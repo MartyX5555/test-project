@@ -520,7 +520,9 @@ function ENT:Calc( InputRPM, InputInertia )
 	end
 
 	if self.Auto and self.Drive == 1 and self.InGear then
-		local vel = BoxPhys:GetVelocity():Length()
+		local Base = ACF_GetPhysicalParent( self )
+		local PhysObj = Base:GetPhysicsObject()
+		local vel = PhysObj:GetVelocity():Length()
 		if vel > (self.ShiftPoints[self.Gear] * self.ShiftScale) and not (self.Gear == self.Gears) and not self.Hold then
 			self:ChangeGear(self.Gear + 1)
 		elseif vel < (self.ShiftPoints[self.Gear-1] * self.ShiftScale) then
