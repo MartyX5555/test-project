@@ -308,18 +308,14 @@ do
 			local dirName = file_data.Dir
 
 			if SERVER and HasPrefix( fileName, "sv_" ) then
-				print("server file:", fileName)
 				include(dirName)
 			elseif HasPrefix( fileName, "cl_" ) then
-				print("client file:", fileName)
-
 				if SERVER then
 					AddCSLuaFile(dirName)
 				else
 					include(dirName)
 				end
-			else
-				print("shared file:", fileName)
+			elseif not HasPrefix( fileName, "sv_" ) then
 				if SERVER then
 					AddCSLuaFile(dirName)
 				end

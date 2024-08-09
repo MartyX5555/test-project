@@ -7,8 +7,6 @@ local this = ACF.Permissions
 
 local getPanelChecks = function() return {} end
 
-
-
 net.Receive("ACF_refreshfriends", function()
 	--Msg("\ncl refreshfriends\n")
 	local perms = net.ReadTable()
@@ -23,10 +21,7 @@ net.Receive("ACF_refreshfriends", function()
 			check:SetChecked(false)
 		end
 	end
-
 end)
-
-
 
 net.Receive("ACF_refreshfeedback", function()
 	local success = net.ReadBit()
@@ -43,8 +38,6 @@ net.Receive("ACF_refreshfeedback", function()
 	notification.AddLegacy(str, notify, 7)
 end)
 
-
-
 function this.ApplyPermissions(checks)
 	perms = {}
 
@@ -57,8 +50,6 @@ function this.ApplyPermissions(checks)
 		net.WriteTable(perms)
 	net.SendToServer()
 end
-
-
 
 function this.ClientPanel(Panel)
 
@@ -99,16 +90,12 @@ function this.ClientPanel(Panel)
 	net.SendToServer(ply)
 end
 
-
-
 function this.SpawnMenuOpen()
 	if this.ClientCPanel then
 		this.ClientPanel(this.ClientCPanel)
 	end
 end
 hook.Add("SpawnMenuOpen", "ACFPermissionsSpawnMenuOpen", this.SpawnMenuOpen)
-
-
 
 function this.PopulateToolMenu()
 	spawnmenu.AddToolMenuOption("Utilities", "ACE", "Damage Permission", "Damage Permission", "", "", this.ClientPanel)

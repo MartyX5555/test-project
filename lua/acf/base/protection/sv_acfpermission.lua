@@ -1,8 +1,7 @@
 -- This file defines damage permission with all ACF weaponry
 
-
 ACF = ACF or {}
-ACF.Permissions = {}
+ACF.Permissions = ACF.Permissions or {}
 local this = ACF.Permissions
 
 --TODO: make player-customizable
@@ -119,13 +118,13 @@ local function LoadMapDPM()
 	local mapname = string.gsub(game.GetMap(), "[ ^ %a%d-_]", "_")
 	return file.Read(mapDPMDir .. mapname .. ".txt", "DATA")
 end
-
+--[[
 hook.Add( "Initialize", "ACF_LoadSafesForMap", function()
 	if not getMapSZs() then
 		print("!!!!!!!!!!!!!!!!!!\n[ACE | WARNING]- Safezone file " .. getMapFilename() .. " is missing, invalid or corrupt!  Safezones will not be restored this time.\n!!!!!!!!!!!!!!!!!!")
 	end
 end )
-
+]]
 hook.Add("ACF_PlayerChangedZone", "ACF_TellPlyAboutSafezoneBattle", function(ply, zone)
 	if not this.NotifySafezones[table.KeyFromValue(this.Modes, this.DamagePermission)] then return end
 
@@ -659,9 +658,7 @@ hook.Add("ACF_ProtectionModeChanged", "ACF_ResendPermissionsOnChanged", this.Res
 
 
 -- -- -- -- -- Initial DP mode load -- -- -- -- --
-
-do
-
+timer.Simple(0,function()
 	local mode = table.KeyFromValue(this.Modes, this.DamagePermission)
 
 	if not mode then
@@ -669,7 +666,6 @@ do
 		hook.Call("ACF_ProtectionModeChanged", GAMEMODE, "default", nil)
 		mode = "default"
 	end
-
-end
+end)
 
 
