@@ -10,7 +10,7 @@ do
 	local function OldShapedShellsAdjust( PlayerData, Data, GUIData, lengthFactor )
 		PlayerData.PropLength = math.max(0.01 + Data.Caliber * lengthFactor, PlayerData.PropLength )
 
-		-- check if current lenght exceeds the max lenght available
+		-- check if current length exceeds the max length available
 		if PlayerData.PropLength + PlayerData.ProjLength > GUIData.MaxTotalLength then
 
 			PlayerData.ProjLength = GUIData.MaxTotalLength - PlayerData.PropLength
@@ -43,10 +43,10 @@ do
 		local CurLength = (PlayerData.ProjLength + math.min(PlayerData.PropLength,PropMax) + Data.Tracer )
 
 		GUIData.MinPropLength = 0.01
-		GUIData.MaxPropLength = math.max(math.min(GUIData.MaxTotalLength - CurLength + PlayerData.PropLength, PropMax), GUIData.MinPropLength) --Check if the desired prop lenght fits in the case and doesn't exceed the gun max
+		GUIData.MaxPropLength = math.max(math.min(GUIData.MaxTotalLength - CurLength + PlayerData.PropLength, PropMax), GUIData.MinPropLength) --Check if the desired prop length fits in the case and doesn't exceed the gun max
 
 		GUIData.MinProjLength = Data.Caliber * 1.5
-		GUIData.MaxProjLength = math.max(GUIData.MaxTotalLength - CurLength + PlayerData.ProjLength, GUIData.MinProjLength ) --Check if the desired proj lenght fits in the case
+		GUIData.MaxProjLength = math.max(GUIData.MaxTotalLength - CurLength + PlayerData.ProjLength, GUIData.MinProjLength ) --Check if the desired proj length fits in the case
 
 		--This is to check the current ratio between elements if i need to clamp it
 		local Ratio 		= math.min(1, (GUIData.MaxTotalLength - Data.Tracer) / (PlayerData.ProjLength + math.min(PlayerData.PropLength, PropMax)))
@@ -144,8 +144,8 @@ do
 			local GunClass	= AmmoGunData.gunclass
 			local ClassData	= ACF.Classes.GunClass[GunClass]
 
-			local ProjLenght = Data.ProjLength
-			local PropLenght = Data.PropLength
+			local ProjLength = Data.ProjLength
+			local PropLength = Data.PropLength
 			local Caliber	= Data.Caliber
 
 			local width, shellLength
@@ -155,7 +155,7 @@ do
 				shellLength = AmmoGunData.length / ACF.AmmoLengthMul / toInche
 			else
 				width = Caliber / ACF.AmmoWidthMul / toInche
-				shellLength = ((PropLenght or 0) + (ProjLenght or 0)) / ACF.AmmoLengthMul / toInche
+				shellLength = ((PropLength or 0) + (ProjLength or 0)) / ACF.AmmoLengthMul / toInche
 			end
 
 			local Id		= acfmenupanel.AmmoData.Id
@@ -165,7 +165,7 @@ do
 				Dimensions = CreateRealScale(Id)
 			else
 				local AmmoData	= ACF.Weapons.Ammo[Id]
-				Dimensions = Vector(AmmoData.Lenght,AmmoData.Width,AmmoData.Height)
+				Dimensions = Vector(AmmoData.Length,AmmoData.Width,AmmoData.Height)
 			end
 
 			local cap1 = Floor(Dimensions.x / shellLength) * Floor(Dimensions.y / width) * Floor(Dimensions.z / width)
@@ -231,9 +231,9 @@ do
 
 	end
 
-	function ACE_AmmoStats(RoundLenght, MaxTotalLenght, MuzzleVel, MaxPen)
+	function ACE_AmmoStats(RoundLength, MaxTotalLength, MuzzleVel, MaxPen)
 	acfmenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
-	acfmenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLenght .. "/" .. MaxTotalLenght .. " cms (" .. math.Round(RoundLenght / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
+	acfmenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLength .. "/" .. MaxTotalLength .. " cms (" .. math.Round(RoundLength / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
 
 	end
 

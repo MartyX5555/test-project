@@ -69,20 +69,14 @@ function PANEL:Init( )
 			--Table content for Guns folder
 			if Class.type == "Gun" then
 
-				--print("Gun detected!")
 				table.insert(self.GunClasses[ID], Class)
-
 			--Table content for Missiles folder
 			elseif Class.type == "missile" then
 
-				--print("Missile detected!")
 				table.insert(self.MisClasses[ID], Class)
-
 			else
 
-				--print("Modded Gun detected!")
 				table.insert(self.ModClasses[ID], Class)
-
 			end
 
 		end

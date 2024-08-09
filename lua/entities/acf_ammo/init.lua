@@ -305,7 +305,7 @@ do
 
 				Model = AmmoData.model
 				Weight = AmmoData.weight
-				Dimensions = Vector( AmmoData.Lenght, AmmoData.Width, AmmoData.Height )
+				Dimensions = Vector( AmmoData.Length, AmmoData.Width, AmmoData.Height )
 
 				Ammo:SetModel( Model )
 				Ammo:PhysicsInit( SOLID_VPHYSICS )
@@ -468,8 +468,8 @@ do
 		--For some reason, removing this will also break several things with missile code. bad
 		self.RoundId            = Data1
 		self.RoundType          = Data2							-- Type of round, IE AP, HE, HEAT ...
-		self.RoundPropellant    = Data3					or 0	-- Lenght of propellant
-		self.RoundProjectile    = Data4					or 0	-- Lenght of the projectile
+		self.RoundPropellant    = Data3					or 0	-- length of propellant
+		self.RoundProjectile    = Data4					or 0	-- length of the projectile
 		self.RoundData5         = Data5					or 0
 		self.RoundData6         = Data6					or 0
 		self.RoundData7         = Data7					or 0

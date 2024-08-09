@@ -74,11 +74,11 @@ duplicator.RegisterEntityClass("acf_explosive", MakeACF_Explosive, "Pos", "Angle
 function ENT:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, bdata,Data11 ,Data12, Data13 ,Data14, Data15)
 
 	self:SetModelEasy(Mdl)
-	--Data 1 to 4 are should always be Round ID, Round Type, Propellant lenght, Projectile lenght
+	--Data 1 to 4 are should always be Round ID, Round Type, Propellant length, Projectile length
 	self.RoundId			= Data1	--Weapon this round loads into, ie 140mmC, 105mmH ...
 	self.RoundType		= Data2	--Type of round, IE AP, HE, HEAT ...
-	self.RoundPropellant	= Data3--Lenght of propellant
-	self.RoundProjectile	= Data4--Lenght of the projectile
+	self.RoundPropellant	= Data3--length of propellant
+	self.RoundProjectile	= Data4--length of the projectile
 	self.RoundData5		= ( Data5 or 0 )
 	self.RoundData6		= ( Data6 or 0 )
 	self.RoundData7		= ( Data7 or 0 )

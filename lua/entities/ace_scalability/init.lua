@@ -7,7 +7,7 @@ include("shared.lua")
 --[[
 function ENT:Initialize()
 
-	--Use the half value of the final scale lenght. To define the real lenght in the final result
+	--Use the half value of the final scale length. To define the real length in the final result
 	--XYZ scale config should depend on what entity we are scaling, since ammos should scale as shown below, guns by caliber, fuels in the same way as ammo, etc...
 
 	local Mode = math.random(1,2)

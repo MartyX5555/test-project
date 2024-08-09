@@ -171,19 +171,19 @@ do
 			CrateNewPanel:AddItem( ShapeComboList )
 
 			-- X Slider
-			local LenghtSlider = vgui.Create( "DNumSlider" )
-			LenghtSlider:SetText( "Length" )
-			LenghtSlider:SetDark( true )
-			LenghtSlider:SetMin( MinCrateSize )
-			LenghtSlider:SetMax( MaxCrateSize )
-			LenghtSlider:SetValue( acfmenupanel.FuelPanelConfig["Crate_Length"] or 10 )
-			LenghtSlider:SetDecimals( 1 )
+			local LengthSlider = vgui.Create( "DNumSlider" )
+			LengthSlider:SetText( "Length" )
+			LengthSlider:SetDark( true )
+			LengthSlider:SetMin( MinCrateSize )
+			LengthSlider:SetMax( MaxCrateSize )
+			LengthSlider:SetValue( acfmenupanel.FuelPanelConfig["Crate_Length"] or 10 )
+			LengthSlider:SetDecimals( 1 )
 
-			function LenghtSlider:OnValueChanged( value )
+			function LengthSlider:OnValueChanged( value )
 			acfmenupanel.FuelPanelConfig["Crate_Length"] = value
 			CreateIdForCrate()
 			end
-			CrateNewPanel:AddItem(LenghtSlider)
+			CrateNewPanel:AddItem(LengthSlider)
 
 			-- Y Slider
 			local WidthSlider = vgui.Create( "DNumSlider" )
