@@ -14,7 +14,6 @@ hook.Remove( "Think", "ACF_ManageBulletEffects" )
 hook.Add("Think", "ACF_ManageBulletEffects", ACF_ManageBulletEffects)
 
 function ACF_SimBulletFlight( Bullet, Index )
-
 	if not Bullet or not Index then return end
 
 	local DeltaTime = CurTime() - Bullet.LastThink --intentionally not using cached curtime value

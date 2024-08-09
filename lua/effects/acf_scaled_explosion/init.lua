@@ -62,7 +62,7 @@ function EFFECT:Init( data )
 	--Main explosion
 	self:Core( self.HitWater )
 	ACE_SBlast( self.Origin, self.Radius, self.HitWater, Ground.HitWorld )
-	ACF_RenderLight( 0, self.Radius * 1800, Color(255, 128, 48), self.Origin, 0.1) -- idx 0: world
+	ACF_RenderLight( 0, self.Radius * 500, Color(255, 128, 48), self.Origin, 0.1) -- idx 0: world
 
 	if IsValid(self.Emitter) then self.Emitter:Finish() end
 end
@@ -78,6 +78,36 @@ function EFFECT:Core( HitWater )
 	local WaterColor = Color(255,255,255,100)
 
 	--local NumRand, Texture, TScale
+
+	local Glow = self.Emitter:Add( "sprites/orangeflare1", self.Origin )
+
+	if Glow then
+			Glow:SetLifeTime( 0 )
+			Glow:SetDieTime( 0.15 )
+			Glow:SetStartAlpha( math.Rand( 25, 50 ) )
+			Glow:SetEndAlpha( 0 )
+			Glow:SetStartSize( 200 * Radius )
+			Glow:SetEndSize( 1 * Radius )
+			Glow:SetColor( 255, 255, 255 )
+	end
+
+	for _ = 1, Radius do --Explosion Core
+
+		local Flame = self.Emitter:Add( "particles/flamelet" .. math.random(1,5), self.Origin)
+		if Flame then
+			Flame:SetVelocity( VectorRand() * math.random(50,150 * Radius) )
+			Flame:SetLifeTime( 0 )
+			Flame:SetDieTime( 0.2 )
+			Flame:SetStartAlpha( 255 )
+			Flame:SetStartSize( 10 * Radius )
+			Flame:SetEndSize( 15 * Radius )
+			Flame:SetRoll( math.random(120, 360) )
+			Flame:SetAirResistance( 350 )
+			Flame:SetGravity( Vector( 0, 0, 4 ) )
+			Flame:SetColor( 255,255,255 )
+		end
+	end
+
 
 	for _ = 0, 3 * Radius do --Flying Debris
 
@@ -101,63 +131,34 @@ function EFFECT:Core( HitWater )
 		end
 	end
 
-	for _ = 0, 2 * Radius do
+	for _ = 0, Radius do
 
-		local Whisp = self.Emitter:Add( "particle/smokesprites_000" .. math.random(1,9), self.Origin + VectorRand() * Radius * 11 )
-		if Whisp then
-			Whisp:SetVelocity(VectorRand() * math.random( 50,150 * Radius) )
-			Whisp:SetLifeTime( 0 )
-			Whisp:SetDieTime( math.Rand( 0.1 , 3 ) * Radius / 3  )
-			Whisp:SetStartAlpha( math.Rand( 125, 150 ) )
-			Whisp:SetEndAlpha( 0 )
-			Whisp:SetStartSize( 10 * Radius )
-			Whisp:SetEndSize( 80 * Radius)
-			Whisp:SetRoll( math.Rand(150, 360) )
-			Whisp:SetRollDelta( math.Rand(-0.2, 0.2) )
-			Whisp:SetAirResistance( 100 )
-			Whisp:SetGravity( Vector( math.random(-5,5) * Radius, math.random(-5,5) * Radius, -140 ) )
+		local Smoke = self.Emitter:Add( "particle/smokesprites_000" .. math.random(1,9), self.Origin + VectorRand() * Radius * 11 )
+		if Smoke then
+			Smoke:SetVelocity(VectorRand() * math.random( 50,150 * Radius) )
+			Smoke:SetLifeTime( 0 )
+			Smoke:SetDieTime( math.Rand( 0.1 , 3 ) * Radius / 3  )
+			Smoke:SetStartAlpha( math.Rand( 125, 150 ) )
+			Smoke:SetEndAlpha( 0 )
+			Smoke:SetStartSize( 10 * Radius )
+			Smoke:SetEndSize( 80 * Radius)
+			Smoke:SetRoll( math.Rand(150, 360) )
+			Smoke:SetRollDelta( math.Rand(-0.2, 0.2) )
+			Smoke:SetAirResistance( 100 )
+			Smoke:SetGravity( Vector( math.random(-5,5) * Radius, math.random(-5,5) * Radius, -140 ) )
 
 			RandColor = 100-math.random( 0 , 45 )
 
 			if HitWater or Underwater then
 				RandColor = math.random( 0 , 50 )
-				Whisp:SetColor( WaterColor.r-RandColor, WaterColor.g-RandColor, WaterColor.b-RandColor, 255 )
+				Smoke:SetColor( WaterColor.r-RandColor, WaterColor.g-RandColor, WaterColor.b-RandColor, 255 )
 			else
-				Whisp:SetColor( RandColor, RandColor, RandColor )
+				Smoke:SetColor( RandColor, RandColor, RandColor )
 			end
 		end
 	end
 
-	local Glow = self.Emitter:Add( "sprites/orangeflare1", self.Origin )
 
-	if Glow then
-			Glow:SetLifeTime( 0 )
-			Glow:SetDieTime( 0.15 )
-			Glow:SetStartAlpha( math.Rand( 25, 50 ) )
-			Glow:SetEndAlpha( 0 )
-			Glow:SetStartSize( 200 * Radius )
-			Glow:SetEndSize( 1 * Radius )
-			Glow:SetColor( 255, 255, 255 )
-	end
-
-	for _ = 0, Radius * 3 do --Explosion Core
-
-		local Flame = self.Emitter:Add( "particles/flamelet" .. math.random(1,5), self.Origin)
-		if Flame then
-			Flame:SetVelocity( VectorRand() * math.random(50,150 * Radius) )
-			Flame:SetLifeTime( 0 )
-			Flame:SetDieTime( 0.2 )
-			Flame:SetStartAlpha( 255 )
-			Flame:SetEndAlpha( 0 )
-			Flame:SetStartSize( 10 * Radius )
-			Flame:SetEndSize( 15 * Radius )
-			Flame:SetRoll( math.random(120, 360) )
-			Flame:SetRollDelta( math.Rand(-1, 1) )
-			Flame:SetAirResistance( 350 )
-			Flame:SetGravity( Vector( 0, 0, 4 ) )
-			Flame:SetColor( 255,255,255 )
-		end
-	end
 end
 
 function EFFECT:Shockwave( Ground, SmokeColor )
