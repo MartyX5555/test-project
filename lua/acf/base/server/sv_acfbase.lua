@@ -23,48 +23,6 @@ function ACF_GetPhysicalParent( obj )
 end
 
 do
-	local SendDelay = 1 -- in miliseconds
-	local RenderProps = {
-		Entities = {},
-		Clock = 0
-	}
-	function ACF_UpdateVisualHealth( Entity )
-		if not Entity.ACF.OnRenderQueue then
-			table.insert(RenderProps.Entities, Entity )
-			Entity.ACF.OnRenderQueue = true
-		end
-	end
-	function ACF_SendVisualDamage()
-
-		local Time = CurTime()
-
-		if next(RenderProps.Entities) and Time >= RenderProps.Clock then
-
-			for k, Ent in ipairs(RenderProps.Entities) do
-				if not Ent:IsValid() then
-					table.remove( RenderProps.Entities, k )
-				end
-			end
-
-			local Entity = RenderProps.Entities[1]
-			if IsValid(Entity) then
-				net.Start("ACF_RenderDamage", true) -- i dont care if the message is not received under extreme cases since its simply a visual effect only.
-					net.WriteUInt(Entity:EntIndex(), 13)
-					net.WriteFloat(Entity.ACF.MaxHealth)
-					net.WriteFloat(Entity.ACF.Health)
-				net.Broadcast()
-
-				Entity.ACF.OnRenderQueue = nil
-			end
-			table.remove( RenderProps.Entities, 1 )
-
-			RenderProps.Clock = Time + (SendDelay / 1000)
-		end
-	end
-	hook.Add("Think","ACF_RenderPropDamage", ACF_SendVisualDamage )
-end
-
-do
 
 	local function OnInitialSpawn( ply )
 		local Table = {}
@@ -197,41 +155,13 @@ end
 function ACF_CalcDamage( Entity , Energy , FrArea , Angle , Type) --y=-5/16x + b
 
 	local HitRes			= {}
-
 	local armor			= Entity.ACF.Armour																						-- Armor
 	local losArmor		= armor / math.abs( math.cos(math.rad(Angle)) ^ ACF.SlopeEffectFactor )									-- LOS Armor
 	local losArmorHealth = armor ^ 1.1 * (3 + math.min(1 / math.abs(math.cos(math.rad(Angle)) ^ ACF.SlopeEffectFactor), 2.8) * 0.5)	-- Bc people had to abuse armor angling, FML
 
 	local Mat			= Entity.ACF.Material or "RHA"	--very important thing
 	local MatData		= ACE_GetMaterialData( Mat )
-
-	local damageMult		= 1
-
-	if Type == "AP" then
-		damageMult = ACF.APDamageMult
-	elseif Type == "APC" then
-		damageMult = ACF.APCDamageMult
-	elseif Type == "APBC" then
-		damageMult = ACF.APBCDamageMult
-	elseif Type == "APCBC" then
-		damageMult = ACF.APCBCDamageMult
-	elseif Type == "APHE" then
-		damageMult = ACF.APHEDamageMult
-	elseif Type == "APDS" then
-		damageMult = ACF.APDSDamageMult
-	elseif Type == "HVAP" then
-		damageMult = ACF.HVAPDamageMult
-	elseif Type == "FL" then
-		damageMult = ACF.FLDamageMult
-	elseif Type == "HEAT" then
-		damageMult = ACF.HEATDamageMult
-	elseif Type == "HE" then
-		damageMult = ACF.HEDamageMult
-	elseif Type == "HESH" then
-		damageMult = ACF.HESHDamageMult
-	elseif Type == "HP" then
-		damageMult = ACF.HPDamageMult
-	end
+	local damageMult		= isstring(Type) and ACF[Type .. "DamageMult"] or 1
 
 	-- RHA Penetration
 	local maxPenetration = (Energy.Penetration / FrArea) * ACF.KEtoRHA
