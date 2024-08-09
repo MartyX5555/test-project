@@ -54,7 +54,7 @@ do
 
 	-- Returns whether or not a sound actually exists, fixes client timeout issues
 	function IsValidSound( path )
-		if IsValidCache[path] == nil then
+		if not IsValidCache[path] then
 			IsValidCache[path] = file.Exists( string.format( "sound/%s", tostring( path ) ), "GAME" ) and true or false
 		end
 		return IsValidCache[path]
@@ -102,10 +102,12 @@ do
 		return ply
 	end
 
+	-- Gets the sound speed time. 13503.9 is around 343m/s
 	function ACE_GetDistanceTime( Dist )
-		return (Dist / 1500) * ACE.DelayMultipler
+		return (Dist / 13503.9) * ACE.DelayMultipler
 	end
 
+	-- Gets the Head Pos
 	local function GetHeadPos( ply )
 		local plyPos	= ply.aceposoverride or ply:GetPos()
 		local headPos	= plyPos + ( not ply:InVehicle() and ( ( ply:Crouching() and Vector(0,0,28) ) or Vector(0,0,64) ) or Vector(0,0,0) )
@@ -121,9 +123,7 @@ do
 		local plyPos = entply:IsPlayer() and GetHeadPos( ply ) or entply:GetPos()
 
 		--return true if the distance is lower than the maximum distance
-		if ACE_InDist( plyPos, Pos, Distance ) then return true end
-
-		return false
+		return ACE_InDist( plyPos, Pos, Distance ) 
 	end
 
 	--Used to see if the player has line of sight with the event
@@ -142,7 +142,8 @@ do
 		return false
 	end
 
-	function ACE_SIsInDoor()
+	function ACE_SIsInDoor(HitPos)
+		if ACE_SHasLOS( HitPos ) then return false end
 
 		local ply    = LocalPlayer()
 		local entply = ACE_SGetHearingEntity( ply )
@@ -299,7 +300,7 @@ do
 						end
 
 						--If a wall is in front of the player and is indoor, reduces its vol
-						if not ACE_SHasLOS( HitPos ) and ACE_SIsInDoor() then
+						if ACE_SIsInDoor(HitPos) then
 							--print("Inside of building")
 							VolFix = VolFix * 0.05
 						end
@@ -360,7 +361,7 @@ do
 					local VolFix = 0.5
 
 					--If a wall is in front of the player and is indoor, reduces its vol at 50%
-					if not ACE_SHasLOS( HitPos ) and ACE_SIsInDoor() then
+					if ACE_SIsInDoor(HitPos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.5
 					end
@@ -436,7 +437,7 @@ do
 					end
 
 					--If a wall is in front of the player and is indoor, reduces its vol at 50%
-					if not ACE_SHasLOS( HitPos ) and ACE_SIsInDoor() then
+					if ACE_SIsInDoor(HitPos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.5
 					end
@@ -531,7 +532,7 @@ do
 					end
 
 					--If a wall is in front of the player and is indoor, reduces its vol at 50%
-					if not ACE_SHasLOS( Pos ) and ACE_SIsInDoor() then
+					if ACE_SIsInDoor(Pos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.5
 					end
@@ -605,7 +606,7 @@ do
 					end
 
 					--If a wall is in front of the player and is indoor, reduces its vol
-					if not ACE_SHasLOS( CrackPos ) and ACE_SIsInDoor() then
+					if ACE_SIsInDoor(CrackPos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.025
 					end
@@ -649,7 +650,7 @@ do
 					local VolFix = 1
 
 					--If a wall is in front of the player and is indoor, reduces its vol
-					if not ACE_SHasLOS( Origin ) and ACE_SIsInDoor() then
+					if ACE_SIsInDoor(Origin) then
 						VolFix = VolFix * 0.025
 					end
 
