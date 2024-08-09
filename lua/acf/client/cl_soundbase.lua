@@ -123,7 +123,7 @@ do
 		local plyPos = entply:IsPlayer() and GetHeadPos( ply ) or entply:GetPos()
 
 		--return true if the distance is lower than the maximum distance
-		return ACE_InDist( plyPos, Pos, Distance ) 
+		return ACE_InDist( plyPos, Pos, Distance )
 	end
 
 	--Used to see if the player has line of sight with the event
