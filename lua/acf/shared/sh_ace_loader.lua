@@ -92,20 +92,16 @@ end
 
 --Gun class definition
 function ACF_defineGunClass( id, data )
-	if (data.year or 0) < ACF.Year then
-		data.id = id
-		GunClasses[ id ] = data
-	end
+	data.id = id
+	GunClasses[ id ] = data
 end
 
 -- Gun definition
 function ACF_defineGun( id, data )
-	if (data.year or 0) < ACF.Year then
-		data.id = id
-		data.round.id = id
-		table.Inherit( data, gun_base )
-		GunTable[ id ] = data
-	end
+	data.id = id
+	data.round.id = id
+	table.Inherit( data, gun_base )
+	GunTable[ id ] = data
 end
 
 function ACE_DefineAmmoCrate( id, data )
@@ -159,7 +155,6 @@ function ACF_DefineGearbox( id, data )
 	MobilityTable[ id ] = data
 end
 
-
 -- fueltank definition
 function ACF_DefineFuelTank( id, data )
 	data.id = id
@@ -175,7 +170,6 @@ function ACF_DefineFuelTankSize( id, data )
 	FuelTankSizeTable[ id ] = data
 end
 
-
 -- Radar definition
 function ACF_DefineRadar( id, data )
 	data.id = id
@@ -189,7 +183,6 @@ function ACF_DefineRadarClass( id, data )
 	RadarClasses[ id ] = data
 end
 
-
 -- Tracking Radar definition
 function ACF_DefineTrackRadar( id, data )
 	data.id = id
@@ -202,7 +195,6 @@ function ACF_DefineTrackRadarClass( id, data )
 	data.id = id
 	RadarClasses[ id ] = data
 end
-
 
 -- Tracking Radar definition
 function ACF_DefineIRST( id, data )

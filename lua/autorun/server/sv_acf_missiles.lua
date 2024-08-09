@@ -54,10 +54,6 @@ end
 
 function ACFM_ExpandBulletData(bullet)
 
-	-- print("==== ACFM_ExpandBulletData")
-	-- pbn(bullet)
-
-
 	local toconvert		= {}
 	toconvert["Id"]		= bullet["Id"]			or "12.7mmMG"
 	toconvert["Type"]	= bullet["Type"]			or "AP"
