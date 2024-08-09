@@ -48,7 +48,7 @@ function EFFECT:Init( data )
 	self.Id            = ValidCrate and self.AmmoCrate:GetNWString( "AmmoType", "AP" ) or "AP"
 	self.Caliber       = ValidCrate and self.AmmoCrate:GetNWFloat( "Caliber", 2 ) or 2
 	self.Emitter       = ParticleEmitter( self.Origin )
-	
+
 	local SurfaceTr	= PerformDecalTrace( self )
 
 	--do this if we are dealing with non-explosive rounds

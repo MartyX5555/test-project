@@ -26,16 +26,13 @@ local function AmmoBuildList( ParentNode, NodeName, AmmoTable )
 
 	for _,AmmoTable in pairs(AmmoTable) do
 
-		local EndNode = AmmoNode:AddNode( AmmoTable.name or "No Name" )
+		local EndNode = AmmoNode:AddNode( AmmoTable.name or "No Name", ItemIcon2 )
 		EndNode.mytable = AmmoTable
 
 		function EndNode:DoClick()
 			RunConsoleCommand( "acfmenu_type", self.mytable.type )
 			acfmenupanel:UpdateDisplay( self.mytable )
 		end
-
-		EndNode.Icon:SetImage( ItemIcon2 )
-
 	end
 end
 
@@ -137,15 +134,13 @@ function PANEL:Init( )
 		for _, Ent in pairs(FinalContainer["Guns"]) do
 			if Ent.gunclass == Class.id then
 
-				local EndNode = SubNode:AddNode( Ent.name or "No Name")
+				local EndNode = SubNode:AddNode( Ent.name or "No Name", "icon16/newspaper.png")
 				EndNode.mytable = Ent
 
 				function EndNode:DoClick()
 					RunConsoleCommand( "acfmenu_type", self.mytable.type )
 					acfmenupanel:UpdateDisplay( self.mytable )
 				end
-
-				EndNode.Icon:SetImage( "icon16/newspaper.png" )
 			end
 		end
 	end
@@ -161,14 +156,13 @@ function PANEL:Init( )
 		for _, Ent in pairs(FinalContainer["Guns"]) do
 			if Ent.gunclass == Class.id then
 
-				local EndNode = SubNode:AddNode( Ent.name or "No Name")
+				local EndNode = SubNode:AddNode( Ent.name or "No Name", "icon16/newspaper.png")
 				EndNode.mytable = Ent
 
 				function EndNode:DoClick()
 				RunConsoleCommand( "acfmenu_type", self.mytable.type )
 				acfmenupanel:UpdateDisplay( self.mytable )
 				end
-				EndNode.Icon:SetImage( "icon16/newspaper.png" )
 			end
 		end
 	end
@@ -207,9 +201,7 @@ function PANEL:Init( )
 			if not EngineCatNodes[category] then
 
 				local Node = Engines:AddNode(category , ItemIcon)
-
 				EngineCatNodes[category] = Node
-
 			end
 		end
 
@@ -239,9 +231,7 @@ function PANEL:Init( )
 			if not GearboxCatNodes[category] then
 
 				local Node = Gearboxes:AddNode(category or "Missing?" , ItemIcon)
-
 				GearboxCatNodes[category] = Node
-
 			end
 		end
 
@@ -305,14 +295,13 @@ function PANEL:Init( )
 
 				if curNode then
 
-					local EndNode = curNode:AddNode( Ent.name or "No Name" )
+					local EndNode = curNode:AddNode( Ent.name or "No Name", "icon16/newspaper.png" )
 					EndNode.mytable = Ent
 
 					function EndNode:DoClick()
 						RunConsoleCommand( "acfmenu_type", self.mytable.type )
 						acfmenupanel:UpdateDisplay( self.mytable )
 					end
-					EndNode.Icon:SetImage( "icon16/newspaper.png" )
 				end
 			end --end radar folder
 		end
@@ -321,28 +310,26 @@ function PANEL:Init( )
 
 	do
 
-	--[[==================================================
-						Settings folder
-	]]--==================================================
+		--[[==================================================
+							Settings folder
+		]]--==================================================
 
-	local OptionsNode = TreePanel:AddNode( "Settings" ) --Options folder
+		local SettingsNode = TreePanel:AddNode( "Settings", "icon16/wrench_orange.png" ) --Options folder
 
-	local CLNod	= OptionsNode:AddNode("Client" , "icon16/user.png") --Client folder
-	local SVNod	= OptionsNode:AddNode("Server", "icon16/cog.png")  --Server folder
+		local CSNode = SettingsNode:AddNode("Client" , "icon16/user.png") --Client folder
+		local SSNode = SettingsNode:AddNode("Server", "icon16/cog.png")  --Server folder
 
-	CLNod.mytable  = {}
-	SVNod.mytable  = {}
+		CSNode.mytable = {}
+		SSNode.mytable = {}
+		CSNode.mytable.guicreate = function( _, Table ) ACFCLGUICreate( Table ) end or nil
+		SSNode.mytable.guicreate = function( _, Table ) ACFSVGUICreate( Table ) end or nil
 
-	CLNod.mytable.guicreate = (function( _, Table ) ACFCLGUICreate( Table ) end or nil)
-	SVNod.mytable.guicreate = (function( _, Table ) ACFSVGUICreate( Table ) end or nil)
-
-	function CLNod:DoClick()
-		acfmenupanel:UpdateDisplay(self.mytable)
-	end
-	function SVNod:DoClick()
-		acfmenupanel:UpdateDisplay(self.mytable)
-	end
-	OptionsNode.Icon:SetImage( "icon16/wrench_orange.png" )
+		function CSNode:DoClick()
+			acfmenupanel:UpdateDisplay(self.mytable)
+		end
+		function SSNode:DoClick()
+			acfmenupanel:UpdateDisplay(self.mytable)
+		end
 
 	end
 
@@ -372,10 +359,10 @@ function PANEL:UpdateDisplay( Table )
 	RunConsoleCommand( "acfmenu_id", Table.id or 0 )
 
 	--If a previous display exists, erase it
-	if ( acfmenupanel.CustomDisplay ) then
-	acfmenupanel.CustomDisplay:Clear(true)
-	acfmenupanel.CustomDisplay = nil
-	acfmenupanel.CData = nil
+	if acfmenupanel.CustomDisplay then
+		acfmenupanel.CustomDisplay:Clear(true)
+		acfmenupanel.CustomDisplay = nil
+		acfmenupanel.CData = nil
 	end
 	--Create the space to display the custom data
 	acfmenupanel.CustomDisplay = vgui.Create( "DPanelList", acfmenupanel )
@@ -384,10 +371,8 @@ function PANEL:UpdateDisplay( Table )
 	acfmenupanel.CustomDisplay:EnableVerticalScrollbar( false )
 	acfmenupanel.CustomDisplay:SetSize( acfmenupanel:GetWide(), acfmenupanel:GetTall() )
 
-	if not acfmenupanel["CData"] then
 	--Create a table for the display to store data
-	acfmenupanel["CData"] = {}
-	end
+	acfmenupanel["CData"] = acfmenupanel["CData"] or {}
 
 	acfmenupanel.CreateAttribs = Table.guicreate
 	acfmenupanel.UpdateAttribs = Table.guiupdate
@@ -409,10 +394,10 @@ function PANEL:PerformLayout()
 	ypos = acfmenupanel.WeaponSelect.Y + acfmenupanel.WeaponSelect:GetTall() + vspacing
 
 	if acfmenupanel.CustomDisplay then
-	--Custom panel
-	acfmenupanel.CustomDisplay:SetPos( 0, ypos )
-	acfmenupanel.CustomDisplay:SetSize( acfmenupanel:GetWide(), acfmenupanel:GetTall() - acfmenupanel.WeaponSelect:GetTall() - 10 )
-	ypos = acfmenupanel.CustomDisplay.Y + acfmenupanel.CustomDisplay:GetTall() + vspacing
+		--Custom panel
+		acfmenupanel.CustomDisplay:SetPos( 0, ypos )
+		acfmenupanel.CustomDisplay:SetSize( acfmenupanel:GetWide(), acfmenupanel:GetTall() - acfmenupanel.WeaponSelect:GetTall() - 10 )
+		ypos = acfmenupanel.CustomDisplay.Y + acfmenupanel.CustomDisplay:GetTall() + vspacing
 	end
 
 end
