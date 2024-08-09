@@ -1172,15 +1172,15 @@ function ACE_CPanelText(Name, Desc, Font, Panel)
 	if not acfmenupanel["CData"][Name .. "_text"] then
 
 		acfmenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
-	
+
 		acfmenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
 		acfmenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
-	
+
 		if Font then acfmenupanel["CData"][Name .. "_text"]:SetFont( Font ) end
-	
+
 		acfmenupanel["CData"][Name .. "_text"]:SetWrap(true)
 		acfmenupanel["CData"][Name .. "_text"]:SetAutoStretchVertical( true )
-	
+
 		if IsValid(Panel) then
 			if Panel.AddItem then
 				Panel:AddItem( acfmenupanel["CData"][Name .. "_text"] )
@@ -1189,7 +1189,7 @@ function ACE_CPanelText(Name, Desc, Font, Panel)
 			acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"][Name .. "_text"] )
 		end
 	end
-	
+
 	acfmenupanel["CData"][Name .. "_text"]:SetText( Desc )
 	acfmenupanel["CData"][Name .. "_text"]:SetSize( acfmenupanel.CustomDisplay:GetWide(), 10 )
 	acfmenupanel["CData"][Name .. "_text"]:SizeToContentsY()
