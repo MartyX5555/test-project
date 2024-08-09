@@ -1,6 +1,5 @@
 
 -- Loads all files from shared folder
-AddCSLuaFile()
 
 ACF = ACF or {}
 
@@ -267,38 +266,6 @@ end
 
 function ACF_GetAllFuseNamesExcept(list)
 	return GetAllInTableExcept(ACF.Fuse, list)
-end
-
--- search for and load a bunch of files or whatever
-
-do
-
-	local Gpath = "acf/shared/"
-	local folders = {
-		"armor",
-		"guns",
-		"missiles",
-		"mines",
-		"radars",
-		"ammocrates",
-		"engines",
-		"gearboxes",
-		"guidances",
-		"fueltanks",
-		"fuses",
-		"sounds"
-	}
-
-	for _, folder in ipairs(folders) do
-
-		local folderData = file.Find( Gpath .. folder .. "/*.lua", "LUA" )
-		for _, v in pairs( folderData ) do
-			AddCSLuaFile( "acf/shared/" .. folder .. "/" .. v )
-			include( "acf/shared/" .. folder .. "/" .. v )
-		end
-
-	end
-
 end
 
 -- now that the tables are populated, throw them in the acf ents list

@@ -1,4 +1,3 @@
-AddCSLuaFile()
 
 game.AddParticles( "particles/flares_fx.pcf" )
 game.AddParticles("particles/acf_muzzleflashes.pcf")

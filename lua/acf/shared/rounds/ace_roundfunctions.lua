@@ -1,5 +1,3 @@
-AddCSLuaFile( "acf/shared/rounds/ace_roundfunctions.lua" )
-
 
 do
 

@@ -8,8 +8,6 @@ ACF.CurrentVersion = 0	-- just defining a variable, do not change
 
 ACF.Year = 2024			-- Current Year
 
-print("[ACE | INFO]- loading ACE. . .")
-
 ACE               = ACE or {}
 ACE.ArmorTypes    = {}
 ACE.GSounds 	  = {}
@@ -274,181 +272,78 @@ elseif CLIENT then
 
 end
 
-
-if ACF.AllowCSLua > 0 then
-	AddCSLuaFile("autorun/translation/ace_translationpacks.lua")
-	RunConsoleCommand( "sv_allowcslua", 1 )
-	include("autorun/translation/ace_translationpacks.lua") --File that is overwritten to install a translation pack
-else
-	RunConsoleCommand( "sv_allowcslua", 0 )
-	include("autorun/translation/ace_translationpacks.lua")
-	AddCSLuaFile("autorun/translation/ace_translationpacks.lua")
-end
-
-include("acf/shared/sh_ace_particles.lua")
-include("acf/shared/sh_ace_sound_loader.lua")
-include("autorun/acf_missile/folder.lua")
-include("acf/shared/sh_ace_functions.lua")
-include("acf/shared/sh_ace_loader.lua")
-include("acf/shared/sh_ace_concommands.lua")
-include("acf/shared/sh_acfm_roundinject.lua")
-include("acf/shared/compatibility/cppiCompatibility.lua")
-AddCSLuaFile("acf/shared/compatibility/cppiCompatibility.lua")
-
-if SERVER then
-
-	include("acf/shared/sv_ace_networking.lua")
-	include("acf/server/sv_acfbase.lua")
-	include("acf/server/sv_acfdamage.lua")
-	include("acf/server/sv_acfballistics.lua")
-	include("acf/server/sv_contraption.lua")
-	include("acf/server/sv_heat.lua")
-	include("acf/server/sv_legality.lua")
-	include("acf/server/sv_acfpermission.lua")
-
-	AddCSLuaFile("acf/client/cl_acfballistics.lua")
-	AddCSLuaFile("acf/client/cl_acfmenu_gui.lua")
-	AddCSLuaFile("acf/client/cl_acfrender.lua")
-	AddCSLuaFile("acf/client/cl_soundbase.lua")
-
-	AddCSLuaFile("acf/client/cl_acfmenu_missileui.lua")
-
-	AddCSLuaFile("acf/client/cl_acfpermission.lua")
-	AddCSLuaFile("acf/client/gui/cl_acfsetpermission.lua")
-
-
-elseif CLIENT then
-
-	include("acf/client/cl_acfballistics.lua")
-	include("acf/client/cl_acfrender.lua")
-	include("acf/client/cl_soundbase.lua")
-
-	include("acf/client/cl_acfpermission.lua")
-	include("acf/client/gui/cl_acfsetpermission.lua")
-
-	CreateClientConVar("ACF_MobilityRopeLinks", "1", true, true)
-
-end
-
-
---[[--------------------------------------
-	RoundType Loader
-]]----------------------------------------
-
-include("acf/shared/rounds/ace_roundfunctions.lua")
-
-include("acf/shared/rounds/roundap.lua")
-include("acf/shared/rounds/roundhe.lua")
-include("acf/shared/rounds/roundfl.lua")
-include("acf/shared/rounds/roundhp.lua")
-include("acf/shared/rounds/roundsmoke.lua")
-include("acf/shared/rounds/roundrefill.lua")
-include("acf/shared/rounds/roundapc.lua")
-
-
-
-include("acf/shared/rounds/roundapbc.lua")
-include("acf/shared/rounds/roundapcbc.lua")
-include("acf/shared/rounds/roundhesh.lua")
-include("acf/shared/rounds/roundheat.lua")
-include("acf/shared/rounds/roundaphe.lua")
-include("acf/shared/rounds/roundaphecbc.lua")
-include("acf/shared/rounds/roundhvap.lua")
-include("acf/shared/rounds/roundapds.lua")
-include("acf/shared/rounds/roundapfsds.lua")
-include("acf/shared/rounds/roundheatfs.lua")
-include("acf/shared/rounds/roundhefs.lua")
-include("acf/shared/rounds/roundflare.lua")
-include("acf/shared/rounds/roundglgm.lua")
-include("acf/shared/rounds/roundtheat.lua")
-include("acf/shared/rounds/roundtheatfs.lua")
-
-timer.Simple( 0, function()
-	for _, Table in pairs(ACF.Classes["GunClass"]) do
-		PrecacheParticleSystem(Table["muzzleflash"])
-	end
-end)
-
---Stupid workaround red added to precache timescaling.
-hook.Add( "Think", "Update ACF Internal Clock", function()
-	ACF.CurTime = CurTime()
-	ACF.SysTime = SysTime()
-end )
-
-
-if SERVER then
-
-	function ACE_SendDPStatus()
-
-		local Cvar = GetConVar("acf_enable_dp"):GetInt()
-		local bool = tobool(Cvar)
-
-		net.Start("ACE_DPStatus")
-			net.WriteBool(bool)
-		net.Broadcast()
-
-	end
-
-	function ACF_SendNotify( ply, success, msg )
-		net.Start( "ACF_Notify" )
-		net.WriteBit( success )
-		net.WriteString( msg or "" )
-		net.Send( ply )
-	end
-else
-
-	local function ACF_Notify()
-		local Type = NOTIFY_ERROR
-		if tobool( net.ReadBit() ) then Type = NOTIFY_GENERIC end
-
-		GAMEMODE:AddNotify( net.ReadString(), Type, 7 )
-	end
-	net.Receive( "ACF_Notify", ACF_Notify )
-end
-
-do
-
-	local function OnInitialSpawn( ply )
-		local Table = {}
-		for _, v in pairs( ents.GetAll() ) do
-			if v.ACF and v.ACF.PrHealth then
-				table.insert(Table,{ID = v:EntIndex(), Health = v.ACF.Health, v.ACF.MaxHealth})
-			end
-		end
-		if Table ~= {} then
-			net.Start("ACF_RenderDamage")
-				net.WriteTable(Table)
-			net.Send(ply)
-		end
-	end
-	hook.Add( "PlayerInitialSpawn", "renderdamage", OnInitialSpawn )
-
-end
-
-
-if CLIENT then
-	ACF.Wind = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
-
-	net.Receive("ACE_Wind", function()
-		ACF.Wind = Vector(net.ReadFloat(), net.ReadFloat(), 0)
-	end)
-else
-	local curveFactor = 2.5
-	local reset_timer = 60
-	ACF.Wind = Vector()
-	timer.Create("ACE_Wind", reset_timer, 0, function()
-		local smokeDir = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
-		ACF.Wind = (math.random() ^ curveFactor) * smokeDir * GetConVar("acf_wind"):GetFloat()
-		net.Start("ACE_Wind")
-			net.WriteFloat(ACF.Wind.x)
-			net.WriteFloat(ACF.Wind.y)
-		net.Broadcast()
-	end)
-end
-
 cleanup.Register( "aceexplosives" )
 
-AddCSLuaFile("autorun/acf_missile/folder.lua")
-include("autorun/acf_missile/folder.lua")
+do
+	-- The name of the folder for the loader. Relative to lua folder
+	local mainfolder_name = "acf"
 
-print("[ACE | INFO]- Done!")
+	local function HasPrefix( File, Prefix)
+		return string.lower(string.Left(File , 3)) == Prefix
+	end
+
+	-- Find recursively every file, through of subfolders.
+	local function GetAllFiles(folder, foundFiles, Dircount)
+		foundFiles = foundFiles or {}
+
+		local files, directories = file.Find(folder .. "/*", "LUA")
+
+		for _, fileName in ipairs(files) do
+			table.insert(foundFiles, { File = fileName, Dir = folder .. "/" .. fileName })
+		end
+
+		for _, dirName in ipairs(directories) do
+			GetAllFiles(folder .. "/" .. dirName, foundFiles, Dircount)
+		end
+
+		return foundFiles
+	end
+
+	-- Include all the found files to their respective realms
+	local function IncludeAllFiles(files)
+
+		for _, file_data in ipairs(files) do
+
+			local fileName = file_data.File
+			local dirName = file_data.Dir
+
+			if SERVER and HasPrefix( fileName, "sv_" ) then
+				print("server file:", fileName)
+				include(dirName)
+			elseif HasPrefix( fileName, "cl_" ) then
+				print("client file:", fileName)
+
+				if SERVER then
+					AddCSLuaFile(dirName)
+				else
+					include(dirName)
+				end
+			else
+				print("shared file:", fileName)
+				if SERVER then
+					AddCSLuaFile(dirName)
+				end
+
+				include(dirName)
+			end
+		end
+	end
+
+	local function LoadAll()
+
+		local files = GetAllFiles(mainfolder_name)
+
+		if next(files) then
+			IncludeAllFiles(files)
+
+			if SERVER then
+				print("================-[ ACE Global loader ]-===================\n")
+				print("- Current version: " .. ACF.Version)
+				print("- Detected " .. #files .. " files")
+				print("- ACE is loaded and ready!")
+				print("============================================================")
+			end
+		end
+	end
+	LoadAll()
+end

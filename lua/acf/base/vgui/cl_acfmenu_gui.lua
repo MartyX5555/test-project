@@ -36,6 +36,8 @@ local function AmmoBuildList( ParentNode, NodeName, AmmoTable )
 	end
 end
 
+PANEL = PANEL or {}
+
 function PANEL:Init( )
 
 	acfmenupanel = self.Panel
@@ -346,6 +348,7 @@ function PANEL:Init( )
 
 	self.WeaponSelect = TreePanel
 
+	http.Fetch("http://raw.github.com/RedDeadlyCreeper/ArmoredCombatExtended/master/changelog.txt", ACFChangelogHTTPCallBack, function() end)
 end
 
 function PANEL:UpdateDisplay( Table )
@@ -534,7 +537,6 @@ function ACFChangelogHTTPCallBack(contents)
 
 end
 
-http.Fetch("http://raw.github.com/RedDeadlyCreeper/ArmoredCombatExtended/master/changelog.txt", ACFChangelogHTTPCallBack, function() end)
 
 --[[=========================
 	Clientside folder content

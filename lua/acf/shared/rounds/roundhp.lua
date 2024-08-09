@@ -1,6 +1,4 @@
 
-AddCSLuaFile()
-
 local RoundTypes = ACF.RoundTypes
 local Round = table.Copy(RoundTypes.AP) -- inherit from AP
 

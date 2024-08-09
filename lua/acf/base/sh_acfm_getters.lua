@@ -1,5 +1,4 @@
 
-AddCSLuaFile()
 
 local GunsTable = ACF.Weapons.Guns
 

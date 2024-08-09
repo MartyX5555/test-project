@@ -380,12 +380,6 @@ concommand.Add( "ACF_ReloadPermissionModes", function(ply)
 
 	else
 
-		local files = file.Find( "acf/server/permissionmodes/*.lua", "LUA" )
-		for _, data in pairs( files ) do
-			include( "acf/server/permissionmodes/" .. data )
-		end
-
-
 		local mode = table.KeyFromValue(this.Modes, this.DamagePermission)
 
 		if not mode then
@@ -667,11 +661,6 @@ hook.Add("ACF_ProtectionModeChanged", "ACF_ResendPermissionsOnChanged", this.Res
 -- -- -- -- -- Initial DP mode load -- -- -- -- --
 
 do
-
-	local files = file.Find( "acf/server/permissionmodes/*.lua", "LUA" )
-	for _, data in pairs( files ) do
-		include( "acf/server/permissionmodes/" .. data )
-	end
 
 	local mode = table.KeyFromValue(this.Modes, this.DamagePermission)
 

@@ -1,4 +1,3 @@
-AddCSLuaFile()
 
 local Clamp = math.Clamp
 
@@ -604,3 +603,65 @@ function ACE_table_contains(table, element)
 	end
 	return false
 end
+
+if SERVER then
+
+	function ACE_SendDPStatus()
+
+		local Cvar = GetConVar("acf_enable_dp"):GetInt()
+		local bool = tobool(Cvar)
+
+		net.Start("ACE_DPStatus")
+			net.WriteBool(bool)
+		net.Broadcast()
+
+	end
+
+	function ACF_SendNotify( ply, success, msg )
+		net.Start( "ACF_Notify" )
+		net.WriteBit( success )
+		net.WriteString( msg or "" )
+		net.Send( ply )
+	end
+else
+
+	local function ACF_Notify()
+		local Type = NOTIFY_ERROR
+		if tobool( net.ReadBit() ) then Type = NOTIFY_GENERIC end
+
+		GAMEMODE:AddNotify( net.ReadString(), Type, 7 )
+	end
+	net.Receive( "ACF_Notify", ACF_Notify )
+end
+
+if CLIENT then
+	ACF.Wind = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
+
+	net.Receive("ACE_Wind", function()
+		ACF.Wind = Vector(net.ReadFloat(), net.ReadFloat(), 0)
+	end)
+else
+	local curveFactor = 2.5
+	local reset_timer = 60
+	ACF.Wind = Vector()
+	timer.Create("ACE_Wind", reset_timer, 0, function()
+		local smokeDir = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
+		ACF.Wind = (math.random() ^ curveFactor) * smokeDir * GetConVar("acf_wind"):GetFloat()
+		net.Start("ACE_Wind")
+			net.WriteFloat(ACF.Wind.x)
+			net.WriteFloat(ACF.Wind.y)
+		net.Broadcast()
+	end)
+end
+
+timer.Simple( 0, function()
+	for _, Table in pairs(ACF.Classes["GunClass"]) do
+		PrecacheParticleSystem(Table["muzzleflash"])
+	end
+end)
+
+--Stupid workaround red added to precache timescaling.
+hook.Add( "Think", "Update ACF Internal Clock", function()
+	ACF.CurTime = CurTime()
+	ACF.SysTime = SysTime()
+end )

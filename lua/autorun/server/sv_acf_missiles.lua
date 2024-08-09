@@ -14,8 +14,6 @@
 -- Lookup table of all currently flying missiles.
 ACF_ActiveMissiles = ACF_ActiveMissiles or {}
 
-include("acf/shared/sh_acfm_getters.lua")
-
 --[[
 	Differences with the default bullet function:
 		1.- It doesnt count traceback, since the missile has no velocity and the bullet will not be hitting the initial launcher.
@@ -227,8 +225,6 @@ function ACFM_ResetVelocity(bdata)
 	return resetFunc(bdata)
 
 end
-
-include("autorun/server/duplicatorDeny.lua")
 
 hook.Add( "InitPostEntity", "ACFMissiles_DupeDeny", function()
 	-- Need to ensure this is called after InitPostEntity because Adv. Dupe 2 resets its whitelist upon this event.

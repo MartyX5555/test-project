@@ -1,4 +1,3 @@
-AddCSLuaFile()
 
 ACF.AmmoBlacklist["FL"] = { "ATR", "MO", "RAC", "RM", "SL", "GL", "MG", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL"}
 

@@ -1,6 +1,4 @@
 
-AddCSLuaFile()
-
 local Round = {}
 
 Round.type  = "Ammo"											-- Tells the spawn menu what entity to spawn

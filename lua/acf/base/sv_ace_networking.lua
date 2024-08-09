@@ -1,4 +1,3 @@
-AddCSLuaFile()
 
 util.AddNetworkString( "ACF_KilledByACF" )
 util.AddNetworkString( "ACF_RenderDamage" )

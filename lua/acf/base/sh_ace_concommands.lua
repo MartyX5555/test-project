@@ -1,4 +1,3 @@
-AddCSLuaFile()
 
 if SERVER then
 

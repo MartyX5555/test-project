@@ -1,12 +1,4 @@
 
-
-
-AddCSLuaFile()
-include("acf/shared/sh_acfm_getters.lua")
-
-
-
-
 local function checkIfDataIsMissile(data)
 
 	local guns = ACF.Weapons.Guns

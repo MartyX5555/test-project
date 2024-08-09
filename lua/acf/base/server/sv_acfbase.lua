@@ -64,6 +64,25 @@ do
 	hook.Add("Think","ACF_RenderPropDamage", ACF_SendVisualDamage )
 end
 
+do
+
+	local function OnInitialSpawn( ply )
+		local Table = {}
+		for _, v in pairs( ents.GetAll() ) do
+			if v.ACF and v.ACF.PrHealth then
+				table.insert(Table,{ID = v:EntIndex(), Health = v.ACF.Health, v.ACF.MaxHealth})
+			end
+		end
+		if Table ~= {} then
+			net.Start("ACF_RenderDamage")
+				net.WriteTable(Table)
+			net.Send(ply)
+		end
+	end
+	hook.Add( "PlayerInitialSpawn", "renderdamage", OnInitialSpawn )
+
+end
+
 --Creates or updates the ACF entity data in a passive way. Meaning this entity wont be updated unless it really requires it (like a shot, damage, looking it using armor tool, etc)
 function ACF_Activate( Entity , Recalc )
 
@@ -564,3 +583,4 @@ function ACE_GetWeaponUser( Weapon, inp )
 
 	return inp:CPPIGetOwner()
 end
+
