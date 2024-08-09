@@ -3,10 +3,6 @@ Initializes the effect. The data is a table of data
 which was passed from the server.
 ---------------------------------------------------------]]
 
-local function GetParticleMul()
-	return math.max( tonumber( LocalPlayer():GetInfo("acf_cl_particlemul") ) or 1, 1)
-end
-
 function EFFECT:Init( data )
 
 	self.HitWater = false
@@ -16,7 +12,6 @@ function EFFECT:Init( data )
 	self.DirVec        = data:GetNormal()
 	self.Radius        = math.max( data:GetRadius()  / 50 ,1)
 	self.Emitter       = ParticleEmitter( self.Origin )
-	self.ParticleMul   = GetParticleMul()
 
 	local GroundTr = { }
 		GroundTr.start = self.Origin + Vector(0,0,1) * self.Radius
@@ -78,14 +73,13 @@ function EFFECT:Core( HitWater )
 	if not self.Emitter then return end
 
 	local Radius = self.Radius
-	local PMul = self.ParticleMul
 
 	local RandColor = 0
 	local WaterColor = Color(255,255,255,100)
 
 	--local NumRand, Texture, TScale
 
-	for _ = 0, 3 * Radius * PMul do --Flying Debris
+	for _ = 0, 3 * Radius do --Flying Debris
 
 		local Debris = self.Emitter:Add( "effects/fleck_tile" .. math.random(1,2), self.Origin )
 		if Debris then
@@ -107,7 +101,7 @@ function EFFECT:Core( HitWater )
 		end
 	end
 
-	for _ = 0, 2 * Radius * PMul do
+	for _ = 0, 2 * Radius do
 
 		local Whisp = self.Emitter:Add( "particle/smokesprites_000" .. math.random(1,9), self.Origin + VectorRand() * Radius * 11 )
 		if Whisp then
@@ -146,7 +140,7 @@ function EFFECT:Core( HitWater )
 			Glow:SetColor( 255, 255, 255 )
 	end
 
-	for _ = 0, Radius * PMul * 3 do --Explosion Core
+	for _ = 0, Radius * 3 do --Explosion Core
 
 		local Flame = self.Emitter:Add( "particles/flamelet" .. math.random(1,5), self.Origin)
 		if Flame then
@@ -170,12 +164,11 @@ function EFFECT:Shockwave( Ground, SmokeColor )
 
 	if not self.Emitter then return end
 
-	local PMul       = self.ParticleMul
 	local Radius     = (1-Ground.Fraction) * self.Radius
 	local Density    = Radius
 	local Angle      = Ground.HitNormal:Angle()
 
-	for _ = 0, Density * PMul do
+	for _ = 0, Density do
 
 		Angle:RotateAroundAxis(Angle:Forward(), 360 / Density)
 		local ShootVector = Angle:Up()
@@ -218,8 +211,6 @@ function EFFECT:Water( Water )
 
 	if not self.Emitter then return end
 
-	local PMul = self.ParticleMul
-
 	local WaterColor = Color(255,255,255,100)
 
 	local Radius   = self.Radius
@@ -227,7 +218,7 @@ function EFFECT:Water( Water )
 	local Angle    = Water.HitNormal:Angle()
 	local Dist     = math.max(math.abs((self.Origin - Water.HitPos):Length()) * 0.01,1)
 
-	for _ = 0, Density * PMul do
+	for _ = 0, Density do
 
 		Angle:RotateAroundAxis(Angle:Forward(), 360 / Density)
 		local ShootVector = Angle:Up()
@@ -251,7 +242,7 @@ function EFFECT:Water( Water )
 		end
 	end
 
-	for _ = 0, 2 * Radius * PMul do
+	for _ = 0, 2 * Radius do
 
 		local Whisp = self.Emitter:Add( TextureTb[math.random(#TextureTb)], Water.HitPos )
 
@@ -281,7 +272,7 @@ function EFFECT:Concrete( SmokeColor )
 
 	if not self.Emitter then return end
 
-	for _ = 0, 5 * self.Radius * self.ParticleMul do --Flying Debris
+	for _ = 0, 5 * self.Radius do --Flying Debris
 
 		local Fragments = self.Emitter:Add( "effects/fleck_tile" .. math.random(1,2), self.Origin )
 		if Fragments then
@@ -304,7 +295,7 @@ function EFFECT:Concrete( SmokeColor )
 		end
 	end
 
-	for _ = 0, 3 * self.Radius * self.ParticleMul do
+	for _ = 0, 3 * self.Radius do
 
 		local Smoke = self.Emitter:Add( "particle/smokesprites_000" .. math.random(1,9), self.Origin )
 		if Smoke then
@@ -329,7 +320,7 @@ function EFFECT:Dirt( SmokeColor )
 
 	if not self.Emitter then return end
 
-	for _ = 0, 3 * self.Radius * self.ParticleMul do
+	for _ = 0, 3 * self.Radius do
 
 		NumRand = math.random(-1, 2)
 		TScale = 1
@@ -364,7 +355,7 @@ function EFFECT:Sand( SmokeColor )
 
 	if not self.Emitter then return end
 
-	for _ = 0, 3 * self.Radius * self.ParticleMul * 2 do
+	for _ = 0, 3 * self.Radius * 2 do
 
 		NumRand = math.random(-1, 2)
 		TScale = 1
@@ -399,7 +390,7 @@ function EFFECT:Airburst()
 	if not self.Emitter then return end
 
 	local Radius = self.Radius
-	for _ = 0, 0.5 * Radius * self.ParticleMul do --Flying Debris
+	for _ = 0, 0.5 * Radius do --Flying Debris
 
 		local Debris = self.Emitter:Add( "effects/fleck_tile" .. math.random(1,2), self.Origin )
 		if Debris then

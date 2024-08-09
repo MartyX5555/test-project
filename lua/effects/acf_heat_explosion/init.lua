@@ -8,9 +8,8 @@ function EFFECT:Init( data )
 	self.DirVec = data:GetNormal()
 	self.Radius = math.max(data:GetRadius() / 50,1)
 	self.Emitter = ParticleEmitter( self.Origin )
-	self.ParticleMul = tonumber(LocalPlayer():GetInfo("acf_cl_particlemul")) or 1
 
-	for _ = 0, 3 * self.Radius * self.ParticleMul do
+	for _ = 0, 3 * self.Radius do
 
 		local Smoke = self.Emitter:Add( "particle/smokesprites_000" .. math.random(1,9), self.Origin )
 		if Smoke then
@@ -30,7 +29,7 @@ function EFFECT:Init( data )
 
 	end
 
-	for _ = 0, 4 * self.Radius * self.ParticleMul do
+	for _ = 0, 4 * self.Radius do
 
 		local Debris = self.Emitter:Add( "effects/fleck_tile" .. math.random(1,2), self.Origin )
 		if Debris then
@@ -49,7 +48,7 @@ function EFFECT:Init( data )
 		end
 	end
 
-	for _ = 0, 5 * self.Radius * self.ParticleMul do
+	for _ = 0, 5 * self.Radius do
 
 		local Embers = self.Emitter:Add( "particles/flamelet" .. math.random(1,5), self.Origin )
 		if (Embers) then

@@ -25,10 +25,6 @@ local function DoubleSidedTraceResult( Effect )
 	return FTrace, BTrace, BackTraceFilter
 end
 
-local function GetParticleMul()
-	return math.max( tonumber( LocalPlayer():GetInfo("acf_cl_particlemul") ) or 1, 1)
-end
-
 function EFFECT:Init( data )
 
 	self.AmmoCrate   = data:GetEntity() 		-- The ammo crate Entity of this round.
@@ -40,7 +36,6 @@ function EFFECT:Init( data )
 	self.Scale       = math.max(self.Mass * (self.Velocity / 39.37) / 100, 1) ^ 0.3
 	self.Caliber     = self.AmmoCrate:GetNWFloat( "Caliber", 10 )
 	self.Emitter     = ParticleEmitter( self.Origin )
-	self.ParticleMul = GetParticleMul()
 
 	local FTrace, BTrace, BackTraceFilter = DoubleSidedTraceResult( self )
 
@@ -64,7 +59,7 @@ function EFFECT:CreatePenetrationEffect()
 
 	local Scale = self.Scale
 
-	for _ = 0, Scale * self.ParticleMul do
+	for _ = 1, Scale do
 
 		local Debris = self.Emitter:Add( "effects/fleck_tile" .. math.random(1,2), self.Origin )
 		if Debris then
@@ -83,7 +78,7 @@ function EFFECT:CreatePenetrationEffect()
 		end
 	end
 
-	for _ = 0, Scale * self.ParticleMul do
+	for _ = 1, Scale do
 
 		local Smoke = self.Emitter:Add( "particle/smokesprites_000" .. math.random(1,9), self.Origin )
 		if Smoke then
@@ -103,7 +98,7 @@ function EFFECT:CreatePenetrationEffect()
 
 	end
 
-	for _ = 0, Scale * self.ParticleMul do
+	for _ = 1, Scale do
 
 		local Embers = self.Emitter:Add( "particles/flamelet" .. math.random(1,5), self.Origin )
 		if Embers then

@@ -34,10 +34,6 @@ local function PerformDecalTrace( Effect )
 	return util.TraceLine( Tr )
 end
 
-local function GetParticleMul()
-	return math.max( tonumber( LocalPlayer():GetInfo("acf_cl_particlemul") ) or 1, 1)
-end
-
 function EFFECT:Init( data )
 
 	self.AmmoCrate   = data:GetEntity() 		-- The ammo crate Entity of this round.
@@ -52,8 +48,7 @@ function EFFECT:Init( data )
 	self.Id            = ValidCrate and self.AmmoCrate:GetNWString( "AmmoType", "AP" ) or "AP"
 	self.Caliber       = ValidCrate and self.AmmoCrate:GetNWFloat( "Caliber", 2 ) or 2
 	self.Emitter       = ParticleEmitter( self.Origin )
-	self.ParticleMul   = GetParticleMul()
-
+	
 	local SurfaceTr	= PerformDecalTrace( self )
 
 	--do this if we are dealing with non-explosive rounds
