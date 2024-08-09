@@ -1180,7 +1180,7 @@ do
 		ACF_HE( AvgPos , vector_origin , HEWeight , HEWeight , Inflictor , ent, ent )
 
 		--util.Effect not working during MP workaround. Waiting a while fixes the issue.
-		timer.Simple(0.001, function()
+		timer.Simple(0, function()
 			local Flash = EffectData()
 				Flash:SetAttachment( 1 )
 				Flash:SetOrigin( AvgPos )

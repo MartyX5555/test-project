@@ -346,63 +346,22 @@ include("acf/shared/rounds/roundrefill.lua")
 include("acf/shared/rounds/roundapc.lua")
 
 
---interwar period
-if ACF.Year > 1920 then
 
-	include("acf/shared/rounds/roundapbc.lua")
-	include("acf/shared/rounds/roundapcbc.lua")
-
-end
---A surprising amount of things were made during WW2
-if ACF.Year > 1939 then
-
-	include("acf/shared/rounds/roundhesh.lua")
-	include("acf/shared/rounds/roundheat.lua")
-	include("acf/shared/rounds/roundaphe.lua")
-	include("acf/shared/rounds/roundaphecbc.lua")
-	include("acf/shared/rounds/roundhvap.lua")
-
-end
---Cold war
-if ACF.Year > 1960 then
-
-	include("acf/shared/rounds/roundapds.lua")
-	include("acf/shared/rounds/roundapfsds.lua")
-	include("acf/shared/rounds/roundheatfs.lua")
-	include("acf/shared/rounds/roundhefs.lua")
-	include("acf/shared/rounds/roundflare.lua")
-	include("acf/shared/rounds/roundglgm.lua")
-
-end
---almost finishing cold war
-if ACF.Year > 1989 then
-
-	include("acf/shared/rounds/roundtheat.lua")
-	include("acf/shared/rounds/roundtheatfs.lua")
-
-end
-
-game.AddDecal("GunShot1", "decals/METAL/shot5")
-
--- Add the ACF tool category
-if CLIENT then
-
-	ACF.CustomToolCategory = CreateClientConVar( "acf_tool_category", 0, true, false );
-
-	if ACF.CustomToolCategory:GetBool() then
-
-		language.Add( "spawnmenu.tools.acf", "ACF" );
-
-		-- We use this hook so that the ACF category is always at the top
-		hook.Add( "AddToolMenuTabs", "CreateACFCategory", function()
-
-			spawnmenu.AddToolCategory( "Main", "ACF", "#spawnmenu.tools.acf" );
-
-		end );
-
-	end
-
-end
+include("acf/shared/rounds/roundapbc.lua")
+include("acf/shared/rounds/roundapcbc.lua")
+include("acf/shared/rounds/roundhesh.lua")
+include("acf/shared/rounds/roundheat.lua")
+include("acf/shared/rounds/roundaphe.lua")
+include("acf/shared/rounds/roundaphecbc.lua")
+include("acf/shared/rounds/roundhvap.lua")
+include("acf/shared/rounds/roundapds.lua")
+include("acf/shared/rounds/roundapfsds.lua")
+include("acf/shared/rounds/roundheatfs.lua")
+include("acf/shared/rounds/roundhefs.lua")
+include("acf/shared/rounds/roundflare.lua")
+include("acf/shared/rounds/roundglgm.lua")
+include("acf/shared/rounds/roundtheat.lua")
+include("acf/shared/rounds/roundtheatfs.lua")
 
 timer.Simple( 0, function()
 	for _, Table in pairs(ACF.Classes["GunClass"]) do
@@ -486,9 +445,6 @@ else
 		net.Broadcast()
 	end)
 end
-
-
-
 
 cleanup.Register( "aceexplosives" )
 

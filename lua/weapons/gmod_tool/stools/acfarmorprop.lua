@@ -20,12 +20,12 @@ local function CalcArmor( Area, Ductility, Thickness, Mat )
 
 	Mat = Mat or "RHA"
 
-	local MatData	= ACE_GetMaterialData( Mat )
-	local MassMod	= MatData.massMod
+	local MatData    = ACE_GetMaterialData( Mat )
+	local MassMod    = MatData.massMod
 
-	local mass		= Area * ( 1 + Ductility ) ^ 0.5 * Thickness * 0.00078 * MassMod
-	local armor		= ACF_CalcArmor( Area, Ductility, mass / MassMod )
-	local health		= ( Area + Area * Ductility ) / ACF.Threshold
+	local mass       = Area * ( 1 + Ductility ) ^ 0.5 * Thickness * 0.00078 * MassMod
+	local armor      = ACF_CalcArmor( Area, Ductility, mass / MassMod )
+	local health     = ( Area + Area * Ductility ) / ACF.Threshold
 
 	return mass, armor, health
 
