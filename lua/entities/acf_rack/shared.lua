@@ -2,7 +2,7 @@
 
 DEFINE_BASECLASS("base_wire_entity")
 
-ENT.PrintName         = "ACF Missile Rack"
+ENT.PrintName         = "ACE Missile Rack"
 
 local Weapons = ACF.Weapons.Guns
 local Racks = ACF.Weapons.Racks

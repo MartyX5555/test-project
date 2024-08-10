@@ -75,17 +75,17 @@ do
 		Gearbox:Spawn()
 
 		Gearbox:CPPISetOwner(Owner)
-		Gearbox.Id		= Id
-		Gearbox.Model	= GearboxData.model
-		Gearbox.Mass		= GearboxData.weight		or 1
-		Gearbox.SwitchTime  = GearboxData.switch
-		Gearbox.MaxTorque	= GearboxData.maxtq		or 0
-		Gearbox.Gears	= GearboxData.gears		or 2 --hmmmmmm ok? just if everything fails
-		Gearbox.Dual		= GearboxData.doubleclutch	or false
-		Gearbox.CVT		= GearboxData.cvt			or false
-		Gearbox.DoubleDiff  = GearboxData.doublediff	or false
-		Gearbox.Auto		= GearboxData.auto			or false
-		Gearbox.Parentable  = GearboxData.parentable	or false
+		Gearbox.Id            = Id
+		Gearbox.Model         = GearboxData.model
+		Gearbox.Mass          = GearboxData.weight		or 1
+		Gearbox.SwitchTime    = GearboxData.switch
+		Gearbox.MaxTorque     = GearboxData.maxtq		or 0
+		Gearbox.Gears         = GearboxData.gears		or 2 --hmmmmmm ok? just if everything fails
+		Gearbox.Dual          = GearboxData.doubleclutch	or false
+		Gearbox.CVT           = GearboxData.cvt			or false
+		Gearbox.DoubleDiff    = GearboxData.doublediff	or false
+		Gearbox.Auto          = GearboxData.auto			or false
+		Gearbox.Parentable    = GearboxData.parentable	or false
 
 		if Gearbox.CVT then
 			Gearbox.TargetMinRPM = Data3
@@ -339,8 +339,10 @@ function ENT:UpdateOverlayText()
 
 	local text = ""
 
+	text = text .. "Current Gear: " .. self.Gear .. "\n\n"
+
 	if self.CVT then
-		text = "Reverse Gear: " .. math.Round( self.GearTable[ 2 ], 2 ) -- maybe a better name than "gear 2"...?
+		text = text .. "Reverse Gear: " .. math.Round( self.GearTable[ 2 ], 2 ) -- maybe a better name than "gear 2"...?
 		text = text .. "\nTarget: " .. math.Round( self.TargetMinRPM ) .. " - " .. math.Round( self.TargetMaxRPM ) .. " RPM\n"
 	elseif self.Auto then
 		for i = 1, self.Gears do
@@ -352,10 +354,10 @@ function ENT:UpdateOverlayText()
 		end
 	end
 	if self.Auto then
-		text = text .. "Reverse gear: " .. math.Round( self.GearTable[ self.Reverse ], 2 ) .. "\n"
+		text = text .. "\nReverse Gear: " .. math.Round( self.GearTable[ self.Reverse ], 2 ) .. "\n"
 	end
 
-	text = text .. "Final Drive: " .. math.Round( self.Gear0, 2 ) .. "\n"
+	text = text .. "\nFinal Drive Ratio: " .. math.Round( self.Gear0, 2 ) .. "\n\n"
 	text = text .. "Torque Rating: " .. self.MaxTorque .. " Nm / " .. math.Round( self.MaxTorque * 0.73 ) .. " ft-lb"
 
 	if not self.Legal then
