@@ -4,7 +4,7 @@ ACF_defineGunClass("C", {
 	spread = 0.1,
 	name = "Cannon",
 	desc = ACFTranslation.GunClasses[4],
-	muzzleflash = "120mm_muzzleflash_noscale",
+	muzzleflash = "C",--"120mm_muzzleflash_noscale",
 	rofmod = 1.5,
 	maxrof = 19, -- maximum rounds per minute
 	sound = "ace_weapons/multi_sound/100mm_multi.mp3",
@@ -140,3 +140,32 @@ ACF_defineGun("170mmC", {
 		propweight = 34
 	}
 } )
+
+ACE_DefineMuzzleFlash("C", {
+	function(Effect)
+
+		local Origin = Effect.Origin
+		local Emitter = ParticleEmitter( Origin )
+
+		for _ = 1, Radius do --Explosion Core
+
+			local Flame = Emitter:Add( "particles/flamelet" .. math.random(1,5), Origin)
+			if Flame then
+				Flame:SetVelocity( VectorRand() * math.random(50,150 * Radius) )
+				Flame:SetLifeTime( 0 )
+				Flame:SetDieTime( 0.2 )
+				Flame:SetStartAlpha( 255 )
+				Flame:SetStartSize( 10 * Radius )
+				Flame:SetEndSize( 15 * Radius )
+				Flame:SetRoll( math.random(120, 360) )
+				Flame:SetAirResistance( 350 )
+				Flame:SetGravity( Vector( 0, 0, 4 ) )
+				Flame:SetColor( 255,255,255 )
+			end
+		end
+
+		--local A = "particles/fire1"
+
+		if Emitter:IsValid() then Emitter:Finish() end
+	end
+})

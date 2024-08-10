@@ -18,6 +18,7 @@ local EngineTable       = {}
 local GearboxTable      = {}
 local FuelTankTable     = {}
 local FuelTankSizeTable = {}
+local MuzzleFlashTable 	= {}
 
 local MobilityTable     = {}
 
@@ -101,6 +102,12 @@ function ACF_defineGun( id, data )
 	data.round.id = id
 	table.Inherit( data, gun_base )
 	GunTable[ id ] = data
+end
+
+-- Muzzleflash definition. The definitions are likely to be placed at the same location as the gun itself
+function ACE_DefineMuzzleFlash(id, data)
+	data.id = id
+	MuzzleFlashTable[ id ] = data
 end
 
 function ACE_DefineAmmoCrate( id, data )
@@ -283,6 +290,7 @@ ACF.Weapons.Gearboxes       = GearboxTable
 ACF.Weapons.FuelTanks       = FuelTankTable
 ACF.Weapons.FuelTanksSize   = FuelTankSizeTable
 ACF.Weapons.Radars          = Radars
+ACE.MuzzleFlashes           = MuzzleFlashTable
 
 --Small reminder of Mobility table. Still being used in stuff like starfall/e2. This can change
 ACF.Weapons.Mobility    = MobilityTable

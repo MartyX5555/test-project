@@ -19,33 +19,39 @@ function EFFECT:Init( data )
 	local MuzzleEffect = Gun:GetNWString( "Muzzleflash", "50cal_muzzleflash_noscale" )
 
 	--This tends to fail
-	local ClassData	= ACF.Classes.GunClass[Class]
-	local Attachment	= "muzzle"
+	local Classes = ACF.Classes
+	local ClassData	= Classes.GunClass[Class]
+	local Attachment = "muzzle"
 
-	if ClassData then
+	if ClassData and Propellant > 0 then
 
-		local longbarrel	= ClassData.longbarrel or nil
+		local longbarrel = ClassData.longbarrel
 
-		if longbarrel ~= nil and Gun:GetBodygroup( longbarrel.index ) == longbarrel.submodel then
+		if longbarrel and Gun:GetBodygroup( longbarrel.index ) == longbarrel.submodel then
 			Attachment = longbarrel.newpos
 		end
 
-	end
-
-	if not IsValidSound( Sound ) then
-		Sound = ClassData.sound
-	end
-
-	if Propellant > 0 then
+		if not IsValidSound( Sound ) then
+			Sound = ClassData.sound
+		end
 
 		ACE_SGunFire( Gun, Sound, SoundPitch, Propellant )
 
 		local Muzzle = Gun:GetAttachment( Gun:LookupAttachment(Attachment)) or { Pos = Gun:GetPos(), Ang = Gun:GetAngles() }
 
-		ParticleEffect( MuzzleEffect , Muzzle.Pos, Muzzle.Ang, Gun )
+		-- Gets the appropiated muzzleflash according to the defined in the gun class
+		local MuzzleTable = ACE.MuzzleFlashes
+		local MuzzleFunction = MuzzleTable[MuzzleEffect].muzzlefunc
+		--local MuzzleCallBack = MuzzleTable["Default"].muzzlefunc
+		if MuzzleFunction then
+			MuzzleFunction( self )
+		--else
+			--MuzzleCallBack( self )
+		end
+
+		--ParticleEffect( MuzzleEffect , Muzzle.Pos, Muzzle.Ang, Gun )
 
 		if Gun:WaterLevel() ~= 3 and not ClassData.nolights then
-
 			ACF_RenderLight(Gun:EntIndex(), Caliber * 75, Color(255, 128, 48), Muzzle.Pos + Muzzle.Ang:Forward() * (Caliber / 5))
 		end
 
@@ -73,3 +79,5 @@ end
 -----------------------------------------------------------]]
 function EFFECT:Render()
 end
+
+
