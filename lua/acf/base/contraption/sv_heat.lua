@@ -92,9 +92,7 @@ function ACE_HeatFromEngine( Engine )
 	local ExTemp = 0			--> Defines how hot is the engine when it is active? DONT TOUCH
 	local Temp = Engine.Heat	--> Current Temperature
 
-
 	if Engine.Active then
-
 		local RPM  = Engine.FlyRPM  --> RPM of said engin
 		local Heat = 0			--> Heat from engine
 
