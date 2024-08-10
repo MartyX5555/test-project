@@ -7,27 +7,8 @@ local Gear2LW = 80
 
 -- Inline
 
-ACF_DefineGearbox( "2Gear-L-S", {
-	name = "Transfer case, Inline, Small",
-	desc = "2 speed gearbox, useful for low/high range and tank turning",
-	model = "models/engines/linear_s.mdl",
-	category = "Transfer",
-	weight = Gear2SW,
-	parentable = true,
-	switch = 0.3,
-	maxtq = 25000,
-	gears = 2,
-	doubleclutch = true,
-	geartable = {
-		[ 0 ] = 0,
-		[ 1 ] = 0.5,
-		[ 2 ] = -0.5,
-		[ -1 ] = 0.5
-	}
-} )
-
 ACF_DefineGearbox( "2Gear-L-S-NC", {
-	name = "(+)Transfer case, Inline, Small, Single Clutch",
+	name = "Transfer case, Inline, Small",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/linear_s.mdl",
 	category = "Transfer",
@@ -45,15 +26,15 @@ ACF_DefineGearbox( "2Gear-L-S-NC", {
 	}
 } )
 
-ACF_DefineGearbox( "2Gear-L-M", {
-	name = "Transfer case, Inline, Medium",
+ACF_DefineGearbox( "2Gear-L-S", {
+	name = "Transfer case, Inline, Small, Dual Clutch",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
-	model = "models/engines/linear_m.mdl",
+	model = "models/engines/linear_s.mdl",
 	category = "Transfer",
-	weight = Gear2MW,
+	weight = Gear2SW,
 	parentable = true,
-	switch = 0.4,
-	maxtq = 50000,
+	switch = 0.3,
+	maxtq = 25000,
 	gears = 2,
 	doubleclutch = true,
 	geartable = {
@@ -65,7 +46,7 @@ ACF_DefineGearbox( "2Gear-L-M", {
 } )
 
 ACF_DefineGearbox( "2Gear-L-M-NC", {
-	name = "(+)Transfer case, Inline, Medium, Single Clutch",
+	name = "Transfer case, Inline, Medium",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/linear_m.mdl",
 	category = "Transfer",
@@ -83,7 +64,27 @@ ACF_DefineGearbox( "2Gear-L-M-NC", {
 	}
 } )
 
-ACF_DefineGearbox( "2Gear-L-L", {
+ACF_DefineGearbox( "2Gear-L-M", {
+	name = "Transfer case, Inline, Medium, Dual Clutch",
+	desc = "2 speed gearbox, useful for low/high range and tank turning",
+	model = "models/engines/linear_m.mdl",
+	category = "Transfer",
+	weight = Gear2MW,
+	parentable = true,
+	switch = 0.4,
+	maxtq = 50000,
+	gears = 2,
+	doubleclutch = true,
+	geartable = {
+		[ 0 ] = 0,
+		[ 1 ] = 0.5,
+		[ 2 ] = -0.5,
+		[ -1 ] = 0.5
+	}
+} )
+
+
+ACF_DefineGearbox( "2Gear-L-L-NC", {
 	name = "Transfer case, Inline, Large",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/linear_l.mdl",
@@ -93,7 +94,7 @@ ACF_DefineGearbox( "2Gear-L-L", {
 	switch = 0.6,
 	maxtq = 100000,
 	gears = 2,
-	doubleclutch = true,
+	doubleclutch = false,
 	geartable = {
 		[ 0 ] = 0,
 		[ 1 ] = 0.5,
@@ -102,8 +103,8 @@ ACF_DefineGearbox( "2Gear-L-L", {
 	}
 } )
 
-ACF_DefineGearbox( "2Gear-L-L-NC", {
-	name = "(+)Transfer case, Inline, Large, Single Clutch",
+ACF_DefineGearbox( "2Gear-L-L", {
+	name = "Transfer case, Inline, Large, Dual Clutch",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/linear_l.mdl",
 	category = "Transfer",
@@ -112,7 +113,7 @@ ACF_DefineGearbox( "2Gear-L-L-NC", {
 	switch = 0.6,
 	maxtq = 100000,
 	gears = 2,
-	doubleclutch = false,
+	doubleclutch = true,
 	geartable = {
 		[ 0 ] = 0,
 		[ 1 ] = 0.5,
@@ -123,27 +124,8 @@ ACF_DefineGearbox( "2Gear-L-L-NC", {
 
 -- Transaxial
 
-ACF_DefineGearbox( "2Gear-T-S", {
-	name = "Transfer case, Small",
-	desc = "2 speed gearbox, useful for low/high range and tank turning",
-	model = "models/engines/transaxial_s.mdl",
-	category = "Transfer",
-	weight = Gear2SW,
-	parentable = true,
-	switch = 0.3,
-	maxtq = 25000,
-	gears = 2,
-	doubleclutch = true,
-	geartable = {
-		[ 0 ] = 0,
-		[ 1 ] = 0.5,
-		[ 2 ] = -0.5,
-		[ -1 ] = 0.5
-	}
-} )
-
 ACF_DefineGearbox( "2Gear-T-S-NC", {
-	name = "(+)Transfer case, Small, Single Clutch",
+	name = "Transfer case, Small",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/transaxial_s.mdl",
 	category = "Transfer",
@@ -161,15 +143,15 @@ ACF_DefineGearbox( "2Gear-T-S-NC", {
 	}
 } )
 
-ACF_DefineGearbox( "2Gear-T-M", {
-	name = "Transfer case, Medium",
+ACF_DefineGearbox( "2Gear-T-S", {
+	name = "Transfer case, Small, Dual Clutch",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
-	model = "models/engines/transaxial_m.mdl",
+	model = "models/engines/transaxial_s.mdl",
 	category = "Transfer",
-	weight = Gear2MW,
+	weight = Gear2SW,
 	parentable = true,
-	switch = 0.4,
-	maxtq = 50000,
+	switch = 0.3,
+	maxtq = 25000,
 	gears = 2,
 	doubleclutch = true,
 	geartable = {
@@ -181,7 +163,7 @@ ACF_DefineGearbox( "2Gear-T-M", {
 } )
 
 ACF_DefineGearbox( "2Gear-T-M-NC", {
-	name = "(+)Transfer case, Medium, Single Clutch",
+	name = "Transfer case, Medium",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/transaxial_m.mdl",
 	category = "Transfer",
@@ -199,8 +181,46 @@ ACF_DefineGearbox( "2Gear-T-M-NC", {
 	}
 } )
 
-ACF_DefineGearbox( "2Gear-T-L", {
+ACF_DefineGearbox( "2Gear-T-M", {
+	name = "Transfer case, Medium, Dual Clutch",
+	desc = "2 speed gearbox, useful for low/high range and tank turning",
+	model = "models/engines/transaxial_m.mdl",
+	category = "Transfer",
+	weight = Gear2MW,
+	parentable = true,
+	switch = 0.4,
+	maxtq = 50000,
+	gears = 2,
+	doubleclutch = true,
+	geartable = {
+		[ 0 ] = 0,
+		[ 1 ] = 0.5,
+		[ 2 ] = -0.5,
+		[ -1 ] = 0.5
+	}
+} )
+
+ACF_DefineGearbox( "2Gear-T-L-NC", {
 	name = "Transfer case, Large",
+	desc = "2 speed gearbox, useful for low/high range and tank turning",
+	model = "models/engines/transaxial_l.mdl",
+	category = "Transfer",
+	weight = Gear2LW,
+	parentable = true,
+	switch = 0.6,
+	maxtq = 100000,
+	gears = 2,
+	doubleclutch = false,
+	geartable = {
+		[ 0 ] = 0,
+		[ 1 ] = 0.5,
+		[ 2 ] = -0.5,
+		[ -1 ] = 1
+	}
+} )
+
+ACF_DefineGearbox( "2Gear-T-L", {
+	name = "Transfer case, Large, Dual Clutch",
 	desc = "2 speed gearbox, useful for low/high range and tank turning",
 	model = "models/engines/transaxial_l.mdl",
 	category = "Transfer",
@@ -218,21 +238,3 @@ ACF_DefineGearbox( "2Gear-T-L", {
 	}
 } )
 
-ACF_DefineGearbox( "2Gear-T-L-NC", {
-	name = "(+)Transfer case, Large, Single Clutch",
-	desc = "2 speed gearbox, useful for low/high range and tank turning",
-	model = "models/engines/transaxial_l.mdl",
-	category = "Transfer",
-	weight = Gear2LW,
-	parentable = true,
-	switch = 0.6,
-	maxtq = 100000,
-	gears = 2,
-	doubleclutch = false,
-	geartable = {
-		[ 0 ] = 0,
-		[ 1 ] = 0.5,
-		[ 2 ] = -0.5,
-		[ -1 ] = 1
-	}
-} )

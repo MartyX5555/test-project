@@ -1,4 +1,4 @@
-
+-- For some reason, this thing is used for the guidance system
 inherit = inherit or {}
 local this = inherit
 
