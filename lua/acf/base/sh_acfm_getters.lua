@@ -1,10 +1,9 @@
 
-
-local GunsTable = ACF.Weapons.Guns
-
 function ACF_GetGunValue(bdata, val)
 
 	bdata = (type(bdata) == "table" and bdata.Id) or bdata
+
+	local GunsTable = ACF.Weapons.Guns
 
 	local guns = GunsTable
 	local class = guns[bdata]
@@ -93,6 +92,8 @@ function ACF_CanLinkRack(rackId, ammoId, bdata, rack)
 
 	local rack = ACF.Weapons.Racks[rackId]
 	if not rack then return false, "Rack '" .. tostring(rackId) .. "' does not exist." end
+
+	local GunsTable = ACF.Weapons.Guns
 
 	local gun = GunsTable[ammoId]
 	if not rack then return false, "Ammo '" .. tostring(ammoId) .. "' does not exist." end
