@@ -40,16 +40,16 @@ function EFFECT:Init( data )
 		local Muzzle = Gun:GetAttachment( Gun:LookupAttachment(Attachment)) or { Pos = Gun:GetPos(), Ang = Gun:GetAngles() }
 
 		-- Gets the appropiated muzzleflash according to the defined in the gun class
-		local MuzzleTable = ACE.MuzzleFlashes
-		local MuzzleFunction = MuzzleTable[MuzzleEffect].muzzlefunc
+		--local MuzzleTable = ACE.MuzzleFlashes
+		--local MuzzleFunction = MuzzleTable[MuzzleEffect].muzzlefunc
 		--local MuzzleCallBack = MuzzleTable["Default"].muzzlefunc
-		if MuzzleFunction then
-			MuzzleFunction( self )
+		--if MuzzleFunction then
+		--	MuzzleFunction( self )
 		--else
 			--MuzzleCallBack( self )
-		end
+		--end
 
-		--ParticleEffect( MuzzleEffect , Muzzle.Pos, Muzzle.Ang, Gun )
+		ParticleEffect( MuzzleEffect , Muzzle.Pos, Muzzle.Ang, Gun )
 
 		if Gun:WaterLevel() ~= 3 and not ClassData.nolights then
 			ACF_RenderLight(Gun:EntIndex(), Caliber * 75, Color(255, 128, 48), Muzzle.Pos + Muzzle.Ang:Forward() * (Caliber / 5))
