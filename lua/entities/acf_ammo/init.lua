@@ -4,6 +4,8 @@ AddCSLuaFile("cl_init.lua")
 
 include("shared.lua")
 
+DEFINE_BASECLASS("ace_scalability") -- Required to get the local BaseClass. A workaround uses this below
+
 local GunClasses = ACF.Classes.GunClass
 
 local GunTable  = ACF.Weapons.Guns
@@ -239,7 +241,10 @@ do
 	local function CreateLegacyScale( Id, Ammo )
 		local Content = LegacyAmmoTable[Id]
 		Scale = Vector( Content.Length, Content.Width, Content.Height )
-		Ammo:SetPos( Ammo:LocalToWorld( vector_up * Content.Offset ) ) -- necessary to do, since some old crates had not a coordinated origin at its center but the base of them.
+
+		local Pos = Ammo:LocalToWorld( vector_up * Content.Offset )
+		Ammo:SetPos( Pos ) -- necessary to do, since some old crates had not a coordinated origin at its center but the base of them.
+		Ammo.LegacyPosInject = Pos
 
 		return Scale
 	end
@@ -832,6 +837,24 @@ function ENT:StopRefillEffect( TargetID )
 		net.WriteUInt( self:EntIndex(), 14 )
 		net.WriteUInt( TargetID, 14 )
 	net.Broadcast()
+end
+
+-- Legacy to new scalable entity workaround
+-- So it looks like the advanced duplicator 2 forces a setpos reset based on the legacy crate. breaking the offset position during the paste.
+-- So lets order it to setpos reset to the offset we have put for the conversion.
+function ENT:OnDuplicated(EntTable)
+
+	local LegacyPos = self.LegacyPosInject
+	if isvector(LegacyPos) then
+
+		EntTable.Pos = LegacyPos
+
+		local DupeInfo = EntTable.BuildDupeInfo
+		if DupeInfo then
+			DupeInfo.PosReset = LegacyPos
+		end
+	end
+	BaseClass.OnDuplicated(self, EntTable)
 end
 
 function ENT:OnRemove()
