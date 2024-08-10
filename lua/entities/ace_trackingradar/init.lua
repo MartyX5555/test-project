@@ -226,13 +226,13 @@ function ENT:Think()
 					--skip any parented entity
 					if scanEnt:GetParent():IsValid() then continue end
 
-					local entvel	= scanEnt:GetVelocity()
-					local velLength = entvel:Length()
-					local entpos	= scanEnt:WorldSpaceCenter()
+					local entvel       = scanEnt:GetVelocity()
+					local velLength    = entvel:Length()
+					local entpos       = scanEnt:WorldSpaceCenter()
 
-					local difpos	= (entpos - thisPos)
-					local ang	= self:WorldToLocalAngles(difpos:Angle())	--Used for testing if inrange
-					local absang	= Angle(math.abs(ang.p),math.abs(ang.y),0)  --Since I like ABS so much
+					local difpos       = (entpos - thisPos)
+					local ang          = self:WorldToLocalAngles(difpos:Angle())	--Used for testing if inrange
+					local absang       = Angle(math.abs(ang.p),math.abs(ang.y),0)  --Since I like ABS so much
 
 					--Doesn't want to see through peripheral vison since its easier to focus a radar on a target front and center of an array
 					local errorFromAng = Vector(0.05 * (absang.y / self.Cone) ^ 2, 0.02 * (absang.y / self.Cone) ^ 2, 0.02 * (absang.p / self.Cone) ^ 2)

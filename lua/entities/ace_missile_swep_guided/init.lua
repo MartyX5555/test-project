@@ -382,20 +382,20 @@ end
 
 function ENT:AcquireLock()
 
-	local found			= self:GetWhitelistedEntsInCone()
+	local found        = self:GetWhitelistedEntsInCone()
 
-	local IRSTPos		= self:GetPos()
+	local IRSTPos      = self:GetPos()
 
-	local besterr		= math.huge --Hugh mungus number
+	local besterr      = math.huge --Hugh mungus number
 
-	local entpos			= Vector()
-	local difpos			= Vector()
-	local nonlocang		= Angle()
-	local ang			= Angle()
-	local absang			= Angle()
-	local dist			= 0
+	local entpos       = vector_origin
+	local difpos       = vector_origin
+	local nonlocang    = Angle()
+	local ang          = Angle()
+	local absang       = Angle()
+	local dist         = 0
 
-	local bestEnt		= NULL
+	local bestEnt      = NULL
 
 	local LockCone = self.TrackCone
 

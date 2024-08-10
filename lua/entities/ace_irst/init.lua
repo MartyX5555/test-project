@@ -178,8 +178,8 @@ function ENT:GetWhitelistedEntsInCone()
 
 	local IRSTPos          = self:GetPos()
 
-	local entpos           = Vector()
-	local difpos           = Vector()
+	local entpos           = vector_origin
+	local difpos           = vector_origin
 	local dist             = 0
 
 	for _, scanEnt in ipairs(ScanArray) do

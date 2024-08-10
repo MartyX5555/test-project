@@ -244,27 +244,24 @@ function SWEP:GetWhitelistedEntsInCone()
 end
 
 function SWEP:AcquireLock()
-	local owner = self:GetOwner()
+	local owner          = self:GetOwner()
+	local found          = self:GetWhitelistedEntsInCone()
+	local IRSTPos        = owner:GetShootPos()
+	local Owners         = {}
 
-	local found			= self:GetWhitelistedEntsInCone()
+	self.ClosestToBeam   = -1
+	local besterr        = math.huge --Hugh mungus number
 
-	local IRSTPos		= owner:GetShootPos()
+	local entpos         = vector_origin
+	local difpos         = vector_origin
+	local nonlocang      = Angle()
+	local ang            = Angle()
+	local absang         = Angle()
+	local dist           = 0
 
-	local Owners			= {}
+	local bestEnt        = NULL
 
-	self.ClosestToBeam = -1
-	local besterr		= math.huge --Hugh mungus number
-
-	local entpos			= Vector()
-	local difpos			= Vector()
-	local nonlocang		= Angle()
-	local ang			= Angle()
-	local absang			= Angle()
-	local dist			= 0
-
-	local bestEnt		= NULL
-
-	local LockCone = 6
+	local LockCone       = 6
 
 	for _, scanEnt in ipairs(found) do
 		entpos	= scanEnt:WorldSpaceCenter()

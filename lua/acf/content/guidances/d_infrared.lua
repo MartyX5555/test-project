@@ -119,16 +119,16 @@ function this:GetWhitelistedEntsInCone(missile)
 	local ScanArray = ACE.contraptionEnts
 	if table.IsEmpty(ScanArray) then return {} end
 
-	local missilePos	= missile:GetPos()
-	local WhitelistEnts = {}
-	local LOSdata	= {}
-	local LOStr		= {}
+	local missilePos       = missile:GetPos()
+	local WhitelistEnts    = {}
+	local LOSdata          = {}
+	local LOStr            = {}
 
-	local entpos		= Vector()
-	local difpos		= Vector()
-	local dist		= 0
+	local entpos           = vector_origin
+	local difpos           = vector_origin
+	local dist             = 0
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end
@@ -180,29 +180,27 @@ function this:AcquireLock(missile)
 
 	local missilePos	= missile:GetPos()
 
-	local bestAng	= math.huge
-	local bestent	= NULL
+	local bestAng    = math.huge
+	local bestent    = NULL
 
-	local Heat		= 0
+	local Heat       = 0
 
-	local entpos		= Vector()
-	local difpos		= Vector()
-	--local entvel		= Vector()
-	local dist		= 0
+	local entpos     = vector_origin
+	local difpos     = vector_origin
+	local dist       = 0
 
-	local physEnt	= NULL
+	local physEnt    = NULL
 
-	local ang		= Angle()
-	local absang		= Angle()
-	local testang	= Angle()
+	local ang        = Angle()
+	local absang     = Angle()
+	local testang    = Angle()
 
 	for _, classifyent in ipairs(found) do
 
 		entpos  = classifyent:WorldSpaceCenter()
 		difpos  = entpos - missilePos
 		dist	= difpos:Length()
-		entvel  = classifyent:GetVelocity()
-
+	
 		--if the target is a Heat Emitter, track its heat
 		if classifyent.Heat then
 
@@ -237,8 +235,6 @@ function this:AcquireLock(missile)
 
 			testang = testang - Heat
 
-
-
 			--Sorts targets as closest to being directly in front of radar
 			if testang < bestAng then
 
@@ -246,10 +242,7 @@ function this:AcquireLock(missile)
 				bestent = classifyent
 
 			end
-
 		end
-
-
 	end
 
 	return bestent

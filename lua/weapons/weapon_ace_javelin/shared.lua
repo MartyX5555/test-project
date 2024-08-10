@@ -269,12 +269,12 @@ function SWEP:GetWhitelistedEntsInCone()
 
 			if dist > MinimumDistance and dist < MaximumDistance then
 
-				LOSdata.start		= IRSTPos
-				LOSdata.endpos		= entpos
-				LOSdata.collisiongroup  = COLLISION_GROUP_WORLD
-				LOSdata.filter		= function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
-				LOSdata.mins			= vector_origin
-				LOSdata.maxs			= LOSdata.mins
+				LOSdata.start             = IRSTPos
+				LOSdata.endpos            = entpos
+				LOSdata.collisiongroup    = COLLISION_GROUP_WORLD
+				LOSdata.filter            = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
+				LOSdata.mins              = vector_origin
+				LOSdata.maxs              = LOSdata.mins
 
 				LOStr = util.TraceHull( LOSdata )
 
@@ -293,25 +293,23 @@ end
 function SWEP:AcquireLock()
 	local owner = self:GetOwner()
 
-	local found			= self:GetWhitelistedEntsInCone()
+	local found          = self:GetWhitelistedEntsInCone()
+	local IRSTPos        = owner:GetShootPos()
+	local Owners         = {}
 
-	local IRSTPos		= owner:GetShootPos()
+	self.ClosestToBeam   = -1
+	local besterr        = math.huge --Hugh mungus number
 
-	local Owners			= {}
+	local entpos         = vector_origin
+	local difpos         = vector_origin
+	local nonlocang      = Angle()
+	local ang            = Angle()
+	local absang         = Angle()
+	local dist           = 0
 
-	self.ClosestToBeam = -1
-	local besterr		= math.huge --Hugh mungus number
+	local bestEnt        = NULL
 
-	local entpos			= Vector()
-	local difpos			= Vector()
-	local nonlocang		= Angle()
-	local ang			= Angle()
-	local absang			= Angle()
-	local dist			= 0
-
-	local bestEnt		= NULL
-
-	local LockCone = 2.5
+	local LockCone       = 2.5
 
 	for _, scanEnt in ipairs(found) do
 		entpos	= scanEnt:WorldSpaceCenter()
