@@ -62,7 +62,7 @@ do
 
 
 		-- make sure traces can hit it (fade door, propnotsolid)
-		if IsRestricted("solid") and not Ent:IsSolid() then
+		if IsRestricted("notsolid") and not Ent:IsSolid() then
 			table.insert(problems,"Not solid")
 		end
 
@@ -72,7 +72,7 @@ do
 		end
 
 		-- check mass
-		if not IsRestricted("mass") then
+		if IsRestricted("mass") then
 
 			--Lets assume that input minmass is also rounded like here.
 			local CMass = math.Round(physobj:GetMass(),2)
