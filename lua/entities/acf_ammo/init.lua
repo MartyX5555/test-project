@@ -451,16 +451,16 @@ do
 
 	--List of ids which no longer stay on ACE. Useful to replace them with the closest counterparts
 	local BackComp = {
-		["20mmHRAC"]		= "20mmRAC",
-		["30mmHRAC"]		= "30mmRAC",
-		["105mmSB"]		= "100mmSBC",
-		["120mmSB"]		= "120mmSBC",
-		["140mmSB"]		= "140mmSBC",
-		["170mmSB"]		= "170mmSBC",
-		["70mmFFARDAGR"]	= "70mmFFAR",
-		["9M113 ASM"]	= "9M133 ASM",
-		["9M311"]		= "9M311 SAM",
-		["SIMBAD-RC SAM"]	= "Mistral SAM"
+		["20mmHRAC"]        = "20mmRAC",
+		["30mmHRAC"]        = "30mmRAC",
+		["105mmSB"]         = "100mmSBC",
+		["120mmSB"]         = "120mmSBC",
+		["140mmSB"]         = "140mmSBC",
+		["170mmSB"]         = "170mmSBC",
+		["70mmFFARDAGR"]    = "70mmFFAR",
+		["9M113 ASM"]       = "9M133 ASM",
+		["9M311"]           = "9M311 SAM",
+		["SIMBAD-RC SAM"]   = "Mistral SAM"
 	}
 
 	--List of munitions no longer stay on ACE
