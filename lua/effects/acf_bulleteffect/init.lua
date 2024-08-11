@@ -1,25 +1,28 @@
 
---This is a fully loaded bullet removal
-function ACE_RemoveBulletClient( Bullet, Index )
 
-	if Bullet then
-
-		local BulletEnt = Bullet.Effect
-		if IsValid(BulletEnt) then
-			BulletEnt.Alive = false
-			BulletEnt:Remove()
-		end
-
-		if ACF.BulletEffect[Index] then
-			ACF.BulletEffect[Index] = nil
-		end
-	end
-end
 
 do
 
+
+	--This is a fully loaded bullet removal
+	function ACE_RemoveBulletClient( Bullet, Index )
+
+		if Bullet then
+
+			local BulletEnt = Bullet.Effect
+			if IsValid(BulletEnt) then
+				BulletEnt.Alive = false
+				BulletEnt:Remove()
+			end
+
+			if ACF.BulletEffect[Index] then
+				ACF.BulletEffect[Index] = nil
+			end
+		end
+	end
+
 	--Applies only to bullets that wants only their entity removed but keeping on the main table
-	local function RemoveBulletEntry( Effect )
+	local function RemoveBulletEffect( Effect )
 		if IsValid(Effect) then
 			Effect.Alive = false
 			Effect:Remove()
@@ -28,101 +31,94 @@ do
 
 	function EFFECT:Init( data )
 
-		self.Index = tostring(data:GetMaterialIndex())
-
-		--print(self.Index)
-		if not self.Index then
-			RemoveBulletEntry( self )
-			return
-		end
+		self.Index = data:GetMaterialIndex()
 		self.CreateTime = ACF.CurTime
 
 		local Hit = data:GetScale()
-		local Bullet = ACF.BulletEffect[self.Index]
+		local BulletData = ACF.BulletEffect[self.Index]
 
 		--Scale encodes the hit type, so if it's 0 it's a new bullet, else it's an update so we need to remove the effect
-		if (Hit > 0 and Bullet) then
+		if (Hit > 0 and BulletData) then
 
-			--print("Updating Bullet Effect")
-			Bullet.SimFlight = data:GetStart() * 10	--Updating old effect with new values
-			Bullet.SimPos = data:GetOrigin()
+			BulletData.SimFlight = data:GetStart() * 10	--Updating old effect with new values
+			BulletData.SimPos = data:GetOrigin()
 
 			--Bullet has reached end of flight, remove old effect
-			if (Hit == 1) then
+			if Hit == 1 then
 
-				Bullet.Impacted = true
+				BulletData.Impacted = true
 
-				self.HitEnd = ACF.RoundTypes[Bullet.AmmoType]["endeffect"]
-				self:HitEnd( Bullet )
+				self.HitEnd = ACF.RoundTypes[BulletData.AmmoType]["endeffect"]
+				self:HitEnd( BulletData )
 				ACF.BulletEffect[self.Index] = nil		--This is crucial, to effectively remove the bullet flight model from the client
 
-				if IsValid(Bullet.Tracer) then Bullet.Tracer:Finish() end
+				if IsValid(BulletData.Tracer) then BulletData.Tracer:Finish() end
 
 			--Bullet penetrated, don't remove old effect
-			elseif (Hit == 2) then
+			elseif Hit == 2 then
 
-				self.HitPierce = ACF.RoundTypes[Bullet.AmmoType]["pierceeffect"]
-				self:HitPierce( Bullet )
+				self.HitPierce = ACF.RoundTypes[BulletData.AmmoType]["pierceeffect"]
+				self:HitPierce( BulletData )
 
 			--Bullet ricocheted, don't remove old effect
-			elseif (Hit == 3) then
+			elseif Hit == 3 then
 
-				self.HitRicochet = ACF.RoundTypes[Bullet.AmmoType]["ricocheteffect"]
-				self:HitRicochet( Bullet )
+				self.HitRicochet = ACF.RoundTypes[BulletData.AmmoType]["ricocheteffect"]
+				self:HitRicochet( BulletData )
 
 			end
 
-			ACF_SimBulletFlight( Bullet, self.Index )
-			RemoveBulletEntry( self )
+			ACF_SimBulletFlight( BulletData, self.Index )
+			RemoveBulletEffect( self )
 
 		else
-			--print("Creating Bullet Effect")
-			local BulletData = {}
-			BulletData.Crate = data:GetEntity()
+
+			local Crate = data:GetEntity()
 
 			--TODO: Check if it is actually a crate
-			if not IsValid(BulletData.Crate) then
-				RemoveBulletEntry( self )
+			if not IsValid(Crate) then
+				RemoveBulletEffect( self )
 				return
 			end
 
-			BulletData.IsMissile    = BulletData.IsMissile or (data:GetAttachment() == 1)
+			local BulletData           = {}
+			BulletData.IsMissile       = BulletData.IsMissile or (data:GetAttachment() == 1)
+			BulletData.SimFlight       = data:GetStart() * 10
+			BulletData.SimPos          = data:GetOrigin()
+			BulletData.SimPosLast      = BulletData.SimPos
+			BulletData.Caliber         = Crate:GetNWFloat( "Caliber", 10 )
+			BulletData.RoundMass       = Crate:GetNWFloat( "ProjMass", 10 )
+			BulletData.FillerMass      = Crate:GetNWFloat( "FillerMass", 0 )
+			BulletData.WPMass          = Crate:GetNWFloat( "WPMass", 0 )
+			BulletData.DragCoef        = Crate:GetNWFloat( "DragCoef", 1 )
+			BulletData.AmmoType        = Crate:GetNWString( "AmmoType", "AP" )
 
-			BulletData.SimFlight    = data:GetStart() * 10
-			BulletData.SimPos       = data:GetOrigin()
-			BulletData.SimPosLast   = BulletData.SimPos
-			BulletData.Caliber      = BulletData.Crate:GetNWFloat( "Caliber", 10 )
-			BulletData.RoundMass    = BulletData.Crate:GetNWFloat( "ProjMass", 10 )
-			BulletData.FillerMass   = BulletData.Crate:GetNWFloat( "FillerMass" )
-			BulletData.WPMass       = BulletData.Crate:GetNWFloat( "WPMass" )
-			BulletData.DragCoef     = BulletData.Crate:GetNWFloat( "DragCoef", 1 )
-			BulletData.AmmoType     = BulletData.Crate:GetNWString( "AmmoType", "AP" )
+			BulletData.Accel           = Crate:GetNWVector( "Accel", Vector(0,0,-600))
 
-			BulletData.Accel        = BulletData.Crate:GetNWVector( "Accel", Vector(0,0,-600))
+			BulletData.LastThink       = CurTime() --ACF.CurTime
+			BulletData.Effect          = self.Entity
+			BulletData.CrackCreated    = false
+			BulletData.InitialPos      = BulletData.SimPos --Store the first pos, se we can limit the crack sound at certain distance
+			BulletData.Crate           = Crate
 
-			BulletData.LastThink    = CurTime() --ACF.CurTime
-			BulletData.Effect       = self.Entity
-			BulletData.CrackCreated = false
-			BulletData.InitialPos   = BulletData.SimPos --Store the first pos, se we can limit the crack sound at certain distance
+			BulletData.BulletModel     = Crate:GetNWString( "BulletModel", "models/munitions/round_100mm_shot.mdl" )
 
-			BulletData.BulletModel  = BulletData.Crate:GetNWString( "BulletModel", "models/munitions/round_100mm_shot.mdl" )
-
-			if BulletData.Crate:GetNWFloat( "Tracer" ) > 0 then
+			if Crate:GetNWFloat( "Tracer" ) > 0 then
 				BulletData.Counter        = 0
 				BulletData.Tracer         = ParticleEmitter( BulletData.SimPos )
-				BulletData.TracerColour   = BulletData.Crate:GetNWVector( "TracerColour", BulletData.Crate:GetColor() ) or Vector(255,255,255)
+				BulletData.TracerColour   = Crate:GetNWVector( "TracerColour", Crate:GetColor() ) or Vector(255,255,255)
 			end
-
-			--Add all that data to the bullet table, overwriting if needed
-			ACF.BulletEffect[self.Index] = BulletData
 
 			--Moving the effect to the calculated position
 			self:SetPos( BulletData.SimPos )
 			self:SetAngles( BulletData.SimFlight:Angle() )
 			self:SetModel( BulletData.BulletModel )
+
+			--Add all that data to the bullet table, overwriting if needed
+			ACF.BulletEffect[self.Index] = BulletData
 			self.Alive = true
 
-			ACF_SimBulletFlight( ACF.BulletEffect[self.Index], self.Index )
+			ACF_SimBulletFlight( BulletData, self.Index )
 
 		end
 
@@ -152,10 +148,6 @@ function EFFECT:Think()
 	local Bullet = ACF.BulletEffect[self.Index]
 
 	if self.Alive and Bullet and self.CreateTime > ACF.CurTime-30 then
-
-		--We require this so the tracer is not spawned in middle of the gun (when initially fired)
-		if Bullet.Tracer and IsValid(Bullet.Tracer) and Bullet.Counter < 3 then Bullet.Counter = Bullet.Counter + 1 end
-
 		return true
 	end
 
@@ -179,78 +171,74 @@ local function CanBulletCrack( Bullet )
 	return true
 end
 
+local TracerLengthMult = 1.25 -- A multipler for the tracer length. 1.25 will cover a distance 25% greater than the distance between the bullet pos and its previous location.
 function EFFECT:ApplyMovement( Bullet, Index )
 
+	-- the bullet will never come back to the map.
 	local setPos = Bullet.SimPos
-	if (math.abs(setPos.x) > 16380) or (math.abs(setPos.y) > 16380) or (setPos.z < -16380) then -- the bullet will never come back to the map.
+	if (math.abs(setPos.x) > 16380) or (math.abs(setPos.y) > 16380) or (setPos.z < -16380) then
 		ACE_RemoveBulletClient( Bullet, Index )
-
 		return
 	end
-	if setPos.z < 16380 then
-		self:SetPos( setPos ) --Moving the effect to the calculated position
-		self:SetAngles( Bullet.SimFlight:Angle() )
 
-		--sonic crack sound
-		if CanBulletCrack( Bullet ) then
-			ACE_SBulletCrack(Bullet, Bullet.Caliber)
-		end
-	else
-		--We don't need small bullets to stay outside of skybox. This is meant for large calibers only.
-		if Bullet.Caliber < 5 then
-			ACE_RemoveBulletClient( Bullet, Index )
-			return
-		end
+	--We don't need small bullets to stay outside of skybox. This is meant for large calibers only.
+	if setPos.z > 16380 and Bullet.Caliber < 5 then
+		ACE_RemoveBulletClient( Bullet, Index )
+		return
+	end
+
+	self:SetPos( setPos ) --Moving the effect to the calculated position
+	self:SetAngles( Bullet.SimFlight:Angle() )
+
+	--sonic crack sound
+	if CanBulletCrack( Bullet ) then
+		ACE_SBulletCrack(Bullet, Bullet.Caliber)
 	end
 
 	if Bullet.Tracer and IsValid(Bullet.Tracer) then
 
-		local value = 2.5
+		--Bullet.Caliber = 100 / 10
 
-		if Bullet.Counter <= 1 then value = 1.85 end
+		--We require this so the tracer is not spawned in middle of the gun (when initially fired)
+		Bullet.Counter = Bullet.Counter + 1
 
 		local DeltaPos = Bullet.SimPos - Bullet.SimPosLast
-		local Length =  math.min(-DeltaPos:Length() * value,-1)
+		local Dist = DeltaPos:Length()
+		local Limit = Bullet.Counter > 1 and 999999999999 or Dist
+		local Length = math.Clamp(Dist * TracerLengthMult, 0, Limit)
 
-		local MaxSprites = 2
-
-		local Light = Bullet.Tracer:Add( "sprites/acf_tracer.vmt", setPos + Bullet.SimFlight * 0.01 )
-
-		--debugoverlay.Cross(setPos,3,1,Color(255,255,255,10), true)
-
-		if (Light) then
-			Light:SetAngles( Bullet.SimFlight:Angle() )
-			Light:SetVelocity( Bullet.SimFlight:GetNormalized() )
-			Light:SetColor( Bullet.TracerColour.x, Bullet.TracerColour.y, Bullet.TracerColour.z )
-			Light:SetDieTime( math.Clamp(ACF.CurTime-self.CreateTime,0.1,0.2) ) -- 0.075, 0.1
-			Light:SetStartAlpha( 180 )
-			Light:SetEndAlpha( 0 )
-			Light:SetStartSize( 30 * Bullet.Caliber ) -- 5
-			Light:SetEndSize( 1 * Bullet.Caliber ) --15 * Bullet.Caliber
-			Light:SetStartLength( Length )
-			Light:SetEndLength( 1 ) --Length
-		end
-
-		if MaxSprites > 0 then
-
-			for i = 1, MaxSprites do
-				local Smoke = Bullet.Tracer:Add( "particle/smokesprites_000" .. math.random(1,9), setPos - (DeltaPos * i / MaxSprites) )
-				if (Smoke) then
-					Smoke:SetAngles( Bullet.SimFlight:Angle() )
-					Smoke:SetVelocity( Bullet.SimFlight * 0.05 )
-					Smoke:SetColor( 200 , 200 , 200 )
-					Smoke:SetDieTime( 0.6 ) -- 1.2
-					Smoke:SetStartAlpha( 10 )
-					Smoke:SetEndAlpha( 0 )
-					Smoke:SetStartSize( 1 )
-					Smoke:SetEndSize( Length / 400 * Bullet.Caliber )
-					Smoke:SetRollDelta( 0.1 )
-					Smoke:SetAirResistance( 150 )
-					Smoke:SetGravity( Vector(0,0,20) )
-
-				end
+		if Length > 0 then
+			local Light = Bullet.Tracer:Add( "sprites/acf_tracer.vmt", setPos )
+			if Light then
+				Light:SetAngles( Bullet.SimFlight:Angle() )
+				Light:SetVelocity( Bullet.SimFlight:GetNormalized())
+				Light:SetColor( Bullet.TracerColour.x, Bullet.TracerColour.y, Bullet.TracerColour.z )
+				Light:SetDieTime( math.Clamp(ACF.CurTime - self.CreateTime, 0.1, 0.15) ) -- 0.075, 0.1
+				Light:SetStartAlpha( 180 )
+				Light:SetStartSize( 40 * Bullet.Caliber ) -- 5
+				Light:SetEndSize( Bullet.Caliber ) --15 * Bullet.Caliber
+				Light:SetStartLength( -Length )
+				Light:SetEndLength( 1 ) --Length
 			end
+
+			local Smoke = Bullet.Tracer:Add( "particle/smokesprites_000" .. math.random(1,9), setPos) --- (DeltaPos * i / MaxSprites) )
+			if Smoke then
+				Smoke:SetAngles( Bullet.SimFlight:Angle() )
+				Smoke:SetVelocity( Bullet.SimFlight * 0.01 )
+				Smoke:SetColor( 200 , 200 , 200 )
+				Smoke:SetDieTime( math.Rand(0.5,1) ) -- 1.2
+				Smoke:SetStartAlpha( math.random(1,20) )
+				Smoke:SetEndAlpha( 0 )
+				Smoke:SetStartSize( 2 )
+				Smoke:SetEndSize( Length / (Bullet.Caliber * 10) )
+				Smoke:SetAirResistance( 150 )
+				Smoke:SetStartLength( -Length * 1.1 )
+				Smoke:SetEndLength( -Length * 1.1 ) --Length
+			end
+
 		end
+
+
 	end
 end
 
