@@ -1,30 +1,33 @@
 
--- Loads all files from shared folder
+-- Register all the entities that were registered with the functions provided below.
+-- Once you edit this file. Force an addon reload from globals to repopulate.
 
-ACF = ACF or {}
+local ACF = ACF or {}
+local Weapons = ACF.Weapons
+local Classes = ACF.Classes
+local MuzzlesFlashes = ACE.MuzzleFlashes
 
-local GunClasses        = {}
-local RackClasses       = {}
-local RadarClasses      = {}
+Classes.GunClass        = {}
+Classes.Rack            = {}
+Classes.Radar           = {}
 
-local GunTable          = {}
-local RackTable         = {}
-local Radars            = {}
+Weapons.Ammo            = {} --end ammo containers listing
+Weapons.LegacyAmmo      = {}
 
-local AmmoTable         = {}
-local LegacyAmmoTable   = {}
+Weapons.Guns            = {}
+Weapons.Racks           = {}
+Weapons.Engines         = {}
+Weapons.Gearboxes       = {}
+Weapons.FuelTanks       = {}
+Weapons.FuelTanksSize   = {}
+Weapons.Radars          = {}
 
-local EngineTable       = {}
-local GearboxTable      = {}
-local FuelTankTable     = {}
-local FuelTankSizeTable = {}
-local MuzzleFlashTable 	= {}
+--Small reminder of Mobility table. Still being used in stuff like starfall/e2. This can change
+Weapons.Mobility        = {}
 
-local MobilityTable     = {}
-
-local GSoundData        = {}
-local ModelData         = {}
-local MineData          = {}
+ACE.GSounds.GunFire     = {}
+ACE.ModelData           = {}
+ACE.MineData            = {}
 
 -- setup base classes
 local gun_base = {
@@ -32,8 +35,8 @@ local gun_base = {
 	type   = "Guns"
 }
 local ammo_base = {
-	ent = "acf_ammo",
-	type = "Ammo"
+	ent    = "acf_ammo",
+	type   = "Ammo"
 }
 local engine_base = {
 	ent    = "acf_engine",
@@ -93,7 +96,7 @@ end
 --Gun class definition
 function ACF_defineGunClass( id, data )
 	data.id = id
-	GunClasses[ id ] = data
+	Classes.GunClass[id] = data
 end
 
 -- Gun definition
@@ -101,37 +104,37 @@ function ACF_defineGun( id, data )
 	data.id = id
 	data.round.id = id
 	table.Inherit( data, gun_base )
-	GunTable[ id ] = data
+	Weapons.Guns[id] = data
 end
 
 -- Muzzleflash definition. The definitions are likely to be placed at the same location as the gun itself
 function ACE_DefineMuzzleFlash(id, data)
 	data.id = id
-	MuzzleFlashTable[ id ] = data
+	MuzzlesFlashes[id] = data
 end
 
 function ACE_DefineAmmoCrate( id, data )
 	data.id = id
 	table.Inherit( data, ammo_base )
-	AmmoTable[ id ] = data
+	Weapons.Ammo[id] = data
 end
 
 function ACE_DefineLegacyAmmoCrate( id, data )
 	data.id = id
-	LegacyAmmoTable[ id ] = data
+	Weapons.LegacyAmmo[id] = data
 end
 
 -- Rack definition
 function ACF_DefineRack( id, data )
 	data.id = id
 	table.Inherit( data, rack_base )
-	RackTable[ id ] = data
+	Weapons.Racks[id] = data
 end
 
 -- Rack class definition
 function ACF_DefineRackClass( id, data )
 	data.id = id
-	RackClasses[ id ] = data
+	Classes.Rack[id] = data
 end
 
 --Engine definition
@@ -148,8 +151,8 @@ function ACF_DefineEngine( id, data )
 
 		data.id = id
 		table.Inherit( data, engine_base )
-		EngineTable[ id ] = data
-		MobilityTable[ id ] = data
+		Weapons.Engines[id] = data
+		Weapons.Mobility[id] = data
 	end
 end
 
@@ -157,144 +160,78 @@ end
 function ACF_DefineGearbox( id, data )
 	data.id = id
 	table.Inherit( data, gearbox_base )
-	GearboxTable[ id ] = data
-	MobilityTable[ id ] = data
+	Weapons.Gearboxes[id] = data
+	Weapons.Mobility[id] = data
 end
 
 -- fueltank definition
 function ACF_DefineFuelTank( id, data )
 	data.id = id
 	table.Inherit( data, fueltank_base )
-	FuelTankTable[ id ] = data
-	MobilityTable[ id ] = data
+	Weapons.FuelTanks[id] = data
+	Weapons.Mobility[id] = data
 end
 
 -- fueltank size definition
 function ACF_DefineFuelTankSize( id, data )
 	data.id = id
 	table.Inherit( data, fueltank_base )
-	FuelTankSizeTable[ id ] = data
+	Weapons.FuelTanksSize[id] = data
+end
+
+-- Radar Class definition
+function ACF_DefineRadarClass( id, data )
+	data.id = id
+	Classes.Radar[id] = data
 end
 
 -- Radar definition
 function ACF_DefineRadar( id, data )
 	data.id = id
 	table.Inherit( data, radar_base )
-	Radars[ id ] = data
+	Weapons.Radars[id] = data
 end
 
--- Radar Class definition
-function ACF_DefineRadarClass( id, data )
+-- Tracking Radar Class definition
+function ACF_DefineTrackRadarClass( id, data )
 	data.id = id
-	RadarClasses[ id ] = data
+	Classes.Radar[id] = data
 end
 
 -- Tracking Radar definition
 function ACF_DefineTrackRadar( id, data )
 	data.id = id
 	table.Inherit( data, trackradar_base )
-	Radars[ id ] = data
+	Weapons.Radars[id] = data
 end
 
 -- Tracking Radar Class definition
-function ACF_DefineTrackRadarClass( id, data )
+function ACF_DefineIRSTClass( id, data )
 	data.id = id
-	RadarClasses[ id ] = data
+	Classes.Radar[id] = data
 end
 
 -- Tracking Radar definition
 function ACF_DefineIRST( id, data )
 	data.id = id
 	table.Inherit( data, irst_base )
-	Radars[ id ] = data
-end
-
--- Tracking Radar Class definition
-function ACF_DefineIRSTClass( id, data )
-	data.id = id
-	RadarClasses[ id ] = data
+	Weapons.Radars[id] = data
 end
 
 --Step 2: gather specialized sounds. Normally sounds that have associated sounds into it. Literally using the string path as id.
 function ACE_DefineGunFireSound( id, data )
 	data.id = id
-	GSoundData[id] = data
+	ACE.GSounds.GunFire[id] = data
 end
 
 function ACE_DefineModelData( id, data )
 	data.id = id
-	ModelData[id] = data
-	ModelData[data.Model] = data -- I will allow both model or fast name as id.
+	ACE.ModelData[id] = data
+	ACE.ModelData[data.Model] = data -- I will allow both model or fast name as id.
 end
 
 function ACE_DefineMine(id, data)
 	data.id = id
-	MineData[id] = data
+	ACE.MineData[id] = data
 end
 
--- Getters for guidance names, for use in missile definitions.
-local function GetAllInTableExcept(tbl, list)
-
-	for k, name in ipairs(list) do
-		list[name] = k
-		list[k] = nil
-	end
-	local ret = {}
-	for name, _ in pairs(tbl) do
-		if not list[name] then
-			ret[#ret + 1] = name
-		end
-	end
-	return ret
-end
-
-function ACF_GetAllGuidanceNames()
-
-	local ret = {}
-	for name, _ in pairs(ACF.Guidance) do
-		ret[#ret + 1] = name
-	end
-	return ret
-end
-
-function ACF_GetAllGuidanceNamesExcept(list)
-	return GetAllInTableExcept(ACF.Guidance, list)
-end
-
--- Getters for fuse names, for use in missile definitions.
-function ACF_GetAllFuseNames()
-
-	local ret = {}
-	for name, _ in pairs(ACF.Fuse) do
-		ret[#ret + 1] = name
-	end
-	return ret
-end
-
-function ACF_GetAllFuseNamesExcept(list)
-	return GetAllInTableExcept(ACF.Fuse, list)
-end
-
--- now that the tables are populated, throw them in the acf ents list
-ACF.Classes.GunClass        = GunClasses
-ACF.Classes.Rack            = RackClasses
-ACF.Classes.Radar           = RadarClasses
-
-ACF.Weapons.Ammo            = AmmoTable --end ammo containers listing
-ACF.Weapons.LegacyAmmo      = LegacyAmmoTable
-
-ACF.Weapons.Guns            = GunTable
-ACF.Weapons.Racks           = RackTable
-ACF.Weapons.Engines         = EngineTable
-ACF.Weapons.Gearboxes       = GearboxTable
-ACF.Weapons.FuelTanks       = FuelTankTable
-ACF.Weapons.FuelTanksSize   = FuelTankSizeTable
-ACF.Weapons.Radars          = Radars
-ACE.MuzzleFlashes           = MuzzleFlashTable
-
---Small reminder of Mobility table. Still being used in stuff like starfall/e2. This can change
-ACF.Weapons.Mobility    = MobilityTable
-
-ACE.GSounds.GunFire     = GSoundData
-ACE.ModelData           = ModelData
-ACE.MineData            = MineData

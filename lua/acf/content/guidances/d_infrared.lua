@@ -10,7 +10,6 @@ ACF.Guidance[ClassName] = this
 
 ---
 
-
 this.Name = ClassName
 
 --Currently acquired target.
@@ -102,7 +101,6 @@ function this:ApplyOverride(missile)
 		end
 
 	end
-
 end
 
 function this:CheckTarget(missile)
@@ -128,7 +126,7 @@ function this:GetWhitelistedEntsInCone(missile)
 	local difpos           = vector_origin
 	local dist             = 0
 
-	for scanEnt, _ in pairs(ScanArray) do
+	for _, scanEnt in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end
@@ -161,7 +159,6 @@ function this:GetWhitelistedEntsInCone(missile)
 	end
 
 	return WhitelistEnts
-
 end
 
 -- Return the first entity found within the seek-tolerance, or the entity within the seek-cone closest to the seek-tolerance.
@@ -200,7 +197,7 @@ function this:AcquireLock(missile)
 		entpos  = classifyent:WorldSpaceCenter()
 		difpos  = entpos - missilePos
 		dist	= difpos:Length()
-	
+
 		--if the target is a Heat Emitter, track its heat
 		if classifyent.Heat then
 

@@ -495,7 +495,7 @@ do
 		local mat = this.ACF.Material
 		if not mat then return empty end
 
-		local matData = ACE.ArmorTypes[mat]
+		local matData = ACE.ArmorMaterials[mat]
 		if not matData then return empty end
 
 		return {

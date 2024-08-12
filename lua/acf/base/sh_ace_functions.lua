@@ -439,7 +439,7 @@ do
 			end
 		end
 
-		local MatData = ACE.ArmorTypes[Mat]
+		local MatData = ACE.ArmorMaterials[Mat]
 
 		return MatData
 	end
@@ -448,7 +448,7 @@ end
 --TODO: Use a universal function
 function ACE_CheckMaterial( MatId )
 
-	local matdata = ACE.ArmorTypes[ MatId ]
+	local matdata = ACE.ArmorMaterials[ MatId ]
 
 	if not matdata then return false end
 

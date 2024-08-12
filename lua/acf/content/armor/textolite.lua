@@ -190,4 +190,4 @@ if SERVER then
 	end
 end
 
-ACE.ArmorTypes[Material.id] = Material
+ACE.ArmorMaterials[Material.id] = Material

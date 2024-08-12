@@ -20,7 +20,7 @@ ACF_defineGun("20mmAC", { --id
 	caliber = 2.0,
 	gunclass = "AC",
 	nomag = true,
-	weight = 170,
+	weight = 1170,
 	year = 1930,
 	rofmod = 1,
 	round = {

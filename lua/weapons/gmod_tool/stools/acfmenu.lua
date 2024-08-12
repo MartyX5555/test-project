@@ -89,6 +89,7 @@ function TOOL:LeftClick( trace )
 	local Type	= self:GetClientInfo( "type" )
 	local Id	= self:GetClientInfo( "id" )
 	local entClass
+
 	local TypeId = ACF.Weapons[Type][Id]
 
 	if not TypeId then

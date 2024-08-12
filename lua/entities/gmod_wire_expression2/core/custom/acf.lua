@@ -1341,7 +1341,7 @@ do
 		local mat = this.ACF.Material
 		if not mat then return ret end
 
-		local matData = ACE.ArmorTypes[mat]
+		local matData = ACE.ArmorMaterials[mat]
 		if not matData then return ret end
 
 		ret.size = 4
