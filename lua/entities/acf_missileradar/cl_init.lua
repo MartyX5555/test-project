@@ -28,6 +28,12 @@ end
 
 function ACFRadarGUICreate( Table )
 
+	if not (ACF and next(ACF.Classes) and next(ACF.Classes.Radar) and Table) then
+		acfmenupanel:CPanelText("Error1", "There was an error trying to gather the information for this sensor", "DermaDefaultBold")
+		acfmenupanel:CPanelText("Error3", "If the problem persists, report it to the server owner as soon as possible!")
+		return
+	end
+
 	acfmenupanel:CPanelText("Name", Table.name, "DermaDefaultBold")
 
 	local RadarMenu = acfmenupanel.CData.DisplayModel
