@@ -68,6 +68,11 @@ do
 
 			end
 
+			-- This will make sure the trace wont spawn behind the surface where it did hit.
+			if IsValid(BulletData.Tracer) then
+				BulletData.Counter = 0
+			end
+
 			ACF_SimBulletFlight( BulletData, self.Index )
 			RemoveBulletEffect( self )
 
@@ -171,7 +176,7 @@ local function CanBulletCrack( Bullet )
 	return true
 end
 
-local TracerLengthMult = 1.25 -- A multipler for the tracer length. 1.25 will cover a distance 25% greater than the distance between the bullet pos and its previous location.
+local TracerLengthMult = 2.5--1.25 -- A multipler for the tracer length. 1.25 will cover a distance 25% greater than the distance between the bullet pos and its previous location.
 function EFFECT:ApplyMovement( Bullet, Index )
 
 	-- the bullet will never come back to the map.
@@ -204,7 +209,7 @@ function EFFECT:ApplyMovement( Bullet, Index )
 
 		local DeltaPos = Bullet.SimPos - Bullet.SimPosLast
 		local Dist = DeltaPos:Length()
-		local Limit = Bullet.Counter > 1 and 999999999999 or Dist
+		local Limit = Bullet.Counter > 3 and 999999999999 or Dist
 		local Length = math.Clamp(Dist * TracerLengthMult, 0, Limit)
 
 		if Length > 0 then
@@ -213,12 +218,11 @@ function EFFECT:ApplyMovement( Bullet, Index )
 				Light:SetAngles( Bullet.SimFlight:Angle() )
 				Light:SetVelocity( Bullet.SimFlight:GetNormalized())
 				Light:SetColor( Bullet.TracerColour.x, Bullet.TracerColour.y, Bullet.TracerColour.z )
-				Light:SetDieTime( math.Clamp(ACF.CurTime - self.CreateTime, 0.1, 0.15) ) -- 0.075, 0.1
+				Light:SetDieTime( math.Clamp(ACF.CurTime - self.CreateTime, 0.075, 0.1) ) -- 0.075, 0.1
 				Light:SetStartAlpha( 180 )
 				Light:SetStartSize( 40 * Bullet.Caliber ) -- 5
 				Light:SetEndSize( Bullet.Caliber ) --15 * Bullet.Caliber
 				Light:SetStartLength( -Length )
-				Light:SetEndLength( 1 ) --Length
 			end
 
 			local Smoke = Bullet.Tracer:Add( "particle/smokesprites_000" .. math.random(1,9), setPos) --- (DeltaPos * i / MaxSprites) )
@@ -230,10 +234,10 @@ function EFFECT:ApplyMovement( Bullet, Index )
 				Smoke:SetStartAlpha( math.random(1,20) )
 				Smoke:SetEndAlpha( 0 )
 				Smoke:SetStartSize( 2 )
-				Smoke:SetEndSize( Length / (Bullet.Caliber * 10) )
+				Smoke:SetEndSize( Length / (Bullet.Caliber * 50) )
 				Smoke:SetAirResistance( 150 )
-				Smoke:SetStartLength( -Length * 1.1 )
-				Smoke:SetEndLength( -Length * 1.1 ) --Length
+				Smoke:SetStartLength( -Length )
+				Smoke:SetEndLength( -Length ) --Length
 			end
 
 		end
