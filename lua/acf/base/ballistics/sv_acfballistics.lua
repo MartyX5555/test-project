@@ -503,36 +503,36 @@ function ACF_BulletClient( Index, Bullet, Type, Hit, HitPos )
 	--Uncheck this to disable effects
 	--if Index then return end
 	if Type == "Update" then
-	local Effect = EffectData()
+		local Effect = EffectData()
 
-		Effect:SetMaterialIndex( Index )	--Bulet Index
-		Effect:SetStart( Bullet.Flight / 10 ) --Bullet Direction
+			Effect:SetMaterialIndex( Index )	--Bulet Index
+			Effect:SetStart( Bullet.Flight / 10 ) --Bullet Direction
 
-		if Hit > 0 then	-- If there is a hit then set the effect pos to the impact pos instead of the retry pos
-			Effect:SetOrigin( HitPos )	--Bullet Pos
-		else
-			Effect:SetOrigin( Bullet.Pos )
-		end
+			if Hit > 0 then	-- If there is a hit then set the effect pos to the impact pos instead of the retry pos
+				Effect:SetOrigin( HitPos )	--Bullet Pos
+			else
+				Effect:SetOrigin( Bullet.Pos )
+			end
 
-		Effect:SetScale( Hit )  --Hit Type
-	util.Effect( "ACF_BulletEffect", Effect, true, true )
+			Effect:SetScale( Hit )  --Hit Type
+		util.Effect( "ACF_BulletEffect", Effect, true, true )
 
 	elseif Type == "Init" then
 
-	local IsMissile
+		local IsMissile
 
-	if not IsValid(Bullet.Gun) or Bullet.Gun:GetClass() == "acf_missile" then
-		IsMissile = 1
-	end
+		if not IsValid(Bullet.Gun) or Bullet.Gun:GetClass() == "acf_missile" then
+			IsMissile = 1
+		end
 
-	local Effect = EffectData()
-		Effect:SetMaterialIndex( Index )	--Bullet Index
-		Effect:SetStart( Bullet.Flight / 10 )	--Bullet Direction
-		Effect:SetOrigin( Bullet.Pos )
-		Effect:SetEntity( Entity(Bullet["Crate"]) )
-		Effect:SetScale( 0 )
-		Effect:SetAttachment( IsMissile or 0 )
-	util.Effect( "ACF_BulletEffect", Effect, true, true )
+		local Effect = EffectData()
+			Effect:SetMaterialIndex( Index )	--Bullet Index
+			Effect:SetStart( Bullet.Flight / 10 )	--Bullet Direction
+			Effect:SetOrigin( Bullet.Pos )
+			Effect:SetEntity( Entity(Bullet["Crate"]) )
+			Effect:SetScale( 0 )
+			Effect:SetAttachment( IsMissile or 0 )
+		util.Effect( "ACF_BulletEffect", Effect, true, true )
 
 	end
 end
