@@ -19,7 +19,7 @@ function EFFECT:Init( data )
 	local MuzzleEffect = Gun:GetNWString( "Muzzleflash", "50cal_muzzleflash_noscale" )
 
 	--This tends to fail
-	local Classes = ACF.Classes
+	local Classes = ACE.Classes
 	local ClassData	= Classes.GunClass[Class]
 	local Attachment = "muzzle"
 

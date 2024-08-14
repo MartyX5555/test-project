@@ -23,7 +23,7 @@ do
 
 	local Wall = 0.03937 -- wall thickness in inches (1mm). Meant to be a global var
 	local SortedTanks = {}
-	local TankTable = ACF.Weapons
+	local TankTable = ACE.Weapons
 	local Tanks = TankTable.FuelTanksSize
 
 	for n in pairs(Tanks) do
@@ -84,7 +84,7 @@ do
 
 			local FuelTypeComboList = vgui.Create( "DComboBox", MainPanel )
 			FuelTypeComboList:SetSize(100, 30)
-			for Key, _ in pairs( ACF.FuelDensity ) do
+			for Key, _ in pairs( ACE.FuelDensity ) do
 				FuelTypeComboList:AddChoice( Key )
 			end
 
@@ -301,13 +301,13 @@ do
 			local Dims      = Tanks[TankID].dims
 
 			local Volume    = Dims.V - (Dims.S * Wall)                              -- total volume of tank (cu in), reduced by wall thickness
-			local Capacity  = Volume * ACF.CuIToLiter * ACF.TankVolumeMul * 0.4774  -- internal volume available for fuel in liters, with magic realism number
+			local Capacity  = Volume * ACE.CuIToLiter * ACE.TankVolumeMul * 0.4774  -- internal volume available for fuel in liters, with magic realism number
 			local EmptyMass = ((Dims.S * Wall) * 16.387) * ( 7.9 / 1000 )                   -- total wall volume * cu in to cc * density of steel (kg/cc)
-			local Mass      = EmptyMass + Capacity * ACF.FuelDensity[FuelID]        -- weight of tank + weight of fuel
+			local Mass      = EmptyMass + Capacity * ACE.FuelDensity[FuelID]        -- weight of tank + weight of fuel
 
 			--fuel and tank info
 			if FuelID == "Electric" then
-				local kwh = Capacity * ACF.LiIonED
+				local kwh = Capacity * ACE.LiIonED
 				acfmenupanel:CPanelText("TankName", Tanks[TankID].name .. " Li-Ion Battery")
 				acfmenupanel:CPanelText("TankDesc", Tanks[TankID].desc .. "\n")
 				acfmenupanel:CPanelText("Cap", "Charge: " .. math.Round(kwh,1) .. " kW hours / " .. math.Round( kwh * 3.6,1) .. " MJ")
@@ -340,13 +340,13 @@ do
 			local CrateVolume = ModelData.volumefunction( Length, Width, Height)
 			local ContentVolume = ModelData.volumefunction( Length - (Wall * 2), Width - (Wall * 2), Height - (Wall * 2))
 
-			local Capacity  = ContentVolume * ACF.CuIToLiter * ACF.TankVolumeMul * 0.4774  -- internal volume available for fuel in liters, with magic realism number
+			local Capacity  = ContentVolume * ACE.CuIToLiter * ACE.TankVolumeMul * 0.4774  -- internal volume available for fuel in liters, with magic realism number
 			local EmptyMass = (CrateVolume - ContentVolume) * 16.387 * ( 7.9 / 1000 )               -- total wall volume * cu in to cc * density of steel (kg/cc)
-			local Mass      = EmptyMass + Capacity * ACF.FuelDensity[acfmenupanel.FuelTankData.FuelID]        -- weight of tank + weight of fuel
+			local Mass      = EmptyMass + Capacity * ACE.FuelDensity[acfmenupanel.FuelTankData.FuelID]        -- weight of tank + weight of fuel
 
 			--fuel and tank info
 			if acfmenupanel.FuelTankData.FuelID == "Electric" then
-				local kwh = Capacity * ACF.LiIonED
+				local kwh = Capacity * ACE.LiIonED
 				acfmenupanel:CPanelText("Cap", "Charge: " .. math.Round(kwh,1) .. " kW hours / " .. math.Round( kwh * 3.6,1) .. " MJ")
 				acfmenupanel:CPanelText("Mass", "Mass: " .. math.Round(Mass,1) .. " kg")
 			else

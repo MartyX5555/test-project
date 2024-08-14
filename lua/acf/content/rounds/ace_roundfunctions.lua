@@ -18,12 +18,12 @@ do
 
 	function ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
-		local BulletMax = ACF.Weapons["Guns"][PlayerData["Id"]]["round"]
+		local BulletMax = ACE.Weapons["Guns"][PlayerData["Id"]]["round"]
 		local Type = PlayerData.Type or ""
 
 		GUIData.MaxTotalLength    = BulletMax.maxlength * (Data.LengthAdj or 1)
 
-		Data.Caliber              = ACF.Weapons["Guns"][PlayerData["Id"]]["caliber"]
+		Data.Caliber              = ACE.Weapons["Guns"][PlayerData["Id"]]["caliber"]
 		Data.FrArea               = PI * (Data.Caliber / 2) ^ 2
 
 		Data.Tracer               = PlayerData.Tracer > 0 and math.min(Data.Caliber / 5, 3) or 0 --Tracer space calcs
@@ -37,7 +37,7 @@ do
 			OldShapedShellsAdjust( PlayerData, Data, GUIData, 4.5 )
 		end
 
-		local PropMax = (BulletMax.propweight * 1000 / ACF.PDensity) / Data.FrArea	--Current casing absolute max propellant capacity
+		local PropMax = (BulletMax.propweight * 1000 / ACE.PDensity) / Data.FrArea	--Current casing absolute max propellant capacity
 		local CurLength = (PlayerData.ProjLength + math.min(PlayerData.PropLength,PropMax) + Data.Tracer )
 
 		GUIData.MinPropLength = 0.01
@@ -52,7 +52,7 @@ do
 		Data.ProjLength		= math.Clamp( PlayerData.ProjLength * Ratio, GUIData.MinProjLength, GUIData.MaxProjLength )
 		Data.PropLength		= math.Clamp( PlayerData.PropLength * Ratio, GUIData.MinPropLength, GUIData.MaxPropLength )
 
-		Data.PropMass		= Data.FrArea * (Data.PropLength * ACF.PDensity / 1000) --Volume of the case as a cylinder * Powder density converted from g to kg
+		Data.PropMass		= Data.FrArea * (Data.PropLength * ACE.PDensity / 1000) --Volume of the case as a cylinder * Powder density converted from g to kg
 		GUIData.ProjVolume	= Data.FrArea * Data.ProjLength
 		Data.RoundVolume	= Data.FrArea * (Data.ProjLength + Data.PropLength )
 
@@ -85,11 +85,11 @@ do
 	--not terribly accurate for acf, particularly small caliber (7.62mm off by 120 m/s at 800m), but is good enough for quick indicator
 	--range in m, vel is m/s
 	function ACF_PenRanging(MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel, Range)
-		local V0 = MuzzleVel * 39.37 * ACF.VelScale -- initial velocity
-		local D0 = DragCoef * V0 ^ 2 / ACF.DragDiv -- initial drag
+		local V0 = MuzzleVel * 39.37 * ACE.VelScale -- initial velocity
+		local D0 = DragCoef * V0 ^ 2 / ACE.DragDiv -- initial drag
 		local K1 = (D0 / (V0 ^ (3 / 2))) ^ -1 -- estimated drag coefficient
 		local Vel = math.max(math.sqrt(V0) - ((Range * 39.37) / (2 * K1)), 0) ^ 2
-		local Pen = (ACF_Kinetic(Vel, ProjMass, LimitVel).Penetration / PenArea) * ACF.KEtoRHA
+		local Pen = (ACF_Kinetic(Vel, ProjMass, LimitVel).Penetration / PenArea) * ACE.KEtoRHA
 
 		return Vel * 0.0254, Pen
 	end
@@ -138,9 +138,9 @@ do
 		function ACE_AmmoCapacity( Data )
 
 			local GunId	= acfmenupanel.AmmoData.Data.id
-			local AmmoGunData = ACF.Weapons.Guns[GunId]
+			local AmmoGunData = ACE.Weapons.Guns[GunId]
 			local GunClass	= AmmoGunData.gunclass
-			local ClassData	= ACF.Classes.GunClass[GunClass]
+			local ClassData	= ACE.Classes.GunClass[GunClass]
 
 			local ProjLength = Data.ProjLength
 			local PropLength = Data.PropLength
@@ -149,11 +149,11 @@ do
 			local width, shellLength
 
 			if ClassData.type == "missile" then
-				width = AmmoGunData.modeldiameter or (AmmoGunData.caliber / ACF.AmmoLengthMul / toInche)
-				shellLength = AmmoGunData.length / ACF.AmmoLengthMul / toInche
+				width = AmmoGunData.modeldiameter or (AmmoGunData.caliber / ACE.AmmoLengthMul / toInche)
+				shellLength = AmmoGunData.length / ACE.AmmoLengthMul / toInche
 			else
-				width = Caliber / ACF.AmmoWidthMul / toInche
-				shellLength = ((PropLength or 0) + (ProjLength or 0)) / ACF.AmmoLengthMul / toInche
+				width = Caliber / ACE.AmmoWidthMul / toInche
+				shellLength = ((PropLength or 0) + (ProjLength or 0)) / ACE.AmmoLengthMul / toInche
 			end
 
 			local Id		= acfmenupanel.AmmoData.Id
@@ -162,7 +162,7 @@ do
 			if not ACE_CheckAmmo( Id ) then
 				Dimensions = CreateRealScale(Id)
 			else
-				local AmmoData	= ACF.Weapons.Ammo[Id]
+				local AmmoData	= ACE.Weapons.Ammo[Id]
 				Dimensions = Vector(AmmoData.Length,AmmoData.Width,AmmoData.Height)
 			end
 
@@ -252,8 +252,8 @@ do
 				acfmenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
 				ACE_AmmoCapacityDisplay( Data )
-				acfmenupanel:CPanelText("Desc", ACF.RoundTypes[PlayerData.Type].desc)
-				ACE_AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACF.VelScale), Floor(Data.MaxPen))
+				acfmenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc)
+				ACE_AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
 			end
 
 		end
@@ -277,7 +277,7 @@ do
 				acfmenupanel:AmmoCheckbox("Tracer", "Enable Tracer: " .. (Floor(Data.Tracer * 5) / 10) .. "cm\n", "", Trtip) --Tracer checkbox (Name, Title, Desc)
 				acfmenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
 
-				local None, Mean, Max = ACF_RicoProbability(Data.Ricochet, Data.MuzzleVel * ACF.VelScale)
+				local None, Mean, Max = ACF_RicoProbability(Data.Ricochet, Data.MuzzleVel * ACE.VelScale)
 				acfmenupanel:CPanelText("RicoDisplay", "0% chance of ricochet at: " .. None .. "°\n50% chance of ricochet at: " .. Mean .. "°\n100% chance of ricochet at: " .. Max .. "°")
 
 				ACE_AmmoRangeStats( Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel )

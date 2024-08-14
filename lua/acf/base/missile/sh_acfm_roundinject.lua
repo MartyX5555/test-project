@@ -1,7 +1,7 @@
 
 local function checkIfDataIsMissile(data)
 
-	local guns = ACF.Weapons.Guns
+	local guns = ACE.Weapons.Guns
 	local class = guns[data.Id]
 
 	if not (class and class.gunclass) then
@@ -11,7 +11,7 @@ local function checkIfDataIsMissile(data)
 		return
 	end
 
-	local classes = ACF.Classes.GunClass
+	local classes = ACE.Classes.GunClass
 	class = classes[class.gunclass]
 
 	return class.type and class.type == "missile"
@@ -23,7 +23,7 @@ end
 
 function ACFM_ModifyRoundDisplayFuncs()
 
-	local roundTypes = ACF.RoundTypes
+	local roundTypes = ACE.RoundTypes
 
 	if not ACFM_RoundDisplayFuncs then
 
@@ -90,7 +90,7 @@ end
 
 function ACFM_ModifyCrateTextFuncs()
 
-	local roundTypes = ACF.RoundTypes
+	local roundTypes = ACE.RoundTypes
 
 	if not ACFM_CrateTextFuncs then
 
@@ -124,7 +124,7 @@ function ACFM_ModifyCrateTextFuncs()
 				local fuse	= IsValid(crate) and crate.RoundData8 or data.Data8
 
 				if guidance then
-					guidance = ACFM_CreateConfigurable(guidance, ACF.Guidance, bdata, "guidance")
+					guidance = ACFM_CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
 					if guidance and guidance.Name ~= "Dumb" then
 						str[#str + 1] = "\n\n"
 						str[#str + 1] = guidance.Name
@@ -135,7 +135,7 @@ function ACFM_ModifyCrateTextFuncs()
 				end
 
 				if fuse then
-					fuse = ACFM_CreateConfigurable(fuse, ACF.Fuse, bdata, "fuses")
+					fuse = ACFM_CreateConfigurable(fuse, ACE.Fuse, bdata, "fuses")
 					if fuse then
 						str[#str + 1] = "\n\n"
 						str[#str + 1] = fuse.Name
@@ -148,7 +148,7 @@ function ACFM_ModifyCrateTextFuncs()
 				return table.concat(str)
 			end
 
-			ACF.RoundTypes[k].cratetxt = v.cratetxt
+			ACE.RoundTypes[k].cratetxt = v.cratetxt
 		end
 	end
 

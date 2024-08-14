@@ -1,6 +1,6 @@
 --TODO: merge this file with cl_acfmenu_gui.lua since having 2 files for the same function is irrevelant. Little transition has been made though
 
-local ACFEnts = ACF.Weapons
+local ACFEnts = ACE.Weapons
 
 function SetMissileGUIEnabled(_, enabled, gundata)
 
@@ -29,11 +29,11 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 
 				local gunId = acfmenupanel.CData.CaliberSelect:GetValue()
 				if gunId then
-					local guns = ACF.Weapons.Guns
+					local guns = ACE.Weapons.Guns
 					gun = guns[gunId]
 				end
 
-				local guidance = ACF.Guidance[data]
+				local guidance = ACE.Guidance[data]
 				if guidance and guidance.desc then
 					acfmenupanel:CPanelText("GuidanceDesc", guidance.desc .. "\n")
 
@@ -77,11 +77,11 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 
 				local gunId = acfmenupanel.CData.CaliberSelect:GetValue()
 				if gunId then
-					local guns = ACF.Weapons.Guns
+					local guns = ACE.Weapons.Guns
 					gun = guns[gunId]
 				end
 
-				local fuse = ACF.Fuse[data]
+				local fuse = ACE.Fuse[data]
 
 				if fuse and fuse.desc then
 					acfmenupanel:CPanelText("FuseDesc", fuse.desc .. "\n")
@@ -186,7 +186,7 @@ function CreateRackSelectGUI(node)
 		acfmenupanel.CData.RackSelect.OnSelect = function( _ , _ , data )
 			RunConsoleCommand( "acfmenu_data9", data )
 
-			local rack = ACF.Weapons.Racks[data]
+			local rack = ACE.Weapons.Racks[data]
 
 			if rack then
 
@@ -252,7 +252,7 @@ function ModifyACFMenu(panel)
 			local gunTbl = ACFEnts["Guns"][data]
 			local class = gunTbl.gunclass
 
-			local Classes = ACF.Classes
+			local Classes = ACE.Classes
 			timer.Simple(0.01, function() SetMissileGUIEnabled( acfmenupanel, Classes.GunClass[class].type == "missile", gunTbl ) end)
 		end
 
@@ -261,7 +261,7 @@ function ModifyACFMenu(panel)
 			local gunTbl = ACFEnts["Guns"][data]
 			local class = gunTbl.gunclass
 
-			local Classes = ACF.Classes
+			local Classes = ACE.Classes
 			timer.Simple(0.01, function() SetMissileGUIEnabled( acfmenupanel, Classes.GunClass[class].type == "missile", gunTbl) end)
 		end
 
@@ -281,7 +281,7 @@ function ModifyACFMenu(panel)
 
 	if gunsNode then
 		local classNodes = gunsNode.ChildNodes:GetChildren()
-		local gunClasses = ACF.Classes.GunClass
+		local gunClasses = ACE.Classes.GunClass
 
 		for _, node in pairs(classNodes) do
 			local gunNodeElement = node.ChildNodes
@@ -304,11 +304,11 @@ function ModifyACFMenu(panel)
 					end
 				end
 			else
-				ErrorNoHalt("ACFM: Unable to find guns for class " .. node:GetText() .. ".\n")
+				ErrorNoHalt("ACEM: Unable to find guns for class " .. node:GetText() .. ".\n")
 			end
 		end
 	else
-		ErrorNoHalt("ACFM: Unable to find the ACF Guns node.")
+		ErrorNoHalt("ACEM: Unable to find the ACF Guns node.")
 	end
 
 end

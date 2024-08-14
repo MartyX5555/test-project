@@ -1,5 +1,5 @@
 
-ACF.AmmoBlacklist.APFSDS = { "AC", "SA","C","MG", "HMG" ,"RAC", "SC","ATR" , "MO" , "RM", "SL", "GL", "HW", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL"}
+ACE.AmmoBlacklist.APFSDS = { "AC", "SA","C","MG", "HMG" ,"RAC", "SC","ATR" , "MO" , "RM", "SL", "GL", "HW", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL"}
 
 local Round = {}
 
@@ -45,7 +45,7 @@ function Round.convert( _, PlayerData )
 	Data.SubFrArea	= Data.FrArea * math.min(PlayerData.Data5,Data.MaxCalMult) ^ 2
 	Data.ProjMass	= Data.SubFrArea * (Data.ProjLength * 7.9 / 1000) * 2.5 * 0.95 --Volume of the projectile as a cylinder * density of steel
 	Data.ShovePower	= 0.2
-	Data.PenArea		= (Data.PenModifier * Data.SubFrArea) ^ ACF.PenAreaMod
+	Data.PenArea		= (Data.PenModifier * Data.SubFrArea) ^ ACE.PenAreaMod
 
 	Data.DragCoef	= ((Data.SubFrArea / 10000) / Data.ProjMass)
 	Data.CaliberMod	= Data.Caliber * math.min(PlayerData.Data5,Data.MaxCalMult)
@@ -73,7 +73,7 @@ end
 function Round.getDisplayData(Data)
 	local GUIData = {}
 	local Energy = ACF_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
-	GUIData.MaxPen = (Energy.Penetration / Data.PenArea) * ACF.KEtoRHA
+	GUIData.MaxPen = (Energy.Penetration / Data.PenArea) * ACE.KEtoRHA
 	return GUIData
 end
 
@@ -112,14 +112,14 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 
 	if ACE_Check( Target ) then
 
-		local Speed	= Bullet.Flight:Length() / ACF.VelScale
+		local Speed	= Bullet.Flight:Length() / ACE.VelScale
 		local Energy	= ACF_Kinetic( Speed , Bullet.ProjMass, Bullet.LimitVel )
 		local HitRes	= ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
 		if HitRes.Overkill > 0 then
 			table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
 
-			ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACF.Armour , Bullet.Owner , Target.ACF.Material) --Do some spalling
+			ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 
 			Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1-HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 
@@ -140,7 +140,7 @@ end
 
 function Round.worldimpact( _, Bullet, HitPos, HitNormal )
 
-	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACF.VelScale, Bullet.ProjMass, Bullet.LimitVel )
+	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, Bullet.LimitVel )
 	local HitRes = ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 	if HitRes.Penetrated then
 		return "Penetrated"
@@ -199,7 +199,7 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACF.AmmoBlacklist.APFSDS )
+	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.APFSDS )
 
 	ACE_UpperCommonDataDisplay()
 
@@ -248,5 +248,5 @@ function Round.guiupdate( Panel )
 end
 
 list.Set( "APRoundTypes", "APFSDS", Round )
-ACF.RoundTypes[Round.Type] = Round     --Set the round properties
-ACF.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above
+ACE.RoundTypes[Round.Type] = Round     --Set the round properties
+ACE.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above

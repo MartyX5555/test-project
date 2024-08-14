@@ -7,11 +7,11 @@ include("shared.lua")
 
 DEFINE_BASECLASS( "base_wire_entity" )
 
-local GunClasses	= ACF.Classes.GunClass
-local RackClasses	= ACF.Classes.Rack
+local GunClasses	= ACE.Classes.GunClass
+local RackClasses	= ACE.Classes.Rack
 
-local GunTable	= ACF.Weapons.Guns
-local RackTable	= ACF.Weapons.Racks
+local GunTable	= ACE.Weapons.Guns
+local RackTable	= ACE.Weapons.Racks
 
 local AmmoLinkDistBase = 512
 
@@ -137,7 +137,7 @@ function ENT:CanLinkCrate(crate)
 
 	-- Don't link if it's a blacklisted round type for this rack
 	local class = ACF_GetGunValue(bdata, "gunclass")
-	local Blacklist = ACF.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
+	local Blacklist = ACE.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
 
 	if not class or table.HasValue( Blacklist, class ) then
 		return false, "That round type cannot be used with this rack!"
@@ -173,7 +173,7 @@ function ENT:Link( Target )
 	end
 
 	-- Don't link if it's a blacklisted round type for this gun
-	local Blacklist = ACF.AmmoBlacklist[ Target.RoundType ] or {}
+	local Blacklist = ACE.AmmoBlacklist[ Target.RoundType ] or {}
 
 	if table.HasValue( Blacklist, self.Class ) then
 		return false, "That round type cannot be used with this gun!"
@@ -223,7 +223,7 @@ end
 
 function ENT:TriggerInput( iname , value )
 
-	if ( iname == "Fire" and value ~= 0 and ACF.GunfireEnabled and self.Legal ) then
+	if ( iname == "Fire" and value ~= 0 and ACE.GunfireEnabled and self.Legal ) then
 		if self.NextFire >= 1 then
 			self.User = ACE_GetWeaponUser( self, self.Inputs.Fire.Src )
 			if not IsValid(self.User) then self.User = self:CPPIGetOwner() end
@@ -311,11 +311,11 @@ function ENT:UpdateRefillBonus()
 	local totalBonus			= 0
 	local selfPos			= self:GetPos()
 
-	local Efficiency			= 0.11 * ACF.AmmoMod		-- Copied from acf_ammo, beware of changes!
+	local Efficiency			= 0.11 * ACE.AmmoMod		-- Copied from acf_ammo, beware of changes!
 	local minFullEfficiency	= 50000 * Efficiency	-- The minimum crate volume to provide full efficiency bonus all by itself.
-	local maxDist			= ACF.RefillDistance
+	local maxDist			= ACE.RefillDistance
 
-	for _, crate in pairs(ACF.AmmoCrates or {}) do
+	for _, crate in pairs(ACE.AmmoCrates or {}) do
 
 		if crate.RoundType ~= "Refill" then
 			continue
@@ -540,7 +540,7 @@ function ENT:AddMissile()
 	missile.Launcher		= self
 	missile.ForceTdelay	= self.ForceTdelay
 
-	missile.ContrapId = ACE_Check( self ) and self.ACF.ContraptionId or 1
+	missile.ContrapId = ACE_Check( self ) and self.ACE.ContraptionId or 1
 
 	local BulletData = ACFM_CompactBulletData(Crate)
 	BulletData.IsShortForm  = true
@@ -705,7 +705,7 @@ list.Set( "ACFCvars", "acf_rack" , {"id"} )
 duplicator.RegisterEntityClass("acf_rack", MakeACF_Rack, "Pos", "Angle", "Id")
 
 function ENT:GetInaccuracy()
-	return self.Inaccuracy * ACF.GunInaccuracyScale
+	return self.Inaccuracy * ACE.GunInaccuracyScale
 end
 
 function ENT:FireMissile()
@@ -733,7 +733,7 @@ function ENT:FireMissile()
 
 			local coneAng		= math.tan(math.rad(self:GetInaccuracy()))
 			local randUnitSquare	= (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-			local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACF.GunInaccuracyBias, 0.5, 4)))
+			local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
 			local ShootVec		= (MuzzleVec + spread):GetNormalized()
 
 			local filter = {}

@@ -20,10 +20,10 @@ function ACE_SimBulletFlight( Bullet, Index )
 
 	Bullet.DeltaTime = CurTime() - Bullet.LastThink --intentionally not using cached curtime value
 
-	local Drag = Bullet.SimFlight:GetNormalized() * ( Bullet.DragCoef * Bullet.SimFlight:LengthSqr() ) / ACF.DragDiv
+	local Drag = Bullet.SimFlight:GetNormalized() * ( Bullet.DragCoef * Bullet.SimFlight:LengthSqr() ) / ACE.DragDiv
 
 	Bullet.SimPosLast	= Bullet.SimPos
-	Bullet.SimPos		= Bullet.SimPos + (Bullet.SimFlight * ACF.VelScale * Bullet.DeltaTime)		--Calculates the next shell position
+	Bullet.SimPos		= Bullet.SimPos + (Bullet.SimFlight * ACE.VelScale * Bullet.DeltaTime)		--Calculates the next shell position
 	Bullet.SimFlight	= Bullet.SimFlight + (Bullet.Accel - Drag) * Bullet.DeltaTime			--Calculates the next shell vector
 
 --	print(Bullet.SimFlight:Length()/39.37)

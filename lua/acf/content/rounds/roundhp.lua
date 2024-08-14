@@ -1,8 +1,8 @@
 
-local RoundTypes = ACF.RoundTypes
+local RoundTypes = ACE.RoundTypes
 local Round = table.Copy(RoundTypes.AP) -- inherit from AP
 
-ACF.AmmoBlacklist.HP = ACF.AmmoBlacklist.AP
+ACE.AmmoBlacklist.HP = ACE.AmmoBlacklist.AP
 
 Round.type = "Ammo" --Tells the spawn menu what entity to spawn
 Round.name = "[HP] - " .. ACFTranslation.HP[1] --Human readable name
@@ -42,7 +42,7 @@ function Round.convert( _, PlayerData )
 	local ExpRatio = Data.CavVol / GUIData.ProjVolume
 	Data.ShovePower = 0.2 + ExpRatio / 2
 	Data.ExpCaliber = Data.Caliber + ExpRatio * Data.ProjLength
-	Data.PenArea = (3.1416 * Data.ExpCaliber / 2) ^ 2 ^ ACF.PenAreaMod
+	Data.PenArea = (3.1416 * Data.ExpCaliber / 2) ^ 2 ^ ACE.PenAreaMod
 	Data.DragCoef = (Data.FrArea / 10000) / Data.ProjMass
 	Data.LimitVel = 400 --Most efficient penetration speed in m/s
 	Data.KETransfert = 0.1 --Kinetic energy transfert to the target for movement purposes
@@ -68,7 +68,7 @@ function Round.getDisplayData(Data)
 	local GUIData = {}
 	local Energy = ACF_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
 	GUIData.MaxKETransfert = Energy.Kinetic * Data.ShovePower
-	GUIData.MaxPen = (Energy.Penetration / Data.PenArea) * ACF.KEtoRHA
+	GUIData.MaxPen = (Energy.Penetration / Data.PenArea) * ACE.KEtoRHA
 
 	return GUIData
 end
@@ -109,7 +109,7 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACF.AmmoBlacklist.HP )
+	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.HP )
 
 	ACE_UpperCommonDataDisplay()
 
@@ -158,5 +158,5 @@ function Round.guiupdate( Panel )
 end
 
 list.Set( "APRoundTypes", "HP", Round )
-ACF.RoundTypes[Round.Type] = Round     --Set the round properties
-ACF.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above
+ACE.RoundTypes[Round.Type] = Round     --Set the round properties
+ACE.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above

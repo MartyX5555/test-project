@@ -137,7 +137,7 @@ do
 	-- @server
 	-- @return number The current drag divisor
 	function acf_library.dragDivisor()
-		return ACF.DragDiv
+		return ACE.DragDiv
 	end
 
 	--- Returns true if functions returning sensitive info are restricted to owned props
@@ -165,7 +165,7 @@ do
 	-- @server
 	-- @return number Air gap factor
 	function acf_library.getHEATAirGapFactor()
-		return ACF.HEATAirGapFactor
+		return ACE.HEATAirGapFactor
 	end
 
 	--- Returns ACF wind direction
@@ -285,7 +285,7 @@ do
 		if isGun(this) then acftype = "Guns" end
 
 		if acftype == "" then return "" end
-		local List = ACF.Weapons
+		local List = ACE.Weapons
 
 		return List[acftype][this.Id].name or ""
 	end
@@ -297,11 +297,11 @@ do
 		local this = getent(self)
 
 		if isEngine(this) or isGearbox(this) then
-			return ACF.Weapons["Mobility"][this.Id].category or ""
+			return ACE.Weapons["Mobility"][this.Id].category or ""
 		end
 
 		if isGun(this) then
-			return ACF.Classes["GunClass"][this.Class].name or ""
+			return ACE.Classes["GunClass"][this.Class].name or ""
 		end
 
 		if isAmmo(this) then return this.RoundType or "" end
@@ -426,7 +426,7 @@ do
 		if restrictInfo(this) then return 0 end
 		if not ACE_Check(this) then return 0 end
 
-		return round(this.ACF.Health, 3)
+		return round(this.ACE.Health, 3)
 	end
 
 	--- Returns the current armor of an entity
@@ -439,7 +439,7 @@ do
 		if restrictInfo(this) then return 0 end
 		if not ACE_Check(this) then return 0 end
 
-		return round(this.ACF.Armour, 3)
+		return round(this.ACE.Armour, 3)
 	end
 
 	--- Returns the max health of an entity
@@ -452,7 +452,7 @@ do
 		if restrictInfo(this) then return 0 end
 		if not ACE_Check(this) then return 0 end
 
-		return round(this.ACF.MaxHealth, 3)
+		return round(this.ACE.MaxHealth, 3)
 	end
 
 	--- Returns the max armor of an entity
@@ -465,7 +465,7 @@ do
 		if restrictInfo(this) then return 0 end
 		if not ACE_Check(this) then return 0 end
 
-		return round(this.ACF.MaxArmour, 3)
+		return round(this.ACE.MaxArmour, 3)
 	end
 
 	--- Returns the ductility of an entity
@@ -478,7 +478,7 @@ do
 		if restrictInfo(this) then return 0 end
 		if not ACE_Check(this) then return 0 end
 
-		return this.ACF.Ductility * 100
+		return this.ACE.Ductility * 100
 	end
 
 	--- Returns the armor data of an entity
@@ -492,7 +492,7 @@ do
 		if restrictInfo(this) then return empty end
 		if not ACE_Check(this) then return empty end
 
-		local mat = this.ACF.Material
+		local mat = this.ACE.Material
 		if not mat then return empty end
 
 		local matData = ACE.ArmorMaterials[mat]
@@ -516,7 +516,7 @@ do
 	function acf_library.getGunSpecs(id)
 		checkluatype(id, TYPE_STRING)
 
-		local listEntries = ACF.Weapons.Guns
+		local listEntries = ACE.Weapons.Guns
 
 		-- Not a valid id, try name
 		if not listEntries[id] then
@@ -540,7 +540,7 @@ do
 	function acf_library.getAllGuns()
 		local tbl = {}
 
-		for id, _ in pairs(ACF.Weapons.Guns) do
+		for id, _ in pairs(ACE.Weapons.Guns) do
 			tbl[#tbl + 1] = id
 		end
 
@@ -858,7 +858,7 @@ do
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
 
-		return round((this.BulletData["MuzzleVel"] or 0) * ACF.VelScale, 3)
+		return round((this.BulletData["MuzzleVel"] or 0) * ACE.VelScale, 3)
 	end
 
 	--- Returns the mass of the projectile in a crate or gun
@@ -922,17 +922,17 @@ do
 		if Type == "AP" or Type == "APHE" then
 			Energy = ACF_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["ProjMass"] - (this.BulletData["FillerMass"] or 0), this.BulletData["LimitVel"])
 
-			return round((Energy.Penetration / this.BulletData["PenArea"]) * ACF.KEtoRHA, 3)
+			return round((Energy.Penetration / this.BulletData["PenArea"]) * ACE.KEtoRHA, 3)
 		elseif Type == "HEAT" then
-			local Crushed, HEATFillerMass, _ = ACF.RoundTypes["HEAT"].CrushCalc(this.BulletData.MuzzleVel, this.BulletData.FillerMass)
+			local Crushed, HEATFillerMass, _ = ACE.RoundTypes["HEAT"].CrushCalc(this.BulletData.MuzzleVel, this.BulletData.FillerMass)
 			if Crushed == 1 then return 0 end -- no HEAT jet to fire off, it was all converted to HE
-			Energy = ACF_Kinetic(ACF.RoundTypes["HEAT"].CalcSlugMV(this.BulletData, HEATFillerMass) * 39.37, this.BulletData["SlugMass"], 9999999)
+			Energy = ACF_Kinetic(ACE.RoundTypes["HEAT"].CalcSlugMV(this.BulletData, HEATFillerMass) * 39.37, this.BulletData["SlugMass"], 9999999)
 
-			return round((Energy.Penetration / this.BulletData["SlugPenArea"]) * ACF.KEtoRHA, 3)
+			return round((Energy.Penetration / this.BulletData["SlugPenArea"]) * ACE.KEtoRHA, 3)
 		elseif Type == "FL" then
 			Energy = ACF_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["FlechetteMass"], this.BulletData["LimitVel"])
 
-			return round((Energy.Penetration / this.BulletData["FlechettePenArea"]) * ACF.KEtoRHA, 3)
+			return round((Energy.Penetration / this.BulletData["FlechettePenArea"]) * ACE.KEtoRHA, 3)
 		end
 
 		return 0
@@ -965,7 +965,7 @@ do
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
 
-		return (this.BulletData["DragCoef"] or 0) / ACF.DragDiv
+		return (this.BulletData["DragCoef"] or 0) / ACE.DragDiv
 	end
 end
 
@@ -978,7 +978,7 @@ do
 	function acf_library.getMobilitySpecs(id)
 		checkluatype(id, TYPE_STRING)
 
-		local listEntries = ACF.Weapons.Mobility
+		local listEntries = ACE.Weapons.Mobility
 
 		-- Not a valid id, try name
 		if not listEntries[id] then
@@ -1002,7 +1002,7 @@ do
 	function acf_library.getAllMobility()
 		local tbl = {}
 
-		for id, _ in pairs(ACF.Weapons.Mobility) do
+		for id, _ in pairs(ACE.Weapons.Mobility) do
 			tbl[#tbl + 1] = id
 		end
 
@@ -1015,7 +1015,7 @@ do
 	function acf_library.getAllEngines()
 		local tbl = {}
 
-		for id, d in pairs(ACF.Weapons.Mobility) do
+		for id, d in pairs(ACE.Weapons.Mobility) do
 			if d.ent == "acf_engine" then
 				tbl[#tbl + 1] = id
 			end
@@ -1030,7 +1030,7 @@ do
 	function acf_library.getAllGearboxes()
 		local tbl = {}
 
-		for id, d in pairs(ACF.Weapons.Mobility) do
+		for id, d in pairs(ACE.Weapons.Mobility) do
 			if d.ent == "acf_gearbox" then
 				tbl[#tbl + 1] = id
 			end
@@ -1090,7 +1090,7 @@ do
 
 		if not isEngine(this) then return 0 end
 
-		return this.PeakTorque * ACF.TorqueBoost
+		return this.PeakTorque * ACE.TorqueBoost
 	end
 
 	--- Returns the power in kW of an ACF engine
@@ -1112,7 +1112,7 @@ do
 
 		if not isEngine(this) then return 0 end
 
-		return this.peakkw * ACF.TorqueBoost
+		return this.peakkw * ACE.TorqueBoost
 	end
 
 	--- Returns the idle rpm of an ACF engine
@@ -1712,7 +1712,7 @@ do
 			Consumption = 60 * (this.Torque * this.FlyRPM / 9548.8) * this.FuelUse
 		else
 			local Load = 0.3 + this.Throttle * 0.7
-			Consumption = 60 * Load * this.FuelUse * (this.FlyRPM / this.PeakKwRPM) / ACF.FuelDensity[tank.FuelType]
+			Consumption = 60 * Load * this.FuelUse * (this.FlyRPM / this.PeakKwRPM) / ACE.FuelDensity[tank.FuelType]
 		end
 
 		return round(Consumption, 3)
@@ -1745,7 +1745,7 @@ do
 		if this.FuelType == "Electric" then
 			Consumption = 60 * (this.PeakTorque * this.LimitRPM / (4 * 9548.8)) * this.FuelUse
 		else
-			Consumption = 60 * this.FuelUse / ACF.FuelDensity[fuel]
+			Consumption = 60 * this.FuelUse / ACE.FuelDensity[fuel]
 		end
 
 		return round(Consumption, 3)

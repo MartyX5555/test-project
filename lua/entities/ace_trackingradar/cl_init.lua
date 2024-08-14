@@ -25,7 +25,7 @@ end
 
 function ACFTrackRadarGUICreate( Table )
 
-	if not (ACF and next(ACF.Classes) and next(ACF.Classes.Radar) and Table) then
+	if not (ACF and next(ACE.Classes) and next(ACE.Classes.Radar) and Table) then
 		acfmenupanel:CPanelText("Error1", "There was an error trying to gather the information for this sensor", "DermaDefaultBold")
 		acfmenupanel:CPanelText("Error3", "If the problem persists, report it to the server owner as soon as possible!")
 		return
@@ -44,7 +44,7 @@ function ACFTrackRadarGUICreate( Table )
 		RadarMenu.LayoutEntity = function() end
 	acfmenupanel.CustomDisplay:AddItem( RadarMenu )
 
-	acfmenupanel:CPanelText("ClassDesc", ACF.Classes.Radar[Table.class].desc)
+	acfmenupanel:CPanelText("ClassDesc", ACE.Classes.Radar[Table.class].desc)
 	acfmenupanel:CPanelText("GunDesc", Table.desc)
 	acfmenupanel:CPanelText("ViewCone", "View cone : " .. ((Table.viewcone or 180) * 2) .. " degs")
 	acfmenupanel:CPanelText("Weight", "Weight : " .. Table.weight .. " kg")

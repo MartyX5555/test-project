@@ -21,10 +21,10 @@ ACF_ActiveMissiles = ACF_ActiveMissiles or {}
 function ACFM_BulletLaunch(BulletData)
 
 	-- Increment the index
-	ACF.CurBulletIndex = ACF.CurBulletIndex + 1
+	ACE.CurBulletIndex = ACE.CurBulletIndex + 1
 
-	if ACF.CurBulletIndex > ACF.BulletIndexLimit then
-		ACF.CurBulletIndex = 1
+	if ACE.CurBulletIndex > ACE.BulletIndexLimit then
+		ACE.CurBulletIndex = 1
 	end
 
 	--Those are BulletData settings that are global and shouldn't change round to round
@@ -42,9 +42,9 @@ function ACFM_BulletLaunch(BulletData)
 		BulletData.Filter = { BulletData.Gun }
 	end
 
-	BulletData.Index		= ACF.CurBulletIndex
-	ACF.Bullet[ACF.CurBulletIndex] = table.Copy(BulletData)	--Place the bullet at the current index pos
-	ACF_BulletClient( ACF.CurBulletIndex, ACF.Bullet[ACF.CurBulletIndex], "Init" , 0 )
+	BulletData.Index		= ACE.CurBulletIndex
+	ACE.Bullet[ACE.CurBulletIndex] = table.Copy(BulletData)	--Place the bullet at the current index pos
+	ACF_BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
 
 end
 
@@ -68,7 +68,7 @@ function ACFM_ExpandBulletData(bullet)
 	toconvert["Data14"]	= bullet["HEAllocation"]	or bullet["Data14"]		or 0
 	toconvert["Data15"]	= bullet["Data15"]		or 0
 
-	local rounddef	= ACF.RoundTypes[bullet.Type] or error("No definition for the shell-type", bullet.Type)
+	local rounddef	= ACE.RoundTypes[bullet.Type] or error("No definition for the shell-type", bullet.Type)
 	local conversion	= rounddef.convert
 
 	if not conversion then error("No conversion available for this shell!") end
@@ -118,7 +118,7 @@ end
 
 
 -- TODO: modify ACF to use this global table, so any future tweaks won't break anything here.
-ACF.FillerDensity =
+ACE.FillerDensity =
 {
 	SM =	2000,
 	HE =	1000,
@@ -154,10 +154,10 @@ function ACFM_CompactBulletData(crate)
 
 
 	if not compact.Data5 and crate.FillerMass then
-		local Filler = ACF.FillerDensity[compact.Type]
+		local Filler = ACE.FillerDensity[compact.Type]
 
 		if Filler then
-			compact.Data5 = crate.FillerMass / ACF.HEDensity * Filler
+			compact.Data5 = crate.FillerMass / ACE.HEDensity * Filler
 		end
 	end
 
@@ -170,7 +170,7 @@ function ACE_DoReplicatedPropHit(Missile, Bullet)
 	local FlightRes = { Entity = Missile, HitNormal = Missile.HitNorm, HitPos = Bullet.Pos, HitGroup = HITGROUP_GENERIC }
 	local Index = Bullet.Index
 
-	local ACF_BulletPropImpact = ACF.RoundTypes[Bullet.Type]["propimpact"]
+	local ACF_BulletPropImpact = ACE.RoundTypes[Bullet.Type]["propimpact"]
 	local Retry = ACF_BulletPropImpact( Index, Bullet, FlightRes.Entity ,  FlightRes.HitNormal , FlightRes.HitPos , FlightRes.HitGroup )				--If we hit stuff then send the resolution to the damage function
 
 	--This is crucial, to avoid 2nd tandem munitions spawn on 1st Bullet hitpos
@@ -190,7 +190,7 @@ function ACE_DoReplicatedPropHit(Missile, Bullet)
 		if Bullet.OnEndFlight then Bullet.OnEndFlight(Index, Bullet, FlightRes) end
 
 		ACF_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-		ACF_BulletEndFlight = ACF.RoundTypes[Bullet.Type]["endflight"]
+		ACF_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
 		ACF_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 	end
 

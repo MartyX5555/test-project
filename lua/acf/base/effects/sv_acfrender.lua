@@ -5,9 +5,9 @@ do
 		Clock = 0
 	}
 	function ACE_UpdateVisualHealth( Entity )
-		if not Entity.ACF.OnRenderQueue then
+		if not Entity.ACE.OnRenderQueue then
 			table.insert(RenderProps.Entities, Entity )
-			Entity.ACF.OnRenderQueue = true
+			Entity.ACE.OnRenderQueue = true
 		end
 	end
 	local function SendVisualDamage()
@@ -26,11 +26,11 @@ do
 			if IsValid(Entity) then
 				net.Start("ACE_RenderDamage", true) -- i dont care if the message is not received under extreme cases since its simply a visual effect only.
 					net.WriteUInt(Entity:EntIndex(), 13)
-					net.WriteFloat(Entity.ACF.MaxHealth)
-					net.WriteFloat(Entity.ACF.Health)
+					net.WriteFloat(Entity.ACE.MaxHealth)
+					net.WriteFloat(Entity.ACE.Health)
 				net.Broadcast()
 
-				Entity.ACF.OnRenderQueue = nil
+				Entity.ACE.OnRenderQueue = nil
 			end
 			table.remove( RenderProps.Entities, 1 )
 

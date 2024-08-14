@@ -3,7 +3,7 @@ function ACF_GetGunValue(bdata, val)
 
 	bdata = (type(bdata) == "table" and bdata.Id) or bdata
 
-	local GunsTable = ACF.Weapons.Guns
+	local GunsTable = ACE.Weapons.Guns
 
 	local guns = GunsTable
 	local class = guns[bdata]
@@ -22,7 +22,7 @@ function ACF_GetGunValue(bdata, val)
 		if ret ~= nil then
 			return ret
 		else
-			local classes = ACF.Classes.GunClass
+			local classes = ACE.Classes.GunClass
 			class = classes[class.gunclass]
 
 			if class then
@@ -41,14 +41,14 @@ function ACF_GetRackValue(rdata, val)
 
 	rdata = (type(rdata) == "table" and rdata.Id) or rdata
 
-	local guns = ACF.Weapons.Racks
+	local guns = ACE.Weapons.Racks
 	local class = guns[rdata]
 
 	if class then
 		if class[val] ~= nil then
 			return class[val]
 		else
-			local classes = ACF.Classes.Rack
+			local classes = ACE.Classes.Rack
 			class = classes[class.gunclass]
 
 			if class then
@@ -64,7 +64,7 @@ end
 
 function ACF_RackCanLoadCaliber(rackId, cal)
 
-	local rack = ACF.Weapons.Racks[rackId]
+	local rack = ACE.Weapons.Racks[rackId]
 	if not rack then return false, "Rack '" .. tostring(rackId) .. "' does not exist." end
 
 	if rack.caliber then
@@ -90,10 +90,10 @@ end
 
 function ACF_CanLinkRack(rackId, ammoId, bdata, rack)
 
-	local rack = ACF.Weapons.Racks[rackId]
+	local rack = ACE.Weapons.Racks[rackId]
 	if not rack then return false, "Rack '" .. tostring(rackId) .. "' does not exist." end
 
-	local GunsTable = ACF.Weapons.Guns
+	local GunsTable = ACE.Weapons.Guns
 
 	local gun = GunsTable[ammoId]
 	if not rack then return false, "Ammo '" .. tostring(ammoId) .. "' does not exist." end
@@ -122,7 +122,7 @@ function ACF_CanLinkRack(rackId, ammoId, bdata, rack)
 		return false, calMsg
 	end
 
-	local Classes = ACF.Classes.GunClass
+	local Classes = ACE.Classes.GunClass
 	if "missile" ~= Classes[gun.gunclass].type then
 		return false, "Racks cannot be linked to ammo crates of type '" .. tostring(ammoId) .. "'!"
 	end
@@ -138,7 +138,7 @@ function ACF_GetCompatibleRacks(ammoId)
 
 	local ret = {}
 
-	for rackId in pairs(ACF.Weapons.Racks) do
+	for rackId in pairs(ACE.Weapons.Racks) do
 		if ACF_CanLinkRack(rackId, ammoId) then
 			ret[#ret + 1] = rackId
 		end

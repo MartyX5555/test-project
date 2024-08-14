@@ -2,11 +2,11 @@
 local ClassName = "Timed"
 
 
-ACF = ACF or {}
-ACF.Fuse = ACF.Fuse or {}
+ACE = ACE or {}
+ACE.Fuse = ACE.Fuse or {}
 
-local this = ACF.Fuse[ClassName] or inherit.NewSubOf(ACF.Fuse.Contact)
-ACF.Fuse[ClassName] = this
+local this = ACE.Fuse[ClassName] or inherit.NewSubOf(ACE.Fuse.Contact)
+ACE.Fuse[ClassName] = this
 
 ---
 

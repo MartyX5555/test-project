@@ -2,11 +2,11 @@
 local ClassName = "Contact"
 
 
-ACF = ACF or {}
-ACF.Fuse = ACF.Fuse or {}
+ACE = ACE or {}
+ACE.Fuse = ACE.Fuse or {}
 
-local this = ACF.Fuse[ClassName] or inherit.NewBaseClass()
-ACF.Fuse[ClassName] = this
+local this = ACE.Fuse[ClassName] or inherit.NewBaseClass()
+ACE.Fuse[ClassName] = this
 
 ---
 

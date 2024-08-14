@@ -1,7 +1,6 @@
 
-local cat = ((ACF.CustomToolCategory and ACF.CustomToolCategory:GetBool()) and "ACF" or "Construction");
 
-TOOL.Category	= cat
+TOOL.Category	= "Construction"
 TOOL.Name	= "#tool.acfarmorprop.name"
 TOOL.Command	= nil
 TOOL.ConfigName = ""
@@ -25,7 +24,7 @@ local function CalcArmor( Area, Ductility, Thickness, Mat )
 
 	local mass       = Area * ( 1 + Ductility ) ^ 0.5 * Thickness * 0.00078 * MassMod
 	local armor      = ACF_CalcArmor( Area, Ductility, mass / MassMod )
-	local health     = ( Area + Area * Ductility ) / ACF.Threshold
+	local health     = ( Area + Area * Ductility ) / ACE.Threshold
 
 	return mass, armor, health
 
@@ -113,7 +112,7 @@ if CLIENT then
 			ToolPanel.panel:AddItem(ToolPanel.ComboMat)
 
 			for _, Mat  in pairs(MaterialTypes) do
-				if ACF.Year >= Mat.year then
+				if ACE.Year >= Mat.year then
 					ToolPanel.ComboMat:AddChoice(Mat.sname, Mat.id )
 				end
 			end
@@ -247,14 +246,14 @@ local function ApplySettings( _, ent, data )
 	end
 
 	if data.Ductility then
-		ent.ACF = ent.ACF or {}
-		ent.ACF.Ductility = data.Ductility / 100
+		ent.ACE = ent.ACE or {}
+		ent.ACE.Ductility = data.Ductility / 100
 		duplicator.StoreEntityModifier( ent, "acfsettings", { Ductility = data.Ductility } )
 	end
 
 	if data.Material then
-		ent.ACF = ent.ACF or {}
-		ent.ACF.Material = data.Material
+		ent.ACE = ent.ACE or {}
+		ent.ACE.Material = data.Material
 		duplicator.StoreEntityModifier( ent, "acfsettings", { Material = data.Material } )
 	end
 
@@ -278,7 +277,7 @@ function TOOL:LeftClick( trace )
 	local thickness = math.Clamp( self:GetClientNumber( "thickness" ), 0.1, 50000 )
 	local material  = self:GetClientInfo( "material" ) or "RHA"
 
-	local mass		= CalcArmor( ent.ACF.Area, ductility / 100, thickness , material)
+	local mass		= CalcArmor( ent.ACE.Area, ductility / 100, thickness , material)
 
 	ApplySettings( ply, ent, { Mass = mass , Ductility = ductility, Material = material} )
 
@@ -300,9 +299,9 @@ function TOOL:RightClick( trace )
 
 	local ply = self:GetOwner()
 
-	ply:ConCommand( "acfarmorprop_ductility " .. (ent.ACF.Ductility or 0) * 100 )
-	ply:ConCommand( "acfarmorprop_thickness " .. ent.ACF.MaxArmour )
-	ply:ConCommand( "acfarmorprop_material " .. (ent.ACF.Material or "RHA") )
+	ply:ConCommand( "acfarmorprop_ductility " .. (ent.ACE.Ductility or 0) * 100 )
+	ply:ConCommand( "acfarmorprop_thickness " .. ent.ACE.MaxArmour )
+	ply:ConCommand( "acfarmorprop_material " .. (ent.ACE.Material or "RHA") )
 
 	-- this invalidates the entity and forces a refresh of networked armor values
 	self.AimEntity = nil
@@ -414,17 +413,17 @@ function TOOL:Think()
 
 	if ACE_Check( ent ) then
 
-		local Mat = ent.ACF.Material or "RHA"
+		local Mat = ent.ACE.Material or "RHA"
 		local MatData =  ACE_GetMaterialData( Mat )
 
 		if not MatData then return end
 
-		ply:ConCommand( "acfarmorprop_area " .. ent.ACF.Area )
+		ply:ConCommand( "acfarmorprop_area " .. ent.ACE.Area )
 		self.Weapon:SetNWFloat( "WeightMass", ent:GetPhysicsObject():GetMass() )
-		self.Weapon:SetNWFloat( "HP", ent.ACF.Health )
-		self.Weapon:SetNWFloat( "Armour", ent.ACF.Armour )
-		self.Weapon:SetNWFloat( "MaxHP", ent.ACF.MaxHealth )
-		self.Weapon:SetNWFloat( "MaxArmour", ent.ACF.MaxArmour )
+		self.Weapon:SetNWFloat( "HP", ent.ACE.Health )
+		self.Weapon:SetNWFloat( "Armour", ent.ACE.Armour )
+		self.Weapon:SetNWFloat( "MaxHP", ent.ACE.MaxHealth )
+		self.Weapon:SetNWFloat( "MaxArmour", ent.ACE.MaxArmour )
 		self.Weapon:SetNWString( "Material", MatData.sname or "RHA")
 
 	else

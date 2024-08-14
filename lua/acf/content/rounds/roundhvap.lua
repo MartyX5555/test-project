@@ -1,6 +1,6 @@
 
 
-ACF.AmmoBlacklist.HVAP =  { "MO", "RM", "SL", "GL", "HW", "MG", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL","SBC"}
+ACE.AmmoBlacklist.HVAP =  { "MO", "RM", "SL", "GL", "HW", "MG", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL","SBC"}
 
 local Round = {}
 
@@ -34,7 +34,7 @@ function Round.convert( _, PlayerData )
 
 	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
---	local GunClass = ACF.Weapons["Guns"][(Data["Id"] or PlayerData["Id"])]["gunclass"]
+--	local GunClass = ACE.Weapons["Guns"][(Data["Id"] or PlayerData["Id"])]["gunclass"]
 
 --	if GunClass == "C" then
 
@@ -48,7 +48,7 @@ function Round.convert( _, PlayerData )
 	Data.SubFrArea = Data.FrArea * math.min(PlayerData.Data5, Data.MaxCalMult) ^ 2
 	Data.ProjMass = Data.SubFrArea * (Data.ProjLength * 7.9 / 1000) * 1.5 + (Data.FrArea - Data.SubFrArea) * (Data.ProjLength * 7.9 / 10000) --(Tungsten Core Mass + Sabot Exterior Mass) * Mass modifier used for bad aerodynamics
 	Data.ShovePower = 0.2
-	Data.PenArea = (Data.PenModifier * Data.SubFrArea) ^ ACF.PenAreaMod
+	Data.PenArea = (Data.PenModifier * Data.SubFrArea) ^ ACE.PenAreaMod
 
 	Data.DragCoef = ((Data.FrArea / 10000) / Data.ProjMass) * 0.8
 	Data.CaliberMod = Data.Caliber * math.min(PlayerData.Data5, Data.MaxCalMult)
@@ -74,7 +74,7 @@ end
 function Round.getDisplayData(Data)
 	local GUIData = {}
 	local Energy = ACF_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
-	GUIData.MaxPen = ((Energy.Penetration / Data.PenArea) * ACF.KEtoRHA) * 1.055
+	GUIData.MaxPen = ((Energy.Penetration / Data.PenArea) * ACE.KEtoRHA) * 1.055
 
 	return GUIData
 end
@@ -102,8 +102,8 @@ function Round.cratetxt( BulletData )
 	--local FrArea = BulletData.FrArea
 	local DData = Round.getDisplayData(BulletData)
 
-	--fakeent.ACF.Armour = DData.MaxPen or 0
-	--fakepen.Penetration = (DData.MaxPen * FrArea) / ACF.KEtoRHA
+	--fakeent.ACE.Armour = DData.MaxPen or 0
+	--fakepen.Penetration = (DData.MaxPen * FrArea) / ACE.KEtoRHA
 	--local fakepen = ACF_Kinetic( BulletData.SlugMV * 39.37 , BulletData.SlugMass, 9999999 )
 	--local MaxHP = ACF_CalcDamage( fakeent , fakepen , FrArea , 0 )
 
@@ -135,13 +135,13 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 
 	if ACE_Check( Target ) then
 
-		local Speed = Bullet.Flight:Length() / ACF.VelScale
+		local Speed = Bullet.Flight:Length() / ACE.VelScale
 		local Energy = ACF_Kinetic( Speed , Bullet.ProjMass, Bullet.LimitVel )
 		local HitRes = ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
 		if HitRes.Overkill > 0 then
 			table.insert( Bullet.Filter , Target )					--"Penetrate" (Ingoring the prop for the retry trace)
-			ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACF.Armour , Bullet.Owner , Target.ACF.Material) --Do some spalling
+			ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 			Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1-HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 			return "Penetrated"
 		elseif HitRes.Ricochet then
@@ -157,7 +157,7 @@ end
 
 function Round.worldimpact( _, Bullet, HitPos, HitNormal )
 
-	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACF.VelScale, Bullet.ProjMass, Bullet.LimitVel )
+	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, Bullet.LimitVel )
 	local HitRes = ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 	if HitRes.Penetrated then
 		return "Penetrated"
@@ -216,7 +216,7 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACF.AmmoBlacklist.HVAP )
+	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.HVAP )
 
 	ACE_UpperCommonDataDisplay()
 
@@ -265,5 +265,5 @@ function Round.guiupdate( Panel )
 end
 
 list.Set( "APRoundTypes", "HVAP", Round )
-ACF.RoundTypes[Round.Type] = Round     --Set the round properties
-ACF.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above
+ACE.RoundTypes[Round.Type] = Round     --Set the round properties
+ACE.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above

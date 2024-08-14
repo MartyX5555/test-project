@@ -10,7 +10,7 @@ function EFFECT:Init( data )
 		local SoundPitch   = Radar:GetNWInt( "SoundPitch", 100 )
 
 		if not IsValidSound( Sound ) then
-			Sound = ACFM.DefaultRadarSound
+			Sound = ACEM.DefaultRadarSound
 		end
 
 		ACE_SimpleSound( Sound, Radar:WorldSpaceCenter(), SoundPitch, 1000 )

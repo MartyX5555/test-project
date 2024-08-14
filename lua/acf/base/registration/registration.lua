@@ -3,8 +3,8 @@
 -- Once you edit this file. Force an addon reload from globals to repopulate.
 
 local ACF = ACF or {}
-local Weapons = ACF.Weapons
-local Classes = ACF.Classes
+local Weapons = ACE.Weapons
+local Classes = ACE.Classes
 local MuzzlesFlashes = ACE.MuzzleFlashes
 
 Classes.GunClass        = {}
@@ -139,8 +139,8 @@ end
 
 --Engine definition
 function ACE_DefineEngine( id, data )
-	if (data.year or 0) < ACF.Year then
-		local engineData = ACE_CalcEnginePerformanceData(data.torquecurve or ACF.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
+	if (data.year or 0) < ACE.Year then
+		local engineData = ACE_CalcEnginePerformanceData(data.torquecurve or ACE.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
 
 		data.peaktqrpm    = engineData.peakTqRPM
 		data.peakpower    = engineData.peakPower

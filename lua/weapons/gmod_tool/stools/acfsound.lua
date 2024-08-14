@@ -1,9 +1,7 @@
 
 ACF = ACF or {}
 
-local cat = ((ACF.CustomToolCategory and ACF.CustomToolCategory:GetBool()) and "ACF" or "Construction");
-
-TOOL.Category		= cat
+TOOL.Category		= "Construction"
 TOOL.Name			= "#Tool.acfsound.name"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
@@ -35,12 +33,12 @@ if CLIENT then
 
 end
 
-local GunClasses = ACF.Classes.GunClass
-local GunTable = ACF.Weapons.Guns
+local GunClasses = ACE.Classes.GunClass
+local GunTable = ACE.Weapons.Guns
 
-local EngineTable = ACF.Weapons.Engines
+local EngineTable = ACE.Weapons.Engines
 
-ACF.SoundToolSupport = {
+ACE.SoundToolSupport = {
 
 	acf_gun = {
 
@@ -62,7 +60,7 @@ ACF.SoundToolSupport = {
 
 			local soundData = { Sound = sound, Pitch = 100 }
 
-			local setSound = ACF.SoundToolSupport["acf_gun"].SetSound
+			local setSound = ACE.SoundToolSupport["acf_gun"].SetSound
 			setSound( ent, soundData )
 		end,
 
@@ -87,7 +85,7 @@ ACF.SoundToolSupport = {
 
 			local soundData = { Sound = sound, Pitch = pitch }
 
-			local setSound = ACF.SoundToolSupport["acf_engine"].SetSound
+			local setSound = ACE.SoundToolSupport["acf_engine"].SetSound
 			setSound( ent, soundData )
 		end
 	},
@@ -111,7 +109,7 @@ ACF.SoundToolSupport = {
 
 			local soundData = { Sound = sound, Pitch = 100 }
 
-			local setSound = ACF.SoundToolSupport["acf_rack"].SetSound
+			local setSound = ACE.SoundToolSupport["acf_rack"].SetSound
 			setSound( ent, soundData )
 		end,
 
@@ -122,7 +120,7 @@ ACF.SoundToolSupport = {
 
 	acf_missileradar = {
 
-		GetSound = function(ent) return { Sound = ent.Sound or ACFM.DefaultRadarSound, Pitch = ent.SoundPitch or 100 } end,
+		GetSound = function(ent) return { Sound = ent.Sound or ACEM.DefaultRadarSound, Pitch = ent.SoundPitch or 100 } end,
 
 		SetSound = function(ent, soundData)
 			ent.Sound = soundData.Sound
@@ -132,9 +130,9 @@ ACF.SoundToolSupport = {
 		end,
 
 		ResetSound = function(ent)
-			local soundData = {Sound = ACFM.DefaultRadarSound, Pitch = 100}
+			local soundData = {Sound = ACEM.DefaultRadarSound, Pitch = 100}
 
-			local setSound = ACF.SoundToolSupport["acf_missileradar"].SetSound
+			local setSound = ACE.SoundToolSupport["acf_missileradar"].SetSound
 			setSound( ent, soundData )
 		end
 	},
@@ -155,7 +153,7 @@ local function ReplaceSound( _ , Entity , data)
 	end
 
 	local class = Entity:GetClass()
-	local support = ACF.SoundToolSupport[class]
+	local support = ACE.SoundToolSupport[class]
 
 	if support then
 
@@ -180,7 +178,7 @@ local function IsReallyValid(trace, ply)
 	if SERVER and not trace.Entity:GetPhysicsObject():IsValid() then return false end
 
 	local class = trace.Entity:GetClass()
-	if not ACF.SoundToolSupport[class] then
+	if not ACE.SoundToolSupport[class] then
 
 		if string.StartWith(class, "acf_") then
 			ACF_SendNotify( ply, false, class .. ACFTranslation.SoundToolText[4] )
@@ -210,7 +208,7 @@ function TOOL:RightClick( trace )
 	if not IsReallyValid( trace, self:GetOwner() ) then return false end
 
 	local class = trace.Entity:GetClass()
-	local support = ACF.SoundToolSupport[class]
+	local support = ACE.SoundToolSupport[class]
 	if not support then return false end
 
 	local soundData = support.GetSound(trace.Entity)
@@ -229,7 +227,7 @@ function TOOL:Reload( trace )
 	if not IsReallyValid( trace, self:GetOwner() ) then return false end
 
 	local class = trace.Entity:GetClass()
-	local support = ACF.SoundToolSupport[class]
+	local support = ACE.SoundToolSupport[class]
 	if not support then return false end
 
 	support.ResetSound(trace.Entity)

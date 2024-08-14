@@ -8,7 +8,7 @@ local TraceRes  = {}
 local TraceInit = { output = TraceRes }
 
 --Used for filter certain undesired ents inside of HE processing
-ACF.HEFilter = {
+ACE.HEFilter = {
 	gmod_wire_hologram       = true,
 	starfall_hologram        = true,
 	prop_vehicle_crane       = true,
@@ -39,7 +39,7 @@ function ACF_HEFind( Hitpos, Radius )
 	local Table = {}
 	for _, ent in pairs( ents.FindInSphere( Hitpos, Radius ) ) do
 		--skip any undesired ent
-		if ACF.HEFilter[ent:GetClass()] then continue end
+		if ACE.HEFilter[ent:GetClass()] then continue end
 		if not ent:IsSolid() then continue end
 
 		table.insert( Table, ent )
@@ -69,10 +69,10 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 	local Radius       = ACE_CalculateHERadius(FillerMass) -- Scalling law found on the net, based on 1PSI overpressure from 1 kg of TNT at 15m.
 	local MaxSphere    = 4 * PI * (Radius * 2.54) ^ 2 -- Surface Area of the sphere at maximum radius
-	local Power        = FillerMass * ACF.HEPower -- Power in KiloJoules of the filler mass of  TNT
+	local Power        = FillerMass * ACE.HEPower -- Power in KiloJoules of the filler mass of  TNT
 	local Amp          = math.min(Power / 2000, 50)
 
-	local Fragments    = math.max(math.floor((FillerMass / FragMass) * ACF.HEFrag), 2)
+	local Fragments    = math.max(math.floor((FillerMass / FragMass) * ACE.HEFrag), 2)
 	local FragWeight   = FragMass / Fragments
 	local FragVel      = ( Power * 50000 / FragWeight / Fragments ) ^ 0.5
 	local FragArea     = (FragWeight / 7.8) ^ 0.33
@@ -169,7 +169,7 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 					Table.Vec		= (TargetPos - Hitpos):GetNormalized()
 
 					local Sphere		= math.max(4 * PI * (Table.Dist * 2.54 ) ^ 2,1) --Surface Area of the sphere at the range of that prop
-					local AreaAdjusted  = Tar.ACF.Area
+					local AreaAdjusted  = Tar.ACE.Area
 
 					--Project the Area of the prop to the Area of the shadow it projects at the explosion max radius
 					Table.Area = math.min(AreaAdjusted / Sphere,0.5) * MaxSphere
@@ -192,22 +192,22 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 			local Tar              = Table.Ent
 			local TargetPos        = Tar:GetPos()
-			local Feathering       = (1-math.min(1,Table.Dist / Radius)) ^ ACF.HEFeatherExp
+			local Feathering       = (1-math.min(1,Table.Dist / Radius)) ^ ACE.HEFeatherExp
 			local AreaFraction     = Table.Area / TotalArea
 			local PowerFraction    = Power * AreaFraction  --How much of the total power goes to that prop
-			local AreaAdjusted     = (Tar.ACF.Area / ACF.Threshold) * Feathering
+			local AreaAdjusted     = (Tar.ACE.Area / ACE.Threshold) * Feathering
 
 			--HE tends to pick some props where simply will not apply damage. So lets ignore it.
 			if AreaAdjusted <= 0 then continue end
 
 			local BlastRes
 			local Blast = {
-				Penetration = PowerFraction ^ ACF.HEBlastPen * AreaAdjusted
+				Penetration = PowerFraction ^ ACE.HEBlastPen * AreaAdjusted
 			}
 
 			local FragRes
 			local FragHit	= Fragments * AreaFraction
-			FragVel	= math.max(FragVel - ( (Table.Dist / FragVel) * FragVel ^ 2 * FragWeight ^ 0.33 / 10000 ) / ACF.DragDiv,0)
+			FragVel	= math.max(FragVel - ( (Table.Dist / FragVel) * FragVel ^ 2 * FragWeight ^ 0.33 / 10000 ) / ACE.DragDiv,0)
 			local FragKE	= ACF_Kinetic( FragVel , FragWeight * FragHit, 1500 )
 			if FragHit < 0 then
 				if math.Rand(0,1) > FragHit then FragHit = 1 else FragHit = 0 end
@@ -296,7 +296,7 @@ end
 function ACF_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
 
 	--Don't use it if it's not allowed to
-	if not ACF.Spalling then return end
+	if not ACE.Spalling then return end
 
 	local Mat		= Material or "RHA"
 	local MatData	= ACE_GetMaterialData( Mat )
@@ -322,7 +322,7 @@ function ACF_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 		local Velocityfactor = 300
 
 		local TotalWeight = PI * (Caliber / 2) ^ 2 * ArmorMul * WeightFactor
-		local Spall = math.min(math.floor((Caliber - 3) * ACF.KEtoSpall * SpallMul * 1.33) * ACF.SpallMult, 32)
+		local Spall = math.min(math.floor((Caliber - 3) * ACE.KEtoSpall * SpallMul * 1.33) * ACE.SpallMult, 32)
 		local SpallWeight = TotalWeight / Spall * SpallMul
 		local SpallVel = (KE * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul * Velocityfactor
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
@@ -340,7 +340,7 @@ function ACF_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 
 			ACE.Spall[Index] = {}
 			ACE.Spall[Index].start  = HitPos
-			ACE.Spall[Index].endpos = HitPos + ( HitVec:GetNormalized() + VectorRand() * ACF.SpallingDistribution ):GetNormalized() * math.max( SpallVel, 600 ) --Spall endtrace. Used to determine spread and the spall trace length. Only adjust the value in the max to determine the minimum distance spall will travel. 600 should be fine.
+			ACE.Spall[Index].endpos = HitPos + ( HitVec:GetNormalized() + VectorRand() * ACE.SpallingDistribution ):GetNormalized() * math.max( SpallVel, 600 ) --Spall endtrace. Used to determine spread and the spall trace length. Only adjust the value in the max to determine the minimum distance spall will travel. 600 should be fine.
 			ACE.Spall[Index].filter = table.Copy(Filter)
 			ACE.Spall[Index].mins	= Vector(0,0,0)
 			ACE.Spall[Index].maxs	= Vector(0,0,0)
@@ -418,7 +418,7 @@ function ACF_PropShockwave( HitPos, HitVec, Filter, Caliber )
 		table.insert( FrontDists, distToFront)
 
 		--TraceFront's armor entity
-		local Armour = tracefront.Entity.ACF and tracefront.Entity.ACF.Armour or 0
+		local Armour = tracefront.Entity.ACE and tracefront.Entity.ACE.Armour or 0
 
 		--Code executed once its scanning the 2nd prop
 		if iteration > 1 then
@@ -430,7 +430,7 @@ function ACF_PropShockwave( HitPos, HitVec, Filter, Caliber )
 				local space = math.abs( (HitFronts[iteration] - HitBacks[iteration - 1]):Length() )
 
 				--prop's material
-				local mat = tracefront.Entity.ACF and tracefront.Entity.ACF.Material or "RHA"
+				local mat = tracefront.Entity.ACE and tracefront.Entity.ACE.Material or "RHA"
 				local MatData = ACE_GetMaterialData( mat )
 
 
@@ -536,11 +536,11 @@ function ACF_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Infl
 	if SpallMul > 0 and HEFiller / 1501 * 4 > UsedArmor then
 
 		--era stops the spalling at the cost of being detonated
-		if MatData.IsExplosive then Filter[1].ACF.ERAexploding = true return end
+		if MatData.IsExplosive then Filter[1].ACE.ERAexploding = true return end
 
 		-- HESH spalling core
 		local TotalWeight = PI * (Caliber / 2) ^ 2 * math.max(UsedArmor, 30) * 2500
-		local Spall = math.min(math.floor((Caliber - 3) / 3 * ACF.KEtoSpall * SpallMul), 24) --24
+		local Spall = math.min(math.floor((Caliber - 3) / 3 * ACE.KEtoSpall * SpallMul), 24) --24
 		local SpallWeight = TotalWeight / Spall * SpallMul
 		local SpallVel = (HEFiller * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
@@ -597,7 +597,7 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 		-- Get the spalling hitAngle
 		local Angle		= ACF_GetHitAngle( SpallRes.HitNormal , HitVec )
 
-		local Mat		= SpallRes.Entity.ACF.Material or "RHA"
+		local Mat		= SpallRes.Entity.ACE.Material or "RHA"
 		local MatData	= ACE_GetMaterialData( Mat )
 
 		local spallarmor	= MatData.spallarmor
@@ -687,7 +687,7 @@ function ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 			ricoProb = 0
 
 		--Guarenteed to not richochet
-		elseif Bullet.Caliber * 3.33 > Target.ACF.Armour / math.max(math.sin(90-Angle),0.0001)  then
+		elseif Bullet.Caliber * 3.33 > Target.ACE.Armour / math.max(math.sin(90-Angle),0.0001)  then
 			ricoProb = 1
 
 		else
@@ -732,7 +732,7 @@ function ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 
 	Bullet.GroundRicos = Bullet.GroundRicos or 0
 
-	local MaxDig = (( Energy.Penetration * 1 / Bullet.PenArea ) * ACF.KEtoRHA / ACF.GroundtoRHA ) / 25.4
+	local MaxDig = (( Energy.Penetration * 1 / Bullet.PenArea ) * ACE.KEtoRHA / ACE.GroundtoRHA ) / 25.4
 
 	--print("Max Dig: ' .. MaxDig .. '\nEnergy Pen: ' .. Energy.Penetration .. '\n")
 
@@ -760,7 +760,7 @@ function ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 	if loss == 1 or loss == 0 then
 
 		local Ricochet  = 0
-		local Speed	= Bullet.Flight:Length() / ACF.VelScale
+		local Speed	= Bullet.Flight:Length() / ACE.VelScale
 		local Angle	= ACF_GetHitAngle( HitNormal, Bullet.Flight )
 		local MinAngle  = math.min(Bullet.Ricochet - Speed / 39.37 / 30 + 20,89.9)  --Making the chance of a ricochet get higher as the speeds increase
 
@@ -834,7 +834,7 @@ end
 -- AP will HE-kill children props like a detonation; looks better than a directional spray of unrelated debris from the AP kill
 local function ACF_KillChildProps( Entity, BlastPos, Energy )
 
-	if ACF.DebrisChance <= 0 then return end
+	if ACE.DebrisChance <= 0 then return end
 	local children = ACF_GetAllChildren(Entity)
 
 	--why should we make use of this for ONE prop?
@@ -883,10 +883,10 @@ local function ACF_KillChildProps( Entity, BlastPos, Energy )
 				--Skip any invalid entity
 				if not IsValid(child) then continue end
 
-				local rand = math.random(0,100) / 100 --print(rand) print(ACF.DebrisChance)
+				local rand = math.random(0,100) / 100 --print(rand) print(ACE.DebrisChance)
 
 				-- ignore some of the debris props to save lag
-				if rand > ACF.DebrisChance then continue end
+				if rand > ACE.DebrisChance then continue end
 
 				ACF_HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
 
@@ -924,7 +924,7 @@ function ACF_HEKill( Entity , HitVector , Energy , BlastPos )
 
 	do
 		--ERA props should not create debris
-		local Mat = (Entity.ACF and Entity.ACF.Material) or "RHA"
+		local Mat = (Entity.ACE and Entity.ACE.Material) or "RHA"
 		local MatData = ACE_GetMaterialData( Mat )
 		if MatData.IsExplosive then return end
 	end
@@ -932,7 +932,7 @@ function ACF_HEKill( Entity , HitVector , Energy , BlastPos )
 	local Debris
 
 	-- Create a debris only if the dead entity is greater than the specified scale.
-	if Entity:BoundingRadius() > ACF.DebrisScale then
+	if Entity:BoundingRadius() > ACE.DebrisScale then
 
 		Debris = ents.Create( "ace_debris" )
 		if IsValid(Debris) then
@@ -944,7 +944,7 @@ function ACF_HEKill( Entity , HitVector , Energy , BlastPos )
 			Debris:Spawn()
 			Debris:Activate()
 
-			if math.random() < ACF.DebrisIgniteChance then
+			if math.random() < ACE.DebrisIgniteChance then
 				Debris:Ignite(math.Rand(5,45),0)
 			end
 
@@ -980,7 +980,7 @@ function ACF_APKill( Entity , HitVector , Power )
 
 	do
 		--ERA props should not create debris
-		local Mat = (Entity.ACF and Entity.ACF.Material) or "RHA"
+		local Mat = (Entity.ACE and Entity.ACE.Material) or "RHA"
 		local MatData = ACE_GetMaterialData( Mat )
 		if MatData.IsExplosive then return end
 	end
@@ -988,7 +988,7 @@ function ACF_APKill( Entity , HitVector , Power )
 	local Debris
 
 	-- Create a debris only if the dead entity is greater than the specified scale.
-	if Entity:BoundingRadius() > ACF.DebrisScale then
+	if Entity:BoundingRadius() > ACE.DebrisScale then
 
 		local Debris = ents.Create( "ace_debris" )
 		if IsValid(Debris) then
@@ -1050,14 +1050,14 @@ do
 			local Capacity   = ent.Capacity  or 0
 			local Type       = ent.FuelType  or "Petrol"
 
-			HEWeight = ( math.min( Fuel, Capacity ) / ACF.FuelDensity[Type] ) * FuelExplosionScale
+			HEWeight = ( math.min( Fuel, Capacity ) / ACE.FuelDensity[Type] ) * FuelExplosionScale
 		else
 
 			local HE       = ent.BulletData.FillerMass	or 0
 			local Propel   = ent.BulletData.PropMass	or 0
 			local Ammo     = ent.Ammo					or 0
 
-			HEWeight = ( ( HE + Propel * ( ACF.PBase / ACF.HEPower ) ) * Ammo ) * AmmoExplosionScale
+			HEWeight = ( ( HE + Propel * ( ACE.PBase / ACE.HEPower ) ) * Ammo ) * AmmoExplosionScale
 		end
 
 		local Radius    = ACE_CalculateHERadius( HEWeight )
@@ -1119,7 +1119,7 @@ do
 							local Capacity   = Found.Capacity or 0
 							local Type       = Found.FuelType or "Petrol"
 
-							FoundHEWeight = ( math.min( Fuel, Capacity ) / ACF.FuelDensity[Type] ) * FuelExplosionScale
+							FoundHEWeight = ( math.min( Fuel, Capacity ) / ACE.FuelDensity[Type] ) * FuelExplosionScale
 						else
 
 							if Found.RoundType == "Refill" then Found:Remove() continue end
@@ -1128,7 +1128,7 @@ do
 							local Propel   = Found.BulletData.PropMass	or 0
 							local Ammo     = Found.Ammo					or 0
 
-							FoundHEWeight = ( ( HE + Propel * ( ACF.PBase / ACF.HEPower)) * Ammo ) * AmmoExplosionScale
+							FoundHEWeight = ( ( HE + Propel * ( ACE.PBase / ACE.HEPower)) * Ammo ) * AmmoExplosionScale
 						end
 
 						table.insert( ExplodePos, Found:LocalToWorld(Found:OBBCenter()) )
@@ -1174,7 +1174,7 @@ do
 		end
 		local AvgPos = totalpos / #ExplodePos
 
-		HEWeight	= HEWeight * ACF.BoomMult
+		HEWeight	= HEWeight * ACE.BoomMult
 		Radius	= ACE_CalculateHERadius( HEWeight )
 
 		ACF_HE( AvgPos , vector_origin , HEWeight , HEWeight , Inflictor , ent, ent )

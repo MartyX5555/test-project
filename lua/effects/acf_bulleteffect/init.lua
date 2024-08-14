@@ -48,7 +48,7 @@ do
 
 				BulletData.Impacted = true
 
-				self.HitEnd = ACF.RoundTypes[BulletData.AmmoType]["endeffect"]
+				self.HitEnd = ACE.RoundTypes[BulletData.AmmoType]["endeffect"]
 				self:HitEnd( BulletData )
 				ACE.BulletEffect[self.Index] = nil		--This is crucial, to effectively remove the bullet flight model from the client
 
@@ -57,13 +57,13 @@ do
 			--Bullet penetrated, don't remove old effect
 			elseif Hit == 2 then
 
-				self.HitPierce = ACF.RoundTypes[BulletData.AmmoType]["pierceeffect"]
+				self.HitPierce = ACE.RoundTypes[BulletData.AmmoType]["pierceeffect"]
 				self:HitPierce( BulletData )
 
 			--Bullet ricocheted, don't remove old effect
 			elseif Hit == 3 then
 
-				self.HitRicochet = ACF.RoundTypes[BulletData.AmmoType]["ricocheteffect"]
+				self.HitRicochet = ACE.RoundTypes[BulletData.AmmoType]["ricocheteffect"]
 				self:HitRicochet( BulletData )
 
 			end

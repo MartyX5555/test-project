@@ -5,7 +5,7 @@ AddCSLuaFile( "cl_init.lua" )
 
 include("shared.lua")
 
-local EngineTable = ACF.Weapons.Engines
+local EngineTable = ACE.Weapons.Engines
 local FuelLinkDistBase = 512
 
 do
@@ -36,7 +36,7 @@ do
 		self.FuelTank       = 0
 		self.Heat           = ACE.AmbientTemp
 		self.TotalFuel      = 0
-		self.Efficiency     = 1-(ACF.Efficiency[self.EngineType] or ACF.Efficiency["GenericPetrol"]) -- Energy not transformed into kinetic energy and instead into thermal
+		self.Efficiency     = 1-(ACE.Efficiency[self.EngineType] or ACE.Efficiency["GenericPetrol"]) -- Energy not transformed into kinetic energy and instead into thermal
 		self.Legal          = true
 		self.CanUpdate      = true
 		self.RequiresFuel   = false
@@ -109,7 +109,7 @@ do
 		Engine.IsTrans          = Lookup.istrans -- driveshaft outputs to the side
 		Engine.FuelType         = Lookup.fuel or "Petrol"
 		Engine.EngineType       = Lookup.enginetype or "GenericPetrol"
-		Engine.TorqueCurve      = Lookup.torquecurve or ACF.GenericTorqueCurves[Engine.EngineType]
+		Engine.TorqueCurve      = Lookup.torquecurve or ACE.GenericTorqueCurves[Engine.EngineType]
 		Engine.RequiresFuel     = Lookup.requiresfuel
 		Engine.SoundPath        = Lookup.sound
 		Engine.DefaultSound     = Engine.SoundPath
@@ -120,13 +120,13 @@ do
 		Engine.FuelTank         = 0
 		Engine.Heat             = ACE.AmbientTemp
 
-		Engine.TorqueScale	= ACF.TorqueScale[Engine.EngineType]
+		Engine.TorqueScale	= ACE.TorqueScale[Engine.EngineType]
 
 		--calculate base fuel usage
 		if Engine.EngineType == "Electric" then
-			Engine.FuelUse = ACF.ElecRate / (ACF.Efficiency[Engine.EngineType] * 60 * 60) --elecs use current power output, not max
+			Engine.FuelUse = ACE.ElecRate / (ACE.Efficiency[Engine.EngineType] * 60 * 60) --elecs use current power output, not max
 		else
-			Engine.FuelUse = ACF.TorqueBoost * ACF.FuelRate * ACF.Efficiency[Engine.EngineType] * Engine.peakkw / (60 * 60)
+			Engine.FuelUse = ACE.TorqueBoost * ACE.FuelRate * ACE.Efficiency[Engine.EngineType] * Engine.peakkw / (60 * 60)
 		end
 
 		Engine.FlyRPM = 0
@@ -211,13 +211,13 @@ function ENT:Update( ArgsTable )
 	self.TorqueMult        = self.TorqueMult or 1
 	self.FuelTank          = 0
 
-	self.TorqueScale		= ACF.TorqueScale[self.EngineType]
+	self.TorqueScale		= ACE.TorqueScale[self.EngineType]
 
 	--calculate base fuel usage
 	if self.EngineType == "Electric" then
-		self.FuelUse = ACF.ElecRate / (ACF.Efficiency[self.EngineType] * 60 * 60) --elecs use current power output, not max
+		self.FuelUse = ACE.ElecRate / (ACE.Efficiency[self.EngineType] * 60 * 60) --elecs use current power output, not max
 	else
-		self.FuelUse = ACF.TorqueBoost * ACF.FuelRate * ACF.Efficiency[self.EngineType] * self.peakkw / (60 * 60)
+		self.FuelUse = ACE.TorqueBoost * ACE.FuelRate * ACE.Efficiency[self.EngineType] * self.peakkw / (60 * 60)
 	end
 
 	self:SetModel( self.Model )
@@ -242,7 +242,7 @@ function ENT:UpdateOverlayText()
 	local pbmin = self.PeakMinRPM
 	local pbmax = self.PeakMaxRPM
 
-	local SpecialBoost = self.RequiresFuel and ACF.TorqueBoost or 1
+	local SpecialBoost = self.RequiresFuel and ACE.TorqueBoost or 1
 	local text = "Status: " .. (self.Active and "On" or "Off") .. "\n\n"
 
 	text = text .. "Power: " .. math.Round( self.peakkw * SpecialBoost ) .. " kW / " .. math.Round( self.peakkw * SpecialBoost * 1.34 ) .. " hp\n"
@@ -317,52 +317,52 @@ end
 function ENT:ACF_Activate()
 	--Density of steel = 7.8g cm3 so 7.8kg for a 1mx1m plate 1m thick
 	local Entity = self
-	Entity.ACF = Entity.ACF or {}
+	Entity.ACE = Entity.ACE or {}
 
 	local Count
 	local PhysObj = Entity:GetPhysicsObject()
 	if PhysObj:GetMesh() then Count = #PhysObj:GetMesh() end
 	if PhysObj:IsValid() and Count and Count > 100 then
 
-		if not Entity.ACF.Area then
-			Entity.ACF.Area = (PhysObj:GetSurfaceArea() * 6.45) * 0.52505066107
+		if not Entity.ACE.Area then
+			Entity.ACE.Area = (PhysObj:GetSurfaceArea() * 6.45) * 0.52505066107
 		end
 
 	else
 		local Size = Entity.OBBMaxs(Entity) - Entity.OBBMins(Entity)
-		if not Entity.ACF.Area then
-			Entity.ACF.Area = ((Size.x * Size.y) + (Size.x * Size.z) + (Size.y * Size.z)) * 6.45
+		if not Entity.ACE.Area then
+			Entity.ACE.Area = ((Size.x * Size.y) + (Size.x * Size.z) + (Size.y * Size.z)) * 6.45
 		end
 
 	end
 
-	Entity.ACF.Ductility = Entity.ACF.Ductility or 0
+	Entity.ACE.Ductility = Entity.ACE.Ductility or 0
 
-	local Area = Entity.ACF.Area
+	local Area = Entity.ACE.Area
 	local Armour = (Entity:GetPhysicsObject():GetMass() * 1000 / Area / 0.78)
-	local Health = Area / ACF.Threshold
+	local Health = Area / ACE.Threshold
 
 	local Percent = 1
 
-	if Recalc and Entity.ACF.Health and Entity.ACF.MaxHealth then
-		Percent = Entity.ACF.Health / Entity.ACF.MaxHealth
+	if Recalc and Entity.ACE.Health and Entity.ACE.MaxHealth then
+		Percent = Entity.ACE.Health / Entity.ACE.MaxHealth
 	end
 
-	Entity.ACF.Health    = Health * Percent * ACF.EngineHPMult[self.EngineType]
-	Entity.ACF.MaxHealth = Health * ACF.EngineHPMult[self.EngineType]
-	Entity.ACF.Armour    = Armour * (0.5 + Percent / 2)
-	Entity.ACF.MaxArmour = Armour * ACF.ArmorMod
-	Entity.ACF.Type      = nil
-	Entity.ACF.Mass      = PhysObj:GetMass()
-	Entity.ACF.Type      = "Prop"
+	Entity.ACE.Health    = Health * Percent * ACE.EngineHPMult[self.EngineType]
+	Entity.ACE.MaxHealth = Health * ACE.EngineHPMult[self.EngineType]
+	Entity.ACE.Armour    = Armour * (0.5 + Percent / 2)
+	Entity.ACE.MaxArmour = Armour * ACE.ArmorMod
+	Entity.ACE.Type      = nil
+	Entity.ACE.Mass      = PhysObj:GetMass()
+	Entity.ACE.Type      = "Prop"
 
-	Entity.ACF.Material	= not isstring(Entity.ACF.Material) and ACE.BackCompMat[Entity.ACF.Material] or Entity.ACF.Material or "RHA"
+	Entity.ACE.Material	= not isstring(Entity.ACE.Material) and ACE.BackCompMat[Entity.ACE.Material] or Entity.ACE.Material or "RHA"
 
 end
 
 function ENT:ACF_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
-	local Mul = (((Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS") and ACF.HEATMulEngine) or 1) --Heat penetrators deal bonus damage to engines
+	local Mul = (((Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS") and ACE.HEATMulEngine) or 1) --Heat penetrators deal bonus damage to engines
 	local HitRes = ACF_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 	return HitRes --This function needs to return HitRes
@@ -547,10 +547,10 @@ function ENT:CalcRPM()
 			Consumption = (self.Torque * self.FlyRPM / 9548.8) * self.FuelUse * DeltaTime
 		else
 			local Load = 0.3 + self.Throttle * 0.7 -- the heck are these magic numbers?
-			Consumption = Load * self.FuelUse * (self.FlyRPM / self.PeakKwRPM) * DeltaTime / ACF.FuelDensity[Tank.FuelType]
+			Consumption = Load * self.FuelUse * (self.FlyRPM / self.PeakKwRPM) * DeltaTime / ACE.FuelDensity[Tank.FuelType]
 		end
 		Tank.Fuel = math.max(Tank.Fuel - Consumption,0)
-		boost = ACF.TorqueBoost
+		boost = ACE.TorqueBoost
 		Wire_TriggerOutput(self, "Fuel Use", math.Round(60 * Consumption / DeltaTime,3))
 	elseif self.RequiresFuel then
 		self:TriggerInput( "Active", 0 ) --shut off if no fuel and requires it
@@ -564,8 +564,8 @@ function ENT:CalcRPM()
 	--adjusting performance based on damage
 	-- TorqueMult is a mutipler that affects the final Torque an engine can offer at its max.
 	-- PeakTorque is the final possible torque to get.
-	local driverboost = self.HasDriver and ACF.DriverTorqueBoost or 1
-	self.TorqueMult = math.Clamp(((1 - self.TorqueScale) / 0.5) * ((self.ACF.Health / self.ACF.MaxHealth) - 1) + 1, self.TorqueScale, 1)
+	local driverboost = self.HasDriver and ACE.DriverTorqueBoost or 1
+	self.TorqueMult = math.Clamp(((1 - self.TorqueScale) / 0.5) * ((self.ACE.Health / self.ACE.MaxHealth) - 1) + 1, self.TorqueScale, 1)
 	self.PeakTorque = self.PeakTorqueHeld * self.TorqueMult * driverboost
 
 	-- Calculate the current torque from flywheel RPM.
@@ -611,7 +611,7 @@ function ENT:CalcRPM()
 	-- Heat Temperature calculation. Below is the damage caused by rpm if damaged.
 	self.Heat = ACE_HeatFromEngine( self )
 
-	local HealthRatio = self.ACF.Health / self.ACF.MaxHealth
+	local HealthRatio = self.ACE.Health / self.ACE.MaxHealth
 	if HealthRatio < 0.95 then
 		if HealthRatio > 0.025 then
 			local PhysObj = self:GetPhysicsObject()

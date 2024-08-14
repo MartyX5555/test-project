@@ -129,14 +129,14 @@ end
 -- changes here will be automatically reflected in the armor properties tool
 function ACF_CalcArmor( Area, Ductility, Mass )
 
-	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACF.ArmorMod
+	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACE.ArmorMod
 
 end
 
 function ACF_MuzzleVelocity( Propellant, Mass )
 
-	local PEnergy	= ACF.PBase * ((1 + Propellant) ^ ACF.PScale-1)
-	local Speed	= ((PEnergy * 2000 / Mass) ^ ACF.MVScale)
+	local PEnergy	= ACE.PBase * ((1 + Propellant) ^ ACE.PScale-1)
+	local Speed	= ((PEnergy * 2000 / Mass) ^ ACE.MVScale)
 	local Final	= Speed -- - Speed * math.Clamp(Speed/2000,0,0.5)
 
 	return Final
@@ -151,7 +151,7 @@ function ACF_Kinetic( Speed , Mass, LimitVel )
 		Energy.Kinetic = (Mass * (Speed ^ 2)) / 2000 --Energy in KiloJoules
 		Energy.Momentum = Speed * Mass
 
-		local KE = (Mass * (Speed ^ ACF.KinFudgeFactor)) / 2000 + Energy.Momentum
+		local KE = (Mass * (Speed ^ ACE.KinFudgeFactor)) / 2000 + Energy.Momentum
 		Energy.Penetration = math.max(KE - (math.max(Speed - LimitVel, 0) ^ 2) / (LimitVel * 5) * (KE / 200) ^ 0.95, KE * 0.1)
 
 	return Energy
@@ -222,7 +222,7 @@ do
 
 					if IsValid(PhysObj) then
 
-						local material		= v.ACF and v.ACF.Material or "RHA"
+						local material		= v.ACE and v.ACE.Material or "RHA"
 
 						--ACE doesnt update their material stats actively, so we need to update it manually here.
 						if not isstring(material) then
@@ -272,7 +272,7 @@ end
 --Checks if theres new versions for ACE
 function ACF_UpdateChecking( )
 	http.Fetch("https://raw.githubusercontent.com/RedDeadlyCreeper/ArmoredCombatExtended/master/lua/autorun/acf_globals.lua",function(contents)
-
+		if true then return end
 		--maybe not the best way to get git but well......
 		str = tostring("String:" .. contents)
 		i,k = string.find(str,"ACE.Version =")
@@ -458,7 +458,7 @@ end
 
 function ACE_CheckRound( id )
 
-	local rounddata = ACF.RoundTypes[ id ]
+	local rounddata = ACE.RoundTypes[ id ]
 
 	if not rounddata then return false end
 
@@ -467,7 +467,7 @@ end
 
 function ACE_CheckGun( gunid )
 
-	local gundata = ACF.Weapons.Guns[ gunid ]
+	local gundata = ACE.Weapons.Guns[ gunid ]
 
 	if not gundata then return false end
 
@@ -476,7 +476,7 @@ end
 
 function ACE_CheckRack( rackid )
 
-	local rackdata = ACF.Weapons.Racks[ rackid ]
+	local rackdata = ACE.Weapons.Racks[ rackid ]
 
 	if not rackdata then return false end
 
@@ -485,7 +485,7 @@ end
 
 function ACE_CheckAmmo( ammoid )
 
-	local Ammodata = ACF.Weapons.Ammo[ ammoid ]
+	local Ammodata = ACE.Weapons.Ammo[ ammoid ]
 
 	if not Ammodata then return false end
 
@@ -494,7 +494,7 @@ end
 
 function ACE_CheckEngine( engineid )
 
-	local enginedata = ACF.Weapons.Engines[ engineid ]
+	local enginedata = ACE.Weapons.Engines[ engineid ]
 
 	if not enginedata then return false end
 
@@ -503,7 +503,7 @@ end
 
 function ACE_CheckGearbox( gearid )
 
-	local geardata = ACF.Weapons.Gearboxes[ gearid ]
+	local geardata = ACE.Weapons.Gearboxes[ gearid ]
 
 	if not geardata then return false end
 
@@ -512,7 +512,7 @@ end
 
 function ACE_CheckFuelTank( fueltankid )
 
-	local fueltankid = ACF.Weapons.FuelTanksSize[ fueltankid ]
+	local fueltankid = ACE.Weapons.FuelTanksSize[ fueltankid ]
 
 	if not fueltankid then return false end
 
@@ -655,7 +655,7 @@ else
 end
 
 timer.Simple( 0, function()
-	for _, Table in pairs(ACF.Classes["GunClass"]) do
+	for _, Table in pairs(ACE.Classes["GunClass"]) do
 		PrecacheParticleSystem(Table["muzzleflash"])
 	end
 end)

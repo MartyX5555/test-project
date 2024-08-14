@@ -1,7 +1,6 @@
 
-local cat = ((ACF.CustomToolCategory and ACF.CustomToolCategory:GetBool()) and "ACF" or "Construction");
 
-TOOL.Category		= cat
+TOOL.Category		= "Construction"
 TOOL.Name			= "#Tool.acfcopy.listname";
 TOOL.Author		= "looter";
 TOOL.Command		= nil;

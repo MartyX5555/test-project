@@ -61,7 +61,7 @@ end
 
 function ENT:ConfigureForClass()
 
-	local behaviour = ACFM.RadarBehaviour[self.Class]
+	local behaviour = ACEM.RadarBehaviour[self.Class]
 
 	if not behaviour then return end
 
@@ -104,7 +104,7 @@ function MakeACF_MissileRadar(Owner, Pos, Angle, Id)
 
 	if not Owner:CheckLimit("_acf_missileradar") then return false end
 
-	local radar = ACF.Weapons.Radars[Id]
+	local radar = ACE.Weapons.Radars[Id]
 
 	if not radar then return false end
 
@@ -121,7 +121,7 @@ function MakeACF_MissileRadar(Owner, Pos, Angle, Id)
 	Radar.Id           = Id
 	Radar.Class        = radar.class
 
-	Radar.Sound        = ACFM.DefaultRadarSound
+	Radar.Sound        = ACEM.DefaultRadarSound
 	Radar.DefaultSound = Radar.Sound
 	Radar.SoundPitch   = 100
 

@@ -1,5 +1,5 @@
 
-ACF.AmmoBlacklist["FL"] = { "ATR", "MO", "RAC", "RM", "SL", "GL", "MG", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL"}
+ACE.AmmoBlacklist["FL"] = { "ATR", "MO", "RAC", "RM", "SL", "GL", "MG", "SC", "BOMB" , "GBU", "ASM", "AAM", "SAM", "UAR", "POD", "FFAR", "ATGM", "ARTY", "ECM", "FGL"}
 
 
 local Round = {}
@@ -54,8 +54,8 @@ function Round.create( Gun, BulletData )
 		MuzzleVec = Gun:GetForward()
 
 		for _ = 1, BulletData["Flechettes"] do
-			BaseSpread			= BaseInaccuracy * (math.random() ^ (1 / math.Clamp(ACF.GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
-			AddSpread			= AddInaccuracy * (math.random() ^ (1 / math.Clamp(ACF.GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
+			BaseSpread			= BaseInaccuracy * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
+			AddSpread			= AddInaccuracy * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
 			FlechetteData["Flight"] = (MuzzleVec + BaseSpread + AddSpread):GetNormalized() * BulletData["MuzzleVel"] * 39.37 + Gun:GetVelocity()
 			ACF_CreateBullet( FlechetteData )
 		end
@@ -82,7 +82,7 @@ function Round.convert( _, PlayerData )
 
 	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
-	local GunClass = ACF.Weapons["Guns"][Data["Id"] or PlayerData["Id"]]["gunclass"]
+	local GunClass = ACE.Weapons["Guns"][Data["Id"] or PlayerData["Id"]]["gunclass"]
 
 
 	if GunClass == "SA" then
@@ -110,13 +110,13 @@ function Round.convert( _, PlayerData )
 	Data["FlechetteRadius"]	= math.sqrt( ( (PackRatio * RadiusAdj * Data["Caliber"] / 2) ^ 2 ) / Data["Flechettes"] ) -- max radius flechette can be, to fit number of flechettes in a shell
 	Data["FlechetteArea"]	= 3.1416 * Data["FlechetteRadius"] ^ 2 -- area of a single flechette
 	Data["FlechetteMass"]	= Data["FlechetteArea"] * (Data["ProjLength"] * 7.9 / 1000) -- volume of single flechette * density of steel
-	Data["FlechettePenArea"]	= (PenAdj * Data["FlechetteArea"]) ^ ACF.PenAreaMod
+	Data["FlechettePenArea"]	= (PenAdj * Data["FlechetteArea"]) ^ ACE.PenAreaMod
 	Data["FlechetteDragCoef"]	= (Data["FlechetteArea"] / 10000) / Data["FlechetteMass"]
 
 	Data["ProjMass"]			= Data["Flechettes"] * Data["FlechetteMass"] -- total mass of all flechettes
 	Data["PropMass"]			= Data["PropMass"]
 	Data["ShovePower"]		= 0.2
-	Data["PenArea"]			= Data["FrArea"] ^ ACF.PenAreaMod
+	Data["PenArea"]			= Data["FrArea"] ^ ACE.PenAreaMod
 	Data["DragCoef"]			= ((Data["FrArea"] / 10000) / Data["ProjMass"])
 	Data["LimitVel"]			= 500									--Most efficient penetration speed in m/s
 	Data["KETransfert"]		= 0.1								--Kinetic energy transfert to the target for movement purposes
@@ -141,7 +141,7 @@ end
 function Round.getDisplayData(Data)
 	local GUIData = {}
 	local Energy = ACF_Kinetic( Data["MuzzleVel"] * 39.37 , Data["FlechetteMass"], Data["LimitVel"] )
-	GUIData["MaxPen"] = (Energy.Penetration / Data["FlechettePenArea"]) * ACF.KEtoRHA
+	GUIData["MaxPen"] = (Energy.Penetration / Data["FlechettePenArea"]) * ACE.KEtoRHA
 	return GUIData
 end
 
@@ -170,14 +170,14 @@ function Round.cratetxt( BulletData )
 	local DData = Round.getDisplayData(BulletData)
 
 	local inaccuracy = 0
-	local Gun = ACF.Weapons.Guns[BulletData.Id]
+	local Gun = ACE.Weapons.Guns[BulletData.Id]
 
 	if Gun then
-		local Classes = ACF.Classes
+		local Classes = ACE.Classes
 		inaccuracy = (Classes.GunClass[Gun.gunclass] or {spread = 0}).spread
 	end
 
-	local coneAng = inaccuracy * ACF.GunInaccuracyScale
+	local coneAng = inaccuracy * ACE.GunInaccuracyScale
 
 	local str =
 	{
@@ -194,7 +194,7 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 
 	if ACE_Check( Target ) then
 
-		local Speed	= Bullet["Flight"]:Length() / ACF.VelScale
+		local Speed	= Bullet["Flight"]:Length() / ACE.VelScale
 		local Energy	= ACF_Kinetic( Speed , Bullet["ProjMass"], Bullet["LimitVel"] )
 		local HitRes	= ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
@@ -219,7 +219,7 @@ end
 
 function Round.worldimpact( _, Bullet, HitPos, HitNormal )
 
-	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACF.VelScale, Bullet.ProjMass, Bullet.LimitVel )
+	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, Bullet.LimitVel )
 	local HitRes = ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 
 	if HitRes.Penetrated then
@@ -281,7 +281,7 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACF.AmmoBlacklist["FL"] )
+	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist["FL"] )
 
 	ACE_UpperCommonDataDisplay()
 
@@ -330,5 +330,5 @@ function Round.guiupdate( Panel )
 end
 
 list.Set( "SPECSRoundTypes", "FL", Round )
-ACF.RoundTypes[Round.Type] = Round     --Set the round properties
-ACF.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above
+ACE.RoundTypes[Round.Type] = Round     --Set the round properties
+ACE.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above

@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-local RadarTable = ACF.Weapons.Radars
+local RadarTable = ACE.Weapons.Radars
 
 function ENT:Initialize()
 

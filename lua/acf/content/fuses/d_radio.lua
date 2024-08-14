@@ -2,11 +2,11 @@
 local ClassName = "Radio"
 
 
-ACF = ACF or {}
-ACF.Fuse = ACF.Fuse or {}
+ACE = ACE or {}
+ACE.Fuse = ACE.Fuse or {}
 
-local this = ACF.Fuse[ClassName] or inherit.NewSubOf(ACF.Fuse.Contact)
-ACF.Fuse[ClassName] = this
+local this = ACE.Fuse[ClassName] or inherit.NewSubOf(ACE.Fuse.Contact)
+ACE.Fuse[ClassName] = this
 
 ---
 
@@ -137,7 +137,7 @@ do
 				-- Not Cool
 				else
 
-					local HitId	= HitEnt.ACF.ContraptionId or 1
+					local HitId	= HitEnt.ACE.ContraptionId or 1
 					local OwnId	= missile.ContrapId or 1
 
 					--Trigger the fuze if our hit was caused to an ent which is not ours, in front of it.

@@ -72,4 +72,4 @@ function Round.guiupdate()
 end
 
 list.Set( "SPECSRoundTypes", "Refill", Round )
-ACF.RoundTypes[Round.Type] = Round     --Set the round properties
+ACE.RoundTypes[Round.Type] = Round     --Set the round properties

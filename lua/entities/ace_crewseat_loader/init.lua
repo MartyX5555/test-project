@@ -33,10 +33,10 @@ function ENT:Initialize()
 	self:GetPhysicsObject():SetMass(60)
 
 	self.Master = {}
-	self.ACF = {}
-	self.ACF.Health = 1
-	self.ACF.MaxHealth = 1
-	self.ACF.Armour = 1
+	self.ACE = {}
+	self.ACE.Health = 1
+	self.ACE.MaxHealth = 1
+	self.ACE.Armour = 1
 	self.Stamina = 100 --initial stamina for crewseat
 	self.LinkedGun = nil
 	self.Name = "Crew Seat"
@@ -110,7 +110,7 @@ function ENT:Think()
 	local curSeatAngle = deg(acos(self:GetUp():Dot(Vector(0, 0, 1))))
 	self.AnglePenalty = clamp(remap(curSeatAngle, startPenalty, maxPenalty, 0, 1), 0, 1)
 
-	if self.ACF.Health <= self.ACF.MaxHealth * 0.97 then
+	if self.ACE.Health <= self.ACE.MaxHealth * 0.97 then
 		ACF_HEKill(self, VectorRand(), 0)
 		self:EmitSound("npc/combine_soldier/die" .. tostring(random(1, 3)) .. ".wav", 60)
 	end
@@ -146,7 +146,7 @@ function ENT:OnRemove()
 end
 
 function ENT:UpdateOverlayText()
-	local hp = round(self.ACF.Health / self.ACF.MaxHealth * 100)
+	local hp = round(self.ACE.Health / self.ACE.MaxHealth * 100)
 	local stamina = round(self.Stamina)
 
 	local str = string.format("Health: %s%%\nStamina: %s%%\nName: %s", hp, stamina, self.Name )

@@ -56,7 +56,7 @@ function ENT:Boom()
 
 	self.Bulletdata.Pos = self:GetPos() + self:GetUp() * 2
 
-	self.CreateShell = ACF.RoundTypes[self.Bulletdata.Type].create
+	self.CreateShell = ACE.RoundTypes[self.Bulletdata.Type].create
 	self:CreateShell( self.Bulletdata )
 end
 

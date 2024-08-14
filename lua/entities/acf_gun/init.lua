@@ -3,9 +3,9 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-local GunClasses = ACF.Classes.GunClass
+local GunClasses = ACE.Classes.GunClass
 
-local GunTable = ACF.Weapons.Guns
+local GunTable = ACE.Weapons.Guns
 
 --The distances these ents would have if its caliber was 10mm. Incremented by caliber size.
 local CrewLinkDistBase = 100
@@ -145,7 +145,7 @@ do
 			if not Owner:CheckLimit("_acf_rapidgun") then return false end
 			Owner:AddCount("_acf_rapidgun", Gun)
 
-		elseif Lookup.caliber >= ACF.LargeCaliber then
+		elseif Lookup.caliber >= ACE.LargeCaliber then
 			if not Owner:CheckLimit("_acf_largegun") then return false end
 			Owner:AddCount("_acf_largegun", Gun)
 
@@ -421,7 +421,7 @@ function ENT:Link( Target )
 		end
 
 		-- Don't link if it's a blacklisted round type for this gun
-		local Blacklist = ACF.AmmoBlacklist[ Target.RoundType ] or {}
+		local Blacklist = ACE.AmmoBlacklist[ Target.RoundType ] or {}
 
 		if table.HasValue( Blacklist, self.Class ) then
 			return false, "That round type cannot be used with this gun!"
@@ -445,7 +445,7 @@ function ENT:Link( Target )
 
 		Wire_TriggerOutput( self, "Fire Rate", self.RateOfFire )
 		Wire_TriggerOutput( self, "Muzzle Weight", math.floor( Target.BulletData.ProjMass * 1000 ) )
-		Wire_TriggerOutput( self, "Muzzle Velocity", math.floor( Target.BulletData.MuzzleVel * ACF.VelScale ) )
+		Wire_TriggerOutput( self, "Muzzle Velocity", math.floor( Target.BulletData.MuzzleVel * ACE.VelScale ) )
 
 		return true, "Link successful!"
 
@@ -512,7 +512,7 @@ function ENT:TriggerInput(iname, value)
 	if iname == "Unload" and value > 0 and not self.Reloading then
 		-- Triggered to unload ammo
 		self:UnloadAmmo()
-	elseif iname == "Fire" and value > 0 and ACF.GunfireEnabled and self.Legal then
+	elseif iname == "Fire" and value > 0 and ACE.GunfireEnabled and self.Legal then
 		-- Triggered to fire if conditions are met
 		if self.NextFire < CurTime() then
 			-- Check if it's time to fire
@@ -730,7 +730,7 @@ function ENT:ReloadMag()
 		self.IsUnderWeight = true
 	end
 	if ( (self.CurrentShot > 0) and self.IsUnderWeight and self.Ready and self.Legal ) then
-		if ( ACF.RoundTypes[self.BulletData.Type] ) then		--Check if the roundtype loaded actually exists
+		if ( ACE.RoundTypes[self.BulletData.Type] ) then		--Check if the roundtype loaded actually exists
 			self:LoadAmmo(self.MagReload, false)
 			self:EmitSound("weapons/357/357_reload4.wav", 68, 100)
 			self.CurrentShot = 0
@@ -755,11 +755,11 @@ do
 
 	function ENT:GetInaccuracy()
 
-		local SpreadScale = ACF.SpreadScale
+		local SpreadScale = ACE.SpreadScale
 		local IaccMult = 1
 
-		if self.ACF.Health and self.ACF.MaxHealth then
-			IaccMult = math.Clamp(((1 - SpreadScale) / 0.5) * ((self.ACF.Health / self.ACF.MaxHealth) - 1) + 1, 1, SpreadScale)
+		if self.ACE.Health and self.ACE.MaxHealth then
+			IaccMult = math.Clamp(((1 - SpreadScale) / 0.5) * ((self.ACE.Health / self.ACE.MaxHealth) - 1) + 1, 1, SpreadScale)
 		end
 
 		-- Increased FS accuracy. Hardcoded.
@@ -772,7 +772,7 @@ do
 			IaccMult = IaccMult * 1.5
 		end
 
-		local coneAng = self.Inaccuracy * ACF.GunInaccuracyScale * IaccMult
+		local coneAng = self.Inaccuracy * ACE.GunInaccuracyScale * IaccMult
 
 		return coneAng
 	end
@@ -823,13 +823,13 @@ do
 		if ( bool and self.IsUnderWeight and self.Ready and self.Legal ) then
 
 			local Blacklist = {}
-			if not ACF.AmmoBlacklist[self.BulletData.Type] then
+			if not ACE.AmmoBlacklist[self.BulletData.Type] then
 				Blacklist = {}
 			else
-				Blacklist = ACF.AmmoBlacklist[self.BulletData.Type]
+				Blacklist = ACE.AmmoBlacklist[self.BulletData.Type]
 			end
 
-			if ( ACF.RoundTypes[self.BulletData.Type] and not table.HasValue( Blacklist, self.Class ) ) then	--Check if the roundtype loaded actually exists
+			if ( ACE.RoundTypes[self.BulletData.Type] and not table.HasValue( Blacklist, self.Class ) ) then	--Check if the roundtype loaded actually exists
 
 				self.HeatFire = true  --Used by Heat
 
@@ -838,7 +838,7 @@ do
 
 				local coneAng		= math.tan(math.rad(self:GetInaccuracy()))
 				local randUnitSquare	= (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-				local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACF.GunInaccuracyBias, 0.5, 4)))
+				local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
 				local ShootVec		= (MuzzleVec + spread):GetNormalized()
 
 				self:MuzzleEffect( MuzzlePos, MuzzleVec )
@@ -861,7 +861,7 @@ do
 					self.BulletData.FuseLength = self.FuseTime
 				end
 
-				self.CreateShell = ACF.RoundTypes[self.BulletData.Type].create
+				self.CreateShell = ACE.RoundTypes[self.BulletData.Type].create
 				self:CreateShell( self.BulletData )
 
 				local Dir = -self:GetForward()
@@ -981,7 +981,7 @@ function ENT:LoadAmmo( AddTime, Reload )
 		self.RateOfFire = (60 / self.ReloadTime)
 		Wire_TriggerOutput(self, "Fire Rate", self.RateOfFire)
 		Wire_TriggerOutput(self, "Muzzle Weight", math.floor(self.BulletData.ProjMass * 1000) )
-		Wire_TriggerOutput(self, "Muzzle Velocity", math.floor(self.BulletData.MuzzleVel * ACF.VelScale) )
+		Wire_TriggerOutput(self, "Muzzle Velocity", math.floor(self.BulletData.MuzzleVel * ACE.VelScale) )
 
 		self.NextFire = curTime + self.ReloadTime
 		local reloadTime = self.ReloadTime
@@ -1049,7 +1049,7 @@ function ENT:MuzzleEffect()
 		Effect:SetEntity( self )
 		Effect:SetScale( self.BulletData.PropMass )
 		Effect:SetMagnitude( self.ReloadTime )
-		Effect:SetSurfaceProp( ACF.RoundTypes[self.BulletData.Type].netid  )	--Encoding the ammo type into a table index
+		Effect:SetSurfaceProp( ACE.RoundTypes[self.BulletData.Type].netid  )	--Encoding the ammo type into a table index
 	util.Effect( "ACF_MuzzleFlash", Effect, true, true )
 
 	if self.AutoSound and self.Sound ~= "" then
@@ -1065,7 +1065,7 @@ function ENT:ReloadEffect()
 		Effect:SetEntity( self )
 		Effect:SetScale( 0 )
 		Effect:SetMagnitude( self.ReloadTime )
-		Effect:SetSurfaceProp( ACF.RoundTypes[self.BulletData.Type].netid  )	--Encoding the ammo type into a table index
+		Effect:SetSurfaceProp( ACE.RoundTypes[self.BulletData.Type].netid  )	--Encoding the ammo type into a table index
 	util.Effect( "ACF_MuzzleFlash", Effect, true, true )
 
 end

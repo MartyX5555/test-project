@@ -23,7 +23,7 @@ end
 
 local nullhit = {Damage = 0, Overkill = 1, Loss = 0, Kill = false}
 function ENT:ACF_OnDamage( Entity , Energy , FrArea , Angle , Inflictor )
-	self.ACF.Armour = 0.1
+	self.ACE.Armour = 0.1
 	local HitRes = ACF_PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
 	if self.Detonated or self.DisableDamage then return table.Copy(nullhit) end
 
@@ -47,7 +47,7 @@ function MakeACF_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5,
 	if not Owner:CheckLimit("_acf_explosive") then return false end
 
 
-	--local weapon = ACF.Weapons.Guns[Data1]
+	--local weapon = ACE.Weapons.Guns[Data1]
 
 	local Bomb = ents.Create("acf_explosive")
 	if not Bomb:IsValid() then return false end
@@ -58,7 +58,7 @@ function MakeACF_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5,
 	Bomb:CPPISetOwner(Owner)
 
 
-	Mdl = Mdl or ACF.Weapons.Guns[Id].model
+	Mdl = Mdl or ACE.Weapons.Guns[Id].model
 
 	Bomb.Id = Id
 	Bomb:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, Data11, Data12, Data13 , Data14 , Data15)
@@ -93,7 +93,7 @@ function ENT:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, 
 
 	local PlayerData = bdata or ACFM_CompactBulletData(self)
 
-	--local guntable = ACF.Weapons.Guns
+	--local guntable = ACE.Weapons.Guns
 	--local gun = guntable[self.RoundId] or {}
 	self:ConfigBulletDataShortForm(PlayerData)
 
@@ -184,7 +184,7 @@ function ENT:Detonate(overrideBData)
 		if self.Fuse.PerformDetonation then
 			self.Fuse:PerformDetonation( self, bdata, phys, pos )
 		else
-			ACF.Fuse.Contact():PerformDetonation( self, bdata, phys, pos )
+			ACE.Fuse.Contact():PerformDetonation( self, bdata, phys, pos )
 		end
 	end
 

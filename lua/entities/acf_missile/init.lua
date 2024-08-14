@@ -5,9 +5,9 @@ include("shared.lua")
 
 DEFINE_BASECLASS("acf_explosive")
 
-local GunTable	= ACF.Weapons.Guns
-local GuidanceTable = ACF.Guidance
-local FuseTable	= ACF.Fuse
+local GunTable	= ACE.Weapons.Guns
+local GuidanceTable = ACE.Guidance
+local FuseTable	= ACE.Fuse
 
 function ENT:Initialize()
 
@@ -222,7 +222,7 @@ function ENT:CalcFlight()
 
 	-- Inertia/Motor thrust calculation
 
-	local Vel        = LastVel + (Dir * self.Motor - Vector(0,0,self.Gravity )) * ACF.VelScale * DeltaTime ^ 2
+	local Vel        = LastVel + (Dir * self.Motor - Vector(0,0,self.Gravity )) * ACE.VelScale * DeltaTime ^ 2
 	local Up         = Dir:Cross(Vel):Cross(Dir):GetNormalized()
 	local Speed      = Vel:Length()
 	local VelNorm    = Vel / Speed
@@ -231,7 +231,7 @@ function ENT:CalcFlight()
 	Vel = Vel - Up * Speed * DotSimple * self.FinMultiplier
 
 	local SpeedSq	= Vel:LengthSqr()
-	local Drag		= Vel:GetNormalized() * (DragCoef * SpeedSq) / ACF.DragDiv * ACF.VelScale
+	local Drag		= Vel:GetNormalized() * (DragCoef * SpeedSq) / ACE.DragDiv * ACE.VelScale
 
 	Vel				= Vel - Drag
 
@@ -719,38 +719,38 @@ function ENT:ACF_Activate( Recalc )
 
 	local EmptyMass = self.RoundWeight or self.Mass or 10
 
-	self.ACF = self.ACF or {}
+	self.ACE = self.ACE or {}
 
 	local PhysObj = self.PhysObj
-	if not self.ACF.Area then
-		self.ACF.Area = PhysObj:GetSurfaceArea() * 6.45
+	if not self.ACE.Area then
+		self.ACE.Area = PhysObj:GetSurfaceArea() * 6.45
 	end
 
 
-	if not self.ACF.Volume then
-		self.ACF.Volume = PhysObj:GetVolume() * 16.38
+	if not self.ACE.Volume then
+		self.ACE.Volume = PhysObj:GetVolume() * 16.38
 	end
 
 	local ForceArmour = ACF_GetGunValue(self.BulletData, "armour")
 
-	local Armour = ForceArmour or (EmptyMass * 1000 / self.ACF.Area / 0.78)	--So we get the equivalent thickness of that prop in mm if all it's weight was a steel plate
-	local Health = self.ACF.Volume / ACF.Threshold							--Setting the threshold of the prop Area gone
+	local Armour = ForceArmour or (EmptyMass * 1000 / self.ACE.Area / 0.78)	--So we get the equivalent thickness of that prop in mm if all it's weight was a steel plate
+	local Health = self.ACE.Volume / ACE.Threshold							--Setting the threshold of the prop Area gone
 	local Percent = 1
 
-	if Recalc and self.ACF.Health and self.ACF.MaxHealth then
-		Percent = self.ACF.Health / self.ACF.MaxHealth
+	if Recalc and self.ACE.Health and self.ACE.MaxHealth then
+		Percent = self.ACE.Health / self.ACE.MaxHealth
 	end
 
-	self.ACF.Health	= Health * Percent
-	self.ACF.MaxHealth  = Health
-	self.ACF.Armour	= Armour * (0.5 + Percent / 2)
-	self.ACF.MaxArmour  = Armour
-	self.ACF.Type	= nil
-	self.ACF.Mass	= self.Mass
-	self.ACF.Density	= (self.PhysObj:GetMass() * 1000) / self.ACF.Volume
-	self.ACF.Type	= "Prop"
+	self.ACE.Health	= Health * Percent
+	self.ACE.MaxHealth  = Health
+	self.ACE.Armour	= Armour * (0.5 + Percent / 2)
+	self.ACE.MaxArmour  = Armour
+	self.ACE.Type	= nil
+	self.ACE.Mass	= self.Mass
+	self.ACE.Density	= (self.PhysObj:GetMass() * 1000) / self.ACE.Volume
+	self.ACE.Type	= "Prop"
 
-	self.ACF.Material	= not isstring(self.ACF.Material) and ACE.BackCompMat[self.ACF.Material] or self.ACF.Material or "RHA"
+	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
 
 end
 

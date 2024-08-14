@@ -32,7 +32,7 @@ function Round.convert( _, PlayerData )
 	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 	--Shell sturdiness calcs
-	Data.ProjMass		= math.max(GUIData.ProjVolume-PlayerData.Data5,0) * 7.9 / 1000 + math.min(PlayerData.Data5,GUIData.ProjVolume) * ACF.HEDensity / 1000--Volume of the projectile as a cylinder - Volume of the filler * density of steel + Volume of the filler * density of TNT
+	Data.ProjMass		= math.max(GUIData.ProjVolume-PlayerData.Data5,0) * 7.9 / 1000 + math.min(PlayerData.Data5,GUIData.ProjVolume) * ACE.HEDensity / 1000--Volume of the projectile as a cylinder - Volume of the filler * density of steel + Volume of the filler * density of TNT
 	Data.MuzzleVel		= ACF_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
 	local Energy			= ACF_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
 
@@ -40,14 +40,14 @@ function Round.convert( _, PlayerData )
 	GUIData.MinFillerVol	= 0
 	GUIData.MaxFillerVol	= math.min(GUIData.ProjVolume,MaxVol * 0.9)
 	GUIData.FillerVol	= math.min(PlayerData.Data5,GUIData.MaxFillerVol)
-	Data.FillerMass		= GUIData.FillerVol * ACF.HEDensity / 1000
+	Data.FillerMass		= GUIData.FillerVol * ACE.HEDensity / 1000
 
 	Data.ProjMass		= math.max(GUIData.ProjVolume-GUIData.FillerVol,0) * 7.9 / 1000 + Data.FillerMass
 	Data.MuzzleVel		= ACF_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
 
 	--Random bullshit left
 	Data.ShovePower		= 0.1
-	Data.PenArea			= Data.FrArea ^ ACF.PenAreaMod
+	Data.PenArea			= Data.FrArea ^ ACE.PenAreaMod
 	Data.DragCoef		= ((Data.FrArea / 10000) / Data.ProjMass)
 	Data.LimitVel		= 700									--Most efficient penetration speed in m/s
 	Data.KETransfert		= 0.1								--Kinetic energy transfert to the target for movement purposes
@@ -76,13 +76,13 @@ end
 function Round.getDisplayData(Data)
 	local GUIData	= {}
 	local Energy	= ACF_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
-	GUIData.MaxPen  = (Energy.Penetration / Data.PenArea) * ACF.KEtoRHA
+	GUIData.MaxPen  = (Energy.Penetration / Data.PenArea) * ACE.KEtoRHA
 
 	GUIData.BlastRadius = Data.FillerMass ^ 0.33 * 8
 	local FragMass	= Data.ProjMass - Data.FillerMass
-	GUIData.Fragments	= math.max(math.floor((Data.FillerMass / FragMass) * ACF.HEFrag),2)
+	GUIData.Fragments	= math.max(math.floor((Data.FillerMass / FragMass) * ACE.HEFrag),2)
 	GUIData.FragMass	= FragMass / GUIData.Fragments
-	GUIData.FragVel	= (Data.FillerMass * ACF.HEPower * 1000 / GUIData.FragMass / GUIData.Fragments) ^ 0.5
+	GUIData.FragVel	= (Data.FillerMass * ACE.HEPower * 1000 / GUIData.FragMass / GUIData.Fragments) ^ 0.5
 	return GUIData
 end
 
@@ -114,7 +114,7 @@ function Round.cratetxt( BulletData )
 		"Muzzle Velocity: ", math.Round(BulletData.MuzzleVel, 1), " m/s\n",
 		"Max Penetration: ", math.floor(DData.MaxPen), " mm\n",
 		"Blast Radius: ", math.Round(DData.BlastRadius, 1), " m\n",
-		"Blast Energy: ", math.floor(BulletData.FillerMass * ACF.HEPower), " KJ\n",
+		"Blast Energy: ", math.floor(BulletData.FillerMass * ACE.HEPower), " KJ\n",
 		"Fuse Delay: ", math.floor(BulletData.DetDelay * 1000), " ms"
 	}
 
@@ -124,20 +124,20 @@ end
 
 function Round.normalize( _, Bullet, HitPos, HitNormal, Target)
 
-	local Mat = Target.ACF.Material or "RHA"
+	local Mat = Target.ACE.Material or "RHA"
 	local NormieMult = ACE.ArmorMaterials[ Mat ].NormMult or 1
 
 	Bullet.Normalize = true
 	Bullet.Pos = HitPos
 
-	local FlightNormal = (Bullet.Flight:GetNormalized() - HitNormal * ACF.NormalizationFactor * NormieMult * 2):GetNormalized() --Guess it doesnt need localization
+	local FlightNormal = (Bullet.Flight:GetNormalized() - HitNormal * ACE.NormalizationFactor * NormieMult * 2):GetNormalized() --Guess it doesnt need localization
 	local Speed = Bullet.Flight:Length()
 
 	Bullet.Flight = FlightNormal * Speed
 
 	local DeltaTime = SysTime() - Bullet.LastThink
-	Bullet.StartTrace = Bullet.Pos - Bullet.Flight:GetNormalized() * math.min(ACF.PhysMaxVel * DeltaTime,Bullet.FlightTime * Bullet.Flight:Length())
-	Bullet.NextPos = Bullet.Pos + (Bullet.Flight * ACF.VelScale * DeltaTime)		--Calculates the next shell position
+	Bullet.StartTrace = Bullet.Pos - Bullet.Flight:GetNormalized() * math.min(ACE.PhysMaxVel * DeltaTime,Bullet.FlightTime * Bullet.Flight:Length())
+	Bullet.NextPos = Bullet.Pos + (Bullet.Flight * ACE.VelScale * DeltaTime)		--Calculates the next shell position
 
 end
 
@@ -148,7 +148,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 
 		if Bullet.Normalize then
 
-			local Speed	= Bullet.Flight:Length() / ACF.VelScale
+			local Speed	= Bullet.Flight:Length() / ACE.VelScale
 			local Energy	= ACF_Kinetic( Speed , Bullet.ProjMass, Bullet.LimitVel )
 			local HitRes	= ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
@@ -164,7 +164,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 				end
 
 				table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
-				ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACF.Armour , Bullet.Owner , Target.ACF.Material) --Do some spalling
+				ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 				Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1-HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 				Bullet.Normalize = false
 				return "Penetrated"
@@ -187,7 +187,7 @@ end
 
 function Round.worldimpact( _, Bullet, HitPos, HitNormal )
 
-	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACF.VelScale, Bullet.ProjMass, Bullet.LimitVel )
+	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, Bullet.LimitVel )
 	local HitRes = ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 	if HitRes.Penetrated then
 		return "Penetrated"
@@ -243,7 +243,7 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACF.AmmoBlacklist.APHE )
+	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.APHE )
 
 	ACE_UpperCommonDataDisplay()
 
@@ -297,5 +297,5 @@ function Round.guiupdate( Panel )
 end
 
 list.Set( "APRoundTypes", "APHECBC", Round )
-ACF.RoundTypes[Round.Type] = Round     --Set the round properties
-ACF.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above
+ACE.RoundTypes[Round.Type] = Round     --Set the round properties
+ACE.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above

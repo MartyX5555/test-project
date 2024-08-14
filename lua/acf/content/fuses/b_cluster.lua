@@ -1,11 +1,11 @@
 
-ACF = ACF or {}
-ACF.Fuse = ACF.Fuse or {}
+ACE = ACE or {}
+ACE.Fuse = ACE.Fuse or {}
 
 local ClassName = "Cluster"
 
-local this = ACF.Fuse[ClassName] or inherit.NewSubOf(ACF.Fuse.Contact)
-ACF.Fuse[ClassName] = this
+local this = ACE.Fuse[ClassName] or inherit.NewSubOf(ACE.Fuse.Contact)
+ACE.Fuse[ClassName] = this
 
 ---
 
@@ -140,7 +140,7 @@ do
 			missile.BulletData["BoomFillerMass"] = missile.BulletData.FillerMass / 1.5
 
 			--local SlugEnergy = ACF_Kinetic( missile.BulletData.MuzzleVel * 39.37 + missile.BulletData.SlugMV * 39.37 , missile.BulletData.SlugMass, 999999 )
-			--local  MaxPen = (SlugEnergy.Penetration/missile.BulletData.SlugPenArea) * ACF.KEtoRHA
+			--local  MaxPen = (SlugEnergy.Penetration/missile.BulletData.SlugPenArea) * ACE.KEtoRHA
 			--print(MaxPen)
 
 		end
@@ -160,7 +160,7 @@ do
 
 					local MuzzlePos = missile:LocalToWorld(Vector(100 - (I * 20), ((Bomblets / 2) - I) * 2, 0) * 0.5)
 					missile.BulletData.Pos = MuzzlePos
-					missile.CreateShell = ACF.RoundTypes[missile.BulletData.Type].create
+					missile.CreateShell = ACE.RoundTypes[missile.BulletData.Type].create
 					missile:CreateShell( missile.BulletData )
 
 				end

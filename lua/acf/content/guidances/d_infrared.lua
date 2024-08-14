@@ -2,11 +2,11 @@
 local ClassName = "Infrared"
 
 
-ACF = ACF or {}
-ACF.Guidance = ACF.Guidance or {}
+ACE = ACE or {}
+ACE.Guidance = ACE.Guidance or {}
 
-local this = ACF.Guidance[ClassName] or inherit.NewSubOf(ACF.Guidance.Wire)
-ACF.Guidance[ClassName] = this
+local this = ACE.Guidance[ClassName] or inherit.NewSubOf(ACE.Guidance.Wire)
+ACE.Guidance[ClassName] = this
 
 ---
 
@@ -248,8 +248,8 @@ end
 --Another Stupid Workaround. Since guidance degrees are not loaded when ammo is created
 function this:GetDisplayConfig(Type)
 
-	local seekCone =  (ACF.Weapons.Guns[Type].seekcone or 0 ) * 2
-	local ViewCone = (ACF.Weapons.Guns[Type].viewcone or 0 ) * 2
+	local seekCone =  (ACE.Weapons.Guns[Type].seekcone or 0 ) * 2
+	local ViewCone = (ACE.Weapons.Guns[Type].viewcone or 0 ) * 2
 
 	return
 	{

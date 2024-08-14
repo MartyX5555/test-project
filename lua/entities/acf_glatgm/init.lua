@@ -202,7 +202,7 @@ function ENT:Detonate()
 
 		btdat.Pos = self:GetPos() + self:GetForward() * 2
 
-		self.CreateShell = ACF.RoundTypes[btdat.Type].create
+		self.CreateShell = ACE.RoundTypes[btdat.Type].create
 		self:CreateShell( btdat )
 
 		local Flash = EffectData()

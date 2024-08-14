@@ -241,9 +241,9 @@ local panel = Menu.MakePanel
 local hookname = string.Replace(item," ","_")
 
 
-hook.Add("SpawnMenuOpen", "ACF.SpawnMenuOpen." .. hookname, open)
+hook.Add("SpawnMenuOpen", "ACE.SpawnMenuOpen." .. hookname, open)
 
 
-hook.Add("PopulateToolMenu", "ACF.PopulateToolMenu." .. hookname, function()
+hook.Add("PopulateToolMenu", "ACE.PopulateToolMenu." .. hookname, function()
 	spawnmenu.AddToolMenuOption("Utilities", cat, item, item, var, "", panel)
 end)

@@ -1,7 +1,5 @@
 
-local cat = ((ACF.CustomToolCategory and ACF.CustomToolCategory:GetBool()) and "ACF" or "Construction");
-
-TOOL.Category		= cat
+TOOL.Category		= "Construction"
 TOOL.Name			= "#Tool.acfmenu.listname"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
@@ -90,7 +88,7 @@ function TOOL:LeftClick( trace )
 	local Id	= self:GetClientInfo( "id" )
 	local entClass
 
-	local TypeId = ACF.Weapons[Type][Id]
+	local TypeId = ACE.Weapons[Type][Id]
 
 	if not TypeId then
 		if Type == "Ammo" then

@@ -8,8 +8,8 @@
 
 ]]--------------------------
 
-local Classes = ACF.Classes
-local ACFEnts = ACF.Weapons
+local Classes = ACE.Classes
+local ACFEnts = ACE.Weapons
 
 local radarClasses    = Classes.Radar
 local radars          = ACFEnts.Radars

@@ -4,7 +4,7 @@
 	with a hard to predict check time and punishing lockout time
 	usage:
 	Ent.Legal, Ent.LegalIssues = ACE_CheckLegal(Ent, Model, MinMass, MinInertia, NeedsGateParent, CanVisclip )
-	Ent.NextLegalCheck = ACF.LegalSettings:NextCheck(Ent.Legal)
+	Ent.NextLegalCheck = ACE.LegalSettings:NextCheck(Ent.Legal)
 ]]
 
 ACE = ACE or {}
@@ -87,7 +87,7 @@ do
 		-- Allowed materials: rha, cast and aluminum
 		if IsRestricted("material") then
 
-			local material = Ent.ACF.Material or "RHA"
+			local material = Ent.ACE.Material or "RHA"
 
 			if not AllowedMaterials[material] then
 				table.insert(problems,"Material not legal")

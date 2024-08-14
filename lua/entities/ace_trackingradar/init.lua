@@ -51,7 +51,7 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
 	Id = Id or "Large-TRACK"
 
-	local radar = ACF.Weapons.Radars[Id]
+	local radar = ACE.Weapons.Radars[Id]
 
 	if not radar then return false end
 

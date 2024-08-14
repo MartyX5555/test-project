@@ -56,7 +56,7 @@ function SWEP:PrimaryAttack()
 
 			ent:SetPos( owner:GetShootPos() )
 			ent:SetAngles( owner:GetAimVector():Angle() )
-			ent.Life = 1.5 / (0.4 * ACFM.FlareBurnMultiplier)
+			ent.Life = 1.5 / (0.4 * ACEM.FlareBurnMultiplier)
 			ent:Spawn()
 			ent:SetOwner( Gun )
 			increaseDrag(ent, 10)

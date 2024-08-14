@@ -73,7 +73,7 @@ end
 
 function ACFGunGUICreate( Table )
 
-	if not (ACF and next(ACF.Classes) and next(ACF.Classes.GunClass) and Table) then
+	if not (ACF and next(ACE.Classes) and next(ACE.Classes.GunClass) and Table) then
 		acfmenupanel:CPanelText("Error1", "There was an error trying to gather the information for this gun", "DermaDefaultBold")
 		acfmenupanel:CPanelText("Error3", "If the problem persists, report it to the server owner as soon as possible!")
 		return
@@ -92,7 +92,7 @@ function ACFGunGUICreate( Table )
 	GunDisplay.LayoutEntity = function() end
 	acfmenupanel.CustomDisplay:AddItem( GunDisplay )
 
-	local GunClass = ACF.Classes.GunClass[Table.gunclass]
+	local GunClass = ACE.Classes.GunClass[Table.gunclass]
 	acfmenupanel:CPanelText("ClassDesc", GunClass.desc)
 	acfmenupanel:CPanelText("GunDesc", Table.desc)
 	acfmenupanel:CPanelText("Caliber", "Caliber: " .. (Table.caliber * 10) .. "mm")

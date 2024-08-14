@@ -29,8 +29,8 @@ function ENT:Think()
 
 		local rackId = self.RackID
 
-		if not (rackId and ACF.Weapons.Racks[rackId]) then
-			local GunClass = ACF.Weapons.Guns[self.Id]
+		if not (rackId and ACE.Weapons.Racks[rackId]) then
+			local GunClass = ACE.Weapons.Guns[self.Id]
 
 			if not GunClass then
 				error("Couldn't spawn the missile rack: can't find the gun-class '" + tostring(self.Id) + "'.")
