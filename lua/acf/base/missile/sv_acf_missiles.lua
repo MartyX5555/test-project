@@ -164,67 +164,92 @@ function ACFM_CompactBulletData(crate)
 	return compact
 end
 
-local ResetVelocity = {}
+--Restored old PropHit function, with some modifications so it doenst fuck up
+function ACE_DoReplicatedPropHit(Missile, Bullet)
 
-function ResetVelocity.AP(bdata)
+	local FlightRes = { Entity = Missile, HitNormal = Missile.HitNorm, HitPos = Bullet.Pos, HitGroup = HITGROUP_GENERIC }
+	local Index = Bullet.Index
 
-	if not bdata.MuzzleVel then return end
+	local ACF_BulletPropImpact = ACF.RoundTypes[Bullet.Type]["propimpact"]
+	local Retry = ACF_BulletPropImpact( Index, Bullet, FlightRes.Entity ,  FlightRes.HitNormal , FlightRes.HitPos , FlightRes.HitGroup )				--If we hit stuff then send the resolution to the damage function
 
-	bdata.Flight:Normalize()
+	--This is crucial, to avoid 2nd tandem munitions spawn on 1st Bullet hitpos
+	Bullet.FirstPos = FlightRes.HitPos
 
-	bdata.Flight = bdata.Flight * (bdata.MuzzleVel * 39.37)
+	--Internally used in case of HEAT hitting world, penetrating or not
+	if Retry == "Penetrated" then
+
+		ACFM_ResetVelocity(Bullet)
+
+		if Bullet.OnPenetrated then Bullet.OnPenetrated(Index, Bullet, FlightRes) end
+
+		ACF_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+		ACF_CalcBulletFlight( Index, Bullet, true )
+	else
+
+		if Bullet.OnEndFlight then Bullet.OnEndFlight(Index, Bullet, FlightRes) end
+
+		ACF_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+		ACF_BulletEndFlight = ACF.RoundTypes[Bullet.Type]["endflight"]
+		ACF_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+	end
 
 end
 
-ResetVelocity.HE = ResetVelocity.AP
-ResetVelocity.HEP = ResetVelocity.AP
-ResetVelocity.SM = ResetVelocity.AP
 
-function ResetVelocity.HEAT(bdata)
+do
+	local ResetVelocity = {
 
-	if not (bdata.MuzzleVel and bdata.SlugMV) then return end
+		AP = function(bdata)
+			if not bdata.MuzzleVel then return end
 
-	bdata.Flight:Normalize()
+			bdata.Flight:Normalize()
+			bdata.Flight = bdata.Flight * (bdata.MuzzleVel * 39.37)
+		end,
+		HEAT = function(bdata)
+			if not (bdata.MuzzleVel and bdata.SlugMV) then return end
 
-	local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77	--local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77
+			bdata.Flight:Normalize()
 
-	bdata.Flight = bdata.Flight * (bdata.SlugMV * penmul) * 39.37
-	bdata.NotFirstPen = false
+			local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77	--local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77
 
-end
+			bdata.Flight = bdata.Flight * (bdata.SlugMV * penmul) * 39.37
+			bdata.NotFirstPen = false
+		end,
+		THEAT = function(bdata)
+			DetCount = bdata.Detonated or 0
 
-function ResetVelocity.THEAT(bdata)
+			if not (bdata.MuzzleVel and bdata.SlugMV and bdata.SlugMV1 and bdata.SlugMV2) then return end
 
-	DetCount = bdata.Detonated or 0
+			bdata.Flight:Normalize()
 
-	if not (bdata.MuzzleVel and bdata.SlugMV and bdata.SlugMV1 and bdata.SlugMV2) then return end
+			local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77
 
-	bdata.Flight:Normalize()
+			if DetCount == 1 then
+				--print("Detonation1")
+				bdata.Flight = bdata.Flight * (bdata.SlugMV * penmul) * 39.37
+				bdata.NotFirstPen = false
+			elseif DetCount == 2 then
+				--print("Detonation2")
+				bdata.Flight = bdata.Flight * (bdata.SlugMV2 * penmul) * 39.37
+				bdata.NotFirstPen = false
+			end
+		end,
 
-	local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77
+	}
 
-	if DetCount == 1 then
-		--print("Detonation1")
-		bdata.Flight = bdata.Flight * (bdata.SlugMV * penmul) * 39.37
-		bdata.NotFirstPen = false
-	elseif DetCount == 2 then
-		--print("Detonation2")
-		bdata.Flight = bdata.Flight * (bdata.SlugMV2 * penmul) * 39.37
-		bdata.NotFirstPen = false
+	ResetVelocity.HE = ResetVelocity.AP
+	ResetVelocity.HEP = ResetVelocity.AP
+	ResetVelocity.SM = ResetVelocity.AP
+
+	-- Resets the velocity of the bullet based on its current state on the serverside only.
+	-- This will de-sync the clientside effect!
+	function ACFM_ResetVelocity(bdata)
+		local resetFunc = ResetVelocity[bdata.Type] or ResetVelocity["AP"]
+		return resetFunc(bdata)
 	end
 end
 
--- Resets the velocity of the bullet based on its current state on the serverside only.
--- This will de-sync the clientside effect!
-function ACFM_ResetVelocity(bdata)
-
-	local resetFunc = ResetVelocity[bdata.Type]
-
-	if not resetFunc then return end
-
-	return resetFunc(bdata)
-
-end
 
 hook.Add( "InitPostEntity", "ACFMissiles_DupeDeny", function()
 	-- Need to ensure this is called after InitPostEntity because Adv. Dupe 2 resets its whitelist upon this event.

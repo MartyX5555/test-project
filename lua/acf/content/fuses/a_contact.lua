@@ -76,7 +76,7 @@ function this:PerformDetonation( missile, bdata, phys, pos )
 	missile:SetSolid(SOLID_NONE)
 	phys:EnableMotion(false)
 
-	missile:DoReplicatedPropHit(bdata)
+	ACE_DoReplicatedPropHit(missile, bdata)
 	missile:SetNoDraw(true)
 end
 
