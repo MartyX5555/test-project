@@ -197,7 +197,7 @@ function ACF_PropDamage( Entity , Energy , FrArea , Angle , _, _, Type)
 		Entity.ACF.Armour = Entity.ACF.MaxArmour * (0.5 + Entity.ACF.Health / Entity.ACF.MaxHealth / 2) --Simulating the plate weakening after a hit
 
 		if Entity.ACF.PrHealth then
-			ACF_UpdateVisualHealth(Entity)
+			ACE_UpdateVisualHealth(Entity)
 		end
 		Entity.ACF.PrHealth = Entity.ACF.Health
 	end

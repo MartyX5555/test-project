@@ -48,7 +48,7 @@ ACE.ExplosiveEnts = {
 }
 
 -- whitelist for things that can be turned into debris
-ACF.Debris = {
+ACE.Debris = {
 	acf_gun                   = true,
 	acf_rack                  = true,
 	acf_gearbox               = true,

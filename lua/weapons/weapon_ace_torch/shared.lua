@@ -146,7 +146,7 @@ do
 					ent:EmitSound( "ambient/energy/NewSpark0" .. tostring( math.random( 3, 5 ) ) .. ".wav", 75, 100, 1, CHAN_WEAPON )
 					TeslaSpark(tr.HitPos , 1 )
 
-					ACF_UpdateVisualHealth(ent)
+					ACE_UpdateVisualHealth(ent)
 
 					self:SetNWFloat( "HP", ent.ACF.Health )
 					self:SetNWFloat( "Armour", ent.ACF.Armour )

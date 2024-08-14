@@ -855,7 +855,7 @@ local function ACF_KillChildProps( Entity, BlastPos, Energy )
 			local class = ent:GetClass()
 
 			-- exclude any entity that is not part of debris ents whitelist
-			if not ACF.Debris[class] then --print("removing not valid class")
+			if not ACE.Debris[class] then --print("removing not valid class")
 				children[ent] = nil continue
 			else
 

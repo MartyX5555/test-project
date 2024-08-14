@@ -4,13 +4,13 @@ do
 		Entities = {},
 		Clock = 0
 	}
-	function ACF_UpdateVisualHealth( Entity )
+	function ACE_UpdateVisualHealth( Entity )
 		if not Entity.ACF.OnRenderQueue then
 			table.insert(RenderProps.Entities, Entity )
 			Entity.ACF.OnRenderQueue = true
 		end
 	end
-	function ACF_SendVisualDamage()
+	local function SendVisualDamage()
 
 		local Time = CurTime()
 
@@ -37,5 +37,5 @@ do
 			RenderProps.Clock = Time + (SendDelay / 1000)
 		end
 	end
-	hook.Add("Think","ACF_RenderPropDamage", ACF_SendVisualDamage )
+	hook.Add("Think","ACF_RenderPropDamage", SendVisualDamage )
 end

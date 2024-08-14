@@ -94,13 +94,13 @@ end
 -- some factory functions for defining ents
 
 --Gun class definition
-function ACF_defineGunClass( id, data )
+function ACE_defineGunClass( id, data )
 	data.id = id
 	Classes.GunClass[id] = data
 end
 
 -- Gun definition
-function ACF_defineGun( id, data )
+function ACE_defineGun( id, data )
 	data.id = id
 	data.round.id = id
 	table.Inherit( data, gun_base )
@@ -125,22 +125,22 @@ function ACE_DefineLegacyAmmoCrate( id, data )
 end
 
 -- Rack definition
-function ACF_DefineRack( id, data )
+function ACE_DefineRack( id, data )
 	data.id = id
 	table.Inherit( data, rack_base )
 	Weapons.Racks[id] = data
 end
 
 -- Rack class definition
-function ACF_DefineRackClass( id, data )
+function ACE_DefineRackClass( id, data )
 	data.id = id
 	Classes.Rack[id] = data
 end
 
 --Engine definition
-function ACF_DefineEngine( id, data )
+function ACE_DefineEngine( id, data )
 	if (data.year or 0) < ACF.Year then
-		local engineData = ACF_CalcEnginePerformanceData(data.torquecurve or ACF.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
+		local engineData = ACE_CalcEnginePerformanceData(data.torquecurve or ACF.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
 
 		data.peaktqrpm    = engineData.peakTqRPM
 		data.peakpower    = engineData.peakPower
@@ -157,7 +157,7 @@ function ACF_DefineEngine( id, data )
 end
 
 -- Gearbox definition
-function ACF_DefineGearbox( id, data )
+function ACE_DefineGearbox( id, data )
 	data.id = id
 	table.Inherit( data, gearbox_base )
 	Weapons.Gearboxes[id] = data
@@ -165,7 +165,7 @@ function ACF_DefineGearbox( id, data )
 end
 
 -- fueltank definition
-function ACF_DefineFuelTank( id, data )
+function ACE_DefineFuelTank( id, data )
 	data.id = id
 	table.Inherit( data, fueltank_base )
 	Weapons.FuelTanks[id] = data
@@ -173,46 +173,46 @@ function ACF_DefineFuelTank( id, data )
 end
 
 -- fueltank size definition
-function ACF_DefineFuelTankSize( id, data )
+function ACE_DefineFuelTankSize( id, data )
 	data.id = id
 	table.Inherit( data, fueltank_base )
 	Weapons.FuelTanksSize[id] = data
 end
 
 -- Radar Class definition
-function ACF_DefineRadarClass( id, data )
+function ACE_DefineRadarClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
 
 -- Radar definition
-function ACF_DefineRadar( id, data )
+function ACE_DefineRadar( id, data )
 	data.id = id
 	table.Inherit( data, radar_base )
 	Weapons.Radars[id] = data
 end
 
 -- Tracking Radar Class definition
-function ACF_DefineTrackRadarClass( id, data )
+function ACE_DefineTrackRadarClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
 
 -- Tracking Radar definition
-function ACF_DefineTrackRadar( id, data )
+function ACE_DefineTrackRadar( id, data )
 	data.id = id
 	table.Inherit( data, trackradar_base )
 	Weapons.Radars[id] = data
 end
 
 -- Tracking Radar Class definition
-function ACF_DefineIRSTClass( id, data )
+function ACE_DefineIRSTClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
 
 -- Tracking Radar definition
-function ACF_DefineIRST( id, data )
+function ACE_DefineIRST( id, data )
 	data.id = id
 	table.Inherit( data, irst_base )
 	Weapons.Radars[id] = data

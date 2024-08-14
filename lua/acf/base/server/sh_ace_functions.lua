@@ -28,7 +28,7 @@ function ACF_CalcCurve(Points, Pos)
 end
 
 --Calculates the performance characteristics of an engine, given a torque curve, max torque (in nm), idle, and redline rpm
-function ACF_CalcEnginePerformanceData(curve, maxTq, idle, redline)
+function ACE_CalcEnginePerformanceData(curve, maxTq, idle, redline)
 	local peakTq = 0
 	local peakTqRPM
 	local peakPower = 0
