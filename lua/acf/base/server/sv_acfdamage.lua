@@ -1038,8 +1038,8 @@ do
 		local HEWeight
 		local ExplodePos = {}
 
-		local MaxGroup    = ACF.ScaledEntsMax	-- Max number of ents to be cached. Reducing this value will make explosions more realistic at the cost of more explosions = lag
-		local MaxHE       = ACF.ScaledHEMax	-- Max amount of HE to be cached. This is useful when we dont want nukes being created by large amounts of clipped ammo.
+		local MaxGroup    = ACE.ScaledEntsMax	-- Max number of ents to be cached. Reducing this value will make explosions more realistic at the cost of more explosions = lag
+		local MaxHE       = ACE.ScaledHEMax	-- Max amount of HE to be cached. This is useful when we dont want nukes being created by large amounts of clipped ammo.
 
 		local Inflictor   = ent.Inflictor or nil
 		local Owner       = ent:CPPIGetOwner() or NULL

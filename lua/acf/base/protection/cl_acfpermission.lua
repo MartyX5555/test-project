@@ -1,7 +1,7 @@
 -- Code modified from the NADMOD client permissions menu, by Nebual
 -- http://www.facepunch.com/showthread.php?t=1221183
 
-ACF = ACF or {}
+ACE = ACE or {}
 ACE.Permissions = ACE.Permissions or {}
 local this = ACE.Permissions
 

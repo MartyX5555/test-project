@@ -244,7 +244,7 @@ do
 		for _, v in pairs( AllEnts ) do
 			v.acfphystotal	= PhysMass
 			v.acftotal		= Mass
-			v.acflastupdatemass = ACF.CurTime
+			v.acflastupdatemass = ACE.CurTime
 		end
 
 		if pwr then
@@ -275,33 +275,33 @@ function ACF_UpdateChecking( )
 
 		--maybe not the best way to get git but well......
 		str = tostring("String:" .. contents)
-		i,k = string.find(str,"ACF.Version =")
+		i,k = string.find(str,"ACE.Version =")
 
 		local rev = tonumber(string.sub(str,k + 2,k + 4)) or 0
 
-		if rev and ACF.Version == rev  and rev ~= 0 then
+		if rev and ACE.Version == rev  and rev ~= 0 then
 
 			print("[ACE | INFO]- You have the latest version! Current version: " .. rev)
 
-		elseif rev and ACF.Version > rev and rev ~= 0 then
+		elseif rev and ACE.Version > rev and rev ~= 0 then
 
-			print("[ACE | INFO]- You have an experimental version! Your version: " .. ACF.Version .. ". Main version: " .. rev)
+			print("[ACE | INFO]- You have an experimental version! Your version: " .. ACE.Version .. ". Main version: " .. rev)
 		elseif rev == 0 then
 
 			print("[ACE | ERROR]- Unable to find the latest version! Failed to connect to GitHub.")
 
 		else
 
-			print("[ACE | INFO]- A new version of ACE is available! Your version: " .. ACF.Version .. ". New version: " .. rev)
+			print("[ACE | INFO]- A new version of ACE is available! Your version: " .. ACE.Version .. ". New version: " .. rev)
 			if CLIENT then chat.AddText( Color( 255, 0, 0 ), "A newer version of ACE is available!" ) end
 
 		end
-		ACF.CurrentVersion = rev
+		ACE.CurrentVersion = rev
 
 	end, function()
 		print("[ACE | ERROR]- Unable to find the latest version! No internet available.")
 
-		ACF.CurrentVersion = 0
+		ACE.CurrentVersion = 0
 	end)
 end
 
@@ -635,21 +635,21 @@ else
 end
 
 if CLIENT then
-	ACF.Wind = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
+	ACE.Wind = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
 
 	net.Receive("ACE_Wind", function()
-		ACF.Wind = Vector(net.ReadFloat(), net.ReadFloat(), 0)
+		ACE.Wind = Vector(net.ReadFloat(), net.ReadFloat(), 0)
 	end)
 else
 	local curveFactor = 2.5
 	local reset_timer = 60
-	ACF.Wind = Vector()
+	ACE.Wind = Vector()
 	timer.Create("ACE_Wind", reset_timer, 0, function()
 		local smokeDir = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
-		ACF.Wind = (math.random() ^ curveFactor) * smokeDir * GetConVar("acf_wind"):GetFloat()
+		ACE.Wind = (math.random() ^ curveFactor) * smokeDir * GetConVar("acf_wind"):GetFloat()
 		net.Start("ACE_Wind")
-			net.WriteFloat(ACF.Wind.x)
-			net.WriteFloat(ACF.Wind.y)
+			net.WriteFloat(ACE.Wind.x)
+			net.WriteFloat(ACE.Wind.y)
 		net.Broadcast()
 	end)
 end
@@ -662,6 +662,6 @@ end)
 
 --Stupid workaround red added to precache timescaling.
 hook.Add( "Think", "Update ACF Internal Clock", function()
-	ACF.CurTime = CurTime()
-	ACF.SysTime = SysTime()
+	ACE.CurTime = CurTime()
+	ACE.SysTime = SysTime()
 end )

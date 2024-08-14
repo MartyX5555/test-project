@@ -151,14 +151,14 @@ do
 	-- @server
 	-- @return number Version number
 	function acf_library.getVersion()
-		return ACF.CurrentVersion
+		return ACE.CurrentVersion
 	end
 
 	--- Returns server version of acf
 	-- @server
 	-- @return number Version number
 	function acf_library.getCurrentVersion()
-		return ACF.Version
+		return ACE.Version
 	end
 
 	--- Returns velocity loss for every meter traveled. 0.2x means HEAT loses 20% of its energy every 2m traveled. 1m is about typical for the sideskirt spaced armor of most tanks.
@@ -172,7 +172,7 @@ do
 	-- @server
 	-- @return vector Wind direction
 	function acf_library.getWindVector()
-		return vwrap(ACF.Wind)
+		return vwrap(ACE.Wind)
 	end
 
 	--- Returns true if this entity contains sensitive info and is not accessable to us

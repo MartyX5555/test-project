@@ -408,8 +408,8 @@ function ACFHomeGUICreate()
 
 	local versionstring
 
-	if ACF.CurrentVersion and ACF.CurrentVersion > 0 then
-	if ACF.Version >= ACF.CurrentVersion then
+	if ACE.CurrentVersion and ACE.CurrentVersion > 0 then
+	if ACE.Version >= ACE.CurrentVersion then
 		versionstring = "Up To Date"
 		color = Color(0,225,0,255)
 	else
@@ -422,7 +422,7 @@ function ACFHomeGUICreate()
 	color = Color(225,0,0,255)
 	end
 
-	versiontext = "GitHub Version: " .. ACF.CurrentVersion .. "\nCurrent Version: " .. ACF.Version
+	versiontext = "GitHub Version: " .. ACE.CurrentVersion .. "\nCurrent Version: " .. ACE.Version
 
 	acfmenupanel["CData"]["VersionInit"] = vgui.Create( "DLabel" )
 	acfmenupanel["CData"]["VersionInit"]:SetText(versiontext)
@@ -488,8 +488,8 @@ function ACFHomeGUIUpdate( Table )
 	local color
 	local versionstring
 
-	if ACF.CurrentVersion > 0 then
-		if ACF.Version >= ACF.CurrentVersion then
+	if ACE.CurrentVersion > 0 then
+		if ACE.Version >= ACE.CurrentVersion then
 			versionstring = "Up To Date"
 			color = Color(0,225,0,255)
 		else
@@ -503,7 +503,7 @@ function ACFHomeGUIUpdate( Table )
 
 	local txt
 
-	if ACF.CurrentVersion > 0 then
+	if ACE.CurrentVersion > 0 then
 		txt = "ACE Is " .. versionstring .. "!\n\n"
 	else
 		txt = versionstring
@@ -846,8 +846,8 @@ do
 	--------------- NEW CONFIG ---------------
 	do
 
-		local MinCrateSize = ACF.CrateMinimumSize
-		local MaxCrateSize = ACF.CrateMaximumSize
+		local MinCrateSize = ACE.CrateMinimumSize
+		local MaxCrateSize = ACE.CrateMaximumSize
 
 		acfmenupanel:CPanelText("Crate_desc_new", "\nAdjust the dimensions for your crate. In inches.", nil, CrateNewPanel)
 

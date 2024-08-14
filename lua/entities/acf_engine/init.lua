@@ -40,7 +40,7 @@ do
 		self.Legal          = true
 		self.CanUpdate      = true
 		self.RequiresFuel   = false
-		self.NextLegalCheck = ACF.CurTime + math.random(ACF.Legal.Min, ACF.Legal.Max) -- give any spawning issues time to iron themselves out
+		self.NextLegalCheck = ACE.CurTime + math.random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
 		self.Legal          = true
 		self.LegalIssues    = ""
 		self.LockOnActive   = false --used to turn on the engine in case of being lockdown by not legal
@@ -260,7 +260,7 @@ function ENT:UpdateOverlayText()
 	end
 
 	if not self.Legal then
-		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACF.CurTime) .. "s\nIssues: " .. self.LegalIssues
+		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
 	self:SetOverlayText( text )
@@ -378,15 +378,15 @@ end
 
 function ENT:Think()
 
-	if ACF.CurTime > self.NextLegalCheck then
-		self.Legal, self.LegalIssues = ACF_CheckLegal(self, self.Model, math.Round(self.Weight,2), self.ModelInertia, true, true)
-		self.NextLegalCheck = ACF.Legal.NextCheck(self.legal)
+	if ACE.CurTime > self.NextLegalCheck then
+		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.Weight,2), self.ModelInertia, true, true)
+		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:CheckRopes()
 		self:CheckFuel()
 		self:CalcMassRatio()
 
 		self:UpdateOverlayText()
-		self.NextUpdate = ACF.CurTime + 1
+		self.NextUpdate = ACE.CurTime + 1
 
 		self:IllegalCrewSeatRemove(self.CrewLink)
 
@@ -403,29 +403,29 @@ function ENT:Think()
 	end
 
 	-- when not legal, update overlay displaying lockout and issues
-	if not self.Legal and ACF.CurTime > self.NextUpdate then
+	if not self.Legal and ACE.CurTime > self.NextUpdate then
 		self:UpdateOverlayText()
-		self.NextUpdate = ACF.CurTime + 1
+		self.NextUpdate = ACE.CurTime + 1
 	end
 
 	self.Heat = ACE_HeatFromEngine( self )
 	Wire_TriggerOutput(self, "EngineHeat", self.Heat)
 
-	if ACF.CurTime > self.NextUpdate then
+	if ACE.CurTime > self.NextUpdate then
 
 		self.TotalFuel = self:GetMaxFuel()
 		Wire_TriggerOutput(self, "Total Fuel", self.TotalFuel)
 
 		self:UpdateOverlayText()
-		self.NextUpdate = ACF.CurTime + 0.5
+		self.NextUpdate = ACE.CurTime + 0.5
 	end
 
 	if self.Active then
 		self:CalcRPM()
 	end
 
-	self.LastThink = ACF.CurTime
-	self:NextThink( ACF.CurTime )
+	self.LastThink = ACE.CurTime
+	self:NextThink( ACE.CurTime )
 	return true
 
 end

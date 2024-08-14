@@ -41,7 +41,7 @@ function ENT:Initialize()
 	self.AnglePenalty = 0
 	self.LinkedEngine = nil
 
-	self.NextLegalCheck	= ACF.CurTime + random(ACF.Legal.Min, ACF.Legal.Max) -- give any spawning issues time to iron themselves out
+	self.NextLegalCheck	= ACE.CurTime + random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
 	self.Legal = true
 	self.LegalIssues = ""
 
@@ -75,10 +75,10 @@ function ENT:Think()
 		self:EmitSound("npc/combine_soldier/die" .. tostring(math.random(1, 3)) .. ".wav", 50)
 	end
 
-	if ACF.CurTime > self.NextLegalCheck then
+	if ACE.CurTime > self.NextLegalCheck then
 
-		self.Legal, self.LegalIssues = ACF_CheckLegal(self, self.Model, round(self.Weight, 2), nil, true, true)
-		self.NextLegalCheck = ACF.Legal.NextCheck(self.legal)
+		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, round(self.Weight, 2), nil, true, true)
+		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 
 	end
 
@@ -107,7 +107,7 @@ function ENT:UpdateOverlayText()
 	local str = string.format("Health: %s%%\nName: %s", hp, self.Name)
 
 	if not self.Legal then
-		str = str .. "\n\nNot legal, disabled for " .. ceil(self.NextLegalCheck - ACF.CurTime) .. "s\nIssues: " .. self.LegalIssues
+		str = str .. "\n\nNot legal, disabled for " .. ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
 	self:SetOverlayText(str)

@@ -31,6 +31,6 @@ function ACE_SimBulletFlight( Bullet, Index )
 	if Bullet and Bullet.Effect:IsValid() then
 		Bullet.Effect:ApplyMovement( Bullet, Index )
 	end
-	Bullet.LastThink = CurTime() --ACF.CurTime --intentionally not using cached curtime value
+	Bullet.LastThink = CurTime() --ACE.CurTime --intentionally not using cached curtime value
 
 end

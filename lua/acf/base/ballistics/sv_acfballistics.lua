@@ -28,7 +28,7 @@ function ACF_CreateBullet( BulletData )
 	--Those are BulletData settings that are global and shouldn't change round to round
 	BulletData.Gravity       = GetConVar("sv_gravity"):GetInt() * -1
 	BulletData.Accel         = Vector(0,0,BulletData.Gravity)
-	BulletData.LastThink     = ACF.SysTime
+	BulletData.LastThink     = ACE.SysTime
 	BulletData.FlightTime    = 0
 	BulletData.TraceBackComp = 0
 
@@ -138,7 +138,7 @@ do
 		if not Bullet.LastThink then ACF_RemoveBullet( Index ) end
 
 		if BackTraceOverride then Bullet.FlightTime = 0 end
-		Bullet.DeltaTime = ACF.SysTime - Bullet.LastThink
+		Bullet.DeltaTime = ACE.SysTime - Bullet.LastThink
 
 		--actual motion of the bullet
 		local Drag		= Bullet.Flight:GetNormalized() * (Bullet.DragCoef * Bullet.Flight:LengthSqr()) / ACF.DragDiv
@@ -156,7 +156,7 @@ do
 		debugoverlay.Line(Bullet.StartTrace, Bullet.EndTrace, DebugTime, Color(255, 255, 0)) -- the real trace detection.
 
 		--updating timestep timers
-		Bullet.LastThink = ACF.SysTime
+		Bullet.LastThink = ACE.SysTime
 		Bullet.FlightTime = Bullet.FlightTime + Bullet.DeltaTime
 
 		ACF_DoBulletsFlight( Index, Bullet )
@@ -396,7 +396,7 @@ do
 		if Bullet.SkyLvL then
 
 			--We don't want to calculate bullets that will never come back to map
-			if (ACF.CurTime - Bullet.LifeTime) > 100 then
+			if (ACE.CurTime - Bullet.LifeTime) > 100 then
 				ACF_RemoveBullet( Index )
 				return
 			end
@@ -471,7 +471,7 @@ do
 					--only if leaving top of skybox
 					if Bullet.Caliber >= 5 and FlightRes.HitNormal == Vector(0,0,-1) then
 						Bullet.SkyLvL   = FlightRes.HitPos.z				-- Lets save height on which bullet went through skybox. So it will start tracing after falling bellow this level. This will prevent from hitting higher levels of map
-						Bullet.LifeTime = ACF.CurTime
+						Bullet.LifeTime = ACE.CurTime
 						Bullet.Pos      = Bullet.NextPos
 					else
 						ACF_RemoveBullet( Index )

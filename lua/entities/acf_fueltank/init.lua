@@ -39,7 +39,7 @@ do
 		self.Active           = false
 		self.SupplyFuel       = false
 		self.Leaking          = 0
-		self.NextLegalCheck   = ACF.CurTime + math.random(ACF.Legal.Min, ACF.Legal.Max) -- give any spawning issues time to iron themselves out
+		self.NextLegalCheck   = ACE.CurTime + math.random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
 		self.Legal            = true
 		self.LegalIssues      = ""
 
@@ -177,8 +177,8 @@ do
 	local function ClampScale( Scale )
 		if not isvector( Scale ) then return end
 
-		local MinSize = ACF.CrateMinimumSize
-		local MaxSize = ACF.CrateMaximumSize
+		local MinSize = ACE.CrateMinimumSize
+		local MaxSize = ACE.CrateMaximumSize
 
 		Scale.x = math.Clamp( math.Round(Scale.x, 1), MinSize, MaxSize)
 		Scale.y = math.Clamp( math.Round(Scale.y, 1), MinSize, MaxSize)
@@ -402,7 +402,7 @@ function ENT:UpdateOverlayText()
 	end
 
 	if not self.Legal then
-		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACF.CurTime) .. "s\nIssues: " .. self.LegalIssues
+		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
 	self:SetOverlayText( text )
@@ -470,10 +470,10 @@ end
 
 function ENT:Think()
 
-	if ACF.CurTime > self.NextLegalCheck then
+	if ACE.CurTime > self.NextLegalCheck then
 		--local minmass = math.floor(self.Mass-6)  -- fuel is light, may as well save complexity and just check it's above empty mass
-		self.Legal, self.LegalIssues = ACF_CheckLegal(self, self.Model, math.Round(self.EmptyMass,2), nil, true, true) -- mass-6, as mass update is granular to 5 kg
-		self.NextLegalCheck = ACF.Legal.NextCheck(self.legal)
+		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.EmptyMass,2), nil, true, true) -- mass-6, as mass update is granular to 5 kg
+		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:UpdateOverlayText()
 	end
 

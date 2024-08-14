@@ -1,6 +1,6 @@
 -- This file defines damage permission with all ACF weaponry
 
-ACF = ACF or {}
+ACE = ACE or {}
 ACE.Permissions = ACE.Permissions or {}
 local this = ACE.Permissions
 

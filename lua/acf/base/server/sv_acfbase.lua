@@ -5,7 +5,7 @@ function ACF_GetPhysicalParent( obj )
 	if not IsValid(obj) then return nil end
 
 	--check for fresh cached parent
-	if obj.acfphysparent and ACF.CurTime < obj.acfphysstale then
+	if obj.acfphysparent and ACE.CurTime < obj.acfphysstale then
 		return obj.acfphysparent
 	end
 
@@ -17,7 +17,7 @@ function ACF_GetPhysicalParent( obj )
 
 	--update cached parent
 	obj.acfphysparent = Parent
-	obj.acfphysstale = ACF.CurTime + 10 --when cached parent is considered stale and needs updating
+	obj.acfphysstale = ACE.CurTime + 10 --when cached parent is considered stale and needs updating
 
 	return Parent
 end

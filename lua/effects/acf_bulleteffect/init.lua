@@ -32,7 +32,7 @@ do
 	function EFFECT:Init( data )
 
 		self.Index = data:GetMaterialIndex()
-		self.CreateTime = ACF.CurTime
+		self.CreateTime = ACE.CurTime
 
 		local Hit = data:GetScale()
 		local BulletData = ACE.BulletEffect[self.Index]
@@ -100,7 +100,7 @@ do
 
 			BulletData.Accel           = Crate:GetNWVector( "Accel", Vector(0,0,-600))
 
-			BulletData.LastThink       = CurTime() --ACF.CurTime
+			BulletData.LastThink       = CurTime() --ACE.CurTime
 			BulletData.Effect          = self.Entity
 			BulletData.CrackCreated    = false
 			BulletData.InitialPos      = BulletData.SimPos --Store the first pos, se we can limit the crack sound at certain distance
@@ -152,7 +152,7 @@ function EFFECT:Think()
 
 	local Bullet = ACE.BulletEffect[self.Index]
 
-	if self.Alive and Bullet and self.CreateTime > ACF.CurTime-30 then
+	if self.Alive and Bullet and self.CreateTime > ACE.CurTime-30 then
 		return true
 	end
 
@@ -218,7 +218,7 @@ function EFFECT:ApplyMovement( Bullet, Index )
 				Light:SetAngles( Bullet.SimFlight:Angle() )
 				Light:SetVelocity( Bullet.SimFlight:GetNormalized())
 				Light:SetColor( Bullet.TracerColour.x, Bullet.TracerColour.y, Bullet.TracerColour.z )
-				Light:SetDieTime( math.Clamp(ACF.CurTime - self.CreateTime, 0.075, 0.1) ) -- 0.075, 0.1
+				Light:SetDieTime( math.Clamp(ACE.CurTime - self.CreateTime, 0.075, 0.1) ) -- 0.075, 0.1
 				Light:SetStartAlpha( 180 )
 				Light:SetStartSize( 40 * Bullet.Caliber ) -- 5
 				Light:SetEndSize( Bullet.Caliber ) --15 * Bullet.Caliber

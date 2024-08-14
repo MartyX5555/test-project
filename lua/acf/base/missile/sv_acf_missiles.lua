@@ -30,7 +30,7 @@ function ACFM_BulletLaunch(BulletData)
 	--Those are BulletData settings that are global and shouldn't change round to round
 	BulletData.Gravity		= GetConVar("sv_gravity"):GetInt() * -1
 	BulletData.Accel		= Vector(0,0,BulletData.Gravity)
-	BulletData.LastThink	= ACF.SysTime
+	BulletData.LastThink	= ACE.SysTime
 	BulletData.FlightTime	= 0
 	BulletData.TraceBackComp	= 0
 

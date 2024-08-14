@@ -3,17 +3,17 @@
 	set up to provide a random, fairly low cost legality check that discourages trying to game legality checking
 	with a hard to predict check time and punishing lockout time
 	usage:
-	Ent.Legal, Ent.LegalIssues = ACF_CheckLegal(Ent, Model, MinMass, MinInertia, NeedsGateParent, CanVisclip )
+	Ent.Legal, Ent.LegalIssues = ACE_CheckLegal(Ent, Model, MinMass, MinInertia, NeedsGateParent, CanVisclip )
 	Ent.NextLegalCheck = ACF.LegalSettings:NextCheck(Ent.Legal)
 ]]
 
-ACF = ACF or {}
+ACE = ACE or {}
 
-ACF.Legal = {}
-ACF.Legal.Min		= 5	-- min seconds between checks --5
-ACF.Legal.Max		= 25	-- max seconds between checks --25
-ACF.Legal.Lockout	= 35	-- lockout time on not legal  --35
-ACF.Legal.NextCheck  = function(_, Legal) return ACF.CurTime + (Legal and math.random(ACF.Legal.Min, ACF.Legal.Max) or ACF.Legal.Lockout) end
+ACE.Legal = {}
+ACE.Legal.Min		= 5	-- min seconds between checks --5
+ACE.Legal.Max		= 25	-- max seconds between checks --25
+ACE.Legal.Lockout	= 35	-- lockout time on not legal  --35
+ACE.Legal.NextCheck  = function(_, Legal) return ACE.CurTime + (Legal and math.random(ACE.Legal.Min, ACE.Legal.Max) or ACE.Legal.Lockout) end
 
 
 local function IsLegalityActivated()
@@ -47,7 +47,7 @@ do
 	}
 
 	--TODO: remove unused functions
-	function ACF_CheckLegal(Ent, Model, MinMass, MinInertia, _, CanVisclip )
+	function ACE_CheckLegal(Ent, Model, MinMass, MinInertia, _, CanVisclip )
 
 		local problems = {} --problems table definition
 		if not IsLegalityActivated() then return #problems == 0, table.concat(problems, ", ") end

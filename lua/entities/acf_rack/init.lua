@@ -84,7 +84,7 @@ function ENT:Initialize()
 	self.NextFire        = 1
 	self.PostReloadWait  = CurTime()
 	self.WaitFunction    = self.GetFireDelay
-	self.NextLegalCheck  = ACF.CurTime + math.random(ACF.Legal.Min, ACF.Legal.Max) -- give any spawning issues time to iron themselves out
+	self.NextLegalCheck  = ACE.CurTime + math.random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
 	self.Legal           = true
 	self.LegalIssues     = ""
 	self.LastSend        = 0
@@ -349,9 +349,9 @@ end
 
 function ENT:Think()
 
-	if ACF.CurTime > self.NextLegalCheck then
-		self.Legal, self.LegalIssues = ACF_CheckLegal(self, nil, math.Round(self.Mass,2), self.ModelInertia, nil, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
-		self.NextLegalCheck = ACF.Legal.NextCheck(self.legal)
+	if ACE.CurTime > self.NextLegalCheck then
+		self.Legal, self.LegalIssues = ACE_CheckLegal(self, nil, math.Round(self.Mass,2), self.ModelInertia, nil, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
+		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 
 		if not self.Legal and self.Firing then
 			self.Firing = false
@@ -883,7 +883,7 @@ function ENT:GetOverlayText()
 	end
 
 	if not self.Legal then
-		txt = txt .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACF.CurTime) .. "s\nIssues: " .. self.LegalIssues
+		txt = txt .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
 	self:SetOverlayText(txt)

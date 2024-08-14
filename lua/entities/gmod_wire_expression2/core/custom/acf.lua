@@ -281,13 +281,13 @@ do
 	-- Returns the latest ACE version
 	[nodiscard]
 	e2function number acfVersion()
-		return ACF.CurrentVersion
+		return ACE.CurrentVersion
 	end
 
 	-- Returns the current ACE version
 	[nodiscard]
 	e2function number acfCurVersion()
-		return ACF.Version
+		return ACE.Version
 	end
 
 	-- Returns the current air gap factor (air effectiveness against HEAT)
@@ -299,7 +299,7 @@ do
 	-- Returns the current ACE wind direction
 	[nodiscard]
 	e2function vector acfWindVector()
-		return ACF.Wind
+		return ACE.Wind
 	end
 
 	-- Returns 1 if the entity is an ACF engine

@@ -38,7 +38,7 @@ function ENT:Initialize()
 	self.Ammo                = 0
 	self.IsTwoPiece          = false
 
-	self.NextLegalCheck      = ACF.CurTime + math.random(ACF.Legal.Min, ACF.Legal.Max) -- give any spawning issues time to iron themselves out
+	self.NextLegalCheck      = ACE.CurTime + math.random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
 	self.Legal               = true
 	self.LegalIssues         = ""
 
@@ -170,7 +170,7 @@ do
 			if DetRand >= 0.95 then
 
 				self.Inflictor  = Inflictor
-				self.Damaged	= ACF.CurTime + (5 - Ratio * 3)
+				self.Damaged	= ACE.CurTime + (5 - Ratio * 3)
 
 			--Boom
 			elseif DetRand >= 0.7 then
@@ -216,8 +216,8 @@ do
 	local function ClampScale( Scale )
 		if not isvector( Scale ) then return end
 
-		local MinSize = ACF.CrateMinimumSize
-		local MaxSize = ACF.CrateMaximumSize
+		local MinSize = ACE.CrateMinimumSize
+		local MaxSize = ACE.CrateMaximumSize
 
 		Scale.x = math.Clamp( math.Round(Scale.x, 1), MinSize, MaxSize)
 		Scale.y = math.Clamp( math.Round(Scale.y, 1), MinSize, MaxSize)
@@ -440,7 +440,7 @@ function ENT:UpdateOverlayText()
 	end
 
 	if not self.Legal then
-		text = text .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACF.CurTime) .. "s\nIssues: " .. self.LegalIssues
+		text = text .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
 	self:SetOverlayText( text )
@@ -622,10 +622,10 @@ function ENT:UpdateMass()
 	self.Mass = self.EmptyMass + math.Round( self.AmmoMassMax * (self.Ammo / math.max(self.Capacity,1)) )
 
 	--reduce superflous engine calls, update crate mass every 5 kgs change or every 10s-15s
-	if math.abs((self.LastMass or 0) - self.Mass) > 5 or ACF.CurTime > self.NextMassUpdate then
+	if math.abs((self.LastMass or 0) - self.Mass) > 5 or ACE.CurTime > self.NextMassUpdate then
 
 		self.LastMass	= self.Mass
-		self.NextMassUpdate = ACF.CurTime + math.Rand(10,15)
+		self.NextMassUpdate = ACE.CurTime + math.Rand(10,15)
 
 		local phys = self:GetPhysicsObject()
 		if (phys:IsValid()) then
@@ -683,10 +683,10 @@ function ENT:Think()
 
 	if not self.BulletData then return false end
 
-	if ACF.CurTime > self.NextLegalCheck then
+	if ACE.CurTime > self.NextLegalCheck then
 
-		self.Legal, self.LegalIssues = ACF_CheckLegal(self, self.Model, math.min(math.Round(self.EmptyMass,2),50000), nil, true, true)
-		self.NextLegalCheck = ACF.Legal.NextCheck(self.legal)
+		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.min(math.Round(self.EmptyMass,2),50000), nil, true, true)
+		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:UpdateOverlayText()
 
 		if not self.Legal then

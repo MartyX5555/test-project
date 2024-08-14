@@ -55,7 +55,7 @@ local function smokePuff(self, Ground, ShootVector, Radius, RadiusMod, SmokeColo
 		-- Calculate the wind effect on velocity and gravity
 		-- Apply wind effect based on wind direction and windStrength
 		local velocity = (ShootVector + Vector(0, 0, 0.2)) * DeploySpeed
-		local gravity = Vector(0, 0, 0) + ACF.Wind * 0.2
+		local gravity = Vector(0, 0, 0) + ACE.Wind * 0.2
 
 		Smoke:SetVelocity(velocity)
 		Smoke:SetLifeTime(0)

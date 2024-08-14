@@ -4,8 +4,8 @@ ACE = ACE or {}
 ACFM = ACFM or {}
 ---------------------------------- Version ----------------------------------
 
-ACF.Version           = 1000		-- ACE current version
-ACF.CurrentVersion    = 0			-- just defining a variable, do not change
+ACE.Version           = 1000		-- ACE current version
+ACE.CurrentVersion    = 0			-- just defining a variable, do not change
 ACF.Year              = 2024		-- Current Year
 
 ---------------------------------- Global DataTables ----------------------------------
@@ -53,8 +53,8 @@ ACF.TankVolumeMul               = 1						-- multiplier for fuel tank capacity, 1
 
 ---------------------------------- Ammo Crate config ----------------------------------
 
-ACF.CrateMaximumSize            = 250
-ACF.CrateMinimumSize            = 5
+ACE.CrateMaximumSize            = 250
+ACE.CrateMinimumSize            = 5
 
 ACF.RefillDistance              = 400					-- Distance in which ammo crate starts refilling.
 ACF.RefillSpeed                 = 250					-- (ACF.RefillSpeed / RoundMass) / Distance
@@ -79,8 +79,8 @@ ACF.HEATAirGapFactor            = 0.15					-- % velocity loss for every meter tr
 ACF.HEATBoomConvert             = 1 / 3					-- percentage of filler that creates HE damage at detonation
 ACF.HEATPlungingReduction       = 4						-- Multiplier for the penarea of HEAT shells. 2x is a 50% reduction in penetration, 4x 25% and so on.
 
-ACF.ScaledHEMax                 = 50
-ACF.ScaledEntsMax               = 5
+ACE.ScaledHEMax                 = 50
+ACE.ScaledEntsMax               = 5
 
 ---------------------------------- Ballistic config ----------------------------------
 
@@ -237,9 +237,9 @@ if SERVER then
 		elseif CVar == "acf_debris_children" then
 			ACF.DebrisChance = math.Clamp(New,0,1)
 		elseif CVar == "acf_explosions_scaled_he_max" then
-			ACF.ScaledHEMax = math.max(New,50)
+			ACE.ScaledHEMax = math.max(New,50)
 		elseif CVar == "acf_explosions_scaled_ents_max" then
-			ACF.ScaledEntsMax = math.max(New,1)
+			ACE.ScaledEntsMax = math.max(New,1)
 		elseif CVar == "acf_enable_dp" then
 			if ACE_SendDPStatus then
 				ACE_SendDPStatus()
@@ -333,7 +333,7 @@ do
 
 			if SERVER then
 				print("================-[ ACE Global loader ]-===================\n")
-				print("- Current version: " .. ACF.Version)
+				print("- Current version: " .. ACE.Version)
 				print("- Detected " .. #files .. " files")
 				print("- ACE is loaded and ready!")
 				print("==========================================================")

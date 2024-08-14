@@ -143,8 +143,8 @@ do
 		--------------- NEW CONFIG ---------------
 		do
 
-			local MinCrateSize = ACF.CrateMinimumSize or 5
-			local MaxCrateSize = ACF.CrateMaximumSize
+			local MinCrateSize = ACE.CrateMinimumSize or 5
+			local MaxCrateSize = ACE.CrateMaximumSize
 
 			acfmenupanel:CPanelText("Crate_desc_new", "\nAdjust the dimensions for your tank. In inches.", nil, CrateNewPanel)
 
