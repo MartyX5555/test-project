@@ -41,22 +41,11 @@ if CLIENT then
 	--Required in order to update material data inserted in client convars
 	local function ACE_MaterialCheck( Material )
 
-		--Convert old numeric IDs to the new string IDs
-		local BackCompMat = {
-			"RHA",
-			"CHA",
-			"Cer",
-			"Rub",
-			"ERA",
-			"Alum",
-			"Texto"
-		}
-
 		--Refreshing the data, so we can replace non valid data with the callback.
 		if isnumber(tonumber(Material)) then
 
 			local Mat_ID = math.Clamp(Material + 1, 1,7)
-			Material = BackCompMat[Mat_ID]
+			Material = ACE.BackCompMat[Mat_ID]
 
 			--Updates the convar with the proper material
 			RunConsoleCommand( "acearmorprop_material", Material )

@@ -159,16 +159,7 @@ end
 
 do
 
-	--Convert old numeric IDs to the new string IDs
-	local BackCompMat = {
-		"RHA",
-		"CHA",
-		"Cer",
-		"Rub",
-		"ERA",
-		"Alum",
-		"Texto"
-	}
+
 
 	-- Global Ratio Setting Function
 	function ACE_CalcMassRatio( obj, pwr )
@@ -227,7 +218,7 @@ do
 						--ACE doesnt update their material stats actively, so we need to update it manually here.
 						if not isstring(material) then
 							local Mat_ID = material + 1
-							material = BackCompMat[Mat_ID]
+							material = ACE.BackCompMat[Mat_ID]
 						end
 
 						Compositions[material]  = Compositions[material] or {}
@@ -413,37 +404,24 @@ timer.Simple(1, function()
 end )
 
 
-do
+--Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
+function ACE_GetMaterialData( Mat )
 
-	--Used to reconvert old material ids
-	ACE.BackCompMat = {
-		[0] = "RHA",
-		[1] = "CHA",
-		[2] = "Cer",
-		[3] = "Rub",
-		[4] = "ERA",
-		[5] = "Alum",
-		[6] = "Texto"
-	}
+	if not ACE_CheckMaterial( Mat ) then
 
-	--Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
-	function ACE_GetMaterialData( Mat )
+		Mat = not isstring(Mat) and ACE.BackCompMat[Mat] or "RHA"
 
 		if not ACE_CheckMaterial( Mat ) then
-
-			Mat = not isstring(Mat) and ACE.BackCompMat[Mat] or "RHA"
-
-			if not ACE_CheckMaterial( Mat ) then
-				print("[ACE|ERROR]- No Armor material data found! Have the armor folder been renamed or removed? Unexpected results could occur!")
-				return nil
-			end
+			print("[ACE|ERROR]- No Armor material data found! Have the armor folder been renamed or removed? Unexpected results could occur!")
+			return nil
 		end
-
-		local MatData = ACE.ArmorMaterials[Mat]
-
-		return MatData
 	end
+
+	local MatData = ACE.ArmorMaterials[Mat]
+
+	return MatData
 end
+
 
 --TODO: Use a universal function
 function ACE_CheckMaterial( MatId )

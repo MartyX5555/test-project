@@ -109,20 +109,20 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.HP )
+	acemenupanel:AmmoSelect( ACE.AmmoBlacklist.HP )
 
 	ACE_UpperCommonDataDisplay()
 
-	acfmenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")	--Propellant Length Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")	--Projectile Length Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("CavVol",0,0,1000,2, "Hollow Point Length", "") --Hollow Point Cavity Slider (Name, Value, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")	--Propellant Length Slider (Name, Value, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")	--Projectile Length Slider (Name, Value, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("CavVol",0,0,1000,2, "Hollow Point Length", "") --Hollow Point Cavity Slider (Name, Value, Min, Max, Decimals, Title, Desc)
 
-	acfmenupanel:AmmoCheckbox("Tracer", "Tracer", "")			--Tracer checkbox (Name, Title, Desc)
-	acfmenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", "" )
+	acemenupanel:AmmoCheckbox("Tracer", "Tracer", "")			--Tracer checkbox (Name, Title, Desc)
+	acemenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", "" )
 
-	acfmenupanel:CPanelText("KEDisplay", "")			--Proj muzzle KE (Name, Desc)
-	acfmenupanel:CPanelText("RicoDisplay", "")	--estimated rico chance
-	acfmenupanel:CPanelText("PenetrationDisplay", "")	--Proj muzzle penetration (Name, Desc)
+	acemenupanel:CPanelText("KEDisplay", "")			--Proj muzzle KE (Name, Desc)
+	acemenupanel:CPanelText("RicoDisplay", "")	--estimated rico chance
+	acemenupanel:CPanelText("PenetrationDisplay", "")	--Proj muzzle penetration (Name, Desc)
 
 	Round.guiupdate( Panel, Table )
 
@@ -131,17 +131,17 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id = acfmenupanel.AmmoData.Data.id			--AmmoSelect GUI
+		PlayerData.Id = acemenupanel.AmmoData.Data.id			--AmmoSelect GUI
 		PlayerData.Type = "HP"										--Hardcoded, match as Round.Type instead
-		PlayerData.PropLength = acfmenupanel.AmmoData.PropLength	--PropLength slider
-		PlayerData.ProjLength = acfmenupanel.AmmoData.ProjLength	--ProjLength slider
-		PlayerData.Data5 = acfmenupanel.AmmoData.CavVol
-		PlayerData.Tracer	= acfmenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acfmenupanel.AmmoData.TwoPiece
+		PlayerData.PropLength = acemenupanel.AmmoData.PropLength	--PropLength slider
+		PlayerData.ProjLength = acemenupanel.AmmoData.ProjLength	--ProjLength slider
+		PlayerData.Data5 = acemenupanel.AmmoData.CavVol
+		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acfmenupanel.AmmoData.Data.id )
+	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
 	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
 	RunConsoleCommand( "acemenu_data3", Data.PropLength )		--For Gun ammo, Data3 should always be Propellant
 	RunConsoleCommand( "acemenu_data4", Data.ProjLength )		--And Data4 total round mass
@@ -149,9 +149,9 @@ function Round.guiupdate( Panel )
 	RunConsoleCommand( "acemenu_data10", Data.Tracer )
 	RunConsoleCommand( "acemenu_data11", Data.TwoPiece )
 
-	acfmenupanel:AmmoSlider("PropLength",Data.PropLength,Data.MinPropLength,Data.MaxTotalLength,3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("CavVol",Data.CavVol,Data.MinCavVol,Data.MaxCavVol,2, "Hollow Point Cavity Volume", "Expanded caliber : " .. (math.floor(Data.ExpCaliber * 10)) .. " mm") --Hollow Point Cavity Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("PropLength",Data.PropLength,Data.MinPropLength,Data.MaxTotalLength,3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("CavVol",Data.CavVol,Data.MinCavVol,Data.MaxCavVol,2, "Hollow Point Cavity Volume", "Expanded caliber : " .. (math.floor(Data.ExpCaliber * 10)) .. " mm") --Hollow Point Cavity Slider (Name, Min, Max, Decimals, Title, Desc)
 
 	ACE_UpperCommonDataDisplay( Data, PlayerData )
 	ACE_CommonDataDisplay( Data )

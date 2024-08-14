@@ -353,29 +353,29 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.HEATFS )
-	acfmenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
+	acemenupanel:AmmoSelect( ACE.AmmoBlacklist.HEATFS )
+	acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
-	acfmenupanel:CPanelText("BonusDisplay", "")
+	acemenupanel:CPanelText("BonusDisplay", "")
 
-	acfmenupanel:CPanelText("Desc", "")	--Description (Name, Desc)
-	acfmenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
-	acfmenupanel:CPanelText("LengthDisplay", "")	--Total round length (Name, Desc)
+	acemenupanel:CPanelText("Desc", "")	--Description (Name, Desc)
+	acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
+	acemenupanel:CPanelText("LengthDisplay", "")	--Total round length (Name, Desc)
 
 	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")
-	acfmenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")
-	acfmenupanel:AmmoSlider("ConeAng",0,0,1000,3, "HEAT Cone Angle", "")
-	acfmenupanel:AmmoSlider("FillerVol",0,0,1000,3, "Total HEAT Warhead volume", "")
+	acemenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")
+	acemenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")
+	acemenupanel:AmmoSlider("ConeAng",0,0,1000,3, "HEAT Cone Angle", "")
+	acemenupanel:AmmoSlider("FillerVol",0,0,1000,3, "Total HEAT Warhead volume", "")
 
 	ACE_Checkboxes()
 
-	acfmenupanel:CPanelText("VelocityDisplay", "")	--Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("BlastDisplay", "")	--HE Blast data (Name, Desc)
-	acfmenupanel:CPanelText("FragDisplay", "")	--HE Fragmentation data (Name, Desc)
+	acemenupanel:CPanelText("VelocityDisplay", "")	--Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("BlastDisplay", "")	--HE Blast data (Name, Desc)
+	acemenupanel:CPanelText("FragDisplay", "")	--HE Fragmentation data (Name, Desc)
 
-	--acfmenupanel:CPanelText("RicoDisplay", "")	--estimated rico chance
-	acfmenupanel:CPanelText("SlugDisplay", "")	--HEAT Slug data (Name, Desc)
+	--acemenupanel:CPanelText("RicoDisplay", "")	--estimated rico chance
+	acemenupanel:CPanelText("SlugDisplay", "")	--HEAT Slug data (Name, Desc)
 
 	Round.guiupdate( Panel, Table )
 
@@ -384,18 +384,18 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id = acfmenupanel.AmmoData.Data.id			--AmmoSelect GUI
+		PlayerData.Id = acemenupanel.AmmoData.Data.id			--AmmoSelect GUI
 		PlayerData.Type = "HEATFS"										--Hardcoded, match as Round.Type instead
-		PlayerData.PropLength = acfmenupanel.AmmoData.PropLength	--PropLength slider
-		PlayerData.ProjLength = acfmenupanel.AmmoData.ProjLength	--ProjLength slider
-		PlayerData.Data5 = acfmenupanel.AmmoData.FillerVol
-		PlayerData.Data6 = acfmenupanel.AmmoData.ConeAng
-		PlayerData.Tracer	= acfmenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acfmenupanel.AmmoData.TwoPiece
+		PlayerData.PropLength = acemenupanel.AmmoData.PropLength	--PropLength slider
+		PlayerData.ProjLength = acemenupanel.AmmoData.ProjLength	--ProjLength slider
+		PlayerData.Data5 = acemenupanel.AmmoData.FillerVol
+		PlayerData.Data6 = acemenupanel.AmmoData.ConeAng
+		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acfmenupanel.AmmoData.Data.id )
+	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
 	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
 	RunConsoleCommand( "acemenu_data3", Data.PropLength )		--For Gun ammo, Data3 should always be Propellant
 	RunConsoleCommand( "acemenu_data4", Data.ProjLength )
@@ -408,22 +408,22 @@ function Round.guiupdate( Panel )
 	ACE_AmmoCapacityDisplay( Data )
 	-------------------------------------------------------------------------------
 
-	acfmenupanel:AmmoSlider("PropLength",Data.PropLength, Data.MinPropLength + (Data.Caliber * 3.9) ,Data.MaxTotalLength,3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ConeAng",Data.ConeAng,Data.MinConeAng,Data.MaxConeAng,0, "Crush Cone Angle", "")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "HE Filler Volume", "HE Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("PropLength",Data.PropLength, Data.MinPropLength + (Data.Caliber * 3.9) ,Data.MaxTotalLength,3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ConeAng",Data.ConeAng,Data.MinConeAng,Data.MaxConeAng,0, "Crush Cone Angle", "")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "HE Filler Volume", "HE Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 
 	ACE_Checkboxes( Data )
 
-	acfmenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc) --Description (Name, Desc)
-	acfmenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)
-	acfmenupanel:CPanelText("VelocityDisplay", "Muzzle Velocity : " .. math.floor(Data.MuzzleVel * ACE.VelScale) .. " m/s") --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m") --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\nAverage Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \nAverage Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
+	acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc) --Description (Name, Desc)
+	acemenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)
+	acemenupanel:CPanelText("VelocityDisplay", "Muzzle Velocity : " .. math.floor(Data.MuzzleVel * ACE.VelScale) .. " m/s") --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m") --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\nAverage Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \nAverage Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
 
 	---------------------------Chance of Ricochet table----------------------------
 
-	acfmenupanel:CPanelText("RicoDisplay", "Max Detonation angle: " .. Data.DetonatorAngle .. "°")
+	acemenupanel:CPanelText("RicoDisplay", "Max Detonation angle: " .. Data.DetonatorAngle .. "°")
 
 	-------------------------------------------------------------------------------
 	local R1V, R1P = ACE_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 100)
@@ -435,7 +435,7 @@ function Round.guiupdate( Panel )
 	local R4V, R4P = ACE_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 800)
 	R4P = (ACE_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
 
-	acfmenupanel:CPanelText("SlugDisplay", "Penetrator Mass : " .. (math.floor(Data.SlugMass * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.MuzzleVel + Data.SlugMV) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen) .. " mm RHA\n\n100m pen: " .. math.floor(R1P, 0) .. "mm @ " .. math.floor(R1V, 0) .. " m\\s\n200m pen: " .. math.floor(R2P, 0) .. "mm @ " .. math.floor(R2V, 0) .. " m\\s\n400m pen: " .. math.floor(R3P, 0) .. "mm @ " .. math.floor(R3V, 0) .. " m\\s\n800m pen: " .. math.floor(R4P, 0) .. "mm @ " .. math.floor(R4V, 0) .. " m\\s\n\nThe range data is an approximation and may not be entirely accurate.\n") --Proj muzzle penetration (Name, Desc)
+	acemenupanel:CPanelText("SlugDisplay", "Penetrator Mass : " .. (math.floor(Data.SlugMass * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.MuzzleVel + Data.SlugMV) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen) .. " mm RHA\n\n100m pen: " .. math.floor(R1P, 0) .. "mm @ " .. math.floor(R1V, 0) .. " m\\s\n200m pen: " .. math.floor(R2P, 0) .. "mm @ " .. math.floor(R2V, 0) .. " m\\s\n400m pen: " .. math.floor(R3P, 0) .. "mm @ " .. math.floor(R3V, 0) .. " m\\s\n800m pen: " .. math.floor(R4P, 0) .. "mm @ " .. math.floor(R4V, 0) .. " m\\s\n\nThe range data is an approximation and may not be entirely accurate.\n") --Proj muzzle penetration (Name, Desc)
 end
 
 list.Set("HERoundTypes", "HEATFS", Round )

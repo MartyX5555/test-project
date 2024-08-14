@@ -137,7 +137,7 @@ do
 
 		function ACE_AmmoCapacity( Data )
 
-			local GunId	= acfmenupanel.AmmoData.Data.id
+			local GunId	= acemenupanel.AmmoData.Data.id
 			local AmmoGunData = ACE.Weapons.Guns[GunId]
 			local GunClass	= AmmoGunData.gunclass
 			local ClassData	= ACE.Classes.GunClass[GunClass]
@@ -156,7 +156,7 @@ do
 				shellLength = ((PropLength or 0) + (ProjLength or 0)) / ACE.AmmoLengthMul / toInche
 			end
 
-			local Id		= acfmenupanel.AmmoData.Id
+			local Id		= acemenupanel.AmmoData.Id
 			local Dimensions = vector_origin
 
 			if not ACE_CheckAmmo( Id ) then
@@ -203,7 +203,7 @@ do
 			if TwoPiece then
 				bonustxt = bonustxt .. ". Uses 2 piece ammo. -" .. RoFNerf .. "% RoF"
 			end
-			acfmenupanel:CPanelText("BonusDisplay", bonustxt )
+			acemenupanel:CPanelText("BonusDisplay", bonustxt )
 		end
 
 	end
@@ -225,13 +225,13 @@ do
 
 		local ftext = table.concat(final_text)
 
-		acfmenupanel:CPanelText("PenetrationDisplay", ftext .. "\nThe range data is an approximation and may not be entirely accurate.\n")
+		acemenupanel:CPanelText("PenetrationDisplay", ftext .. "\nThe range data is an approximation and may not be entirely accurate.\n")
 
 	end
 
 	function ACE_AmmoStats(RoundLength, MaxTotalLength, MuzzleVel, MaxPen)
-	acfmenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
-	acfmenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLength .. "/" .. MaxTotalLength .. " cms (" .. math.Round(RoundLength / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
+	acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
+	acemenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLength .. "/" .. MaxTotalLength .. " cms (" .. math.Round(RoundLength / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
 
 	end
 
@@ -239,20 +239,20 @@ do
 
 		function ACE_UpperCommonDataDisplay( Data, PlayerData )
 
-			if not acfmenupanel then return end
+			if not acemenupanel then return end
 
 			if not Data or not PlayerData then
-				acfmenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
+				acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
-				acfmenupanel:CPanelText("BonusDisplay", "\n")
-				acfmenupanel:CPanelText("Desc", "")
+				acemenupanel:CPanelText("BonusDisplay", "\n")
+				acemenupanel:CPanelText("Desc", "")
 				ACE_AmmoStats( 0, 0, 0, 0 )
 
 			else
-				acfmenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
+				acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
 				ACE_AmmoCapacityDisplay( Data )
-				acfmenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc)
+				acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc)
 				ACE_AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
 			end
 
@@ -264,21 +264,21 @@ do
 
 		function ACE_CommonDataDisplay( Data )
 
-			if not acfmenupanel then return end
+			if not acemenupanel then return end
 
 			if not Data then
 
-				acfmenupanel:AmmoCheckbox("Tracer", "Enable Tracer: ", "", Trtip)							--Tracer checkbox (Name, Title, Desc)
-				acfmenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
-				acfmenupanel:CPanelText("RicoDisplay", "")										--estimated rico chance
-				acfmenupanel:CPanelText("PenetrationDisplay", "")								--Proj muzzle penetration (Name, Desc)
+				acemenupanel:AmmoCheckbox("Tracer", "Enable Tracer: ", "", Trtip)							--Tracer checkbox (Name, Title, Desc)
+				acemenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
+				acemenupanel:CPanelText("RicoDisplay", "")										--estimated rico chance
+				acemenupanel:CPanelText("PenetrationDisplay", "")								--Proj muzzle penetration (Name, Desc)
 			else
 
-				acfmenupanel:AmmoCheckbox("Tracer", "Enable Tracer: " .. (Floor(Data.Tracer * 5) / 10) .. "cm\n", "", Trtip) --Tracer checkbox (Name, Title, Desc)
-				acfmenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
+				acemenupanel:AmmoCheckbox("Tracer", "Enable Tracer: " .. (Floor(Data.Tracer * 5) / 10) .. "cm\n", "", Trtip) --Tracer checkbox (Name, Title, Desc)
+				acemenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
 
 				local None, Mean, Max = ACE_RicoProbability(Data.Ricochet, Data.MuzzleVel * ACE.VelScale)
-				acfmenupanel:CPanelText("RicoDisplay", "0% chance of ricochet at: " .. None .. "°\n50% chance of ricochet at: " .. Mean .. "°\n100% chance of ricochet at: " .. Max .. "°")
+				acemenupanel:CPanelText("RicoDisplay", "0% chance of ricochet at: " .. None .. "°\n50% chance of ricochet at: " .. Mean .. "°\n100% chance of ricochet at: " .. Max .. "°")
 
 				ACE_AmmoRangeStats( Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel )
 			end
@@ -287,14 +287,14 @@ do
 		--Because HE/Shaped rounds are different. Intented not to be merged into main function above, as its temporal.
 		function ACE_Checkboxes( Data )
 
-			if not acfmenupanel then return end
+			if not acemenupanel then return end
 
 			if not Data then
-				acfmenupanel:AmmoCheckbox("Tracer", "Enable Tracer: ", "", Trtip)							--Tracer checkbox (Name, Title, Desc)
-				acfmenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
+				acemenupanel:AmmoCheckbox("Tracer", "Enable Tracer: ", "", Trtip)							--Tracer checkbox (Name, Title, Desc)
+				acemenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
 			else
-				acfmenupanel:AmmoCheckbox("Tracer", "Enable Tracer: " .. (Floor(Data.Tracer * 5) / 10) .. "cm\n", "", Trtip)		--Tracer checkbox (Name, Title, Desc)
-				acfmenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
+				acemenupanel:AmmoCheckbox("Tracer", "Enable Tracer: " .. (Floor(Data.Tracer * 5) / 10) .. "cm\n", "", Trtip)		--Tracer checkbox (Name, Title, Desc)
+				acemenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
 			end
 		end
 	end

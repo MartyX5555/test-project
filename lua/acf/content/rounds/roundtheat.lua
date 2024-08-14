@@ -434,33 +434,33 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect( ACE.AmmoBlacklist.THEAT )
+	acemenupanel:AmmoSelect( ACE.AmmoBlacklist.THEAT )
 
-	acfmenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
+	acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
-	acfmenupanel:CPanelText("BonusDisplay", "")
+	acemenupanel:CPanelText("BonusDisplay", "")
 
-	acfmenupanel:CPanelText("Desc", "") --Description (Name, Desc)
-	acfmenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
-	acfmenupanel:CPanelText("LengthDisplay", "")	--Total round length (Name, Desc)
+	acemenupanel:CPanelText("Desc", "") --Description (Name, Desc)
+	acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
+	acemenupanel:CPanelText("LengthDisplay", "")	--Total round length (Name, Desc)
 
 	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")
-	acfmenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")
-	acfmenupanel:AmmoSlider("ConeAng",0,0,1000,3, "HEAT Cone Angle(1st)", "")
-	acfmenupanel:AmmoSlider("ConeAng2",0,0,1000,3, "HEAT Cone Angle(2nd)", "")
-	acfmenupanel:AmmoSlider("HEAllocation",0,0,1000,2, "HE Filler Allocation", "")
-	acfmenupanel:AmmoSlider("FillerVol",0,0,1000,3, "Total HEAT Warhead volume", "")
+	acemenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")
+	acemenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")
+	acemenupanel:AmmoSlider("ConeAng",0,0,1000,3, "HEAT Cone Angle(1st)", "")
+	acemenupanel:AmmoSlider("ConeAng2",0,0,1000,3, "HEAT Cone Angle(2nd)", "")
+	acemenupanel:AmmoSlider("HEAllocation",0,0,1000,2, "HE Filler Allocation", "")
+	acemenupanel:AmmoSlider("FillerVol",0,0,1000,3, "Total HEAT Warhead volume", "")
 
 	ACE_Checkboxes()
 
-	acfmenupanel:CPanelText("VelocityDisplay", "")  --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("BlastDisplay", "") --HE Blast data (Name, Desc)
-	acfmenupanel:CPanelText("FragDisplay", "")  --HE Fragmentation data (Name, Desc)
+	acemenupanel:CPanelText("VelocityDisplay", "")  --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("BlastDisplay", "") --HE Blast data (Name, Desc)
+	acemenupanel:CPanelText("FragDisplay", "")  --HE Fragmentation data (Name, Desc)
 
-	--acfmenupanel:CPanelText("RicoDisplay", "")	--estimated rico chance
-	acfmenupanel:CPanelText("SlugDisplay", "")  --HEAT Slug data (Name, Desc)
-	acfmenupanel:CPanelText("SlugDisplay2", "") --HEAT Slug data (Name, Desc)
+	--acemenupanel:CPanelText("RicoDisplay", "")	--estimated rico chance
+	acemenupanel:CPanelText("SlugDisplay", "")  --HEAT Slug data (Name, Desc)
+	acemenupanel:CPanelText("SlugDisplay2", "") --HEAT Slug data (Name, Desc)
 
 	Round.guiupdate( Panel, Table )
 
@@ -469,20 +469,20 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id = acfmenupanel.AmmoData.Data.id		--AmmoSelect GUI
+		PlayerData.Id = acemenupanel.AmmoData.Data.id		--AmmoSelect GUI
 		PlayerData.Type = "THEAT"									--Hardcoded, match as Round.Type instead
-		PlayerData.PropLength = acfmenupanel.AmmoData.PropLength	--PropLength slider
-		PlayerData.ProjLength = acfmenupanel.AmmoData.ProjLength	--ProjLength slider
-		PlayerData.Data5 = acfmenupanel.AmmoData.FillerVol
-		PlayerData.Data6 = acfmenupanel.AmmoData.ConeAng
-		PlayerData.Data13 = acfmenupanel.AmmoData.ConeAng2
-		PlayerData.Data14 = acfmenupanel.AmmoData.HEAllocation
-		PlayerData.Tracer	= acfmenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acfmenupanel.AmmoData.TwoPiece
+		PlayerData.PropLength = acemenupanel.AmmoData.PropLength	--PropLength slider
+		PlayerData.ProjLength = acemenupanel.AmmoData.ProjLength	--ProjLength slider
+		PlayerData.Data5 = acemenupanel.AmmoData.FillerVol
+		PlayerData.Data6 = acemenupanel.AmmoData.ConeAng
+		PlayerData.Data13 = acemenupanel.AmmoData.ConeAng2
+		PlayerData.Data14 = acemenupanel.AmmoData.HEAllocation
+		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acfmenupanel.AmmoData.Data.id )
+	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
 	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
 	RunConsoleCommand( "acemenu_data3", Data.PropLength )	--For Gun ammo, Data3 should always be Propellant
 	RunConsoleCommand( "acemenu_data4", Data.ProjLength )
@@ -496,22 +496,22 @@ function Round.guiupdate( Panel )
 	---------------------------Ammo Capacity-------------------------------------
 	ACE_AmmoCapacityDisplay( Data )
 	-------------------------------------------------------------------------------
-	acfmenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. math.floor(Data.PropMass * 1000) .. " g" .. "/ " .. math.Round(Data.PropMass, 1) .. " kg") --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. math.floor(Data.ProjMass * 1000) .. " g" .. "/ " .. math.Round(Data.ProjMass, 1) .. " kg") --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ConeAng", Data.ConeAng, Data.MinConeAng, Data.MaxConeAng, 0, "Crush Cone Angle(1st)", "") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ConeAng2", Data.ConeAng2, Data.MinConeAng, Data.MaxConeAng, 0, "Crush Cone Angle(2nd)", "") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("FillerVol", Data.FillerVol, Data.MinFillerVol, Data.MaxFillerVol, 3, "HE Filler Volume", "HE Filler Mass : " .. math.floor(Data.FillerMass * 1000) .. " g") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("HEAllocation", Data.HEAllocation, 0.05, 0.95, 2, "HE Filler Distribution", "HE Filler Ratio : " .. math.floor((1 - Data.HEAllocation) * 100) .. "% (1st), " .. math.floor(Data.HEAllocation * 100) .. "% (2nd)") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. math.floor(Data.PropMass * 1000) .. " g" .. "/ " .. math.Round(Data.PropMass, 1) .. " kg") --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. math.floor(Data.ProjMass * 1000) .. " g" .. "/ " .. math.Round(Data.ProjMass, 1) .. " kg") --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ConeAng", Data.ConeAng, Data.MinConeAng, Data.MaxConeAng, 0, "Crush Cone Angle(1st)", "") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ConeAng2", Data.ConeAng2, Data.MinConeAng, Data.MaxConeAng, 0, "Crush Cone Angle(2nd)", "") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("FillerVol", Data.FillerVol, Data.MinFillerVol, Data.MaxFillerVol, 3, "HE Filler Volume", "HE Filler Mass : " .. math.floor(Data.FillerMass * 1000) .. " g") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("HEAllocation", Data.HEAllocation, 0.05, 0.95, 2, "HE Filler Distribution", "HE Filler Ratio : " .. math.floor((1 - Data.HEAllocation) * 100) .. "% (1st), " .. math.floor(Data.HEAllocation * 100) .. "% (2nd)") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 
 	ACE_Checkboxes( Data )
 
-	acfmenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc) --Description (Name, Desc)
-	acfmenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)
-	acfmenupanel:CPanelText("VelocityDisplay", "Muzzle Velocity : " .. math.floor(Data.MuzzleVel * ACE.VelScale) .. " m/s") --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m") --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\n Average Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \n Average Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
+	acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc) --Description (Name, Desc)
+	acemenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)
+	acemenupanel:CPanelText("VelocityDisplay", "Muzzle Velocity : " .. math.floor(Data.MuzzleVel * ACE.VelScale) .. " m/s") --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m") --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\n Average Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \n Average Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
 
-	acfmenupanel:CPanelText("SlugDisplay", "1st Penetrator \nPenetrator Mass : " .. (math.floor(Data.SlugMass * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.SlugMV) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen) .. " mm \n\n2nd Penetrator \nPenetrator Mass : " .. (math.floor(Data.SlugMass2 * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber2 * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.SlugMV2) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen2) .. " mm \n") --Proj muzzle penetration (Name, Desc)
+	acemenupanel:CPanelText("SlugDisplay", "1st Penetrator \nPenetrator Mass : " .. (math.floor(Data.SlugMass * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.SlugMV) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen) .. " mm \n\n2nd Penetrator \nPenetrator Mass : " .. (math.floor(Data.SlugMass2 * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber2 * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.SlugMV2) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen2) .. " mm \n") --Proj muzzle penetration (Name, Desc)
 end
 
 list.Set("HERoundTypes", "THEAT", Round )

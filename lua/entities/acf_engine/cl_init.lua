@@ -22,24 +22,24 @@ end
 
 function ACE_EngineGUI_Update( Table )
 
-	acfmenupanel:CPanelText("Name", Table.name, "DermaDefaultBold")
+	acemenupanel:CPanelText("Name", Table.name, "DermaDefaultBold")
 
-	if not acfmenupanel.CData.DisplayModel then
+	if not acemenupanel.CData.DisplayModel then
 
-		acfmenupanel.CData.DisplayModel = vgui.Create( "DModelPanel", acfmenupanel.CustomDisplay )
-		acfmenupanel.CData.DisplayModel:SetModel( Table.model )
-		acfmenupanel.CData.DisplayModel:SetCamPos( Vector( 250, 500, 250 ) )
-		acfmenupanel.CData.DisplayModel:SetLookAt( Vector( 0, 0, 0 ) )
-		acfmenupanel.CData.DisplayModel:SetFOV( 20 )
-		acfmenupanel.CData.DisplayModel:SetSize(acfmenupanel:GetWide(),acfmenupanel:GetWide())
-		acfmenupanel.CData.DisplayModel.LayoutEntity = function() end
-		acfmenupanel.CustomDisplay:AddItem( acfmenupanel.CData.DisplayModel )
+		acemenupanel.CData.DisplayModel = vgui.Create( "DModelPanel", acemenupanel.CustomDisplay )
+		acemenupanel.CData.DisplayModel:SetModel( Table.model )
+		acemenupanel.CData.DisplayModel:SetCamPos( Vector( 250, 500, 250 ) )
+		acemenupanel.CData.DisplayModel:SetLookAt( Vector( 0, 0, 0 ) )
+		acemenupanel.CData.DisplayModel:SetFOV( 20 )
+		acemenupanel.CData.DisplayModel:SetSize(acemenupanel:GetWide(),acemenupanel:GetWide())
+		acemenupanel.CData.DisplayModel.LayoutEntity = function() end
+		acemenupanel.CustomDisplay:AddItem( acemenupanel.CData.DisplayModel )
 
 	end
 
-	acfmenupanel.CData.DisplayModel:SetModel( Table.model )
+	acemenupanel.CData.DisplayModel:SetModel( Table.model )
 
-	acfmenupanel:CPanelText("Desc", Table.desc)
+	acemenupanel:CPanelText("Desc", Table.desc)
 
 	local peakkw = Table.peakpower
 	local peakkwrpm = Table.peakpowerrpm
@@ -48,39 +48,39 @@ function ACE_EngineGUI_Update( Table )
 	local pbmax = Table.peakmaxrpm
 
 	if Table.requiresfuel then --if fuel required, show max power with fuel at top, no point in doing it twice
-		acfmenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw * ACE.TorqueBoost) .. " kW / " .. math.Round(peakkw * ACE.TorqueBoost * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
-		acfmenupanel:CPanelText("Torque", "Peak Torque: " .. math.Round(Table.torque * ACE.TorqueBoost) .. " n/m  / " .. math.Round(Table.torque * ACE.TorqueBoost * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
+		acemenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw * ACE.TorqueBoost) .. " kW / " .. math.Round(peakkw * ACE.TorqueBoost * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
+		acemenupanel:CPanelText("Torque", "Peak Torque: " .. math.Round(Table.torque * ACE.TorqueBoost) .. " n/m  / " .. math.Round(Table.torque * ACE.TorqueBoost * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
 	else
-		acfmenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw) .. " kW / " .. math.Round(peakkw * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
-		acfmenupanel:CPanelText("Torque", "Peak Torque: " .. Table.torque .. " n/m  / " .. math.Round(Table.torque * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
+		acemenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw) .. " kW / " .. math.Round(peakkw * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
+		acemenupanel:CPanelText("Torque", "Peak Torque: " .. Table.torque .. " n/m  / " .. math.Round(Table.torque * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
 	end
 
-	acfmenupanel:CPanelText("RPM", "Idle: " .. Table.idlerpm .. " RPM\nPowerband : " .. (math.Round(pbmin / 10) * 10) .. "-" .. (math.Round(pbmax / 10) * 10) .. " RPM\nRedline : " .. Table.limitrpm .. " RPM")
-	acfmenupanel:CPanelText("Weight", "Weight: " .. Table.weight .. " kg")
+	acemenupanel:CPanelText("RPM", "Idle: " .. Table.idlerpm .. " RPM\nPowerband : " .. (math.Round(pbmin / 10) * 10) .. "-" .. (math.Round(pbmax / 10) * 10) .. " RPM\nRedline : " .. Table.limitrpm .. " RPM")
+	acemenupanel:CPanelText("Weight", "Weight: " .. Table.weight .. " kg")
 
 
-	acfmenupanel:CPanelText("FuelType", "\nFuel Type: " .. Table.fuel)
+	acemenupanel:CPanelText("FuelType", "\nFuel Type: " .. Table.fuel)
 
 	if Table.fuel == "Electric" then
 		local cons = ACE.ElecRate * peakkw / ACE.Efficiency[Table.enginetype]
-		acfmenupanel:CPanelText("FuelCons", "Peak energy use: " .. math.Round(cons,1) .. " kW / " .. math.Round(0.06 * cons,1) .. " MJ/min")
+		acemenupanel:CPanelText("FuelCons", "Peak energy use: " .. math.Round(cons,1) .. " kW / " .. math.Round(0.06 * cons,1) .. " MJ/min")
 	elseif Table.fuel == "Multifuel" then
 		local petrolcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * ACE.TorqueBoost * peakkw / (60 * ACE.FuelDensity.Petrol)
 		local dieselcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * ACE.TorqueBoost * peakkw / (60 * ACE.FuelDensity.Diesel)
-		acfmenupanel:CPanelText("FuelConsP", "Petrol Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(petrolcons,2) .. " liters/min / " .. math.Round(0.264 * petrolcons,2) .. " gallons/min")
-		acfmenupanel:CPanelText("FuelConsD", "Diesel Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(dieselcons,2) .. " liters/min / " .. math.Round(0.264 * dieselcons,2) .. " gallons/min")
+		acemenupanel:CPanelText("FuelConsP", "Petrol Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(petrolcons,2) .. " liters/min / " .. math.Round(0.264 * petrolcons,2) .. " gallons/min")
+		acemenupanel:CPanelText("FuelConsD", "Diesel Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(dieselcons,2) .. " liters/min / " .. math.Round(0.264 * dieselcons,2) .. " gallons/min")
 	else
 		local fuelcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * ACE.TorqueBoost * peakkw / (60 * ACE.FuelDensity[Table.fuel])
-		acfmenupanel:CPanelText("FuelCons", Table.fuel .. " Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(fuelcons,2) .. " liters/min / " .. math.Round(0.264 * fuelcons,2) .. " gallons/min")
+		acemenupanel:CPanelText("FuelCons", Table.fuel .. " Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(fuelcons,2) .. " liters/min / " .. math.Round(0.264 * fuelcons,2) .. " gallons/min")
 	end
 
 	if Table.requiresfuel then
-		acfmenupanel:CPanelText("Fuelreq", "\nTHIS ENGINE REQUIRES " .. (Table.fuel == "Electric" and "BATTERIES" or "FUEL") .. "\n", "DermaDefaultBold")
+		acemenupanel:CPanelText("Fuelreq", "\nTHIS ENGINE REQUIRES " .. (Table.fuel == "Electric" and "BATTERIES" or "FUEL") .. "\n", "DermaDefaultBold")
 	else
-		acfmenupanel:CPanelText("FueledPower", "\nWhen supplied with fuel:\nPeak Power: " .. math.floor(peakkw * ACE.TorqueBoost) .. " kW / " .. math.Round(peakkw * ACE.TorqueBoost * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
-		acfmenupanel:CPanelText("FueledTorque", "Peak Torque: " .. (Table.torque * ACE.TorqueBoost) .. " n/m  / " .. math.Round(Table.torque * ACE.TorqueBoost * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM\n")
+		acemenupanel:CPanelText("FueledPower", "\nWhen supplied with fuel:\nPeak Power: " .. math.floor(peakkw * ACE.TorqueBoost) .. " kW / " .. math.Round(peakkw * ACE.TorqueBoost * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
+		acemenupanel:CPanelText("FueledTorque", "Peak Torque: " .. (Table.torque * ACE.TorqueBoost) .. " n/m  / " .. math.Round(Table.torque * ACE.TorqueBoost * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM\n")
 	end
 
-	acfmenupanel.CustomDisplay:PerformLayout()
+	acemenupanel.CustomDisplay:PerformLayout()
 
 end

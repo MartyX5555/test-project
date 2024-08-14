@@ -26,31 +26,31 @@ end
 function ACFIRSTGUICreate( Table )
 
 	if not (ACF and next(ACE.Classes) and next(ACE.Classes.Radar) and Table) then
-		acfmenupanel:CPanelText("Error1", "There was an error trying to gather the information for this sensor", "DermaDefaultBold")
-		acfmenupanel:CPanelText("Error3", "If the problem persists, report it to the server owner as soon as possible!")
+		acemenupanel:CPanelText("Error1", "There was an error trying to gather the information for this sensor", "DermaDefaultBold")
+		acemenupanel:CPanelText("Error3", "If the problem persists, report it to the server owner as soon as possible!")
 		return
 	end
 
-	acfmenupanel:CPanelText("Name", Table.name, "DermaDefaultBold")
+	acemenupanel:CPanelText("Name", Table.name, "DermaDefaultBold")
 
-	local RadarMenu = acfmenupanel.CData.DisplayModel
+	local RadarMenu = acemenupanel.CData.DisplayModel
 
-	RadarMenu = vgui.Create( "DModelPanel", acfmenupanel.CustomDisplay )
+	RadarMenu = vgui.Create( "DModelPanel", acemenupanel.CustomDisplay )
 		RadarMenu:SetModel( Table.model )
 		RadarMenu:SetCamPos( Vector( 250, 500, 250 ) )
 		RadarMenu:SetLookAt( Vector( 0, 0, 0 ) )
 		RadarMenu:SetFOV( 20 )
-		RadarMenu:SetSize(acfmenupanel:GetWide(),acfmenupanel:GetWide())
+		RadarMenu:SetSize(acemenupanel:GetWide(),acemenupanel:GetWide())
 		RadarMenu.LayoutEntity = function() end
-	acfmenupanel.CustomDisplay:AddItem( RadarMenu )
+	acemenupanel.CustomDisplay:AddItem( RadarMenu )
 
-	acfmenupanel:CPanelText("ClassDesc", ACE.Classes.Radar[Table.class].desc)
-	acfmenupanel:CPanelText("GunDesc", Table.desc)
-	acfmenupanel:CPanelText("ViewCone", "View cone : " .. ((Table.viewcone or 180) * 2) .. " degs")
-	acfmenupanel:CPanelText("MaxRange", "View range : " .. math.Round(Table.maxdist / 39.37 , 2) .. " m")
-	acfmenupanel:CPanelText("Weight", "Weight : " .. Table.weight .. " kg")
-	--acfmenupanel:CPanelText("GunParentable", "\nThis radar can be parented\n","DermaDefaultBold")
+	acemenupanel:CPanelText("ClassDesc", ACE.Classes.Radar[Table.class].desc)
+	acemenupanel:CPanelText("GunDesc", Table.desc)
+	acemenupanel:CPanelText("ViewCone", "View cone : " .. ((Table.viewcone or 180) * 2) .. " degs")
+	acemenupanel:CPanelText("MaxRange", "View range : " .. math.Round(Table.maxdist / 39.37 , 2) .. " m")
+	acemenupanel:CPanelText("Weight", "Weight : " .. Table.weight .. " kg")
+	--acemenupanel:CPanelText("GunParentable", "\nThis radar can be parented\n","DermaDefaultBold")
 
-	acfmenupanel.CustomDisplay:PerformLayout()
+	acemenupanel.CustomDisplay:PerformLayout()
 
 end

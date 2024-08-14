@@ -56,18 +56,18 @@ end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect()
-	acfmenupanel:CPanelText("Desc", ACFTranslation.ShellRef[2])	--Description (Name, Desc)
+	acemenupanel:AmmoSelect()
+	acemenupanel:CPanelText("Desc", ACFTranslation.ShellRef[2])	--Description (Name, Desc)
 	Round.guiupdate( Panel, Table )
 
 end
 
 function Round.guiupdate()
 
-	RunConsoleCommand( "acemenu_data1", acfmenupanel.CData.AmmoId )
+	RunConsoleCommand( "acemenu_data1", acemenupanel.CData.AmmoId )
 	RunConsoleCommand( "acemenu_data2", "Refill")
 
-	acfmenupanel.CustomDisplay:PerformLayout()
+	acemenupanel.CustomDisplay:PerformLayout()
 
 end
 

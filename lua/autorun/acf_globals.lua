@@ -169,6 +169,18 @@ ACE.DustMaterialColor = {
 
 --------------------------------------------------------------------------------------
 
+--Convert old numeric IDs to the new string IDs
+--Used to reconvert old material ids
+ACE.BackCompMat = {
+	[0] = "RHA",
+	[1] = "CHA",
+	[2] = "Cer",
+	[3] = "Rub",
+	[4] = "ERA",
+	[5] = "Alum",
+	[6] = "Texto"
+}
+
 ---------------------------------- Serverside Convars ----------------------------------
 if SERVER then
 

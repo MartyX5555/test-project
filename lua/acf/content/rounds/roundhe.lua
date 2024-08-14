@@ -147,7 +147,7 @@ function Round.endeffect( _, Bullet )
 		Flash:SetOrigin( Bullet.SimPos )
 		Flash:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Flash:SetRadius( math.max( Radius, 1 ) )
-	util.Effect( "ace_explosion", Flash )
+	util.Effect( "ACE_Scaled_Explosion", Flash )
 
 end
 
@@ -181,31 +181,31 @@ function Round.ricocheteffect( _, Bullet )
 		Spall:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ace_ricochet", Spall )
+	util.Effect( "ACE_AP_Ricochet", Spall )
 
 end
 
 function Round.guicreate( Panel, Table )
 
-	acfmenupanel:AmmoSelect(ACE.AmmoBlacklist.HE)
+	acemenupanel:AmmoSelect(ACE.AmmoBlacklist.HE)
 
-	acfmenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
+	acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
-	acfmenupanel:CPanelText("BonusDisplay", "")
+	acemenupanel:CPanelText("BonusDisplay", "")
 
-	acfmenupanel:CPanelText("Desc", "") --Description (Name, Desc)
-	acfmenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
-	acfmenupanel:CPanelText("LengthDisplay", "")	--Total round length (Name, Desc)
+	acemenupanel:CPanelText("Desc", "") --Description (Name, Desc)
+	acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
+	acemenupanel:CPanelText("LengthDisplay", "")	--Total round length (Name, Desc)
 
-	acfmenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("FillerVol",0,0,1000,3, "HE Filler", "")			--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("FillerVol",0,0,1000,3, "HE Filler", "")			--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
 
 	ACE_Checkboxes()
 
-	acfmenupanel:CPanelText("VelocityDisplay", "")  --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("BlastDisplay", "") --HE Blast data (Name, Desc)
-	acfmenupanel:CPanelText("FragDisplay", "")  --HE Fragmentation data (Name, Desc)
+	acemenupanel:CPanelText("VelocityDisplay", "")  --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("BlastDisplay", "") --HE Blast data (Name, Desc)
+	acemenupanel:CPanelText("FragDisplay", "")  --HE Fragmentation data (Name, Desc)
 
 	Round.guiupdate( Panel, Table )
 
@@ -214,17 +214,17 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id		= acfmenupanel.AmmoData.Data.id		--AmmoSelect GUI
+		PlayerData.Id		= acemenupanel.AmmoData.Data.id		--AmmoSelect GUI
 		PlayerData.Type		= "HE"									--Hardcoded, match as Round.Type instead
-		PlayerData.PropLength	= acfmenupanel.AmmoData.PropLength  --PropLength slider
-		PlayerData.ProjLength	= acfmenupanel.AmmoData.ProjLength  --ProjLength slider
-		PlayerData.Data5		= acfmenupanel.AmmoData.FillerVol
-		PlayerData.Tracer	= acfmenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acfmenupanel.AmmoData.TwoPiece
+		PlayerData.PropLength	= acemenupanel.AmmoData.PropLength  --PropLength slider
+		PlayerData.ProjLength	= acemenupanel.AmmoData.ProjLength  --ProjLength slider
+		PlayerData.Data5		= acemenupanel.AmmoData.FillerVol
+		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acfmenupanel.AmmoData.Data.id )
+	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
 	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
 	RunConsoleCommand( "acemenu_data3", Data.PropLength )	--For Gun ammo, Data3 should always be Propellant
 	RunConsoleCommand( "acemenu_data4", Data.ProjLength )	--And Data4 total round mass
@@ -235,21 +235,21 @@ function Round.guiupdate( Panel )
 	---------------------------Ammo Capacity-------------------------------------
 	ACE_AmmoCapacityDisplay( Data )
 	-------------------------------------------------------------------------------
-	acfmenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
-	acfmenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "HE Filler Volume", "HE Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "HE Filler Volume", "HE Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 
 	ACE_Checkboxes( Data )
 
-	acfmenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc) --Description (Name, Desc)
-	acfmenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)
-	acfmenupanel:CPanelText("VelocityDisplay", "Muzzle Velocity : " .. math.floor(Data.MuzzleVel * ACE.VelScale) .. " m/s") --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m") --Proj muzzle velocity (Name, Desc)
-	acfmenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\n Average Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \n Average Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
+	acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc) --Description (Name, Desc)
+	acemenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)
+	acemenupanel:CPanelText("VelocityDisplay", "Muzzle Velocity : " .. math.floor(Data.MuzzleVel * ACE.VelScale) .. " m/s") --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m") --Proj muzzle velocity (Name, Desc)
+	acemenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\n Average Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \n Average Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
 
 	---------------------------Chance of Ricochet table----------------------------
 
-	acfmenupanel:CPanelText("RicoDisplay", "Max Detonation angle: " .. Data.DetonatorAngle .. "°")
+	acemenupanel:CPanelText("RicoDisplay", "Max Detonation angle: " .. Data.DetonatorAngle .. "°")
 
 	-------------------------------------------------------------------------------
 end

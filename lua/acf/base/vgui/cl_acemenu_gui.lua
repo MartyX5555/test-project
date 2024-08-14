@@ -31,7 +31,7 @@ local function AmmoBuildList( ParentNode, NodeName, AmmoTable )
 
 		function EndNode:DoClick()
 			RunConsoleCommand( "acemenu_type", self.mytable.type )
-			acfmenupanel:UpdateDisplay( self.mytable )
+			acemenupanel:UpdateDisplay( self.mytable )
 		end
 	end
 end
@@ -40,7 +40,7 @@ PANEL = PANEL or {}
 
 function PANEL:Init( )
 
-	acfmenupanel = self.Panel
+	acemenupanel = self.Panel
 
 	-- -- height
 	self:SetTall( ScrH() - 150 )
@@ -116,7 +116,7 @@ function PANEL:Init( )
 	HomeNode.mytable.guiupdate = (function( _, Table ) ACFHomeGUIUpdate( Table ) end or nil)
 
 	function HomeNode:DoClick()
-		acfmenupanel:UpdateDisplay(self.mytable)
+		acemenupanel:UpdateDisplay(self.mytable)
 	end
 
 	------------------- Guns folder -------------------
@@ -135,7 +135,7 @@ function PANEL:Init( )
 
 				function EndNode:DoClick()
 					RunConsoleCommand( "acemenu_type", self.mytable.type )
-					acfmenupanel:UpdateDisplay( self.mytable )
+					acemenupanel:UpdateDisplay( self.mytable )
 				end
 			end
 		end
@@ -157,7 +157,7 @@ function PANEL:Init( )
 
 				function EndNode:DoClick()
 				RunConsoleCommand( "acemenu_type", self.mytable.type )
-				acfmenupanel:UpdateDisplay( self.mytable )
+				acemenupanel:UpdateDisplay( self.mytable )
 				end
 			end
 		end
@@ -212,7 +212,7 @@ function PANEL:Init( )
 
 				function Item:DoClick()
 				RunConsoleCommand( "acemenu_type", EngineData.type )
-				acfmenupanel:UpdateDisplay( EngineData )
+				acemenupanel:UpdateDisplay( EngineData )
 				end
 			end
 		end
@@ -242,7 +242,7 @@ function PANEL:Init( )
 
 				function Item:DoClick()
 				RunConsoleCommand( "acemenu_type", GearboxData.type )
-				acfmenupanel:UpdateDisplay( GearboxData )
+				acemenupanel:UpdateDisplay( GearboxData )
 				end
 			end
 		end
@@ -254,7 +254,7 @@ function PANEL:Init( )
 
 			function FuelTanks:DoClick()
 				RunConsoleCommand( "acemenu_type", FuelTankData.type )
-				acfmenupanel:UpdateDisplay( FuelTankData )
+				acemenupanel:UpdateDisplay( FuelTankData )
 			end
 
 			break
@@ -296,7 +296,7 @@ function PANEL:Init( )
 
 					function EndNode:DoClick()
 						RunConsoleCommand( "acemenu_type", self.mytable.type )
-						acfmenupanel:UpdateDisplay( self.mytable )
+						acemenupanel:UpdateDisplay( self.mytable )
 					end
 				end
 			end --end radar folder
@@ -321,10 +321,10 @@ function PANEL:Init( )
 		SSNode.mytable.guicreate = function( _, Table ) ACFSVGUICreate( Table ) end or nil
 
 		function CSNode:DoClick()
-			acfmenupanel:UpdateDisplay(self.mytable)
+			acemenupanel:UpdateDisplay(self.mytable)
 		end
 		function SSNode:DoClick()
-			acfmenupanel:UpdateDisplay(self.mytable)
+			acemenupanel:UpdateDisplay(self.mytable)
 		end
 
 	end
@@ -341,7 +341,7 @@ function PANEL:Init( )
 	Contact.mytable.guicreate = (function( _, Table ) ContactGUICreate( Table ) end or nil)
 
 	function Contact:DoClick()
-		acfmenupanel:UpdateDisplay(self.mytable)
+		acemenupanel:UpdateDisplay(self.mytable)
 	end
 
 	end
@@ -356,26 +356,26 @@ function PANEL:UpdateDisplay( Table )
 	RunConsoleCommand( "acemenu_id", Table.id or 0 )
 
 	--If a previous display exists, erase it
-	if acfmenupanel.CustomDisplay then
-		acfmenupanel.CustomDisplay:Clear(true)
-		acfmenupanel.CustomDisplay = nil
-		acfmenupanel.CData = nil
+	if acemenupanel.CustomDisplay then
+		acemenupanel.CustomDisplay:Clear(true)
+		acemenupanel.CustomDisplay = nil
+		acemenupanel.CData = nil
 	end
 	--Create the space to display the custom data
-	acfmenupanel.CustomDisplay = vgui.Create( "DPanelList", acfmenupanel )
-	acfmenupanel.CustomDisplay:SetSpacing( 10 )
-	acfmenupanel.CustomDisplay:EnableHorizontal( false )
-	acfmenupanel.CustomDisplay:EnableVerticalScrollbar( false )
-	acfmenupanel.CustomDisplay:SetSize( acfmenupanel:GetWide(), acfmenupanel:GetTall() )
+	acemenupanel.CustomDisplay = vgui.Create( "DPanelList", acemenupanel )
+	acemenupanel.CustomDisplay:SetSpacing( 10 )
+	acemenupanel.CustomDisplay:EnableHorizontal( false )
+	acemenupanel.CustomDisplay:EnableVerticalScrollbar( false )
+	acemenupanel.CustomDisplay:SetSize( acemenupanel:GetWide(), acemenupanel:GetTall() )
 
 	--Create a table for the display to store data
-	acfmenupanel["CData"] = acfmenupanel["CData"] or {}
+	acemenupanel["CData"] = acemenupanel["CData"] or {}
 
-	acfmenupanel.CreateAttribs = Table.guicreate
-	acfmenupanel.UpdateAttribs = Table.guiupdate
-	acfmenupanel:CreateAttribs( Table )
+	acemenupanel.CreateAttribs = Table.guicreate
+	acemenupanel.UpdateAttribs = Table.guiupdate
+	acemenupanel:CreateAttribs( Table )
 
-	acfmenupanel:PerformLayout()
+	acemenupanel:PerformLayout()
 
 end
 
@@ -386,15 +386,15 @@ function PANEL:PerformLayout()
 	local ypos = 0
 
 	--Selection Tree panel
-	acfmenupanel.WeaponSelect:SetPos( 0, ypos )
-	acfmenupanel.WeaponSelect:SetSize( acfmenupanel:GetWide(), ScrH() * 0.4 )
-	ypos = acfmenupanel.WeaponSelect.Y + acfmenupanel.WeaponSelect:GetTall() + vspacing
+	acemenupanel.WeaponSelect:SetPos( 0, ypos )
+	acemenupanel.WeaponSelect:SetSize( acemenupanel:GetWide(), ScrH() * 0.4 )
+	ypos = acemenupanel.WeaponSelect.Y + acemenupanel.WeaponSelect:GetTall() + vspacing
 
-	if acfmenupanel.CustomDisplay then
+	if acemenupanel.CustomDisplay then
 		--Custom panel
-		acfmenupanel.CustomDisplay:SetPos( 0, ypos )
-		acfmenupanel.CustomDisplay:SetSize( acfmenupanel:GetWide(), acfmenupanel:GetTall() - acfmenupanel.WeaponSelect:GetTall() - 10 )
-		ypos = acfmenupanel.CustomDisplay.Y + acfmenupanel.CustomDisplay:GetTall() + vspacing
+		acemenupanel.CustomDisplay:SetPos( 0, ypos )
+		acemenupanel.CustomDisplay:SetSize( acemenupanel:GetWide(), acemenupanel:GetTall() - acemenupanel.WeaponSelect:GetTall() - 10 )
+		ypos = acemenupanel.CustomDisplay.Y + acemenupanel.CustomDisplay:GetTall() + vspacing
 	end
 
 end
@@ -404,7 +404,7 @@ end
 ]]--=========================
 function ACFHomeGUICreate()
 
-	if not acfmenupanel.CustomDisplay then return end
+	if not acemenupanel.CustomDisplay then return end
 
 	local versionstring
 
@@ -424,55 +424,55 @@ function ACFHomeGUICreate()
 
 	versiontext = "GitHub Version: " .. ACE.CurrentVersion .. "\nCurrent Version: " .. ACE.Version
 
-	acfmenupanel["CData"]["VersionInit"] = vgui.Create( "DLabel" )
-	acfmenupanel["CData"]["VersionInit"]:SetText(versiontext)
-	acfmenupanel["CData"]["VersionInit"]:SetTextColor( Color( 0, 0, 0) )
-	acfmenupanel["CData"]["VersionInit"]:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"]["VersionInit"] )
+	acemenupanel["CData"]["VersionInit"] = vgui.Create( "DLabel" )
+	acemenupanel["CData"]["VersionInit"]:SetText(versiontext)
+	acemenupanel["CData"]["VersionInit"]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel["CData"]["VersionInit"]:SizeToContents()
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["VersionInit"] )
 
 
-	acfmenupanel["CData"]["VersionText"] = vgui.Create( "DLabel" )
+	acemenupanel["CData"]["VersionText"] = vgui.Create( "DLabel" )
 
-	acfmenupanel["CData"]["VersionText"]:SetFont("Trebuchet18")
-	acfmenupanel["CData"]["VersionText"]:SetText("ACE Is " .. versionstring .. "!\n\n")
-	acfmenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
-	acfmenupanel["CData"]["VersionText"]:SizeToContents()
+	acemenupanel["CData"]["VersionText"]:SetFont("Trebuchet18")
+	acemenupanel["CData"]["VersionText"]:SetText("ACE Is " .. versionstring .. "!\n\n")
+	acemenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel["CData"]["VersionText"]:SizeToContents()
 
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"]["VersionText"] )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["VersionText"] )
 	-- end version
 
-	acfmenupanel:CPanelText("Header", "Changelog")  --changelog screen
+	acemenupanel:CPanelText("Header", "Changelog")  --changelog screen
 
 --[[=========================
 	Changelog table maker
 ]]--=========================
 
-	if acfmenupanel.Changelog then
-	acfmenupanel["CData"]["Changelist"] = vgui.Create( "DTree" )
+	if acemenupanel.Changelog then
+	acemenupanel["CData"]["Changelist"] = vgui.Create( "DTree" )
 
-	for i = 0, table.maxn(acfmenupanel.Changelog) - 100 do
+	for i = 0, table.maxn(acemenupanel.Changelog) - 100 do
 
-		local k = table.maxn(acfmenupanel.Changelog) - i
+		local k = table.maxn(acemenupanel.Changelog) - i
 
-		local Node = acfmenupanel["CData"]["Changelist"]:AddNode( "Rev " .. k )
+		local Node = acemenupanel["CData"]["Changelist"]:AddNode( "Rev " .. k )
 			Node.mytable = {}
 			Node.mytable["rev"] = k
 				function Node:DoClick()
 
-				acfmenupanel:UpdateAttribs( Node.mytable )
+				acemenupanel:UpdateAttribs( Node.mytable )
 
 			end
 		Node.Icon:SetImage( "icon16/newspaper.png" )
 
 	end
 
-	acfmenupanel.CData.Changelist:SetSize( acfmenupanel.CustomDisplay:GetWide(), 60 )
+	acemenupanel.CData.Changelist:SetSize( acemenupanel.CustomDisplay:GetWide(), 60 )
 
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"]["Changelist"] )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["Changelist"] )
 
-	acfmenupanel.CustomDisplay:PerformLayout()
+	acemenupanel.CustomDisplay:PerformLayout()
 
-	acfmenupanel:UpdateAttribs( {rev = table.maxn(acfmenupanel.Changelog)} )
+	acemenupanel:UpdateAttribs( {rev = table.maxn(acemenupanel.Changelog)} )
 	end
 
 end
@@ -482,8 +482,8 @@ end
 ]]--=========================
 function ACFHomeGUIUpdate( Table )
 
-	acfmenupanel:CPanelText("Changelog", acfmenupanel.Changelog[Table["rev"]])
-	acfmenupanel.CustomDisplay:PerformLayout()
+	acemenupanel:CPanelText("Changelog", acemenupanel.Changelog[Table["rev"]])
+	acemenupanel.CustomDisplay:PerformLayout()
 
 	local color
 	local versionstring
@@ -509,10 +509,10 @@ function ACFHomeGUIUpdate( Table )
 		txt = versionstring
 	end
 
-	acfmenupanel["CData"]["VersionText"]:SetText(txt)
-	acfmenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
-	acfmenupanel["CData"]["VersionText"]:SetColor(color)
-	acfmenupanel["CData"]["VersionText"]:SizeToContents()
+	acemenupanel["CData"]["VersionText"]:SetText(txt)
+	acemenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel["CData"]["VersionText"]:SetColor(color)
+	acemenupanel["CData"]["VersionText"]:SizeToContents()
 
 end
 
@@ -523,17 +523,17 @@ end
 function ACFChangelogHTTPCallBack(contents)
 	local Temp = string.Explode( "*", contents )
 
-	acfmenupanel.Changelog = {}  --changelog table
+	acemenupanel.Changelog = {}  --changelog table
 	for _,String in pairs(Temp) do
-		acfmenupanel.Changelog[tonumber(string.sub(String,2,4))] = string.Trim(string.sub(String, 5))
+		acemenupanel.Changelog[tonumber(string.sub(String,2,4))] = string.Trim(string.sub(String, 5))
 	end
 
-	table.SortByKey(acfmenupanel.Changelog,true)
+	table.SortByKey(acemenupanel.Changelog,true)
 
 	local Table = {}
 	Table.guicreate = (function( _, Table ) ACFHomeGUICreate( Table ) end or nil)
 	Table.guiupdate = (function( _, Table ) ACFHomeGUIUpdate( Table ) end or nil)
-	acfmenupanel:UpdateDisplay( Table )
+	acemenupanel:UpdateDisplay( Table )
 
 end
 
@@ -543,7 +543,7 @@ end
 ]]--=========================
 function ACFCLGUICreate()
 
-	local Client = acfmenupanel["CData"]["Options"]
+	local Client = acemenupanel["CData"]["Options"]
 
 	Client = vgui.Create( "DLabel" )
 	Client:SetPos( 0, 0 )
@@ -551,14 +551,14 @@ function ACFCLGUICreate()
 	Client:SetText("ACE - Client Side Control Panel")
 	Client:SetFont("DermaDefaultBold")
 	Client:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( Client )
+	acemenupanel.CustomDisplay:AddItem( Client )
 
 	local Sub = vgui.Create( "DLabel" )
 	Sub:SetPos( 0, 0 )
 	Sub:SetColor( Color(10,10,10) )
 	Sub:SetText("Client Side parameters can be adjusted here.")
 	Sub:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( Sub )
+	acemenupanel.CustomDisplay:AddItem( Sub )
 
 	local Sounds = vgui.Create( "DForm" )
 	Sounds:SetName("Sounds")
@@ -569,7 +569,7 @@ function ACFCLGUICreate()
 	Sounds:NumSlider( "Ambient overall sounds", "acf_sound_volume", 0, 100, 0 )
 	Sounds:ControlHelp( "Adjusts the volume of ACE sounds like explosions, penetrations, ricochets, etc. Engines and some mechanic sounds are not affected yet." )
 
-	acfmenupanel.CustomDisplay:AddItem( Sounds )
+	acemenupanel.CustomDisplay:AddItem( Sounds )
 
 	local Effects = vgui.Create( "DForm" )
 	Effects:SetName("Rendering")
@@ -580,7 +580,7 @@ function ACFCLGUICreate()
 	Effects:CheckBox("Draw Mobility rope links", "ACE_MobilityRopeLinks")
 	Effects:ControlHelp( "Allow you to see the links between engines and gearboxes (requires dupe restart)" )
 
-	acfmenupanel.CustomDisplay:AddItem( Effects )
+	acemenupanel.CustomDisplay:AddItem( Effects )
 
 	local DupeSection = vgui.Create( "DForm" )
 	DupeSection:SetName("Dupe Loader")
@@ -588,7 +588,7 @@ function ACFCLGUICreate()
 	DupeSection:Help( "If for some reason, your ace dupe folder was damaged or deleted, you can restore them here." )
 	DupeSection:Button("Restore ace dupe folders", "acf_dupes_remount" )
 
-	acfmenupanel.CustomDisplay:AddItem( DupeSection )
+	acemenupanel.CustomDisplay:AddItem( DupeSection )
 
 end
 
@@ -599,7 +599,7 @@ local function MenuNotifyError()
 	Note:SetColor( Color(10,10,10) )
 	Note:SetText("Not available in this moment")
 	Note:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( Note )
+	acemenupanel.CustomDisplay:AddItem( Note )
 
 end
 
@@ -614,7 +614,7 @@ function ACFSVGUICreate()	--Serverside folder content
 	if not ply:IsSuperAdmin() then return end
 	if game.IsDedicated() then MenuNotifyError() return end
 
-	local Server = acfmenupanel["CData"]["Options"]
+	local Server = acemenupanel["CData"]["Options"]
 
 	Server = vgui.Create( "DLabel" )
 	Server:SetPos( 0, 0 )
@@ -622,14 +622,14 @@ function ACFSVGUICreate()	--Serverside folder content
 	Server:SetText("ACE - Server Side Control Panel")
 	Server:SetFont("DermaDefaultBold")
 	Server:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( Server )
+	acemenupanel.CustomDisplay:AddItem( Server )
 
 	local Sub = vgui.Create( "DLabel" )
 	Sub:SetPos( 0, 0 )
 	Sub:SetColor( Color(10,10,10) )
 	Sub:SetText("Server Side parameters can be adjusted here")
 	Sub:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( Sub )
+	acemenupanel.CustomDisplay:AddItem( Sub )
 
 	local General = vgui.Create( "DForm" )
 	General:SetName("General")
@@ -649,7 +649,7 @@ function ACFSVGUICreate()	--Serverside folder content
 	--General:NumSlider( "Year", "acf_year", 1900, 2021, 0 )
 	--General:ControlHelp( "Changes the year. This will affect the available weaponry (requires restart)." )
 
-	acfmenupanel.CustomDisplay:AddItem( General )
+	acemenupanel.CustomDisplay:AddItem( General )
 
 	local Spall = vgui.Create( "DForm" )
 	Spall:SetName("Spalling")
@@ -660,7 +660,7 @@ function ACFSVGUICreate()	--Serverside folder content
 	Spall:NumSlider( "Spalling Multipler", "acf_spalling_multipler", 1, 5, 0 )
 	Spall:ControlHelp( "How much Spalling will be created during impacts? Applies for spalling created by impacts" )
 
-	acfmenupanel.CustomDisplay:AddItem( Spall )
+	acemenupanel.CustomDisplay:AddItem( Spall )
 
 	local Scaled = vgui.Create( "DForm" )
 	Scaled:SetName("Cooking off")
@@ -671,7 +671,7 @@ function ACFSVGUICreate()	--Serverside folder content
 	Scaled:NumSlider( "Max entities per explosion", "acf_explosions_scaled_ents_max", 1, 20, 0 )
 	Scaled:ControlHelp( "The maximum amount of entities to detonate at once." )
 
-	acfmenupanel.CustomDisplay:AddItem( Scaled )
+	acemenupanel.CustomDisplay:AddItem( Scaled )
 
 	local Legal = vgui.Create( "DForm" )
 	Legal:SetName("Legality")
@@ -700,7 +700,7 @@ function ACFSVGUICreate()	--Serverside folder content
 	Legal:CheckBox( "Allow visclip", "acf_legal_ignore_visclip" )
 	Legal:ControlHelp( "ace ents can have visclip at any case" )
 
-	acfmenupanel.CustomDisplay:AddItem( Legal )
+	acemenupanel.CustomDisplay:AddItem( Legal )
 
 end
 
@@ -709,16 +709,16 @@ end
 ]]--=========================
 function ContactGUICreate()
 
-	acfmenupanel["CData"]["Contact"] = vgui.Create( "DLabel" )
-	acfmenupanel["CData"]["Contact"]:SetPos( 0, 0 )
-	acfmenupanel["CData"]["Contact"]:SetColor( Color(10,10,10) )
-	acfmenupanel["CData"]["Contact"]:SetText("Contact Us")
-	acfmenupanel["CData"]["Contact"]:SetFont("Trebuchet24")
-	acfmenupanel["CData"]["Contact"]:SizeToContents()
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"]["Contact"] )
+	acemenupanel["CData"]["Contact"] = vgui.Create( "DLabel" )
+	acemenupanel["CData"]["Contact"]:SetPos( 0, 0 )
+	acemenupanel["CData"]["Contact"]:SetColor( Color(10,10,10) )
+	acemenupanel["CData"]["Contact"]:SetText("Contact Us")
+	acemenupanel["CData"]["Contact"]:SetFont("Trebuchet24")
+	acemenupanel["CData"]["Contact"]:SizeToContents()
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["Contact"] )
 
-	acfmenupanel:CPanelText("desc1","If you want to contribute to ACE by providing us feedback, report bugs or tell us suggestions about new stuff to be added, our discord is a good place.")
-	acfmenupanel:CPanelText("desc2","Don't forget to check out our wiki, contains valuable information about how to use this addon. It's on WIP, but expect more content in future.")
+	acemenupanel:CPanelText("desc1","If you want to contribute to ACE by providing us feedback, report bugs or tell us suggestions about new stuff to be added, our discord is a good place.")
+	acemenupanel:CPanelText("desc2","Don't forget to check out our wiki, contains valuable information about how to use this addon. It's on WIP, but expect more content in future.")
 
 	local Discord = vgui.Create("DButton")
 	Discord:SetText( "Join our Discord!" )
@@ -727,7 +727,7 @@ function ContactGUICreate()
 	Discord.DoClick = function()
 	gui.OpenURL("https://discord.gg/Y8aEYU6")
 	end
-	acfmenupanel.CustomDisplay:AddItem( Discord )
+	acemenupanel.CustomDisplay:AddItem( Discord )
 
 	local Wiki = vgui.Create("DButton")
 	Wiki:SetText( "Open Wiki" )
@@ -736,7 +736,7 @@ function ContactGUICreate()
 	Wiki.DoClick = function()
 	gui.OpenURL("https://github.com/RedDeadlyCreeper/ArmoredCombatExtended/wiki")
 	end
-	acfmenupanel.CustomDisplay:AddItem( Wiki )
+	acemenupanel.CustomDisplay:AddItem( Wiki )
 
 	local Guide = vgui.Create("DButton")
 	Guide:SetText( "ACE guidelines" )
@@ -745,7 +745,7 @@ function ContactGUICreate()
 	Guide.DoClick = function()
 	gui.OpenURL("https://docs.google.com/document/d/1yaHq4Lfjad4KKa0Jg9s-5lCpPVjV7FE4HXoGaKpi4Fs/edit")
 	end
-	acfmenupanel.CustomDisplay:AddItem( Guide )
+	acemenupanel.CustomDisplay:AddItem( Guide )
 
 end
 
@@ -757,15 +757,15 @@ do
 
 	local function CreateIdForCrate( self )
 
-		if not acfmenupanel.AmmoPanelConfig["LegacyAmmos"] then
+		if not acemenupanel.AmmoPanelConfig["LegacyAmmos"] then
 
-			local X = math.Round( acfmenupanel.AmmoPanelConfig["Crate_Length"], 1 )
-			local Y = math.Round(acfmenupanel.AmmoPanelConfig["Crate_Width"], 1 )
-			local Z = math.Round(acfmenupanel.AmmoPanelConfig["Crate_Height"], 1)
+			local X = math.Round( acemenupanel.AmmoPanelConfig["Crate_Length"], 1 )
+			local Y = math.Round(acemenupanel.AmmoPanelConfig["Crate_Width"], 1 )
+			local Z = math.Round(acemenupanel.AmmoPanelConfig["Crate_Height"], 1)
 
 			local Id = X .. ":" .. Y .. ":" .. Z
 
-			acfmenupanel.AmmoData["Id"] = Id
+			acemenupanel.AmmoData["Id"] = Id
 			RunConsoleCommand( "acemenu_id", Id )
 
 		end
@@ -776,42 +776,42 @@ do
 
 	function PANEL:AmmoSelect( Blacklist )
 
-	if not acfmenupanel.CustomDisplay then return end
+	if not acemenupanel.CustomDisplay then return end
 	if not Blacklist then Blacklist = {} end
 
-	if not acfmenupanel.AmmoData then
+	if not acemenupanel.AmmoData then
 
-		acfmenupanel.AmmoData               = {}
-		acfmenupanel.AmmoData["Id"]         = "10:10:10"  --default Ammo dimension on list
-		acfmenupanel.AmmoData["IdLegacy"]   = "Shell100mm"
-		acfmenupanel.AmmoData["Type"]       = "Ammo"
-		acfmenupanel.AmmoData["Classname"]  = Classes.GunClass["MG"]["name"]
-		acfmenupanel.AmmoData["ClassData"]  = Classes.GunClass["MG"]["id"]
-		acfmenupanel.AmmoData["Data"]       = ACFEnts["Guns"]["12.7mmMG"]["round"]
+		acemenupanel.AmmoData               = {}
+		acemenupanel.AmmoData["Id"]         = "10:10:10"  --default Ammo dimension on list
+		acemenupanel.AmmoData["IdLegacy"]   = "Shell100mm"
+		acemenupanel.AmmoData["Type"]       = "Ammo"
+		acemenupanel.AmmoData["Classname"]  = Classes.GunClass["MG"]["name"]
+		acemenupanel.AmmoData["ClassData"]  = Classes.GunClass["MG"]["id"]
+		acemenupanel.AmmoData["Data"]       = ACFEnts["Guns"]["12.7mmMG"]["round"]
 	end
 
-	if not acfmenupanel.AmmoPanelConfig then
+	if not acemenupanel.AmmoPanelConfig then
 
-		acfmenupanel.AmmoPanelConfig = {}
-		acfmenupanel.AmmoPanelConfig["ExpandedCatNew"] = true
-		acfmenupanel.AmmoPanelConfig["ExpandedCatOld"] = false
-		acfmenupanel.AmmoPanelConfig["LegacyAmmos"]	= false
-		acfmenupanel.AmmoPanelConfig["Crate_Length"]  = 10
-		acfmenupanel.AmmoPanelConfig["Crate_Width"]	= 10
-		acfmenupanel.AmmoPanelConfig["Crate_Height"]  = 10
+		acemenupanel.AmmoPanelConfig = {}
+		acemenupanel.AmmoPanelConfig["ExpandedCatNew"] = true
+		acemenupanel.AmmoPanelConfig["ExpandedCatOld"] = false
+		acemenupanel.AmmoPanelConfig["LegacyAmmos"]	= false
+		acemenupanel.AmmoPanelConfig["Crate_Length"]  = 10
+		acemenupanel.AmmoPanelConfig["Crate_Width"]	= 10
+		acemenupanel.AmmoPanelConfig["Crate_Height"]  = 10
 
 	end
 
 	local MainPanel = self
 	local CrateNewCat = vgui.Create( "DCollapsibleCategory" )	-- Create a collapsible category
-	acfmenupanel.CustomDisplay:AddItem(CrateNewCat)
+	acemenupanel.CustomDisplay:AddItem(CrateNewCat)
 	CrateNewCat:SetLabel( "Crate Config" )						-- Set the name ( label )
 	CrateNewCat:SetPos( 25, 50 )		-- Set position
 	CrateNewCat:SetSize( 250, 100 )	-- Set size
-	CrateNewCat:SetExpanded( acfmenupanel.AmmoPanelConfig["ExpandedCatNew"] )
+	CrateNewCat:SetExpanded( acemenupanel.AmmoPanelConfig["ExpandedCatNew"] )
 
 	function CrateNewCat:OnToggle( bool )
-		acfmenupanel.AmmoPanelConfig["ExpandedCatNew"] = bool
+		acemenupanel.AmmoPanelConfig["ExpandedCatNew"] = bool
 	end
 
 	local CrateNewPanel = vgui.Create( "DPanelList" )
@@ -822,14 +822,14 @@ do
 	CrateNewCat:SetContents( CrateNewPanel )
 
 	local CrateOldCat = vgui.Create( "DCollapsibleCategory" )
-	acfmenupanel.CustomDisplay:AddItem(CrateOldCat)
+	acemenupanel.CustomDisplay:AddItem(CrateOldCat)
 	CrateOldCat:SetLabel( "Crate Config (legacy)" )
 	CrateOldCat:SetPos( 25, 50 )
 	CrateOldCat:SetSize( 250, 100 )
-	CrateOldCat:SetExpanded( acfmenupanel.AmmoPanelConfig["ExpandedCatOld"] )
+	CrateOldCat:SetExpanded( acemenupanel.AmmoPanelConfig["ExpandedCatOld"] )
 
 	function CrateOldCat:OnToggle( bool )
-		acfmenupanel.AmmoPanelConfig["ExpandedCatOld"] = bool
+		acemenupanel.AmmoPanelConfig["ExpandedCatOld"] = bool
 	end
 
 	local CrateOldPanel = vgui.Create( "DPanelList" )
@@ -849,18 +849,18 @@ do
 		local MinCrateSize = ACE.CrateMinimumSize
 		local MaxCrateSize = ACE.CrateMaximumSize
 
-		acfmenupanel:CPanelText("Crate_desc_new", "\nAdjust the dimensions for your crate. In inches.", nil, CrateNewPanel)
+		acemenupanel:CPanelText("Crate_desc_new", "\nAdjust the dimensions for your crate. In inches.", nil, CrateNewPanel)
 
 		local LengthSlider = vgui.Create( "DNumSlider" )
 		LengthSlider:SetText( "Length" )
 		LengthSlider:SetDark( true )
 		LengthSlider:SetMin( MinCrateSize )
 		LengthSlider:SetMax( MaxCrateSize )
-		LengthSlider:SetValue( acfmenupanel.AmmoPanelConfig["Crate_Length"] or 10 )
+		LengthSlider:SetValue( acemenupanel.AmmoPanelConfig["Crate_Length"] or 10 )
 		LengthSlider:SetDecimals( 1 )
 
 		function LengthSlider:OnValueChanged( value )
-			acfmenupanel.AmmoPanelConfig["Crate_Length"] = value
+			acemenupanel.AmmoPanelConfig["Crate_Length"] = value
 			CreateIdForCrate( MainPanel )
 		end
 		CrateNewPanel:AddItem(LengthSlider)
@@ -870,11 +870,11 @@ do
 		WidthSlider:SetDark( true )
 		WidthSlider:SetMin( MinCrateSize )
 		WidthSlider:SetMax( MaxCrateSize )
-		WidthSlider:SetValue( acfmenupanel.AmmoPanelConfig["Crate_Width"] or 10 )
+		WidthSlider:SetValue( acemenupanel.AmmoPanelConfig["Crate_Width"] or 10 )
 		WidthSlider:SetDecimals( 1 )
 
 		function WidthSlider:OnValueChanged( value )
-			acfmenupanel.AmmoPanelConfig["Crate_Width"] = value
+			acemenupanel.AmmoPanelConfig["Crate_Width"] = value
 			CreateIdForCrate( MainPanel )
 		end
 		CrateNewPanel:AddItem(WidthSlider)
@@ -884,11 +884,11 @@ do
 		HeightSlider:SetDark( true )
 		HeightSlider:SetMin( MinCrateSize )
 		HeightSlider:SetMax( MaxCrateSize )
-		HeightSlider:SetValue( acfmenupanel.AmmoPanelConfig["Crate_Height"] or 10 )
+		HeightSlider:SetValue( acemenupanel.AmmoPanelConfig["Crate_Height"] or 10 )
 		HeightSlider:SetDecimals( 1 )
 
 		function HeightSlider:OnValueChanged( value )
-			acfmenupanel.AmmoPanelConfig["Crate_Height"] = value
+			acemenupanel.AmmoPanelConfig["Crate_Height"] = value
 			CreateIdForCrate( MainPanel )
 		end
 		CrateNewPanel:AddItem(HeightSlider)
@@ -898,21 +898,21 @@ do
 	--------------- OLD CONFIG ---------------
 	do
 
-		acfmenupanel:CPanelText("Crate_desc_legacy", "\nChoose a crate in the legacy way. Remember to enable the checkbox below to do so.", nil, CrateOldPanel)
-		acfmenupanel:CPanelText("Crate_desc_legacy2", "DISCLAIMER: These crates are deprecated and dont't follow any proper format like the capacity or size. Don't trust on these crates, apart they might be removed in a future!", nil, CrateOldPanel)
+		acemenupanel:CPanelText("Crate_desc_legacy", "\nChoose a crate in the legacy way. Remember to enable the checkbox below to do so.", nil, CrateOldPanel)
+		acemenupanel:CPanelText("Crate_desc_legacy2", "DISCLAIMER: These crates are deprecated and dont't follow any proper format like the capacity or size. Don't trust on these crates, apart they might be removed in a future!", nil, CrateOldPanel)
 
 		local LegacyCheck = vgui.Create( "DCheckBoxLabel" ) -- Create the checkbox
 		LegacyCheck:SetPos( 25, 50 )							-- Set the position
 		LegacyCheck:SetText("Use Legacy Mode")					-- Set the text next to the box
 		LegacyCheck:SetDark( true )
-		LegacyCheck:SetChecked( acfmenupanel.AmmoPanelConfig["LegacyAmmos"] or false )						-- Initial value
+		LegacyCheck:SetChecked( acemenupanel.AmmoPanelConfig["LegacyAmmos"] or false )						-- Initial value
 		LegacyCheck:SizeToContents()							-- Make its size the same as the contents
 
 		function LegacyCheck:OnChange( val )
-			acfmenupanel.AmmoPanelConfig["LegacyAmmos"] = val
+			acemenupanel.AmmoPanelConfig["LegacyAmmos"] = val
 			if val then
-				acfmenupanel.AmmoData["Id"] =  acfmenupanel.AmmoData["IdLegacy"]
-				RunConsoleCommand( "acemenu_id", acfmenupanel.AmmoData["Id"] )
+				acemenupanel.AmmoData["Id"] =  acemenupanel.AmmoData["IdLegacy"]
+				RunConsoleCommand( "acemenu_id", acemenupanel.AmmoData["Id"] )
 			else
 				CreateIdForCrate( MainPanel )
 			end
@@ -924,7 +924,7 @@ do
 		CrateOldPanel:AddItem(LegacyCheck)
 
 		local AmmoComboBox = vgui.Create( "DComboBox", CrateOldPanel )	--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
-		AmmoComboBox:SetSize(acfmenupanel.CustomDisplay:GetWide(), 30)
+		AmmoComboBox:SetSize(acemenupanel.CustomDisplay:GetWide(), 30)
 
 		for Key, Value in pairs( ACFEnts.Ammo ) do
 
@@ -933,18 +933,18 @@ do
 		end
 
 		AmmoComboBox.OnSelect = function( _ , _ , data )	-- calls the ID of the list
-			if acfmenupanel.AmmoPanelConfig["LegacyAmmos"] then
+			if acemenupanel.AmmoPanelConfig["LegacyAmmos"] then
 			RunConsoleCommand( "acemenu_id", data )
-			acfmenupanel.AmmoData["Id"] = data
+			acemenupanel.AmmoData["Id"] = data
 			end
 
-			acfmenupanel.AmmoData["IdLegacy"] = data
+			acemenupanel.AmmoData["IdLegacy"] = data
 
-			if acfmenupanel.CData.CrateDisplay then
+			if acemenupanel.CData.CrateDisplay then
 
-			local cratemodel = ACFEnts.Ammo[acfmenupanel.AmmoData["IdLegacy"]].model
-			acfmenupanel.CData.CrateDisplay:SetModel(cratemodel)
-			acfmenupanel:CPanelText("CrateDesc", ACFEnts.Ammo[acfmenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
+			local cratemodel = ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].model
+			acemenupanel.CData.CrateDisplay:SetModel(cratemodel)
+			acemenupanel:CPanelText("CrateDesc", ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
 
 			end
 
@@ -952,8 +952,8 @@ do
 
 		end
 
-		AmmoComboBox:SetText(acfmenupanel.AmmoData["IdLegacy"])
-		RunConsoleCommand( "acemenu_id", acfmenupanel.AmmoData["Id"] )
+		AmmoComboBox:SetText(acemenupanel.AmmoData["IdLegacy"])
+		RunConsoleCommand( "acemenu_id", acemenupanel.AmmoData["Id"] )
 
 		CrateOldPanel:AddItem(AmmoComboBox)
 
@@ -962,19 +962,19 @@ do
 	--===========================================================================================
 
 		--Used to create the general model display
-		if not acfmenupanel.CData.CrateDisplay then
+		if not acemenupanel.CData.CrateDisplay then
 
-			acfmenupanel:CPanelText("CrateDesc", ACFEnts.Ammo[acfmenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
+			acemenupanel:CPanelText("CrateDesc", ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
 
-			acfmenupanel.CData.CrateDisplay = vgui.Create( "DModelPanel", CrateOldPanel )
-			acfmenupanel.CData.CrateDisplay:SetSize(acfmenupanel.CustomDisplay:GetWide(),acfmenupanel.CustomDisplay:GetWide() / 2)
-			acfmenupanel.CData.CrateDisplay:SetCamPos( Vector( 250, 500, 250 ) )
-			acfmenupanel.CData.CrateDisplay:SetLookAt( Vector( 0, 0, 0 ) )
-			acfmenupanel.CData.CrateDisplay:SetFOV( 10 )
-			acfmenupanel.CData.CrateDisplay:SetModel(ACFEnts.Ammo[acfmenupanel.AmmoData["IdLegacy"]].model)
-			acfmenupanel.CData.CrateDisplay.LayoutEntity = function() end
+			acemenupanel.CData.CrateDisplay = vgui.Create( "DModelPanel", CrateOldPanel )
+			acemenupanel.CData.CrateDisplay:SetSize(acemenupanel.CustomDisplay:GetWide(),acemenupanel.CustomDisplay:GetWide() / 2)
+			acemenupanel.CData.CrateDisplay:SetCamPos( Vector( 250, 500, 250 ) )
+			acemenupanel.CData.CrateDisplay:SetLookAt( Vector( 0, 0, 0 ) )
+			acemenupanel.CData.CrateDisplay:SetFOV( 10 )
+			acemenupanel.CData.CrateDisplay:SetModel(ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].model)
+			acemenupanel.CData.CrateDisplay.LayoutEntity = function() end
 
-			CrateOldPanel:AddItem(acfmenupanel.CData.CrateDisplay)
+			CrateOldPanel:AddItem(acemenupanel.CData.CrateDisplay)
 
 		end
 
@@ -984,38 +984,38 @@ do
 	-----Creating the gun Class display
 	--===========================================================================================
 
-	acfmenupanel.CData.ClassSelect = vgui.Create( "DComboBox", acfmenupanel.CustomDisplay)
-	acfmenupanel.CData.ClassSelect:SetSize(100, 30)
+	acemenupanel.CData.ClassSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay)
+	acemenupanel.CData.ClassSelect:SetSize(100, 30)
 
 	local DComboList = {}
 
 	for _, GunTable in pairs( Classes.GunClass ) do
 
 		if not table.HasValue( Blacklist, GunTable.id ) then
-			acfmenupanel.CData.ClassSelect:AddChoice( GunTable.name , GunTable.id )
+			acemenupanel.CData.ClassSelect:AddChoice( GunTable.name , GunTable.id )
 			DComboList[GunTable.id] = true
 
 		end
 	end
 
-	acfmenupanel.CData.ClassSelect:SetText( acfmenupanel.AmmoData["Classname"] .. (not DComboList[acfmenupanel.AmmoData["ClassData"]] and " - update caliber!" or "" ))
-	acfmenupanel.CData.ClassSelect:SetColor( not DComboList[acfmenupanel.AmmoData["ClassData"]] and Color(255,0,0) or Color(0,0,0) )
+	acemenupanel.CData.ClassSelect:SetText( acemenupanel.AmmoData["Classname"] .. (not DComboList[acemenupanel.AmmoData["ClassData"]] and " - update caliber!" or "" ))
+	acemenupanel.CData.ClassSelect:SetColor( not DComboList[acemenupanel.AmmoData["ClassData"]] and Color(255,0,0) or Color(0,0,0) )
 
-	acfmenupanel.CData.ClassSelect.OnSelect = function( _ , index , data )
+	acemenupanel.CData.ClassSelect.OnSelect = function( _ , index , data )
 
-		data = acfmenupanel.CData.ClassSelect:GetOptionData(index) -- Why?
+		data = acemenupanel.CData.ClassSelect:GetOptionData(index) -- Why?
 
-		acfmenupanel.AmmoData["Classname"] = Classes.GunClass[data]["name"]
-		acfmenupanel.AmmoData["ClassData"] = Classes.GunClass[data]["id"]
+		acemenupanel.AmmoData["Classname"] = Classes.GunClass[data]["name"]
+		acemenupanel.AmmoData["ClassData"] = Classes.GunClass[data]["id"]
 
-		acfmenupanel.CData.ClassSelect:SetColor( Color(0,0,0) )
+		acemenupanel.CData.ClassSelect:SetColor( Color(0,0,0) )
 
-		acfmenupanel.CData.CaliberSelect:Clear()
+		acemenupanel.CData.CaliberSelect:Clear()
 
 		for Key, Value in pairs( ACFEnts.Guns ) do
 
-			if acfmenupanel.AmmoData["ClassData"] == Value.gunclass then
-			acfmenupanel.CData.CaliberSelect:AddChoice( Value.id , Key )
+			if acemenupanel.AmmoData["ClassData"] == Value.gunclass then
+			acemenupanel.CData.CaliberSelect:AddChoice( Value.id , Key )
 			end
 
 		end
@@ -1024,139 +1024,139 @@ do
 		MainPanel:UpdateAttribs() --Note : this is intentional
 	end
 
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel.CData.ClassSelect )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel.CData.ClassSelect )
 
 	--===========================================================================================
 	-----Creating the caliber selection display
 	--===========================================================================================
 
-	acfmenupanel.CData.CaliberSelect = vgui.Create( "DComboBox", acfmenupanel.CustomDisplay )
-	acfmenupanel.CData.CaliberSelect:SetSize(100, 30)
+	acemenupanel.CData.CaliberSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )
+	acemenupanel.CData.CaliberSelect:SetSize(100, 30)
 
-	acfmenupanel.CData.CaliberSelect:SetText(acfmenupanel.AmmoData["Data"]["id"]  )
+	acemenupanel.CData.CaliberSelect:SetText(acemenupanel.AmmoData["Data"]["id"]  )
 
 	for Key, Value in pairs( ACFEnts.Guns ) do
 
-		if acfmenupanel.AmmoData["ClassData"] == Value.gunclass then
-			acfmenupanel.CData.CaliberSelect:AddChoice( Value.id , Key )
+		if acemenupanel.AmmoData["ClassData"] == Value.gunclass then
+			acemenupanel.CData.CaliberSelect:AddChoice( Value.id , Key )
 		end
 
 	end
 
-	acfmenupanel.CData.CaliberSelect.OnSelect = function( _ , _ , data )
-		acfmenupanel.AmmoData["Data"] = acfmenupanel.WeaponData["Guns"][data]["round"]
+	acemenupanel.CData.CaliberSelect.OnSelect = function( _ , _ , data )
+		acemenupanel.AmmoData["Data"] = acemenupanel.WeaponData["Guns"][data]["round"]
 		MainPanel:UpdateAttribs()
 		MainPanel:UpdateAttribs() --Note : this is intentional
 
 	end
 
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel.CData.CaliberSelect )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel.CData.CaliberSelect )
 
 	end
 end
 
 function PANEL:AmmoSlider(Name, Value, Min, Max, Decimals, Title, Desc) --Variable name in the table, Value, Min value, Max Value, slider text title, slider decimeals, description text below slider
 
-	if not acfmenupanel["CData"][Name] then
+	if not acemenupanel["CData"][Name] then
 
-	acfmenupanel["CData"][Name] = vgui.Create( "DNumSlider", acfmenupanel.CustomDisplay )
-	acfmenupanel["CData"][Name].Label:SetSize( 0 )  --Note : this is intentional
-	acfmenupanel["CData"][Name]:SetTall( 50 )	-- make the slider taller to fit the new label
-	acfmenupanel["CData"][Name]:SetMin( 0 )
-	acfmenupanel["CData"][Name]:SetMax( 1000 )
-	acfmenupanel["CData"][Name]:SetDark( true )
-	acfmenupanel["CData"][Name]:SetDecimals( Decimals )
+	acemenupanel["CData"][Name] = vgui.Create( "DNumSlider", acemenupanel.CustomDisplay )
+	acemenupanel["CData"][Name].Label:SetSize( 0 )  --Note : this is intentional
+	acemenupanel["CData"][Name]:SetTall( 50 )	-- make the slider taller to fit the new label
+	acemenupanel["CData"][Name]:SetMin( 0 )
+	acemenupanel["CData"][Name]:SetMax( 1000 )
+	acemenupanel["CData"][Name]:SetDark( true )
+	acemenupanel["CData"][Name]:SetDecimals( Decimals )
 
-	acfmenupanel["CData"][Name .. "_label"] = vgui.Create( "DLabel", acfmenupanel["CData"][Name]) -- recreating the label
-	acfmenupanel["CData"][Name .. "_label"]:SetPos( 0, 0)
-	acfmenupanel["CData"][Name .. "_label"]:SetText( Title )
-	acfmenupanel["CData"][Name .. "_label"]:SizeToContents()
-	acfmenupanel["CData"][Name .. "_label"]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel["CData"][Name .. "_label"] = vgui.Create( "DLabel", acemenupanel["CData"][Name]) -- recreating the label
+	acemenupanel["CData"][Name .. "_label"]:SetPos( 0, 0)
+	acemenupanel["CData"][Name .. "_label"]:SetText( Title )
+	acemenupanel["CData"][Name .. "_label"]:SizeToContents()
+	acemenupanel["CData"][Name .. "_label"]:SetTextColor( Color( 0, 0, 0) )
 
-	if acfmenupanel.AmmoData[Name] then
-			acfmenupanel["CData"][Name]:SetValue(acfmenupanel.AmmoData[Name])
+	if acemenupanel.AmmoData[Name] then
+			acemenupanel["CData"][Name]:SetValue(acemenupanel.AmmoData[Name])
 	end
 
-	acfmenupanel["CData"][Name].OnValueChanged = function( _, val )
+	acemenupanel["CData"][Name].OnValueChanged = function( _, val )
 
-	if acfmenupanel.AmmoData[Name] ~= val then
+	if acemenupanel.AmmoData[Name] ~= val then
 
-		acfmenupanel.AmmoData[Name] = val
+		acemenupanel.AmmoData[Name] = val
 			self:UpdateAttribs( Name )
 		end
 
 	end
 
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"][Name] )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name] )
 
 	end
 
-	acfmenupanel["CData"][Name]:SetMin( Min )
-	acfmenupanel["CData"][Name]:SetMax( Max )
-	acfmenupanel["CData"][Name]:SetValue( Value )
+	acemenupanel["CData"][Name]:SetMin( Min )
+	acemenupanel["CData"][Name]:SetMax( Max )
+	acemenupanel["CData"][Name]:SetValue( Value )
 
-	if not acfmenupanel["CData"][Name .. "_text"] and Desc then
+	if not acemenupanel["CData"][Name .. "_text"] and Desc then
 
-	acfmenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
-	acfmenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
-	acfmenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
-	acfmenupanel["CData"][Name .. "_text"]:SetTall( 20 )
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"][Name .. "_text"] )
+	acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
+	acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
+	acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel["CData"][Name .. "_text"]:SetTall( 20 )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name .. "_text"] )
 
 	end
 
-	acfmenupanel["CData"][Name .. "_text"]:SetText( Desc )
-	acfmenupanel["CData"][Name .. "_text"]:SetSize( acfmenupanel.CustomDisplay:GetWide(), 14 )
-	acfmenupanel["CData"][Name .. "_text"]:SizeToContentsX()
+	acemenupanel["CData"][Name .. "_text"]:SetText( Desc )
+	acemenupanel["CData"][Name .. "_text"]:SetSize( acemenupanel.CustomDisplay:GetWide(), 14 )
+	acemenupanel["CData"][Name .. "_text"]:SizeToContentsX()
 
 end
 
 -- Variable name in the table, slider text title, slider decimeals, description text below slider
 function PANEL:AmmoCheckbox(Name, Title, Desc, Tooltip )
 
-	if not acfmenupanel["CData"][Name] then
+	if not acemenupanel["CData"][Name] then
 
-	acfmenupanel["CData"][Name] = acfmenupanel["CData"][Name]
+	acemenupanel["CData"][Name] = acemenupanel["CData"][Name]
 
-	acfmenupanel["CData"][Name] = vgui.Create( "DCheckBoxLabel" )
-	acfmenupanel["CData"][Name]:SetText( Title or "" )
-	acfmenupanel["CData"][Name]:SetTextColor( Color( 0, 0, 0) )
-	acfmenupanel["CData"][Name]:SizeToContents()
-	acfmenupanel["CData"][Name]:SetChecked(acfmenupanel.AmmoData[Name] or false)
+	acemenupanel["CData"][Name] = vgui.Create( "DCheckBoxLabel" )
+	acemenupanel["CData"][Name]:SetText( Title or "" )
+	acemenupanel["CData"][Name]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel["CData"][Name]:SizeToContents()
+	acemenupanel["CData"][Name]:SetChecked(acemenupanel.AmmoData[Name] or false)
 
-	acfmenupanel["CData"][Name].OnChange = function( _, bval )
+	acemenupanel["CData"][Name].OnChange = function( _, bval )
 
 		bval = bval and 1 or 0 -- converting to number since booleans sucks in this duty
 
-		acfmenupanel.AmmoData[Name] = tonumber(bval) --print(isstring(acfmenupanel.AmmoData[Name]))
+		acemenupanel.AmmoData[Name] = tonumber(bval) --print(isstring(acemenupanel.AmmoData[Name]))
 
 		self:UpdateAttribs()
 
 	end
 
 	if Tooltip and Tooltip ~= "" then
-		acfmenupanel["CData"][Name]:SetTooltip( Tooltip )
+		acemenupanel["CData"][Name]:SetTooltip( Tooltip )
 	end
 
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"][Name] )
-
-	end
-
-	acfmenupanel["CData"][Name]:SetText( Title )
-
-	if not acfmenupanel["CData"][Name .. "_text"] and Desc then
-
-	acfmenupanel["CData"][Name .. "_text"] = acfmenupanel["CData"][Name .. "_text"]
-	acfmenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
-	acfmenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
-	acfmenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
-	acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"][Name .. "_text"] )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name] )
 
 	end
 
-	acfmenupanel["CData"][Name .. "_text"]:SetText( Desc )
-	acfmenupanel["CData"][Name .. "_text"]:SetSize( acfmenupanel.CustomDisplay:GetWide(), 10 )
-	acfmenupanel["CData"][Name .. "_text"]:SizeToContentsX()
+	acemenupanel["CData"][Name]:SetText( Title )
+
+	if not acemenupanel["CData"][Name .. "_text"] and Desc then
+
+	acemenupanel["CData"][Name .. "_text"] = acemenupanel["CData"][Name .. "_text"]
+	acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
+	acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
+	acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
+	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name .. "_text"] )
+
+	end
+
+	acemenupanel["CData"][Name .. "_text"]:SetText( Desc )
+	acemenupanel["CData"][Name .. "_text"]:SetSize( acemenupanel.CustomDisplay:GetWide(), 10 )
+	acemenupanel["CData"][Name .. "_text"]:SizeToContentsX()
 
 end
 
@@ -1171,30 +1171,30 @@ end
 
 function ACE_CPanelText(Name, Desc, Font, Panel)
 
-	if not acfmenupanel["CData"][Name .. "_text"] then
+	if not acemenupanel["CData"][Name .. "_text"] then
 
-		acfmenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
+		acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
 
-		acfmenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
-		acfmenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
+		acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
+		acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
 
-		if Font then acfmenupanel["CData"][Name .. "_text"]:SetFont( Font ) end
+		if Font then acemenupanel["CData"][Name .. "_text"]:SetFont( Font ) end
 
-		acfmenupanel["CData"][Name .. "_text"]:SetWrap(true)
-		acfmenupanel["CData"][Name .. "_text"]:SetAutoStretchVertical( true )
+		acemenupanel["CData"][Name .. "_text"]:SetWrap(true)
+		acemenupanel["CData"][Name .. "_text"]:SetAutoStretchVertical( true )
 
 		if IsValid(Panel) then
 			if Panel.AddItem then
-				Panel:AddItem( acfmenupanel["CData"][Name .. "_text"] )
+				Panel:AddItem( acemenupanel["CData"][Name .. "_text"] )
 			end
 		else
-			acfmenupanel.CustomDisplay:AddItem( acfmenupanel["CData"][Name .. "_text"] )
+			acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name .. "_text"] )
 		end
 	end
 
-	acfmenupanel["CData"][Name .. "_text"]:SetText( Desc )
-	acfmenupanel["CData"][Name .. "_text"]:SetSize( acfmenupanel.CustomDisplay:GetWide(), 10 )
-	acfmenupanel["CData"][Name .. "_text"]:SizeToContentsY()
+	acemenupanel["CData"][Name .. "_text"]:SetText( Desc )
+	acemenupanel["CData"][Name .. "_text"]:SetSize( acemenupanel.CustomDisplay:GetWide(), 10 )
+	acemenupanel["CData"][Name .. "_text"]:SizeToContentsY()
 
 end
 
