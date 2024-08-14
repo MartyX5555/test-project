@@ -4,7 +4,7 @@ local Material    = {}
 Material.id       = "Texto"
 Material.name     = "Textolite"
 Material.sname    = "Textolite"
-Material.desc     = "Fiberglass based material, this material provides decent protection agaisnt both chemical especially and kinetic rounds, while taking reduced damage from explosions."
+Material.desc     = "Fiberglass based material, this material provides decent protection against both chemical especially and kinetic rounds, while taking reduced damage from explosions."
 Material.year     = 1955
 
 Material.massMod  = 0.35

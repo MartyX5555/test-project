@@ -679,7 +679,7 @@ function ACFSVGUICreate()	--Serverside folder content
 	Legal:CheckBox("Enable Legality checks", "acf_legalcheck")
 	Legal:ControlHelp( "Enable the legality checks, which will punish with a lock time any stuff considered illegal." )
 
-	Legal:CheckBox( "Allow not solid", "acf_legal_ignore_solid" )
+	Legal:CheckBox( "Allow not solid", "acf_legal_ignore_notsolid" )
 	Legal:ControlHelp( "allow to use not solid" )
 
 	Legal:CheckBox( "Allow any model", "acf_legal_ignore_model" )

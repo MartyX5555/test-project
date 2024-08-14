@@ -439,7 +439,7 @@ do
 
 				if self.Motor > 0 or self.MotorLength > 0.1 then --Ignition -- must not be called here
 					self.MissileIgnited = true
-					self.CacheParticleEffect = CurTime() + 0.1
+					self.CacheParticleEffect = CurTime() + 0.01
 					self:SetNWFloat("LightSize", BulletData.Caliber * 3)
 					self.CutoutTime	= Time + self.MotorLength -- must not be called here
 				end
@@ -464,7 +464,7 @@ do
 
 			if self.Motor > 0 or self.MotorLength > 0.1 then
 				self.MissileIgnited = true
-				self.CacheParticleEffect = CurTime() + 0.1
+				self.CacheParticleEffect = CurTime() + 0.01
 				self:SetNWFloat("LightSize", BulletData.Caliber * 3)
 				self.CutoutTime	= Time + self.MotorLength
 			end
@@ -587,7 +587,8 @@ function ENT:Think()
 
 	end
 
-	return self.BaseClass.Think(self)
+	self:NextThink(CurTime() + self.ThinkDelay)
+	return true
 end
 
 --===========================================================================================

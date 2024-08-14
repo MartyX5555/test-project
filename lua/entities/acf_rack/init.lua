@@ -55,15 +55,20 @@ function ENT:GetFireDelay(nextMsl)
 
 end
 
-local RackWireDescs = {
-	--Inputs
-	["Reload"]       = "Arms this rack. Its mandatory to set this since racks don't reload automatically.",
-	["Delay"]        = "Sets a specific delay to guidance control over the default one in seconds.\n Note that you cannot override lower values than default.",
-	["TargetPos"]    = "Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.",
+--Inputs
+local WireInputs = {
+	"Fire",
+	"Reload (Arms this rack. Its mandatory to set this since racks don't reload automatically.)",
+	"Delay (Sets a specific delay to guidance control over the default one in seconds.\n Note that you cannot override lower values than default.)",
+	"TargetPos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
+}
 
-	--Outputs
-	["Ready"]        = "Returns if the rack is ready to fire."
-
+--Outputs
+local WireOutputs = {
+	"Ready (Returns if the rack is ready to fire.)",
+	"Entity (The rack itself) [ENTITY]",
+	"Shots Left",
+	"Position [VECTOR]",
 }
 
 function ENT:Initialize()
@@ -98,15 +103,12 @@ function ENT:Initialize()
 	self.ForceTdelay           = 0
 	self.Inaccuracy            = 1
 
-	self.Inputs = WireLib.CreateSpecialInputs( self, { "Fire",	"Reload (" .. RackWireDescs["Reload"] .. ")", "Track Delay (" .. RackWireDescs["Delay"] .. ")",	"Target Pos (" .. RackWireDescs["TargetPos"] .. ")" },
-													{ "NORMAL", "NORMAL", "NORMAL", "VECTOR" } )
-
-	self.Outputs = WireLib.CreateSpecialOutputs( self,  { "Ready (" .. RackWireDescs["Ready"] .. ")",	"Entity",	"Shots Left",  "Position" },
-														{ "NORMAL", "ENTITY", "NORMAL", "VECTOR" } )
+	self.Inputs = WireLib.CreateInputs( self, WireInputs )
+	self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
 
 	Wire_TriggerOutput(self, "Entity", self)
 	Wire_TriggerOutput(self, "Ready", 1)
-	self.WireDebugName = "ACF Rack"
+	self.WireDebugName = "ACE Rack"
 
 	self.lastCol = self:GetColor() or Color(255, 255, 255)
 	self.nextColCheck = CurTime() + 2
@@ -120,13 +122,8 @@ function ENT:Initialize()
 end
 
 function ENT:CanLoadCaliber(cal)
-
 	return ACF_RackCanLoadCaliber(self.Id, cal)
-
 end
-
-
-
 
 function ENT:CanLinkCrate(crate)
 
@@ -165,13 +162,8 @@ function ENT:CanLinkCrate(crate)
 		end
 	end
 
-
 	return true
-
 end
-
-
-
 
 function ENT:Link( Target )
 

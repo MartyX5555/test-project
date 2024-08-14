@@ -167,15 +167,6 @@ function ENT:ConfigBulletDataShortForm(bdata)
 	self:RefreshClientInfo()
 end
 
-
-function ENT:Think()
-
-	self:NextThink(CurTime() + self.ThinkDelay)
-
-	return true
-
-end
-
 function ENT:Detonate(overrideBData)
 
 	if self.Detonated then return end
