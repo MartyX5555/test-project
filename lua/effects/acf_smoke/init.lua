@@ -4,29 +4,24 @@ which was passed from the server.
 -----------------------------------------------------------]]
 
 function EFFECT:Init( data )
-	self.Origin = data:GetOrigin()
-	self.DirVec = data:GetNormal()
-	self.Colour = data:GetStart()
-	self.Radius = math.min(math.log(1 + data:GetRadius()) / 0.02303,350) --smoke filler (long lasting, slow deploy)
+	self.Origin    = data:GetOrigin()
+	self.DirVec    = data:GetNormal()
+	self.Colour    = data:GetStart()
+	self.Radius    = math.min(math.log(1 + data:GetRadius()) / 0.02303,350) --smoke filler (long lasting, slow deploy)
 	self.Magnitude = math.min(math.log(1 + data:GetMagnitude()) / 0.02303,350) --WP filler (fast deploy, short duration)
-	--print(self.Radius .. " " .. self.Magnitude)
-	self.Emitter = ParticleEmitter( self.Origin )
+	self.Emitter   = ParticleEmitter( self.Origin )
 
 	local ImpactTr = { }
 		ImpactTr.start = self.Origin - self.DirVec * 20
 		ImpactTr.endpos = self.Origin + self.DirVec * 20
-		ImpactTr.mins = Vector(0,0,0)
-		ImpactTr.maxs = Vector(0,0,0)
-	local Impact = util.TraceHull(ImpactTr)										--Trace to see if it will hit anything
+	local Impact = util.TraceLine(ImpactTr)										--Trace to see if it will hit anything
 	self.Normal = Impact.HitNormal
 
 	local GroundTr = { }
 		GroundTr.start = self.Origin + Vector(0,0,1)
 		GroundTr.endpos = self.Origin - Vector(0,0,1) * self.Radius
 		GroundTr.mask = 131083
-		GroundTr.mins = Vector(0,0,0)
-		GroundTr.maxs = Vector(0,0,0)
-	local Ground = util.TraceHull(GroundTr)
+	local Ground = util.TraceLine(GroundTr)
 
 	local SmokeColor = self.Colour or Vector(255,255,255)
 	if not Ground.HitWorld then Ground.HitNormal = Vector(0,0,1) end
@@ -40,7 +35,7 @@ function EFFECT:Init( data )
 		self:SmokeFiller( Ground, SmokeColor, self.Radius * 1.25, 0.15, 20 + self.Radius / 4 ) --slow build but long lasting
 	end
 
-	self.Emitter:Finish()
+	if self.Emitter:IsValid() then self.Emitter:Finish() end
 end
 
 local smokes = {
@@ -62,7 +57,6 @@ local function smokePuff(self, Ground, ShootVector, Radius, RadiusMod, SmokeColo
 		local velocity = (ShootVector + Vector(0, 0, 0.2)) * DeploySpeed
 		local gravity = Vector(0, 0, 0) + ACF.Wind * 0.2
 
-
 		Smoke:SetVelocity(velocity)
 		Smoke:SetLifeTime(0)
 		Smoke:SetDieTime(math.Clamp(Lifetime, 1, 60))
@@ -77,9 +71,6 @@ local function smokePuff(self, Ground, ShootVector, Radius, RadiusMod, SmokeColo
 		Smoke:SetColor(SmokeColor.x, SmokeColor.y, SmokeColor.z)
 	end
 end
-
-
-
 
 function EFFECT:SmokeFiller( Ground, SmokeColor, Radius, DeploySpeed, Lifetime )
 
