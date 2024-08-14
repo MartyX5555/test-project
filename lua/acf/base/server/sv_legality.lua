@@ -53,7 +53,7 @@ do
 		if not IsLegalityActivated() then return #problems == 0, table.concat(problems, ", ") end
 
 		-- check it exists
-		if not ACF_Check( Ent ) then return { Legal = false, Problems = {"Invalid Ent"} } end
+		if not ACE_Check( Ent ) then return { Legal = false, Problems = {"Invalid Ent"} } end
 
 		local physobj = Ent:GetPhysicsObject()
 

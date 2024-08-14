@@ -288,7 +288,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 	--2nd charge should always appear in the same place as 1st charge
 	if Bullet.FirstPos then HitPos = Bullet.FirstPos end
 
-	if ACF_Check( Target ) then
+	if ACE_Check( Target ) then
 
 		if DetCount > 0 then --Bullet Has Detonated
 			Bullet.NotFirstPen = true

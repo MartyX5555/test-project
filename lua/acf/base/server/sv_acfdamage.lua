@@ -95,7 +95,7 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 			if not IsValid(Tar) then continue end
 			if Power <= 0 or Tar.Exploding then continue end
 
-			local Type = ACF_Check(Tar)
+			local Type = ACE_Check(Tar)
 			if Type then
 
 				local TargetPos = Tar:GetPos()
@@ -578,7 +578,7 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 	local SpallRes = util.TraceLine(ACE.Spall[Index])
 
 	-- Check if spalling hit something
-	if SpallRes.Hit and ACF_Check( SpallRes.Entity ) then
+	if SpallRes.Hit and ACE_Check( SpallRes.Entity ) then
 
 		do
 

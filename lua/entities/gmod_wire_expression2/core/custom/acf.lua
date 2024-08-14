@@ -1229,7 +1229,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACF or not this.ACF.Health then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return 0 end
 		end
@@ -1243,7 +1243,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACF or not this.ACF.Armour then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return 0 end
 		end
@@ -1257,7 +1257,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACF or not this.ACF.MaxHealth then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return 0 end
 		end
@@ -1271,7 +1271,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACF or not this.ACF.MaxArmour then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return 0 end
 		end
@@ -1285,7 +1285,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACF then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return 0 end
 		end
@@ -1300,7 +1300,7 @@ do
 		if not (this and validPhysics(ent)) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, ent) then return 0 end
 		if not ent.ACF then
-			local check = ACF_Check(ent)
+			local check = ACE_Check(ent)
 
 			if not check then return 0 end
 		end
@@ -1315,7 +1315,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", "") end
 		if restrictInfo(self.player, this) then return "" end
 		if not this.ACF then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return "" end
 		end
@@ -1333,7 +1333,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", ret) end
 		if restrictInfo(self.player, this) then return ret end
 		if not this.ACF then
-			local check = ACF_Check(this)
+			local check = ACE_Check(this)
 
 			if not check then return ret end
 		end

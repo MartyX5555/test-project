@@ -424,7 +424,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACF_Check(this) then return 0 end
+		if not ACE_Check(this) then return 0 end
 
 		return round(this.ACF.Health, 3)
 	end
@@ -437,7 +437,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACF_Check(this) then return 0 end
+		if not ACE_Check(this) then return 0 end
 
 		return round(this.ACF.Armour, 3)
 	end
@@ -450,7 +450,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACF_Check(this) then return 0 end
+		if not ACE_Check(this) then return 0 end
 
 		return round(this.ACF.MaxHealth, 3)
 	end
@@ -463,7 +463,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACF_Check(this) then return 0 end
+		if not ACE_Check(this) then return 0 end
 
 		return round(this.ACF.MaxArmour, 3)
 	end
@@ -476,7 +476,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACF_Check(this) then return 0 end
+		if not ACE_Check(this) then return 0 end
 
 		return this.ACF.Ductility * 100
 	end
@@ -490,7 +490,7 @@ do
 
 		if not validPhysics(this) then return empty end
 		if restrictInfo(this) then return empty end
-		if not ACF_Check(this) then return empty end
+		if not ACE_Check(this) then return empty end
 
 		local mat = this.ACF.Material
 		if not mat then return empty end

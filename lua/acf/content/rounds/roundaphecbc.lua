@@ -144,7 +144,7 @@ end
 function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 
 
-	if ACF_Check( Target ) then
+	if ACE_Check( Target ) then
 
 		if Bullet.Normalize then
 

@@ -108,7 +108,7 @@ do
 
 			local HitEnt = tr.Entity
 
-			if ACF_Check( HitEnt ) then
+			if ACE_Check( HitEnt ) then
 
 				local HitPos	= HitEnt:GetPos()
 				local tolocal	= missile:WorldToLocal(HitPos)

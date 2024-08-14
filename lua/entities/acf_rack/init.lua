@@ -540,7 +540,7 @@ function ENT:AddMissile()
 	missile.Launcher		= self
 	missile.ForceTdelay	= self.ForceTdelay
 
-	missile.ContrapId = ACF_Check( self ) and self.ACF.ContraptionId or 1
+	missile.ContrapId = ACE_Check( self ) and self.ACF.ContraptionId or 1
 
 	local BulletData = ACFM_CompactBulletData(Crate)
 	BulletData.IsShortForm  = true

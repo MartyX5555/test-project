@@ -9,7 +9,7 @@ do
 		CreateMaterial("ACF_Damaged3", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged3"})
 	}
 
-	hook.Add("PostDrawOpaqueRenderables", "ACF_RenderDamage", function()
+	hook.Add("PostDrawOpaqueRenderables", "ACE_RenderDamage", function()
 		if not ACF_HealthRenderList then return end
 
 		cam.Start3D( EyePos(), EyeAngles() )
@@ -30,7 +30,7 @@ do
 		cam.End3D()
 	end)
 
-	net.Receive("ACF_RenderDamage", function()
+	net.Receive("ACE_RenderDamage", function()
 
 		local Index = net.ReadUInt(13)
 		local Entity = ents.GetByIndex( Index )

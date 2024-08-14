@@ -24,7 +24,7 @@ do
 
 			local Entity = RenderProps.Entities[1]
 			if IsValid(Entity) then
-				net.Start("ACF_RenderDamage", true) -- i dont care if the message is not received under extreme cases since its simply a visual effect only.
+				net.Start("ACE_RenderDamage", true) -- i dont care if the message is not received under extreme cases since its simply a visual effect only.
 					net.WriteUInt(Entity:EntIndex(), 13)
 					net.WriteFloat(Entity.ACF.MaxHealth)
 					net.WriteFloat(Entity.ACF.Health)

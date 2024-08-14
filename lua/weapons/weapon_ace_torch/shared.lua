@@ -70,7 +70,7 @@ function SWEP:Think()
 		local tr = util.TraceLine( trace )
 		local ent = tr.Entity
 
-		if IsValid(ent) and not ent:IsPlayer() and not ent:IsNPC() and ACF_Check( ent ) then
+		if IsValid(ent) and not ent:IsPlayer() and not ent:IsNPC() and ACE_Check( ent ) then
 			self:SetNWFloat( "HP", ent.ACF.Health )
 			self:SetNWFloat( "Armour", ent.ACF.Armour )
 			self:SetNWFloat( "MaxHP", ent.ACF.MaxHealth )
@@ -139,7 +139,7 @@ do
 
 				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
 
-				if ACF_Check( ent ) and ent.ACF.Health < ent.ACF.MaxHealth then
+				if ACE_Check( ent ) and ent.ACF.Health < ent.ACF.MaxHealth then
 
 					ent.ACF.Health = math.min(ent.ACF.Health + (600 / ent.ACF.MaxArmour), ent.ACF.MaxHealth)
 					ent.ACF.Armour = math.min(ent.ACF.MaxArmour * (ent.ACF.Health / ent.ACF.MaxHealth), ent.ACF.MaxArmour)
@@ -188,7 +188,7 @@ do
 
 		if not IsValid(ent) then return end
 
-		if ACF_Check ( ent ) then
+		if ACE_Check ( ent ) then
 
 			self:SetNWFloat( "HP", ent.ACF.Health )
 			self:SetNWFloat( "Armour", ent.ACF.Armour )

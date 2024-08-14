@@ -32,7 +32,7 @@ do
 			end
 		end
 		if Table ~= {} then
-			net.Start("ACF_RenderDamage")
+			net.Start("ACE_RenderDamage")
 				net.WriteTable(Table)
 			net.Send(ply)
 		end
@@ -105,7 +105,7 @@ function ACF_Activate( Entity , Recalc )
 	end
 end
 
-function ACF_Check( Entity )
+function ACE_Check( Entity )
 
 	if not IsValid(Entity) then return false end
 
@@ -126,7 +126,7 @@ end
 
 function ACF_Damage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun, Type )
 
-	local Activated = ACF_Check( Entity )
+	local Activated = ACE_Check( Entity )
 	local CanDo = hook.Run("ACF_BulletDamage", Activated, Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun )
 	if CanDo == false or Activated == false then -- above (default) hook does nothing with activated. Excludes godded players.
 		return { Damage = 0, Overkill = 0, Loss = 0, Kill = false }

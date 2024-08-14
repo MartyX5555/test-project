@@ -253,7 +253,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 
 	local DetCount = Bullet.Detonated or 0
 
-	if ACF_Check( Target ) then
+	if ACE_Check( Target ) then
 
 		if DetCount > 0 then --Bullet Has Detonated
 			Bullet.NotFirstPen = true

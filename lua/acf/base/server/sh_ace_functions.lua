@@ -618,20 +618,20 @@ if SERVER then
 	end
 
 	function ACF_SendNotify( ply, success, msg )
-		net.Start( "ACF_Notify" )
+		net.Start( "ACE_Notify" )
 		net.WriteBit( success )
 		net.WriteString( msg or "" )
 		net.Send( ply )
 	end
 else
 
-	local function ACF_Notify()
+	local function ACE_Notify()
 		local Type = NOTIFY_ERROR
 		if tobool( net.ReadBit() ) then Type = NOTIFY_GENERIC end
 
 		GAMEMODE:AddNotify( net.ReadString(), Type, 7 )
 	end
-	net.Receive( "ACF_Notify", ACF_Notify )
+	net.Receive( "ACE_Notify", ACE_Notify )
 end
 
 if CLIENT then

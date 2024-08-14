@@ -119,7 +119,7 @@ end
 
 function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 
-	if ACF_Check( Target ) then
+	if ACE_Check( Target ) then
 
 		local Speed = Bullet.Flight:Length() / ACF.VelScale
 		local Energy = ACF_Kinetic(Speed / 4 + Bullet.FillerMass * 250, Bullet.ProjMass / 4 + Bullet.FillerMass * 5, Bullet.LimitVel)

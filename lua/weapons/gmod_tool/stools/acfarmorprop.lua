@@ -270,7 +270,7 @@ function TOOL:LeftClick( trace )
 
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
-	if not ACF_Check( ent ) then return false end
+	if not ACE_Check( ent ) then return false end
 
 	local ply		= self:GetOwner()
 
@@ -296,7 +296,7 @@ function TOOL:RightClick( trace )
 
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
-	if not ACF_Check( ent ) then return false end
+	if not ACE_Check( ent ) then return false end
 
 	local ply = self:GetOwner()
 
@@ -412,7 +412,7 @@ function TOOL:Think()
 	local ent = trace.Entity
 	if ent == self.AimEntity then return end
 
-	if ACF_Check( ent ) then
+	if ACE_Check( ent ) then
 
 		local Mat = ent.ACF.Material or "RHA"
 		local MatData =  ACE_GetMaterialData( Mat )
