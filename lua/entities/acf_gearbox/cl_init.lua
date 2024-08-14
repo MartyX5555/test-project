@@ -27,7 +27,7 @@ function ACFGearboxGUICreate( Table )
 			for i = 1,7 do
 				str = str .. math.Round(tbl[i] * factor,1) .. ","
 			end
-			RunConsoleCommand( "acfmenu_data9", str )
+			RunConsoleCommand( "acemenu_data9", str )
 		end
 	end
 
@@ -78,7 +78,7 @@ function ACFGearboxGUICreate( Table )
 		ACE_GearsSlider(3, acfmenupanel.GearboxData[Table.id].GearTable[-3], Table.id, "Min Target RPM",true)
 		ACE_GearsSlider(4, acfmenupanel.GearboxData[Table.id].GearTable[-2], Table.id, "Max Target RPM",true)
 		ACE_GearsSlider(10, acfmenupanel.GearboxData[Table.id].GearTable[-1], Table.id, "Final Drive")
-		RunConsoleCommand( "acfmenu_data1", 0.01 )
+		RunConsoleCommand( "acemenu_data1", 0.01 )
 	else
 		for ID,Value in pairs(acfmenupanel.GearboxData[Table.id].GearTable) do
 			if ID > 0 and not (Table.auto and ID == 8) then
@@ -219,10 +219,10 @@ function ACE_GearsSlider(Gear, Value, ID, Desc, CVT)
 			acfmenupanel.CData[Gear].Gear = Gear
 			acfmenupanel.CData[Gear].ID = ID
 			acfmenupanel.CData[Gear]:SetValue(Value)
-			RunConsoleCommand( "acfmenu_data" .. Gear, Value )
+			RunConsoleCommand( "acemenu_data" .. Gear, Value )
 			acfmenupanel.CData[Gear].OnValueChanged = function( slider, val )
 				acfmenupanel.GearboxData[slider.ID].GearTable[slider.Gear] = val
-				RunConsoleCommand( "acfmenu_data" .. Gear, val )
+				RunConsoleCommand( "acemenu_data" .. Gear, val )
 			end
 		acfmenupanel.CustomDisplay:AddItem( acfmenupanel.CData[Gear] )
 	end
@@ -252,7 +252,7 @@ function ACE_ShiftPoint(Gear, Value, ID, Desc)
 				local _, factor = acfmenupanel.CData.UnitsInput:GetSelected()
 				acfmenupanel.Serialize( acfmenupanel.GearboxData[acfmenupanel.CData.UnitsInput.ID].ShiftTable, factor )  --dot intentional
 			end
-			RunConsoleCommand( "acfmenu_data9", "10,20,30,40,50,60,70" )
+			RunConsoleCommand( "acemenu_data9", "10,20,30,40,50,60,70" )
 
 		acfmenupanel.CData[Index].Label = acfmenupanel.CData[Index]:Add( "DLabel" )
 			acfmenupanel.CData[Index].Label:Dock( RIGHT )

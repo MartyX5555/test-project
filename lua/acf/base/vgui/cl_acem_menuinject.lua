@@ -1,4 +1,4 @@
---TODO: merge this file with cl_acfmenu_gui.lua since having 2 files for the same function is irrevelant. Little transition has been made though
+--TODO: merge this file with cl_acemenu_gui.lua since having 2 files for the same function is irrevelant. Little transition has been made though
 
 local ACFEnts = ACE.Weapons
 
@@ -23,7 +23,7 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 			acfmenupanel.CData.GuidanceSelect:SetSize(100, 30)
 
 			acfmenupanel.CData.GuidanceSelect.OnSelect = function( _ , _ , data )
-				RunConsoleCommand( "acfmenu_data7", data )
+				RunConsoleCommand( "acemenu_data7", data )
 
 				local gun = {}
 
@@ -37,7 +37,7 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 				if guidance and guidance.desc then
 					acfmenupanel:CPanelText("GuidanceDesc", guidance.desc .. "\n")
 
-					local configPanel = ACFMissiles_CreateMenuConfiguration(guidance, acfmenupanel.CData.GuidanceSelect, "acfmenu_data7", acfmenupanel.CData.GuidanceSelect.ConfigPanel, gun)
+					local configPanel = ACFMissiles_CreateMenuConfiguration(guidance, acfmenupanel.CData.GuidanceSelect, "acemenu_data7", acfmenupanel.CData.GuidanceSelect.ConfigPanel, gun)
 					acfmenupanel.CData.GuidanceSelect.ConfigPanel = configPanel
 				else
 					acfmenupanel:CPanelText("GuidanceDesc", "Missiles and bombs can be given a guidance package to steer them during flight.\n")
@@ -86,13 +86,13 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 				if fuse and fuse.desc then
 					acfmenupanel:CPanelText("FuseDesc", fuse.desc .. "\n")
 
-					local configPanel = ACFMissiles_CreateMenuConfiguration(fuse, acfmenupanel.CData.FuseSelect, "acfmenu_data8", acfmenupanel.CData.FuseSelect.ConfigPanel, gun)
+					local configPanel = ACFMissiles_CreateMenuConfiguration(fuse, acfmenupanel.CData.FuseSelect, "acemenu_data8", acfmenupanel.CData.FuseSelect.ConfigPanel, gun)
 					acfmenupanel.CData.FuseSelect.ConfigPanel = configPanel
 				else
 					acfmenupanel:CPanelText("FuseDesc", "Missiles and bombs can be given a fuse to control when they detonate.\n")
 				end
 
-				ACFMissiles_SetCommand(acfmenupanel.CData.FuseSelect, acfmenupanel.CData.FuseSelect.ControlGroup, "acfmenu_data8")
+				ACFMissiles_SetCommand(acfmenupanel.CData.FuseSelect, acfmenupanel.CData.FuseSelect.ControlGroup, "acemenu_data8")
 			end
 
 			acfmenupanel.CustomDisplay:AddItem( acfmenupanel.CData.FuseSelect )
@@ -184,7 +184,7 @@ function CreateRackSelectGUI(node)
 		acfmenupanel.CData.RackSelect:SetSize(100, 30)
 
 		acfmenupanel.CData.RackSelect.OnSelect = function( _ , _ , data )
-			RunConsoleCommand( "acfmenu_data9", data )
+			RunConsoleCommand( "acemenu_data9", data )
 
 			local rack = ACE.Weapons.Racks[data]
 

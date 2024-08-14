@@ -1,7 +1,7 @@
 
 
 TOOL.Category		= "Construction"
-TOOL.Name			= "#Tool.acfcopy.listname";
+TOOL.Name			= "#Tool.acecopy.listname";
 TOOL.Author		= "looter";
 TOOL.Command		= nil;
 TOOL.ConfigName		= "";
@@ -11,10 +11,10 @@ TOOL.AmmoCopyData = {};
 
 if CLIENT then
 
-	language.Add( "Tool.acfcopy.listname", ACFTranslation.CopyToolText[1] );
-	language.Add( "Tool.acfcopy.name", ACFTranslation.CopyToolText[2] );
-	language.Add( "Tool.acfcopy.desc", ACFTranslation.CopyToolText[3] );
-	language.Add( "Tool.acfcopy.0", ACFTranslation.CopyToolText[4] );
+	language.Add( "Tool.acecopy.listname", ACFTranslation.CopyToolText[1] );
+	language.Add( "Tool.acecopy.name", ACFTranslation.CopyToolText[2] );
+	language.Add( "Tool.acecopy.desc", ACFTranslation.CopyToolText[3] );
+	language.Add( "Tool.acecopy.0", ACFTranslation.CopyToolText[4] );
 
 	function TOOL.BuildCPanel()
 

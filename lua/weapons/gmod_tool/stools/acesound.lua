@@ -2,15 +2,15 @@
 ACF = ACF or {}
 
 TOOL.Category		= "Construction"
-TOOL.Name			= "#Tool.acfsound.name"
+TOOL.Name			= "#Tool.acesound.name"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
 
 TOOL.ClientConVar["pitch"] = "1"
 if CLIENT then
-	language.Add( "Tool.acfsound.name", ACFTranslation.SoundToolText[1] )
-	language.Add( "Tool.acfsound.desc", ACFTranslation.SoundToolText[2] )
-	language.Add( "Tool.acfsound.0", ACFTranslation.SoundToolText[3] )
+	language.Add( "Tool.acesound.name", ACFTranslation.SoundToolText[1] )
+	language.Add( "Tool.acesound.desc", ACFTranslation.SoundToolText[2] )
+	language.Add( "Tool.acesound.0", ACFTranslation.SoundToolText[3] )
 end
 
 if CLIENT then
@@ -23,13 +23,13 @@ if CLIENT then
 
 	}
 
-	language.Add( "Tool.acfsound.name", ACFTranslation.SoundToolText[1] )
-	language.Add( "Tool.acfsound.desc", ACFTranslation.SoundToolText[2] )
-	--language.Add( "Tool.acfsound.0", ACFTranslation.SoundToolText[3] )
+	language.Add( "Tool.acesound.name", ACFTranslation.SoundToolText[1] )
+	language.Add( "Tool.acesound.desc", ACFTranslation.SoundToolText[2] )
+	--language.Add( "Tool.acesound.0", ACFTranslation.SoundToolText[3] )
 
-	language.Add( "Tool.acfsound.left", "Apply the new sound. You can use empty sounds too." )
-	language.Add( "Tool.acfsound.right", "Copy the sound." )
-	language.Add( "Tool.acfsound.reload", "Reset to default sound." )
+	language.Add( "Tool.acesound.left", "Apply the new sound. You can use empty sounds too." )
+	language.Add( "Tool.acesound.right", "Copy the sound." )
+	language.Add( "Tool.acesound.reload", "Reset to default sound." )
 
 end
 
@@ -198,7 +198,7 @@ function TOOL:LeftClick( trace )
 	if not IsReallyValid( trace, self:GetOwner() ) then return false end
 
 	local sound = self:GetOwner():GetInfo("wire_soundemitter_sound")
-	local pitch = self:GetOwner():GetInfo("acfsound_pitch")
+	local pitch = self:GetOwner():GetInfo("acesound_pitch")
 	ReplaceSound( self:GetOwner(), trace.Entity, {sound, pitch, true} )
 	return true
 end
@@ -216,7 +216,7 @@ function TOOL:RightClick( trace )
 	self:GetOwner():ConCommand("wire_soundemitter_sound " .. soundData.Sound);
 
 	if soundData.Pitch then
-		self:GetOwner():ConCommand("acfsound_pitch " .. soundData.Pitch);
+		self:GetOwner():ConCommand("acesound_pitch " .. soundData.Pitch);
 	end
 
 	return true
@@ -325,7 +325,7 @@ if CLIENT then
 		end
 		panel:AddItem(ClearButton)
 
-		panel:NumSlider( "Pitch", "acfsound_pitch", 10, 255, 0 )
+		panel:NumSlider( "Pitch", "acesound_pitch", 10, 255, 0 )
 		panel:ControlHelp( "Adjust the pitch of the sound. Currently supports engines, guns, racks and missile radars. \n\nNote: This will not work with dynamic sounds atm." )
 	end
 

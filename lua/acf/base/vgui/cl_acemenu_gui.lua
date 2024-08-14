@@ -30,7 +30,7 @@ local function AmmoBuildList( ParentNode, NodeName, AmmoTable )
 		EndNode.mytable = AmmoTable
 
 		function EndNode:DoClick()
-			RunConsoleCommand( "acfmenu_type", self.mytable.type )
+			RunConsoleCommand( "acemenu_type", self.mytable.type )
 			acfmenupanel:UpdateDisplay( self.mytable )
 		end
 	end
@@ -134,7 +134,7 @@ function PANEL:Init( )
 				EndNode.mytable = Ent
 
 				function EndNode:DoClick()
-					RunConsoleCommand( "acfmenu_type", self.mytable.type )
+					RunConsoleCommand( "acemenu_type", self.mytable.type )
 					acfmenupanel:UpdateDisplay( self.mytable )
 				end
 			end
@@ -156,7 +156,7 @@ function PANEL:Init( )
 				EndNode.mytable = Ent
 
 				function EndNode:DoClick()
-				RunConsoleCommand( "acfmenu_type", self.mytable.type )
+				RunConsoleCommand( "acemenu_type", self.mytable.type )
 				acfmenupanel:UpdateDisplay( self.mytable )
 				end
 			end
@@ -211,7 +211,7 @@ function PANEL:Init( )
 				local Item = EngineCatNodes[category]:AddNode( name, ItemIcon )
 
 				function Item:DoClick()
-				RunConsoleCommand( "acfmenu_type", EngineData.type )
+				RunConsoleCommand( "acemenu_type", EngineData.type )
 				acfmenupanel:UpdateDisplay( EngineData )
 				end
 			end
@@ -241,7 +241,7 @@ function PANEL:Init( )
 				local Item = GearboxCatNodes[category]:AddNode( name, ItemIcon )
 
 				function Item:DoClick()
-				RunConsoleCommand( "acfmenu_type", GearboxData.type )
+				RunConsoleCommand( "acemenu_type", GearboxData.type )
 				acfmenupanel:UpdateDisplay( GearboxData )
 				end
 			end
@@ -253,7 +253,7 @@ function PANEL:Init( )
 		for _, FuelTankData in pairs(FinalContainer["FuelTanks"]) do
 
 			function FuelTanks:DoClick()
-				RunConsoleCommand( "acfmenu_type", FuelTankData.type )
+				RunConsoleCommand( "acemenu_type", FuelTankData.type )
 				acfmenupanel:UpdateDisplay( FuelTankData )
 			end
 
@@ -295,7 +295,7 @@ function PANEL:Init( )
 					EndNode.mytable = Ent
 
 					function EndNode:DoClick()
-						RunConsoleCommand( "acfmenu_type", self.mytable.type )
+						RunConsoleCommand( "acemenu_type", self.mytable.type )
 						acfmenupanel:UpdateDisplay( self.mytable )
 					end
 				end
@@ -353,7 +353,7 @@ end
 
 function PANEL:UpdateDisplay( Table )
 
-	RunConsoleCommand( "acfmenu_id", Table.id or 0 )
+	RunConsoleCommand( "acemenu_id", Table.id or 0 )
 
 	--If a previous display exists, erase it
 	if acfmenupanel.CustomDisplay then
@@ -766,7 +766,7 @@ do
 			local Id = X .. ":" .. Y .. ":" .. Z
 
 			acfmenupanel.AmmoData["Id"] = Id
-			RunConsoleCommand( "acfmenu_id", Id )
+			RunConsoleCommand( "acemenu_id", Id )
 
 		end
 
@@ -912,7 +912,7 @@ do
 			acfmenupanel.AmmoPanelConfig["LegacyAmmos"] = val
 			if val then
 				acfmenupanel.AmmoData["Id"] =  acfmenupanel.AmmoData["IdLegacy"]
-				RunConsoleCommand( "acfmenu_id", acfmenupanel.AmmoData["Id"] )
+				RunConsoleCommand( "acemenu_id", acfmenupanel.AmmoData["Id"] )
 			else
 				CreateIdForCrate( MainPanel )
 			end
@@ -934,7 +934,7 @@ do
 
 		AmmoComboBox.OnSelect = function( _ , _ , data )	-- calls the ID of the list
 			if acfmenupanel.AmmoPanelConfig["LegacyAmmos"] then
-			RunConsoleCommand( "acfmenu_id", data )
+			RunConsoleCommand( "acemenu_id", data )
 			acfmenupanel.AmmoData["Id"] = data
 			end
 
@@ -953,7 +953,7 @@ do
 		end
 
 		AmmoComboBox:SetText(acfmenupanel.AmmoData["IdLegacy"])
-		RunConsoleCommand( "acfmenu_id", acfmenupanel.AmmoData["Id"] )
+		RunConsoleCommand( "acemenu_id", acfmenupanel.AmmoData["Id"] )
 
 		CrateOldPanel:AddItem(AmmoComboBox)
 

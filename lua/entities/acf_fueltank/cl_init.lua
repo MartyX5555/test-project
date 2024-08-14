@@ -43,7 +43,7 @@ do
 
 		   ACFFuelTankGUIUpdate( Table )
 		   acfmenupanel.FuelTankData["Id"] = Id
-		   RunConsoleCommand( "acfmenu_data1", Id )
+		   RunConsoleCommand( "acemenu_data1", Id )
 
 		end
 
@@ -89,13 +89,13 @@ do
 			end
 
 			FuelTypeComboList.OnSelect = function( _, _, data )
-				RunConsoleCommand( "acfmenu_data2", data )
+				RunConsoleCommand( "acemenu_data2", data )
 				acfmenupanel.FuelTankData.FuelID = data
 				ACFFuelTankGUIUpdate( Table )
 			end
 
 			FuelTypeComboList:SetText(acfmenupanel.FuelTankData.FuelID)
-			RunConsoleCommand( "acfmenu_data2", acfmenupanel.FuelTankData.FuelID )
+			RunConsoleCommand( "acemenu_data2", acfmenupanel.FuelTankData.FuelID )
 			MainPanel:AddItem( FuelTypeComboList )
 
 			acfmenupanel:CPanelText("Cap", "")
@@ -162,11 +162,11 @@ do
 
 			ShapeComboList.OnSelect = function( _, _, data )
 				acfmenupanel.FuelPanelConfig["Crate_Shape"] = data
-				RunConsoleCommand( "acfmenu_data3", data )
+				RunConsoleCommand( "acemenu_data3", data )
 				ACFFuelTankGUIUpdate( Table )
 			end
 
-			RunConsoleCommand( "acfmenu_data3", acfmenupanel.FuelPanelConfig["Crate_Shape"] )
+			RunConsoleCommand( "acemenu_data3", acfmenupanel.FuelPanelConfig["Crate_Shape"] )
 			ShapeComboList:SetText(acfmenupanel.FuelPanelConfig["Crate_Shape"])
 			CrateNewPanel:AddItem( ShapeComboList )
 
@@ -233,7 +233,7 @@ do
 				acfmenupanel.FuelPanelConfig["LegacyFuels"] = val
 				if val then
 					acfmenupanel.FuelTankData.Id =  acfmenupanel.FuelTankData.IdLegacy
-					RunConsoleCommand( "acfmenu_data1", acfmenupanel.FuelTankData.Id )
+					RunConsoleCommand( "acemenu_data1", acfmenupanel.FuelTankData.Id )
 					ACFFuelTankGUIUpdate( Table )
 				else
 					CreateIdForCrate()
@@ -252,7 +252,7 @@ do
 			FuelTankComboList.OnSelect = function( _, _, data )
 				acfmenupanel.FuelTankData.Id = data
 				acfmenupanel.FuelTankData.IdLegacy = data
-				RunConsoleCommand( "acfmenu_data1", data )
+				RunConsoleCommand( "acemenu_data1", data )
 				ACFFuelTankGUIUpdate( Table )
 
 				if acfmenupanel.CData.DisplayModel then
@@ -265,7 +265,7 @@ do
 			end
 
 			FuelTankComboList:SetText(acfmenupanel.FuelTankData.IdLegacy)
-			RunConsoleCommand( "acfmenu_data1", acfmenupanel.FuelTankData.Id )
+			RunConsoleCommand( "acemenu_data1", acfmenupanel.FuelTankData.Id )
 			CrateOldPanel:AddItem( FuelTankComboList )
 
 			acfmenupanel:CPanelText("TankName", "", nil, CrateOldPanel)

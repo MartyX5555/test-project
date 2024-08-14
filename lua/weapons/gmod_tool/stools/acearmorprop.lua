@@ -1,7 +1,7 @@
 
 
 TOOL.Category	= "Construction"
-TOOL.Name	= "#tool.acfarmorprop.name"
+TOOL.Name	= "#tool.acearmorprop.name"
 TOOL.Command	= nil
 TOOL.ConfigName = ""
 
@@ -12,7 +12,7 @@ TOOL.ClientConVar["material"]	= "RHA"
 --Used by the panel. If i can to use the TOOL itself for this, i would be really appreciated
 local ToolPanel = ToolPanel or {}
 
-CreateClientConVar( "acfarmorprop_area", 0, false, true ) -- we don't want this one to save
+CreateClientConVar( "acearmorprop_area", 0, false, true ) -- we don't want this one to save
 
 -- Calculates mass, armor, and health given prop area and desired ductility and thickness.
 local function CalcArmor( Area, Ductility, Thickness, Mat )
@@ -32,9 +32,9 @@ end
 
 if CLIENT then
 
-	language.Add( "tool.acfarmorprop.name", ACFTranslation.ArmorPropertiesText[1] )
-	language.Add( "tool.acfarmorprop.desc", ACFTranslation.ArmorPropertiesText[2] )
-	language.Add( "tool.acfarmorprop.0", ACFTranslation.ArmorPropertiesText[3] )
+	language.Add( "tool.acearmorprop.name", ACFTranslation.ArmorPropertiesText[1] )
+	language.Add( "tool.acearmorprop.desc", ACFTranslation.ArmorPropertiesText[2] )
+	language.Add( "tool.acearmorprop.0", ACFTranslation.ArmorPropertiesText[3] )
 
 	surface.CreateFont( "Torchfont", { size = 40, weight = 1000, font = "arial" } )
 
@@ -59,13 +59,13 @@ if CLIENT then
 			Material = BackCompMat[Mat_ID]
 
 			--Updates the convar with the proper material
-			RunConsoleCommand( "acfarmorprop_material", Material )
+			RunConsoleCommand( "acearmorprop_material", Material )
 		end
 	end
 
 	--Looks like client convars are not initialized very quickly, so we will wait a bit until they become valid.
 	timer.Simple(0.1, function()
-		ACE_MaterialCheck( GetConVar("acfarmorprop_material"):GetString() )
+		ACE_MaterialCheck( GetConVar("acearmorprop_material"):GetString() )
 	end )
 
 	--Replicated from PANEL:CPanelText(Name, Desc, Font). No idea why this doesnt work with this function out of this file
@@ -96,7 +96,7 @@ if CLIENT then
 		local MaterialTypes = ACE.ArmorMaterials
 		if not MaterialTypes then return end
 
-		local Material = GetConVar("acfarmorprop_material"):GetString()
+		local Material = GetConVar("acearmorprop_material"):GetString()
 		local MaterialData  = MaterialTypes[Material] or MaterialTypes["RHA"]
 
 		ArmorPanelText( "ComboBox", panel, "Material" )
@@ -128,7 +128,7 @@ if CLIENT then
 
 			function ToolPanel.ComboMat:OnSelect(self, _, value )
 
-				RunConsoleCommand( "acfarmorprop_material", value )
+				RunConsoleCommand( "acearmorprop_material", value )
 			end
 		end
 	end
@@ -137,17 +137,17 @@ if CLIENT then
 	function TOOL.BuildCPanel( panel )
 		local Presets = vgui.Create( "ControlPresets" )
 
-		Presets:AddConVar( "acfarmorprop_thickness" )
-		Presets:AddConVar( "acfarmorprop_ductility" )
-		Presets:AddConVar( "acfarmorprop_material" )
-		Presets:SetPreset( "acfarmorprop" )
+		Presets:AddConVar( "acearmorprop_thickness" )
+		Presets:AddConVar( "acearmorprop_ductility" )
+		Presets:AddConVar( "acearmorprop_material" )
+		Presets:SetPreset( "acearmorprop" )
 
 		panel:AddItem( Presets )
 
-		panel:NumSlider( ACFTranslation.ArmorPropertiesText[4], "acfarmorprop_thickness", 1, 5000 )
+		panel:NumSlider( ACFTranslation.ArmorPropertiesText[4], "acearmorprop_thickness", 1, 5000 )
 		panel:ControlHelp( ACFTranslation.ArmorPropertiesText[5] )
 
-		panel:NumSlider( ACFTranslation.ArmorPropertiesText[6], "acfarmorprop_ductility", -80, 80 )
+		panel:NumSlider( ACFTranslation.ArmorPropertiesText[6], "acearmorprop_ductility", -80, 80 )
 		panel:ControlHelp( ACFTranslation.ArmorPropertiesText[7] )
 
 		MaterialTable(panel)
@@ -155,16 +155,16 @@ if CLIENT then
 	end
 
 	-- clamp thickness if the change in ductility puts mass out of range
-	cvars.AddChangeCallback( "acfarmorprop_ductility", function( _, _, value )
+	cvars.AddChangeCallback( "acearmorprop_ductility", function( _, _, value )
 
-		local area = GetConVar( "acfarmorprop_area" ):GetFloat()
+		local area = GetConVar( "acearmorprop_area" ):GetFloat()
 
 		-- don't bother recalculating if we don't have a valid ent
 		if area == 0 then return end
 
 		local ductility = math.Clamp( ( tonumber( value ) or 0 ) / 100, -0.8, 0.8 )
-		local thickness = math.Clamp( GetConVar( "acfarmorprop_thickness" ):GetFloat(), 0.1, 5000 )
-		local material  = GetConVar( "acfarmorprop_material" ):GetString() or "RHA"
+		local thickness = math.Clamp( GetConVar( "acearmorprop_thickness" ):GetFloat(), 0.1, 5000 )
+		local material  = GetConVar( "acearmorprop_material" ):GetString() or "RHA"
 
 		local mass		= CalcArmor( area, ductility, thickness , material )
 
@@ -177,21 +177,21 @@ if CLIENT then
 		end
 
 		thickness = mass * 1000 / ( area + area * ductility ) / 0.78
-		RunConsoleCommand( "acfarmorprop_thickness", thickness )
+		RunConsoleCommand( "acearmorprop_thickness", thickness )
 
 	end )
 
 	-- clamp ductility if the change in thickness puts mass out of range
-	cvars.AddChangeCallback( "acfarmorprop_thickness", function( _, _, value )
+	cvars.AddChangeCallback( "acearmorprop_thickness", function( _, _, value )
 
-		local area = GetConVar( "acfarmorprop_area" ):GetFloat()
+		local area = GetConVar( "acearmorprop_area" ):GetFloat()
 
 		-- don't bother recalculating if we don't have a valid ent
 		if area == 0 then return end
 
 		local thickness = math.Clamp( tonumber( value ) or 0, 0.1, 5000 )
-		local ductility = math.Clamp( GetConVar( "acfarmorprop_ductility" ):GetFloat() / 100, -0.8, 0.8 )
-		local material  = GetConVar( "acfarmorprop_material" ):GetString() or "RHA"
+		local ductility = math.Clamp( GetConVar( "acearmorprop_ductility" ):GetFloat() / 100, -0.8, 0.8 )
+		local material  = GetConVar( "acearmorprop_material" ):GetString() or "RHA"
 
 		local mass		= CalcArmor( area, ductility, thickness , material )
 
@@ -204,19 +204,19 @@ if CLIENT then
 		end
 
 		ductility = -( 39 * area * thickness - mass * 50000 ) / ( 39 * area * thickness )
-		RunConsoleCommand( "acfarmorprop_ductility", math.Clamp( ductility * 100, -80, 80 ) )
+		RunConsoleCommand( "acearmorprop_ductility", math.Clamp( ductility * 100, -80, 80 ) )
 
 	end )
 
 	-- Refresh Armor material info on menu
-	cvars.AddChangeCallback( "acfarmorprop_material", function( _, _, value )
+	cvars.AddChangeCallback( "acearmorprop_material", function( _, _, value )
 
 			if ToolPanel.panel then
 
 				local MatData = ACE_GetMaterialData( value )
 
 				--Use RHA if the choosen material is invalid or doesnt exist
-				if not MatData then RunConsoleCommand( "acfarmorprop_material", "RHA" ) return end
+				if not MatData then RunConsoleCommand( "acearmorprop_material", "RHA" ) return end
 
 				--Too redundant, ik, but looks like the unique way to have it working even when right clicking a prop
 				ToolPanel.ComboMat:SetText(MatData.sname)
@@ -299,9 +299,9 @@ function TOOL:RightClick( trace )
 
 	local ply = self:GetOwner()
 
-	ply:ConCommand( "acfarmorprop_ductility " .. (ent.ACE.Ductility or 0) * 100 )
-	ply:ConCommand( "acfarmorprop_thickness " .. ent.ACE.MaxArmour )
-	ply:ConCommand( "acfarmorprop_material " .. (ent.ACE.Material or "RHA") )
+	ply:ConCommand( "acearmorprop_ductility " .. (ent.ACE.Ductility or 0) * 100 )
+	ply:ConCommand( "acearmorprop_thickness " .. ent.ACE.MaxArmour )
+	ply:ConCommand( "acearmorprop_material " .. (ent.ACE.Material or "RHA") )
 
 	-- this invalidates the entity and forces a refresh of networked armor values
 	self.AimEntity = nil
@@ -418,7 +418,7 @@ function TOOL:Think()
 
 		if not MatData then return end
 
-		ply:ConCommand( "acfarmorprop_area " .. ent.ACE.Area )
+		ply:ConCommand( "acearmorprop_area " .. ent.ACE.Area )
 		self.Weapon:SetNWFloat( "WeightMass", ent:GetPhysicsObject():GetMass() )
 		self.Weapon:SetNWFloat( "HP", ent.ACE.Health )
 		self.Weapon:SetNWFloat( "Armour", ent.ACE.Armour )
@@ -428,7 +428,7 @@ function TOOL:Think()
 
 	else
 
-		ply:ConCommand( "acfarmorprop_area 0" )
+		ply:ConCommand( "acearmorprop_area 0" )
 		self.Weapon:SetNWFloat( "WeightMass", 0 )
 		self.Weapon:SetNWFloat( "HP", 0 )
 		self.Weapon:SetNWFloat( "Armour", 0 )
@@ -453,10 +453,10 @@ function TOOL:DrawHUD()
 	local curhealth	= self.Weapon:GetNWFloat( "MaxHP" )
 	local material	= self.Weapon:GetNWString( "Material" )
 
-	local area		= GetConVar( "acfarmorprop_area" ):GetFloat()
-	local ductility	= GetConVar( "acfarmorprop_ductility" ):GetFloat()
-	local thickness	= GetConVar( "acfarmorprop_thickness" ):GetFloat()
-	local mat		= GetConVar( "acfarmorprop_material" ):GetString() or "RHA"
+	local area		= GetConVar( "acearmorprop_area" ):GetFloat()
+	local ductility	= GetConVar( "acearmorprop_ductility" ):GetFloat()
+	local thickness	= GetConVar( "acearmorprop_thickness" ):GetFloat()
+	local mat		= GetConVar( "acearmorprop_material" ):GetString() or "RHA"
 
 	local MatData	= ACE_GetMaterialData( mat )
 

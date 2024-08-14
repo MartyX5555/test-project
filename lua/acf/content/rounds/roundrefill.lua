@@ -64,8 +64,8 @@ end
 
 function Round.guiupdate()
 
-	RunConsoleCommand( "acfmenu_data1", acfmenupanel.CData.AmmoId )
-	RunConsoleCommand( "acfmenu_data2", "Refill")
+	RunConsoleCommand( "acemenu_data1", acfmenupanel.CData.AmmoId )
+	RunConsoleCommand( "acemenu_data2", "Refill")
 
 	acfmenupanel.CustomDisplay:PerformLayout()
 

@@ -1,6 +1,6 @@
 
 TOOL.Category		= "Construction"
-TOOL.Name			= "#Tool.acfmenu.listname"
+TOOL.Name			= "#Tool.acemenu.listname"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
 
@@ -28,11 +28,11 @@ TOOL.SelectedEntities = {}
 cleanup.Register( "acfmenu" )
 
 if CLIENT then
-	language.Add( "Tool.acfmenu.listname", ACFTranslation.ACFMenuTool[1] )
-	language.Add( "Tool.acfmenu.name", ACFTranslation.ACFMenuTool[2] )
-	language.Add( "Tool.acfmenu.desc", ACFTranslation.ACFMenuTool[3] )
-	language.Add( "Tool.acfmenu.0", ACFTranslation.ACFMenuTool[4] )
-	language.Add( "Tool.acfmenu.1", ACFTranslation.ACFMenuTool[5] )
+	language.Add( "Tool.acemenu.listname", ACFTranslation.ACFMenuTool[1] )
+	language.Add( "Tool.acemenu.name", ACFTranslation.ACFMenuTool[2] )
+	language.Add( "Tool.acemenu.desc", ACFTranslation.ACFMenuTool[3] )
+	language.Add( "Tool.acemenu.0", ACFTranslation.ACFMenuTool[4] )
+	language.Add( "Tool.acemenu.1", ACFTranslation.ACFMenuTool[5] )
 
 	language.Add( "Undone_ACF Entity", ACFTranslation.ACFMenuTool[6] )
 	language.Add( "Undone_acf_engine",ACFTranslation.ACFMenuTool[7] )
@@ -45,13 +45,13 @@ if CLIENT then
 	language.Add( "SBoxLimit_acf_sensor", ACFTranslation.ACFMenuTool[14] )
 
 	-- These still need translations, hardcoding as english for now
-	language.Add("tool.acfmenu.left", "Create/Update entity")
-	language.Add("tool.acfmenu.right", "Link/Unlink entities")
+	language.Add("tool.acemenu.left", "Create/Update entity")
+	language.Add("tool.acemenu.right", "Link/Unlink entities")
 
-	language.Add("tool.acfmenu.stage1.link", "Link selected entities to this entity")
-	language.Add("tool.acfmenu.stage1.unlink", "(Hold Use) Unlink selected entities from this entity")
-	language.Add("tool.acfmenu.stage1.multiselect", "(Hold Shift) Select more entities")
-	language.Add("tool.acfmenu.stage1.reload", "Deselect all entities")
+	language.Add("tool.acemenu.stage1.link", "Link selected entities to this entity")
+	language.Add("tool.acemenu.stage1.unlink", "(Hold Use) Unlink selected entities from this entity")
+	language.Add("tool.acemenu.stage1.multiselect", "(Hold Shift) Select more entities")
+	language.Add("tool.acemenu.stage1.reload", "Deselect all entities")
 
 	TOOL.Information = {
 		{ name = "left", stage = 0 },
@@ -68,7 +68,7 @@ if CLIENT then
 	--------------------------------------]]
 	function TOOL.BuildCPanel( CPanel )
 
-		local pnldef_ACFmenu = vgui.RegisterFile( "acf/base/vgui/cl_acfmenu_gui.lua" )
+		local pnldef_ACFmenu = vgui.RegisterFile( "acf/base/vgui/cl_acemenu_gui.lua" )
 
 		-- create
 		local DPanel = vgui.CreateFromTable( pnldef_ACFmenu )
