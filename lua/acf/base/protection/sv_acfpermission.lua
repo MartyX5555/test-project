@@ -119,20 +119,20 @@ local function LoadMapDPM()
 	return file.Read(mapDPMDir .. mapname .. ".txt", "DATA")
 end
 --[[
-hook.Add( "Initialize", "ACF_LoadSafesForMap", function()
+hook.Add( "Initialize", "ACE_LoadSafesForMap", function()
 	if not getMapSZs() then
 		print("!!!!!!!!!!!!!!!!!!\n[ACE | WARNING]- Safezone file " .. getMapFilename() .. " is missing, invalid or corrupt!  Safezones will not be restored this time.\n!!!!!!!!!!!!!!!!!!")
 	end
 end )
 ]]
-hook.Add("ACF_PlayerChangedZone", "ACF_TellPlyAboutSafezoneBattle", function(ply, zone)
+hook.Add("ACE_PlayerChangedZone", "ACE_TellPlyAboutSafezoneBattle", function(ply, zone)
 	if not this.NotifySafezones[table.KeyFromValue(this.Modes, this.DamagePermission)] then return end
 
 	ACE_SendMsg(ply, zone and Color(0, 255, 0) or Color(255, 0, 0), "You have entered the " .. (zone and zone .. " safezone." or "battlefield!"))
 end)
 
 local plyzones = {}
-hook.Add("Think", "ACF_DetectSZTransition", function()
+hook.Add("Think", "ACE_DetectSZTransition", function()
 	for _, ply in pairs(player.GetAll()) do
 		local sid = ply:SteamID()
 		--local trans = false
@@ -143,20 +143,20 @@ hook.Add("Think", "ACF_DetectSZTransition", function()
 		plyzones[sid] = zone
 
 		if oldzone ~= zone then
-			hook.Call("ACF_PlayerChangedZone", GAMEMODE, ply, zone, oldzone)
+			hook.Call("ACE_PlayerChangedZone", GAMEMODE, ply, zone, oldzone)
 		end
 	end
 end)
 
 
-concommand.Add( "ACF_AddSafeZone", function(ply, _, args)
+concommand.Add( "ACE_AddSafeZone", function(ply, _, args)
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
 
 	if not args[1] then printmsg(HUD_PRINTCONSOLE,
 		" - Add a safezone as an AABB box." ..
 		"\n	Input a name and six numbers.  First three numbers are minimum co-ords, last three are maxs." ..
-		"\n	Example; ACF_addsafezone airbase -500 -500 0 500 500 1000")
+		"\n	Example; ACE_addsafezone airbase -500 -500 0 500 500 1000")
 		return false
 	end
 
@@ -196,7 +196,7 @@ concommand.Add( "ACF_AddSafeZone", function(ply, _, args)
 	end
 end)
 
-concommand.Add( "ACF_RemoveSafeZone", function(ply, _, args)
+concommand.Add( "ACE_RemoveSafeZone", function(ply, _, args)
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
 
@@ -235,7 +235,7 @@ concommand.Add( "ACF_RemoveSafeZone", function(ply, _, args)
 end)
 
 
-concommand.Add( "ACF_SaveSafeZones", function(ply)
+concommand.Add( "ACE_SaveSafeZones", function(ply)
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
 
@@ -261,7 +261,7 @@ concommand.Add( "ACF_SaveSafeZones", function(ply)
 end)
 
 
-concommand.Add( "ACF_ReloadSafeZones", function(ply)
+concommand.Add( "ACE_ReloadSafeZones", function(ply)
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
 
@@ -282,7 +282,7 @@ concommand.Add( "ACF_ReloadSafeZones", function(ply)
 end)
 
 
-concommand.Add( "ACF_SetPermissionMode", function(ply, _, args)
+concommand.Add( "ACE_SetPermissionMode", function(ply, _, args)
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
 
@@ -315,13 +315,13 @@ concommand.Add( "ACF_SetPermissionMode", function(ply, _, args)
 
 		printmsg(HUD_PRINTCONSOLE, "Command SUCCESSFUL: Current damage permission policy is now " .. mode .. "!")
 
-		hook.Call("ACF_ProtectionModeChanged", GAMEMODE, mode, oldmode)
+		hook.Call("ACE_ProtectionModeChanged", GAMEMODE, mode, oldmode)
 
 		return true
 	end
 end)
 
-concommand.Add( "ACF_SetDefaultPermissionMode", function(ply, _, args)
+concommand.Add( "ACE_SetDefaultPermissionMode", function(ply, _, args)
 
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
@@ -369,7 +369,7 @@ concommand.Add( "ACF_SetDefaultPermissionMode", function(ply, _, args)
 end)
 
 
-concommand.Add( "ACF_ReloadPermissionModes", function(ply)
+concommand.Add( "ACE_ReloadPermissionModes", function(ply)
 	local validply = IsValid(ply)
 	local printmsg = validply and function(hud, msg) ply:PrintMessage(hud, msg) end or msgtoconsole
 
@@ -383,7 +383,7 @@ concommand.Add( "ACF_ReloadPermissionModes", function(ply)
 
 		if not mode then
 			this.DamagePermission = function() end
-			hook.Call("ACF_ProtectionModeChanged", GAMEMODE, "default", nil)
+			hook.Call("ACE_ProtectionModeChanged", GAMEMODE, "default", nil)
 			mode = "default"
 		end
 
@@ -401,7 +401,7 @@ local function tellPlysAboutDPMode(mode, oldmode)
 		ACE_SendMsg(v, Color(255,0,0), "Damage protection has been changed to " .. mode .. " mode!")
 	end
 end
-hook.Add("ACF_ProtectionModeChanged", "ACF_TellPlysAboutDPMode", tellPlysAboutDPMode)
+hook.Add("ACE_ProtectionModeChanged", "ACE_TellPlysAboutDPMode", tellPlysAboutDPMode)
 
 
 
@@ -478,7 +478,7 @@ function this.CanDamage(_, Entity, _, _, _, Inflictor, _, _)
 
 	return this.DamagePermission(owner, Inflictor, Entity)
 end
-hook.Add("ACF_BulletDamage", "ACF_DamagePermissionCore", this.CanDamage)
+hook.Add("ACE_BulletDamage", "ACE_DamagePermissionCore", this.CanDamage)
 
 function this.thinkWrapper()
 
@@ -550,7 +550,7 @@ local function onDisconnect( ply )
 
 	plyzones[plyid] = nil
 end
-hook.Add( "PlayerDisconnected", "ACF_PermissionDisconnect", onDisconnect )
+hook.Add( "PlayerDisconnected", "ACE_PermissionDisconnect", onDisconnect )
 
 local function plyBySID(steamid)
 	for _, v in pairs(player.GetAll()) do
@@ -569,9 +569,9 @@ end
 
 -- All code below modified from the NADMOD client permissions menu, by Nebual
 -- http://www.facepunch.com/showthread.php?t=1221183
-util.AddNetworkString("ACF_dmgfriends")
-util.AddNetworkString("ACF_refreshfeedback")
-net.Receive("ACF_dmgfriends", function(_, ply)
+util.AddNetworkString("ACE_dmgfriends")
+util.AddNetworkString("ACE_refreshfeedback")
+net.Receive("ACE_dmgfriends", function(_, ply)
 	--Msg("\nsv dmgfriends\n")
 	if not ply:IsValid() then return end
 
@@ -602,7 +602,7 @@ net.Receive("ACF_dmgfriends", function(_, ply)
 		end
 	end
 
-	net.Start("ACF_refreshfeedback")
+	net.Start("ACE_refreshfeedback")
 		net.WriteBit(true)
 	net.Send(ply)
 
@@ -617,12 +617,12 @@ function this.RefreshPlyDPFriends(ply)
 
 	local perms = this.GetDamagePermissions(ply:SteamID())
 
-	net.Start("ACF_refreshfriends")
+	net.Start("ACE_refreshfriends")
 		net.WriteTable(perms)
 	net.Send(ply)
 end
-util.AddNetworkString("ACF_refreshfriends")
-net.Receive("ACF_refreshfriends", function(_, ply) this.RefreshPlyDPFriends(ply) end)
+util.AddNetworkString("ACE_refreshfriends")
+net.Receive("ACE_refreshfriends", function(_, ply) this.RefreshPlyDPFriends(ply) end)
 
 
 
@@ -632,14 +632,14 @@ function this.SendPermissionsState(ply)
 	local modes = this.ModeDescs
 	local current = table.KeyFromValue(this.Modes, this.DamagePermission)
 
-	net.Start("ACF_refreshpermissions")
+	net.Start("ACE_refreshpermissions")
 		net.WriteTable(modes)
 		net.WriteString(current or this.DefaultPermission)
 		net.WriteString(this.DefaultPermission or "")
 	net.Send(ply)
 end
-util.AddNetworkString("ACF_refreshpermissions")
-net.Receive("ACF_refreshpermissions", function(_, ply)
+util.AddNetworkString("ACE_refreshpermissions")
+net.Receive("ACE_refreshpermissions", function(_, ply)
 	ACE_SendDPStatus()
 	this.SendPermissionsState(ply)
 end)
@@ -652,7 +652,7 @@ function this.ResendPermissionsOnChanged()
 		this.SendPermissionsState(ply)
 	end
 end
-hook.Add("ACF_ProtectionModeChanged", "ACF_ResendPermissionsOnChanged", this.ResendPermissionsOnChanged)
+hook.Add("ACE_ProtectionModeChanged", "ACE_ResendPermissionsOnChanged", this.ResendPermissionsOnChanged)
 
 
 
@@ -663,7 +663,7 @@ timer.Simple(0,function()
 
 	if not mode then
 		this.DamagePermission = function() end
-		hook.Call("ACF_ProtectionModeChanged", GAMEMODE, "default", nil)
+		hook.Call("ACE_ProtectionModeChanged", GAMEMODE, "default", nil)
 		mode = "default"
 	end
 end)

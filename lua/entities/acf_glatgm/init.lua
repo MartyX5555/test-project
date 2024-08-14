@@ -30,7 +30,7 @@ function ENT:Initialize()
 	self.LastVel		= Vector(0,0,0)
 	self.CurPos			= self:GetPos()
 	self.LastPos		= self.CurPos
-	ACF_ActiveMissiles[self] = true
+	ACE_ActiveMissiles[self] = true
 
 	self.LastRun = 0
 
@@ -146,7 +146,7 @@ function ENT:Detonate()
 
 	if IsValid(self) and not self.Detonated then
 
-		ACF_ActiveMissiles[self] = nil
+		ACE_ActiveMissiles[self] = nil
 		self.Detonated = true
 
 		self:Remove()
@@ -209,7 +209,7 @@ function ENT:Detonate()
 			Flash:SetOrigin( self:GetPos() )
 			Flash:SetNormal( self:GetForward() )
 			Flash:SetRadius(self.BulletData.FillerMass ^ 0.33 * 8 * 39.37 )
-		util.Effect( "ACF_Scaled_Explosion", Flash )
+		util.Effect( "ace_explosion", Flash )
 
 	end
 end

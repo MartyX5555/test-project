@@ -125,7 +125,7 @@ do
 		HMG = true
 	}
 
-	function MakeACF_Gun(Owner, Pos, Angle, Id)
+	function MakeACE_Gun(Owner, Pos, Angle, Id)
 
 		local Gun = ents.Create("acf_gun")
 		if not IsValid(Gun) then return false end
@@ -260,7 +260,7 @@ do
 
 		Owner:AddCleanup("acfmenu", Gun)
 
-		ACF_Activate(Gun, 0)
+		ACE_Activate(Gun, 0)
 
 		return Gun
 
@@ -268,7 +268,7 @@ do
 end
 
 list.Set( "ACFCvars", "acf_gun", {"id"} )
-duplicator.RegisterEntityClass("acf_gun", MakeACF_Gun, "Pos", "Angle", "Id")
+duplicator.RegisterEntityClass("acf_gun", MakeACE_Gun, "Pos", "Angle", "Id")
 
 function ENT:UpdateOverlayText()
 
@@ -569,14 +569,14 @@ function ENT:Heat_Function()
 		local phys = self:GetPhysicsObject()
 		local Mass = phys:GetMass()
 
-		HitRes = ACF_Damage(self, {
+		HitRes = ACE_Damage(self, {
 			Kinetic = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1)),
 			Momentum = 0,
 			Penetration = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1))
 		}, 2, 0, self:CPPIGetOwner())
 
 		if HitRes.Kill then
-			ACF_HEKill( self, VectorRand() , 0)
+			ACE_HEKill( self, VectorRand() , 0)
 		end
 
 	else
@@ -811,7 +811,7 @@ do
 
 	function ENT:FireShell()
 
-		local CanDo = hook.Run("ACF_FireShell", self, self.BulletData )
+		local CanDo = hook.Run("ACE_FireShell", self, self.BulletData )
 		if CanDo == false then return end
 
 		if self.IsUnderWeight == nil then
@@ -844,7 +844,7 @@ do
 				self:MuzzleEffect( MuzzlePos, MuzzleVec )
 
 				local GPos = self:GetPos()
-				local TestVel = self:WorldToLocal(ACF_GetPhysicalParent(self):GetVelocity() + GPos)
+				local TestVel = self:WorldToLocal(ACE_GetPhysicalParent(self):GetVelocity() + GPos)
 
 				--Traceback component
 				TestVel = self:LocalToWorld(Vector(math.max(TestVel.x,-0.1),TestVel.y,TestVel.z)) - GPos
@@ -867,7 +867,7 @@ do
 				local Dir = -self:GetForward()
 				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 3500 * 39.37) * (GetConVar("acf_recoilpush"):GetFloat() or 1)
 
-				ACF_KEShove(self, self:GetPos() , Dir , KE )
+				ACE_KEShove(self, self:GetPos() , Dir , KE )
 
 				self.Ready = false
 				self.CurrentShot = math.min(self.CurrentShot + 1, self.MagSize)
@@ -1050,7 +1050,7 @@ function ENT:MuzzleEffect()
 		Effect:SetScale( self.BulletData.PropMass )
 		Effect:SetMagnitude( self.ReloadTime )
 		Effect:SetSurfaceProp( ACE.RoundTypes[self.BulletData.Type].netid  )	--Encoding the ammo type into a table index
-	util.Effect( "ACF_MuzzleFlash", Effect, true, true )
+	util.Effect( "ace_muzzleflash", Effect, true, true )
 
 	if self.AutoSound and self.Sound ~= "" then
 		timer.Simple(0.6, function()
@@ -1066,7 +1066,7 @@ function ENT:ReloadEffect()
 		Effect:SetScale( 0 )
 		Effect:SetMagnitude( self.ReloadTime )
 		Effect:SetSurfaceProp( ACE.RoundTypes[self.BulletData.Type].netid  )	--Encoding the ammo type into a table index
-	util.Effect( "ACF_MuzzleFlash", Effect, true, true )
+	util.Effect( "ace_muzzleflash", Effect, true, true )
 
 end
 

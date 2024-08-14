@@ -13,7 +13,7 @@ Round.Type  = "HESH"
 
 function Round.create( _, BulletData )
 
-	ACF_CreateBullet( BulletData )
+	ACE_CreateBullet( BulletData )
 
 end
 
@@ -30,21 +30,21 @@ function Round.convert( _, PlayerData )
 	PlayerData.TwoPiece	=  PlayerData.TwoPiece	or 0
 	PlayerData.Data5 = math.max(PlayerData.Data5 or 0, 0)
 
-	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
+	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 	--Shell sturdiness calcs
 	Data.ProjMass = math.max(GUIData.ProjVolume - PlayerData.Data5, 0) * 7.9 / 1000 + math.min(PlayerData.Data5, GUIData.ProjVolume) * ACE.HEDensity / 1000 --Volume of the projectile as a cylinder - Volume of the filler * density of steel + Volume of the filler * density of TNT
-	Data.MuzzleVel = ACF_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
-	local Energy = ACF_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
+	Data.MuzzleVel = ACE_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
+	local Energy = ACE_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
 
-	local MaxVol = ACF_RoundShellCapacity(Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength)
+	local MaxVol = ACE_RoundShellCapacity(Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength)
 	GUIData.MinFillerVol = 0
 	GUIData.MaxFillerVol = math.min(GUIData.ProjVolume, MaxVol)
 	GUIData.FillerVol = math.min(PlayerData.Data5, GUIData.MaxFillerVol)
 	Data.FillerMass = GUIData.FillerVol * ACE.HEDensity / 1000
 
 	Data.ProjMass = math.max(GUIData.ProjVolume - GUIData.FillerVol, 0) * 7.9 / 1000 + Data.FillerMass
-	Data.MuzzleVel = ACF_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
+	Data.MuzzleVel = ACE_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
 
 	--Random bullshit left
 	Data.ShovePower = 0.1
@@ -122,12 +122,12 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 	if ACE_Check( Target ) then
 
 		local Speed = Bullet.Flight:Length() / ACE.VelScale
-		local Energy = ACF_Kinetic(Speed / 4 + Bullet.FillerMass * 250, Bullet.ProjMass / 4 + Bullet.FillerMass * 5, Bullet.LimitVel)
-		--local HitRes = ACF_RoundImpact(Bullet, Speed / 4 + Bullet.FillerMass * 250, Energy, Target, HitPos, HitNormal / 10, Bone)
-		ACF_RoundImpact(Bullet, Speed / 4 + Bullet.FillerMass * 250, Energy, Target, HitPos, HitNormal / 10, Bone)
+		local Energy = ACE_Kinetic(Speed / 4 + Bullet.FillerMass * 250, Bullet.ProjMass / 4 + Bullet.FillerMass * 5, Bullet.LimitVel)
+		--local HitRes = ACE_RoundImpact(Bullet, Speed / 4 + Bullet.FillerMass * 250, Energy, Target, HitPos, HitNormal / 10, Bone)
+		ACE_RoundImpact(Bullet, Speed / 4 + Bullet.FillerMass * 250, Energy, Target, HitPos, HitNormal / 10, Bone)
 
 		table.insert( Bullet.Filter , Target )
-		ACF_Spall_HESH( HitPos, Bullet.Flight, Bullet.Filter, Bullet.FillerMass * ACE.HEPower, Bullet.Caliber * 5, Target.ACE.Armour, Bullet.Owner, Target.ACE.Material) --Do some spalling
+		ACE_Spall_HESH( HitPos, Bullet.Flight, Bullet.Filter, Bullet.FillerMass * ACE.HEPower, Bullet.Caliber * 5, Target.ACE.Armour, Bullet.Owner, Target.ACE.Material) --Do some spalling
 
 	else
 		table.insert( Bullet.Filter , Target )
@@ -143,8 +143,8 @@ end
 
 function Round.endflight( Index, Bullet, HitPos, HitNormal )
 
-	ACF_HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.FillerMass * 0.4, Bullet.ProjMass - Bullet.FillerMass * 0.4, Bullet.Owner, nil, Bullet.Gun )
-	ACF_RemoveBullet( Index )
+	ACE_HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.FillerMass * 0.4, Bullet.ProjMass - Bullet.FillerMass * 0.4, Bullet.Owner, nil, Bullet.Gun )
+	ACE_RemoveBullet( Index )
 
 end
 
@@ -155,7 +155,7 @@ function Round.endeffect( _, Bullet )
 		Flash:SetOrigin( Bullet.SimPos )
 		Flash:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Flash:SetRadius( math.max( Radius, 1 ) )
-	util.Effect( "ACF_Scaled_Explosion", Flash )
+	util.Effect( "ace_explosion", Flash )
 
 end
 
@@ -177,7 +177,7 @@ function Round.pierceeffect( _, Bullet )
 		Spall:SetOrigin( Bullet.SimPos )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale(math.max(((Bullet.RoundMass * (Bullet.SimFlight:Length() / 39.37) ^ 2) / 2000) / 10000, 1))
-	util.Effect( "ACF_AP_Impact", Spall )
+	util.Effect( "ace_impact", Spall )
 
 end
 
@@ -189,7 +189,7 @@ function Round.ricocheteffect( _, Bullet )
 		Spall:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACF_AP_Ricochet", Spall )
+	util.Effect( "ace_ricochet", Spall )
 
 end
 

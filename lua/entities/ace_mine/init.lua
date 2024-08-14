@@ -110,13 +110,13 @@ do
 		local Radius = ACE_CalculateHERadius( HEWeight )
 		local ExplosionOrigin = self:LocalToWorld(Vector(0,0,5))
 
-		ACF_HE( ExplosionOrigin, Vector(0,0,1), HEWeight, FragMass, self.DamageOwner, self, self) --0.5 is standard antipersonal mine
+		ACE_HE( ExplosionOrigin, Vector(0,0,1), HEWeight, FragMass, self.DamageOwner, self, self) --0.5 is standard antipersonal mine
 
 		local Flash = EffectData()
 			Flash:SetOrigin( ExplosionOrigin )
 			Flash:SetNormal( Vector(0,0,-1) )
 			Flash:SetRadius( Radius )
-		util.Effect( "ACF_Scaled_Explosion", Flash )
+		util.Effect( "ace_explosion", Flash )
 
 	end
 

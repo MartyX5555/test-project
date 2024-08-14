@@ -75,8 +75,8 @@ function ENT:Initialize()
 
 	self.BaseClass.Initialize(self)
 
-	self.SpecialHealth   = false	--If true needs a special ACF_Activate function
-	self.SpecialDamage   = false	--If true needs a special ACF_OnDamage function --NOTE: you can't "fix" missiles with setting this to false, it acts like a prop!!!!
+	self.SpecialHealth   = false	--If true needs a special ACE_Activate function
+	self.SpecialDamage   = false	--If true needs a special ACE_OnDamage function --NOTE: you can't "fix" missiles with setting this to false, it acts like a prop!!!!
 	self.ReloadTime      = 1
 	self.RackStatus      = "Empty"
 	self.Ready           = true
@@ -122,7 +122,7 @@ function ENT:Initialize()
 end
 
 function ENT:CanLoadCaliber(cal)
-	return ACF_RackCanLoadCaliber(self.Id, cal)
+	return ACE_RackCanLoadCaliber(self.Id, cal)
 end
 
 function ENT:CanLinkCrate(crate)
@@ -136,7 +136,7 @@ function ENT:CanLinkCrate(crate)
 
 
 	-- Don't link if it's a blacklisted round type for this rack
-	local class = ACF_GetGunValue(bdata, "gunclass")
+	local class = ACE_GetGunValue(bdata, "gunclass")
 	local Blacklist = ACE.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
 
 	if not class or table.HasValue( Blacklist, class ) then
@@ -151,7 +151,7 @@ function ENT:CanLinkCrate(crate)
 
 
 	-- Don't link if it's not a missile.
-	local ret, msg = ACF_CanLinkRack(self.Id, bdata.Id, bdata, self)
+	local ret, msg = ACE_CanLinkRack(self.Id, bdata.Id, bdata, self)
 	if not ret then return ret, msg end
 
 
@@ -548,7 +548,7 @@ function ENT:AddMissile()
 	missile:SetBulletData(BulletData)
 
 	--For pod based launchers
-	local rackmodel = ACF_GetRackValue(self.Id, "rackmdl") or ACF_GetGunValue(BulletData.Id, "rackmdl")
+	local rackmodel = ACE_GetRackValue(self.Id, "rackmdl") or ACE_GetGunValue(BulletData.Id, "rackmdl")
 	if rackmodel then
 		missile:SetModelEasy( rackmodel )
 		missile.RackModelApplied = true
@@ -616,7 +616,7 @@ function ENT:LoadAmmo()
 
 end
 
-function MakeACF_Rack(Owner, Pos, Angle, Id)
+function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	if not Owner:CheckLimit("_acf_rack") then return false end
 
@@ -667,12 +667,12 @@ function MakeACF_Rack(Owner, Pos, Angle, Id)
 	Rack.SoundPitch        = 100
 	Rack.Inaccuracy        = gundef["spread"]	or gunclass["spread"]	or 1
 
-	Rack.HideMissile       = ACF_GetRackValue(Id, "hidemissile")			or false
+	Rack.HideMissile       = ACE_GetRackValue(Id, "hidemissile")			or false
 	Rack.ProtectMissile    = gundef.protectmissile or gunclass.protectmissile  or false
 	Rack.CustomArmour      = gundef.armour		or gunclass.armour		or 1
 
-	Rack.ReloadMultiplier  = ACF_GetRackValue(Id, "reloadmul")
-	Rack.WhitelistOnly     = ACF_GetRackValue(Id, "whitelistonly")
+	Rack.ReloadMultiplier  = ACE_GetRackValue(Id, "reloadmul")
+	Rack.WhitelistOnly     = ACE_GetRackValue(Id, "whitelistonly")
 
 	Rack:SetNWString("WireName",Rack.name)
 	Rack:SetNWString( "Class",  Rack.Class )
@@ -690,7 +690,7 @@ function MakeACF_Rack(Owner, Pos, Angle, Id)
 		phys:SetMass(Rack.Mass or 1)
 	end
 
-	hook.Call("ACF_RackCreate", nil, Rack)
+	hook.Call("ACE_RackCreate", nil, Rack)
 
 	undo.Create( "acf_rack" )
 		undo.AddEntity( Rack )
@@ -702,7 +702,7 @@ function MakeACF_Rack(Owner, Pos, Angle, Id)
 end
 
 list.Set( "ACFCvars", "acf_rack" , {"id"} )
-duplicator.RegisterEntityClass("acf_rack", MakeACF_Rack, "Pos", "Angle", "Id")
+duplicator.RegisterEntityClass("acf_rack", MakeACE_Rack, "Pos", "Angle", "Id")
 
 function ENT:GetInaccuracy()
 	return self.Inaccuracy * ACE.GunInaccuracyScale
@@ -712,12 +712,12 @@ function ENT:FireMissile()
 
 	if self.Ready and self.Legal and (self.PostReloadWait < CurTime()) then
 
-		self.BaseEntity = ACF_GetPhysicalParent(self) or game.GetWorld()
+		self.BaseEntity = ACE_GetPhysicalParent(self) or game.GetWorld()
 
 		local nextMsl = self:PeekMissile()
 
 		local CanDo = true
-		if nextMsl then CanDo = hook.Run("ACF_FireShell", self, nextMsl.BulletData ) end
+		if nextMsl then CanDo = hook.Run("ACE_FireShell", self, nextMsl.BulletData ) end
 		if CanDo == false then return end
 
 		local ReloadTime = 0.5
@@ -755,7 +755,7 @@ function ENT:FireMissile()
 			bdata.Flight = (self:GetAngles():Forward() + spread):GetNormalized() * (bdata.MuzzleVel or missile.MinimumSpeed or 1) * (inverted and -1 or 1)
 
 			if missile.RackModelApplied then
-				local model = ACF_GetGunValue(bdata.Id, "model")
+				local model = ACE_GetGunValue(bdata.Id, "model")
 				missile:SetModelEasy( model )
 				missile.RackModelApplied = nil
 			end

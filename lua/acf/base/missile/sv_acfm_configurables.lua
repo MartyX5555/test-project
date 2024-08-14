@@ -48,7 +48,7 @@ function ACFM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 
 
 		if bdata then
-			local allowed = ACF_GetGunValue(bdata, wlistPath)
+			local allowed = ACE_GetGunValue(bdata, wlistPath)
 			if not table.HasValue(allowed, name) then return nil end
 		end
 

@@ -45,21 +45,21 @@ function Round.convert( _, PlayerData )
 	PlayerData.TwoPiece	=  PlayerData.TwoPiece	or 0
 	if not PlayerData.Data5 then PlayerData.Data5 = 0 end
 
-	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
+	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 	--Shell sturdiness calcs
 	Data.ProjMass = math.max(GUIData.ProjVolume-PlayerData.Data5,0) * 7.9 / 1000 + math.min(PlayerData.Data5,GUIData.ProjVolume) * ACE.HEDensity / 1000--Volume of the projectile as a cylinder - Volume of the filler * density of steel + Volume of the filler * density of TNT
-	Data.MuzzleVel = ACF_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
-	local Energy = ACF_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
+	Data.MuzzleVel = ACE_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
+	local Energy = ACE_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
 
-	local MaxVol = ACF_RoundShellCapacity( Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength )
+	local MaxVol = ACE_RoundShellCapacity( Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength )
 	GUIData.MinFillerVol = 0
 	GUIData.MaxFillerVol = math.min(GUIData.ProjVolume,MaxVol * 0.9)
 	GUIData.FillerVol = math.min(PlayerData.Data5,GUIData.MaxFillerVol)
 	Data.FillerMass = GUIData.FillerVol * ACE.HEDensity / 200
 
 	Data.ProjMass = math.max(GUIData.ProjVolume-GUIData.FillerVol,0) * 7.9 / 1000 + Data.FillerMass
-	Data.MuzzleVel = ACF_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
+	Data.MuzzleVel = ACE_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
 
 	--Random bullshit left
 	Data.ShovePower = 0.1
@@ -145,7 +145,7 @@ end
 
 function Round.endflight( Index )
 
-	ACF_RemoveBullet( Index )
+	ACE_RemoveBullet( Index )
 
 end
 
@@ -161,7 +161,7 @@ function Round.pierceeffect( _, Bullet )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACF_AP_Penetration", Spall )
+	util.Effect( "ace_penetration", Spall )
 
 end
 
@@ -173,7 +173,7 @@ function Round.ricocheteffect( _, Bullet )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACF_AP_Ricochet", Spall )
+	util.Effect( "ace_ricochet", Spall )
 
 end
 

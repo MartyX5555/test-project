@@ -27,7 +27,7 @@ local function BezPoint(perc, Table)
 	return vec
 end
 
-function ACF_DrawRefillAmmo( Table )
+function ACE_DrawRefillAmmo( Table )
 	for _, v in pairs(Table) do
 		local St, En = v.EntFrom:LocalToWorld(v.EntFrom:OBBCenter()), v.EntTo:LocalToWorld(v.EntTo:OBBCenter())
 		local Distance = (En - St):Length()
@@ -54,7 +54,7 @@ function ACF_DrawRefillAmmo( Table )
 	end
 end
 
-function ACF_TrimInvalidRefillEffects(effectsTbl)
+function ACE_TrimInvalidRefillEffects(effectsTbl)
 
 	local effect
 
@@ -68,12 +68,12 @@ function ACF_TrimInvalidRefillEffects(effectsTbl)
 
 end
 
-CreateClientConVar("ACF_AmmoInfoWhileSeated", 0, true, false)
+CreateClientConVar("ACE_AmmoInfoWhileSeated", 0, true, false)
 
 function ENT:Draw()
 
 	local lply = LocalPlayer()
-	local hideBubble = not GetConVar("ACF_AmmoInfoWhileSeated"):GetBool() and IsValid(lply) and lply:InVehicle()
+	local hideBubble = not GetConVar("ACE_AmmoInfoWhileSeated"):GetBool() and IsValid(lply) and lply:InVehicle()
 
 	self.BaseClass.DoNormalDraw(self, false, hideBubble)
 	Wire_Render(self)
@@ -85,13 +85,13 @@ function ENT:Draw()
 	--self.BaseClass.Draw( self )
 
 	if self.RefillAmmoEffect then
-		ACF_TrimInvalidRefillEffects(self.RefillAmmoEffect)
-		ACF_DrawRefillAmmo( self.RefillAmmoEffect )
+		ACE_TrimInvalidRefillEffects(self.RefillAmmoEffect)
+		ACE_DrawRefillAmmo( self.RefillAmmoEffect )
 	end
 
 end
 
-net.Receive("ACF_RefillEffect", function()
+net.Receive("ACE_RefillEffect", function()
 
 	local EntFrom, EntTo = ents.GetByIndex( net.ReadUInt(14) ), ents.GetByIndex( net.ReadUInt(14) )
 	if not IsValid( EntFrom ) or not IsValid( EntTo ) then return end
@@ -102,7 +102,7 @@ net.Receive("ACF_RefillEffect", function()
 	table.insert( EntFrom.RefillAmmoEffect, {EntFrom = EntFrom, EntTo = EntTo, Model = Mdl, StTime = SysTime()} )
 end)
 
-net.Receive("ACF_StopRefillEffect", function()
+net.Receive("ACE_StopRefillEffect", function()
 
 	local EntFrom, EntTo = ents.GetByIndex( net.ReadUInt(14) ), ents.GetByIndex( net.ReadUInt(14) )
 	if not IsValid( EntFrom ) or not IsValid( EntTo ) or not EntFrom.RefillAmmoEffect then return end

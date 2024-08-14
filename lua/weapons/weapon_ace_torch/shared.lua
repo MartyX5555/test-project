@@ -201,19 +201,19 @@ do
 			if ent:IsPlayer() or ent:IsNPC() or ent:IsNextBot() then
 
 				Energy = { Kinetic = 0.2,Momentum = 0,Penetration = 0.2 }
-				HitRes = ACF_Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
+				HitRes = ACE_Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 			else
 
 				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
 
 				Energy = { Kinetic = 500, Momentum = 0, Penetration = 500 }
-				HitRes = ACF_Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
+				HitRes = ACE_Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 
 			end
 
 			if HitRes.Kill and not ent:IsPlayer() then
 
-				ACF_APKill( ent, VectorRand() , 0)
+				ACE_APKill( ent, VectorRand() , 0)
 				ent:EmitSound("ambient/energy/NewSpark0" .. tostring(math.random(3, 5)) .. ".wav", 75, 100, 1, CHAN_AUTO)
 			else
 				local effectdata = EffectData()

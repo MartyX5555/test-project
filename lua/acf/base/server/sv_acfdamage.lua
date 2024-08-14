@@ -34,7 +34,7 @@ ACE.CritEnts = {
 }
 
 --I don't want HE processing every ent that it has in range
-function ACF_HEFind( Hitpos, Radius )
+function ACE_HEFind( Hitpos, Radius )
 
 	local Table = {}
 	for _, ent in pairs( ents.FindInSphere( Hitpos, Radius ) ) do
@@ -51,7 +51,7 @@ end
 
 --[[----------------------------------------------------------------------------
 	Function:
-		ACF_HE
+		ACE_HE
 	Arguments:
 		HitPos	- detonation center,
 		FillerMass  - mass of TNT being detonated in KG
@@ -65,7 +65,7 @@ end
 
 local PI = math.pi
 
-function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
+function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 	local Radius       = ACE_CalculateHERadius(FillerMass) -- Scalling law found on the net, based on 1PSI overpressure from 1 kg of TNT at 15m.
 	local MaxSphere    = 4 * PI * (Radius * 2.54) ^ 2 -- Surface Area of the sphere at maximum radius
@@ -80,7 +80,7 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 	local OccFilter	= istable(NoOcc) and NoOcc or { NoOcc }
 	local LoopKill	= true
 
-	local Targets	= ACF_HEFind( Hitpos, Radius )		-- Will give tiny HE just a pinch of radius to help it hit the player
+	local Targets	= ACE_HEFind( Hitpos, Radius )		-- Will give tiny HE just a pinch of radius to help it hit the player
 
 	while LoopKill and Power > 0 do
 
@@ -208,7 +208,7 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 			local FragRes
 			local FragHit	= Fragments * AreaFraction
 			FragVel	= math.max(FragVel - ( (Table.Dist / FragVel) * FragVel ^ 2 * FragWeight ^ 0.33 / 10000 ) / ACE.DragDiv,0)
-			local FragKE	= ACF_Kinetic( FragVel , FragWeight * FragHit, 1500 )
+			local FragKE	= ACE_Kinetic( FragVel , FragWeight * FragHit, 1500 )
 			if FragHit < 0 then
 				if math.Rand(0,1) > FragHit then FragHit = 1 else FragHit = 0 end
 			end
@@ -243,29 +243,29 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 					if not (Occ.Hit and Occ.Entity:EntIndex() ~= Tar:EntIndex()) and not (not Occ.Hit and NewHitpos ~= NewHitat) then
 
-						BlastRes = ACF_Damage ( Tar	, Blast  , AreaAdjusted , 0	, Inflictor , 0	, Gun , "HE" )
-						FragRes = ACF_Damage ( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
+						BlastRes = ACE_Damage ( Tar	, Blast  , AreaAdjusted , 0	, Inflictor , 0	, Gun , "HE" )
+						FragRes = ACE_Damage ( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
 
 						if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
-							ACF_HEKill( Tar, (TargetPos - NewHitpos):GetNormalized(), PowerFraction , Hitpos)
+							ACE_HEKill( Tar, (TargetPos - NewHitpos):GetNormalized(), PowerFraction , Hitpos)
 						else
-							ACF_KEShove(Tar, NewHitpos, (TargetPos - NewHitpos):GetNormalized(), PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) ) --0.333
+							ACE_KEShove(Tar, NewHitpos, (TargetPos - NewHitpos):GetNormalized(), PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) ) --0.333
 						end
 					end
 				end)
 
 				--calculate damage that would be applied (without applying it), so HE deals correct damage to other props
-				BlastRes = ACF_CalcDamage( Tar, Blast, AreaAdjusted, 0 )
+				BlastRes = ACE_CalcDamage( Tar, Blast, AreaAdjusted, 0 )
 
 			else
 
-				BlastRes = ACF_Damage ( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
-				FragRes = ACF_Damage ( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
+				BlastRes = ACE_Damage ( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
+				FragRes = ACE_Damage ( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
 
 				if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
 
 					--Add the debris created to the ignore so we don't hit it in other rounds
-					local Debris = ACF_HEKill( Tar , Table.Vec , PowerFraction , Hitpos )
+					local Debris = ACE_HEKill( Tar , Table.Vec , PowerFraction , Hitpos )
 					table.insert( OccFilter , Debris )
 
 					LoopKill = true --look for fresh targets since we blew a hole somewhere
@@ -273,7 +273,7 @@ function ACF_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				else
 
 					--Assuming about 1/30th of the explosive energy goes to propelling the target prop (Power in KJ * 1000 to get J then divided by 33)
-					ACF_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) )
+					ACE_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) )
 
 				end
 			end
@@ -293,7 +293,7 @@ end
 
 
 --Handles normal spalling
-function ACF_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
+function ACE_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
 
 	--Don't use it if it's not allowed to
 	if not ACE.Spalling then return end
@@ -326,7 +326,7 @@ function ACF_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 		local SpallWeight = TotalWeight / Spall * SpallMul
 		local SpallVel = (KE * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul * Velocityfactor
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
-		local SpallEnergy = ACF_Kinetic(SpallVel, SpallWeight, 800)
+		local SpallEnergy = ACE_Kinetic(SpallVel, SpallWeight, 800)
 
 		for i = 1,Spall do
 
@@ -345,7 +345,7 @@ function ACF_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 			ACE.Spall[Index].mins	= Vector(0,0,0)
 			ACE.Spall[Index].maxs	= Vector(0,0,0)
 
-			ACF_SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
+			ACE_SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
 
 			--little sound optimization
 			if i < math.max(math.Round(Spall / 2), 1) then
@@ -358,7 +358,7 @@ end
 
 
 --Dedicated function for HESH spalling
-function ACF_PropShockwave( HitPos, HitVec, Filter, Caliber )
+function ACE_PropShockwave( HitPos, HitVec, Filter, Caliber )
 
 	--Don't even bother at calculating something that doesn't exist
 	if table.IsEmpty(Filter) then return end
@@ -519,9 +519,9 @@ end
 
 
 --Handles HESH spalling
-function ACF_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
+function ACE_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
 
-	local spallPos, Armour, PEnts, fNormal = ACF_PropShockwave( HitPos, HitVec, Filter, Caliber )
+	local spallPos, Armour, PEnts, fNormal = ACE_PropShockwave( HitPos, HitVec, Filter, Caliber )
 
 	local Mat		= Material or "RHA"
 	local MatData	= ACE_GetMaterialData( Mat )
@@ -544,7 +544,7 @@ function ACF_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Infl
 		local SpallWeight = TotalWeight / Spall * SpallMul
 		local SpallVel = (HEFiller * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
-		local SpallEnergy = ACF_Kinetic(SpallVel, SpallWeight, 800)
+		local SpallEnergy = ACE_Kinetic(SpallVel, SpallWeight, 800)
 
 		for i = 1,Spall do
 
@@ -561,7 +561,7 @@ function ACF_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Infl
 			ACE.Spall[Index].endpos	= spallPos + ((fNormal * 2500 + HitVec):GetNormalized() + VectorRand() / 3):GetNormalized() * math.max(SpallVel * 10,math.random(450,600)) --I got bored of spall not going across the tank
 			ACE.Spall[Index].filter	= table.Copy(PEnts)
 
-			ACF_SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
+			ACE_SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
 
 			--little sound optimization
 			if i < math.max(math.Round(Spall / 4), 1) then
@@ -573,7 +573,7 @@ end
 
 
 --Spall trace core. For HESH and normal spalling
-function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
+function ACE_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 
 	local SpallRes = util.TraceLine(ACE.Spall[Index])
 
@@ -588,14 +588,14 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 
 				table.insert( ACE.Spall[Index].filter , SpallRes.Entity )
 
-				ACF_SpallTrace( SpallRes.StartPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+				ACE_SpallTrace( SpallRes.StartPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 				return
 			end
 
 		end
 
 		-- Get the spalling hitAngle
-		local Angle		= ACF_GetHitAngle( SpallRes.HitNormal , HitVec )
+		local Angle		= ACE_GetHitAngle( SpallRes.HitNormal , HitVec )
 
 		local Mat		= SpallRes.Entity.ACE.Material or "RHA"
 		local MatData	= ACE_GetMaterialData( Mat )
@@ -610,14 +610,14 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 		end
 
 		-- Applies the damage to the impacted entity
-		local HitRes = ACF_Damage( SpallRes.Entity , SpallEnergy , SpallArea , Angle , Inflictor, 0, nil, "Spall")
+		local HitRes = ACE_Damage( SpallRes.Entity , SpallEnergy , SpallArea , Angle , Inflictor, 0, nil, "Spall")
 
 		-- If it's able to destroy it, kill it and filter it
 		if HitRes.Kill then
-			local Debris = ACF_APKill( SpallRes.Entity , HitVec:GetNormalized() , SpallEnergy.Kinetic )
+			local Debris = ACE_APKill( SpallRes.Entity , HitVec:GetNormalized() , SpallEnergy.Kinetic )
 			if IsValid(Debris) then
 				table.insert( ACE.Spall[Index].filter , Debris )
-				ACF_SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+				ACE_SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 			end
 		end
 
@@ -634,7 +634,7 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 			SpallEnergy.Momentum = SpallEnergy.Momentum * (1-HitRes.Loss)
 
 			-- Retry
-			ACF_SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+			ACE_SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 
 			debugoverlay.Line( SpallRes.StartPos + Vector(2,0,0), SpallRes.HitPos + Vector(2,0,0), 10 , Color(255,255,0), true )
 
@@ -649,14 +649,14 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 end
 
 --Calculates the vector of the ricochet of a round upon impact at a set angle
-function ACF_RicochetVector(Flight, HitNormal)
+function ACE_RicochetVector(Flight, HitNormal)
 	local Vec = Flight:GetNormalized()
 
 	return Vec - ( 2 * Vec:Dot(HitNormal) ) * HitNormal
 end
 
 -- Handles the impact of a round on a target
-function ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone  )
+function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone  )
 
 --[[
 	print("======DATA=======")
@@ -669,8 +669,8 @@ function ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 ]]
 	Bullet.Ricochets = Bullet.Ricochets or 0
 
-	local Angle	= ACF_GetHitAngle( HitNormal , Bullet["Flight"] )
-	local HitRes	= ACF_Damage( Target, Energy, Bullet["PenArea"], Angle, Bullet["Owner"], Bone, Bullet["Gun"], Bullet["Type"] )
+	local Angle	= ACE_GetHitAngle( HitNormal , Bullet["Flight"] )
+	local HitRes	= ACE_Damage( Target, Energy, Bullet["PenArea"], Angle, Bullet["Owner"], Bone, Bullet["Gun"], Bullet["Type"] )
 
 	HitRes.Ricochet = false
 
@@ -703,7 +703,7 @@ function ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 	end
 
 	if HitRes.Kill then
-		local Debris = ACF_APKill( Target , (Bullet["Flight"]):GetNormalized() , Energy.Kinetic )
+		local Debris = ACE_APKill( Target , (Bullet["Flight"]):GetNormalized() , Energy.Kinetic )
 		table.insert( Bullet["Filter"] , Debris )
 	end
 
@@ -712,23 +712,23 @@ function ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 		Bullet.Ricochets	= Bullet.Ricochets + 1
 		Bullet["Pos"]	= HitPos + HitNormal * 0.75
 		Bullet.FlightTime	= 0
-		Bullet.Flight	= (ACF_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
+		Bullet.Flight	= (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
 
-		if IsValid( ACF_GetPhysicalParent(Target):GetPhysicsObject() ) then
-			Bullet.TraceBackComp = math.max(ACF_GetPhysicalParent(Target):GetPhysicsObject():GetVelocity():Dot(Bullet["Flight"]:GetNormalized()),0)
+		if IsValid( ACE_GetPhysicalParent(Target):GetPhysicsObject() ) then
+			Bullet.TraceBackComp = math.max(ACE_GetPhysicalParent(Target):GetPhysicsObject():GetVelocity():Dot(Bullet["Flight"]:GetNormalized()),0)
 		end
 
 		HitRes.Ricochet = true
 
 	end
 
-	ACF_KEShove( Target, HitPos, Bullet["Flight"]:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet["ShovePower"] * (GetConVar("acf_recoilpush"):GetFloat() or 1))
+	ACE_KEShove( Target, HitPos, Bullet["Flight"]:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet["ShovePower"] * (GetConVar("acf_recoilpush"):GetFloat() or 1))
 
 	return HitRes
 end
 
 --Handles Ground penetrations
-function ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
+function ACE_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 
 	Bullet.GroundRicos = Bullet.GroundRicos or 0
 
@@ -761,7 +761,7 @@ function ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 
 		local Ricochet  = 0
 		local Speed	= Bullet.Flight:Length() / ACE.VelScale
-		local Angle	= ACF_GetHitAngle( HitNormal, Bullet.Flight )
+		local Angle	= ACE_GetHitAngle( HitNormal, Bullet.Flight )
 		local MinAngle  = math.min(Bullet.Ricochet - Speed / 39.37 / 30 + 20,89.9)  --Making the chance of a ricochet get higher as the speeds increase
 
 		if Angle > math.random(MinAngle,90) and Angle < 89.9 then	--Checking for ricochet
@@ -771,7 +771,7 @@ function ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 		if Ricochet > 0 and Bullet.GroundRicos < 2 then
 			Bullet.GroundRicos  = Bullet.GroundRicos + 1
 			Bullet.Pos		= HitPos + HitNormal * 1
-			Bullet.Flight	= (ACF_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.05):GetNormalized() * Speed * Ricochet
+			Bullet.Flight	= (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.05):GetNormalized() * Speed * Ricochet
 			HitRes.Ricochet	= true
 		end
 
@@ -788,7 +788,7 @@ end
 --helper function to replace ENT:ApplyForceOffset()
 --Gmod applyforce creates weird torque when moving https://github.com/Facepunch/garrysmod-issues/issues/5159
 local m_insq = 1 / 39.37 ^ 2
-local function ACF_ApplyForceOffset(Phys, Force, Pos)
+local function ACE_ApplyForceOffset(Phys, Force, Pos)
 	Phys:ApplyForceCenter(Force)
 	local off = Pos - Phys:LocalToWorld(Phys:GetMassCenter())
 	local angf = off:Cross(Force) * m_insq * 360 / (2 * 3.1416)
@@ -796,19 +796,19 @@ local function ACF_ApplyForceOffset(Phys, Force, Pos)
 end
 
 --Handles ACE forces (HE Push, Recoil, etc)
-function ACF_KEShove(Target, Pos, Vec, KE )
+function ACE_KEShove(Target, Pos, Vec, KE )
 
-	local CanDo = hook.Run("ACF_KEShove", Target, Pos, Vec, KE )
+	local CanDo = hook.Run("ACE_KEShove", Target, Pos, Vec, KE )
 	if CanDo == false then return end
 
 	--Gets the baseplate of target
-	local parent	= ACF_GetPhysicalParent(Target)
+	local parent	= ACE_GetPhysicalParent(Target)
 	local phys	= parent:GetPhysicsObject()
 
 	if not IsValid(phys) then return end
 
 	if not Target.acflastupdatemass or ((Target.acflastupdatemass + 10) < CurTime()) then
-		ACF_CalcMassRatio(Target)
+		ACE_CalcMassRatio(Target)
 	end
 
 	--corner case error check
@@ -827,15 +827,15 @@ function ACF_KEShove(Target, Pos, Vec, KE )
 	local Res	= Local + phys:GetMassCenter()
 	Pos			= parent:LocalToWorld(Res)
 
-	ACF_ApplyForceOffset(phys, Vec:GetNormalized() * KE * physratio, Pos )
+	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * physratio, Pos )
 end
 
 -- helper function to process children of an acf-destroyed prop
 -- AP will HE-kill children props like a detonation; looks better than a directional spray of unrelated debris from the AP kill
-local function ACF_KillChildProps( Entity, BlastPos, Energy )
+local function ACE_KillChildProps( Entity, BlastPos, Energy )
 
 	if ACE.DebrisChance <= 0 then return end
-	local children = ACF_GetAllChildren(Entity)
+	local children = ACE_GetAllChildren(Entity)
 
 	--why should we make use of this for ONE prop?
 	if table.Count(children) > 1 then
@@ -850,7 +850,7 @@ local function ACF_KillChildProps( Entity, BlastPos, Energy )
 			if Entity:EntIndex() == ent:EntIndex() then children[ent] = nil continue end
 
 			-- mark that it's already processed
-			ent.ACF_Killed = true
+			ent.ACE_Killed = true
 
 			local class = ent:GetClass()
 
@@ -888,7 +888,7 @@ local function ACF_KillChildProps( Entity, BlastPos, Energy )
 				-- ignore some of the debris props to save lag
 				if rand > ACE.DebrisChance then continue end
 
-				ACF_HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
+				ACE_HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
 
 				constraint.RemoveAll( child )
 				child:Remove()
@@ -903,7 +903,7 @@ local function ACF_KillChildProps( Entity, BlastPos, Energy )
 				if not IsValid(child) or child.Exploding then continue end
 
 				child.Exploding = true
-				ACF_ScaledExplosion( child ) -- explode any crates that are getting removed
+				ACE_ScaledExplosion( child ) -- explode any crates that are getting removed
 
 			end
 		end
@@ -917,10 +917,10 @@ local function RemoveEntity( Entity )
 end
 
 -- Creates a debris related to explosive destruction.
-function ACF_HEKill( Entity , HitVector , Energy , BlastPos )
+function ACE_HEKill( Entity , HitVector , Energy , BlastPos )
 
 	-- if it hasn't been processed yet, check for children
-	if not Entity.ACF_Killed then ACF_KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy ) end
+	if not Entity.ACE_Killed then ACE_KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy ) end
 
 	do
 		--ERA props should not create debris
@@ -951,7 +951,7 @@ function ACF_HEKill( Entity , HitVector , Energy , BlastPos )
 			-- Applies force to this debris
 			local phys = Debris:GetPhysicsObject()
 			local physent = Entity:GetPhysicsObject()
-			local Parent = ACF_GetPhysicalParent( Entity )
+			local Parent = ACE_GetPhysicalParent( Entity )
 
 			if IsValid(phys) and IsValid(physent) then
 				phys:SetDragCoefficient( -50 )
@@ -973,10 +973,10 @@ function ACF_HEKill( Entity , HitVector , Energy , BlastPos )
 end
 
 -- Creates a debris related to kinetic destruction.
-function ACF_APKill( Entity , HitVector , Power )
+function ACE_APKill( Entity , HitVector , Power )
 
 	-- kill the children of this ent, instead of disappearing them from removing parent
-	ACF_KillChildProps( Entity, Entity:GetPos(), Power )
+	ACE_KillChildProps( Entity, Entity:GetPos(), Power )
 
 	do
 		--ERA props should not create debris
@@ -1004,7 +1004,7 @@ function ACF_APKill( Entity , HitVector , Power )
 			--Applies force to this debris
 			local phys = Debris:GetPhysicsObject()
 			local physent = Entity:GetPhysicsObject()
-			local Parent =  ACF_GetPhysicalParent( Entity )
+			local Parent =  ACE_GetPhysicalParent( Entity )
 
 			if IsValid(phys) and IsValid(physent) then
 				phys:SetDragCoefficient( -50 )
@@ -1031,7 +1031,7 @@ do
 	local FuelExplosionScale = 0.005
 
 	--converts what would be multiple simultaneous cache detonations into one large explosion
-	function ACF_ScaledExplosion( ent )
+	function ACE_ScaledExplosion( ent )
 
 		if ent.RoundType and ent.RoundType == "Refill" then return end
 
@@ -1177,7 +1177,7 @@ do
 		HEWeight	= HEWeight * ACE.BoomMult
 		Radius	= ACE_CalculateHERadius( HEWeight )
 
-		ACF_HE( AvgPos , vector_origin , HEWeight , HEWeight , Inflictor , ent, ent )
+		ACE_HE( AvgPos , vector_origin , HEWeight , HEWeight , Inflictor , ent, ent )
 
 		--util.Effect not working during MP workaround. Waiting a while fixes the issue.
 		timer.Simple(0, function()
@@ -1186,14 +1186,14 @@ do
 				Flash:SetOrigin( AvgPos )
 				Flash:SetNormal( -vector_up )
 				Flash:SetRadius( math.max( Radius , 1 ) )
-			util.Effect( "ACF_Scaled_Explosion", Flash )
+			util.Effect( "ace_explosion", Flash )
 		end )
 
 	end
 
 end
 
-function ACF_GetHitAngle( HitNormal , HitVector )
+function ACE_GetHitAngle( HitNormal , HitVector )
 
 	HitVector = HitVector * -1
 	local Angle = math.min(math.deg(math.acos(HitNormal:Dot( HitVector:GetNormalized() ) ) ),89.999 )

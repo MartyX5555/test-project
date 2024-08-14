@@ -226,7 +226,7 @@ function CreateRackSelectGUI(node)
 	acfmenupanel.CData.RackSelect:Clear()
 
 	local default = node.mytable.rack
-	for _, Value in pairs( ACF_GetCompatibleRacks(node.mytable.id) ) do
+	for _, Value in pairs( ACE_GetCompatibleRacks(node.mytable.id) ) do
 		acfmenupanel.CData.RackSelect:AddChoice( Value, Value, Value == default )
 	end
 

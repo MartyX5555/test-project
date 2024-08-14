@@ -22,8 +22,8 @@ function ENT:Initialize()
 
 	self.DestructOnMiss = false --Detonate the missile the distance to the target increases(when the missile misses or runs out of energy)
 
-	self.SpecialHealth  = true  --If true, use the ACF_Activate function defined by this ent
-	self.SpecialDamage  = true  --If true, use the ACF_OnDamage function defined by this ent
+	self.SpecialHealth  = true  --If true, use the ACE_Activate function defined by this ent
+	self.SpecialDamage  = true  --If true, use the ACE_OnDamage function defined by this ent
 
 	self.TopAttackGuidance = false
 	self.DirectFireDist = 125 * 39.37
@@ -65,7 +65,7 @@ function ENT:Initialize()
 
 	self:EmitSound( "acf_extra/airfx/tow2.wav", 100, 100, 2, CHAN_AUTO )
 
-	ACF_ActiveMissiles[self] = true
+	ACE_ActiveMissiles[self] = true
 end
 
 local function GetRootVelocity(ent)
@@ -82,7 +82,7 @@ function ENT:Detonate()
 	if self.Exploded then return end
 
 	self.Exploded = true
-	ACF_ActiveMissiles[self] = nil
+	ACE_ActiveMissiles[self] = nil
 
 	self:Remove()
 
@@ -106,11 +106,11 @@ function ENT:Detonate()
 	Flash:SetOrigin(self:GetPos() + Vector(0, 0, 8))
 	Flash:SetNormal(Vector(0, 0, -1))
 	Flash:SetRadius(math.max(Radius, 1))
-	util.Effect( "ACF_Scaled_Explosion", Flash )
+	util.Effect( "ace_explosion", Flash )
 end
 
 function ENT:OnRemove()
-	ACF_ActiveMissiles[self] = nil
+	ACE_ActiveMissiles[self] = nil
 end
 
 function ENT:PhysicsCollide()
@@ -237,7 +237,7 @@ end
 --===========================================================================================
 ----- OnDamage functions
 --===========================================================================================
-function ENT:ACF_Activate( Recalc )
+function ENT:ACE_Activate( Recalc )
 
 	local EmptyMass = self.RoundWeight or self.Mass or 10
 
@@ -253,7 +253,7 @@ function ENT:ACF_Activate( Recalc )
 		self.ACE.Volume = PhysObj:GetVolume() * 16.38
 	end
 
-	local ForceArmour = ACF_GetGunValue(self.BulletData, "armour")
+	local ForceArmour = ACE_GetGunValue(self.BulletData, "armour")
 
 	local Armour = ForceArmour or (EmptyMass * 1000 / self.ACE.Area / 0.78)	--So we get the equivalent thickness of that prop in mm if all it's weight was a steel plate
 	local Health = self.ACE.Volume / ACE.Threshold							--Setting the threshold of the prop Area gone
@@ -278,18 +278,18 @@ end
 
 local nullhit = {Damage = 0, Overkill = 1, Loss = 0, Kill = false}
 
-function ENT:ACF_OnDamage( Entity , Energy , FrArea , Ang , Inflictor )	--This function needs to return HitRes
+function ENT:ACE_OnDamage( Entity , Energy , FrArea , Ang , Inflictor )	--This function needs to return HitRes
 
 	if self.Detonated or self.DisableDamage then return table.Copy(nullhit) end
 
-	local HitRes = ACF_PropDamage( Entity , Energy , FrArea , Ang , Inflictor )	--Calling the standard damage prop function
+	local HitRes = ACE_PropDamage( Entity , Energy , FrArea , Ang , Inflictor )	--Calling the standard damage prop function
 
 	-- Detonate if the shot penetrates the casing.
 	HitRes.Kill = HitRes.Kill or HitRes.Overkill > 0
 
 	if HitRes.Kill then
 
-		local CanDo = hook.Run("ACF_AmmoExplode", self, self.BulletData )
+		local CanDo = hook.Run("ACE_AmmoExplode", self, self.BulletData )
 		if CanDo == false then return HitRes end
 
 		self:Remove()

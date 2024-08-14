@@ -37,5 +37,5 @@ do
 			RenderProps.Clock = Time + (SendDelay / 1000)
 		end
 	end
-	hook.Add("Think","ACF_RenderPropDamage", SendVisualDamage )
+	hook.Add("Think","ACE_RenderPropDamage", SendVisualDamage )
 end

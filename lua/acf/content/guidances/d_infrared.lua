@@ -48,10 +48,10 @@ function this:Configure(missile)
 
 	self:super().Configure(self, missile)
 
-	self.ViewCone		= (ACF_GetGunValue(missile.BulletData, "viewcone") or this.ViewCone) * 1.2
+	self.ViewCone		= (ACE_GetGunValue(missile.BulletData, "viewcone") or this.ViewCone) * 1.2
 	self.ViewConeCos		= (math.cos(math.rad(self.ViewCone))) * 1.2
-	self.SeekCone		= (ACF_GetGunValue(missile.BulletData, "seekcone") or this.SeekCone) * 1.2
-	self.SeekSensitivity	= ACF_GetGunValue(missile.BulletData, "seeksensitivity") or this.SeekSensitivity
+	self.SeekCone		= (ACE_GetGunValue(missile.BulletData, "seekcone") or this.SeekCone) * 1.2
+	self.SeekSensitivity	= ACE_GetGunValue(missile.BulletData, "seeksensitivity") or this.SeekSensitivity
 
 end
 

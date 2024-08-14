@@ -181,9 +181,9 @@ local function IsReallyValid(trace, ply)
 	if not ACE.SoundToolSupport[class] then
 
 		if string.StartWith(class, "acf_") then
-			ACF_SendNotify( ply, false, class .. ACFTranslation.SoundToolText[4] )
+			ACE_SendNotify( ply, false, class .. ACFTranslation.SoundToolText[4] )
 		else
-			ACF_SendNotify( ply, false, ACFTranslation.SoundToolText[5] )
+			ACE_SendNotify( ply, false, ACFTranslation.SoundToolText[5] )
 		end
 
 		return false

@@ -12,7 +12,7 @@ CreateConVar("sbox_max_acf_explosive", 20)
 function ENT:Initialize()
 
 	self.BulletData = self.BulletData or {}
-	self.SpecialDamage = true	--If true needs a special ACF_OnDamage function
+	self.SpecialDamage = true	--If true needs a special ACE_OnDamage function
 
 	self.Inputs = Wire_CreateInputs( self, { "Detonate" } )
 	self.Outputs = Wire_CreateOutputs( self, {} )
@@ -22,12 +22,12 @@ function ENT:Initialize()
 end
 
 local nullhit = {Damage = 0, Overkill = 1, Loss = 0, Kill = false}
-function ENT:ACF_OnDamage( Entity , Energy , FrArea , Angle , Inflictor )
+function ENT:ACE_OnDamage( Entity , Energy , FrArea , Angle , Inflictor )
 	self.ACE.Armour = 0.1
-	local HitRes = ACF_PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
+	local HitRes = ACE_PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
 	if self.Detonated or self.DisableDamage then return table.Copy(nullhit) end
 
-	local CanDo = hook.Run("ACF_AmmoExplode", self, self.BulletData )
+	local CanDo = hook.Run("ACE_AmmoExplode", self, self.BulletData )
 	if CanDo == false then return table.Copy(nullhit) end
 
 	HitRes.Kill = false
@@ -42,7 +42,7 @@ function ENT:TriggerInput( inp, value )
 	end
 end
 
-function MakeACF_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, Data11, Data12, Data13, Data14, Data15)
+function MakeACE_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, Data11, Data12, Data13, Data14, Data15)
 
 	if not Owner:CheckLimit("_acf_explosive") then return false end
 
@@ -69,7 +69,7 @@ function MakeACF_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5,
 	return Bomb
 end
 list.Set( "ACFCvars", "acf_explosive", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "mdl", "data11", "data12", "data13", "data14", "data15"} )
-duplicator.RegisterEntityClass("acf_explosive", MakeACF_Explosive, "Pos", "Angle", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10", "Model" , "RoundData11" , "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
+duplicator.RegisterEntityClass("acf_explosive", MakeACE_Explosive, "Pos", "Angle", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10", "Model" , "RoundData11" , "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
 
 function ENT:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, bdata,Data11 ,Data12, Data13 ,Data14, Data15)
 

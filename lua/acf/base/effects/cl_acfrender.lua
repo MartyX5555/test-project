@@ -1,27 +1,27 @@
 
 ---------------- ACE Damage Material rendering ----------------
 do
-	local ACF_HealthRenderList = {}
+	local ACE_HealthRenderList = {}
 
 	local Damaged = {
-		CreateMaterial("ACF_Damaged1", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged1"}),
-		CreateMaterial("ACF_Damaged2", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged2"}),
-		CreateMaterial("ACF_Damaged3", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged3"})
+		CreateMaterial("ACE_Damaged1", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged1"}),
+		CreateMaterial("ACE_Damaged2", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged2"}),
+		CreateMaterial("ACE_Damaged3", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged3"})
 	}
 
 	hook.Add("PostDrawOpaqueRenderables", "ACE_RenderDamage", function()
-		if not ACF_HealthRenderList then return end
+		if not ACE_HealthRenderList then return end
 
 		cam.Start3D( EyePos(), EyeAngles() )
 
-			for k,ent in pairs( ACF_HealthRenderList ) do
+			for k,ent in pairs( ACE_HealthRenderList ) do
 				if not IsValid(ent) then
-					ACF_HealthRenderList[k] = nil
+					ACE_HealthRenderList[k] = nil
 					continue
 				end
 
-				render.ModelMaterialOverride( ent.ACF_Material )
-				render.SetBlend( math.Clamp( 1 - ent.ACF_HealthPercent,0,0.8) )
+				render.ModelMaterialOverride( ent.ACE_Material )
+				render.SetBlend( math.Clamp( 1 - ent.ACE_HealthPercent,0,0.8) )
 				ent:DrawModel()
 
 			end
@@ -41,23 +41,23 @@ do
 			local Health = net.ReadFloat()
 
 			if math.Round(MaxHealth) == math.Round(Health) then
-				ACF_HealthRenderList[Entity:EntIndex()] = nil
+				ACE_HealthRenderList[Entity:EntIndex()] = nil
 				return
 			end
 
-			Entity.ACF_Health = Health
-			Entity.ACF_MaxHealth = MaxHealth
-			Entity.ACF_HealthPercent = (Health / MaxHealth)
+			Entity.ACE_Health = Health
+			Entity.ACE_MaxHealth = MaxHealth
+			Entity.ACE_HealthPercent = (Health / MaxHealth)
 
-			if Entity.ACF_HealthPercent > 0.7 then
-				Entity.ACF_Material = Damaged[1]
-			elseif Entity.ACF_HealthPercent > 0.3 then
-				Entity.ACF_Material = Damaged[2]
-			elseif Entity.ACF_HealthPercent <= 0.3 then
-				Entity.ACF_Material = Damaged[3]
+			if Entity.ACE_HealthPercent > 0.7 then
+				Entity.ACE_Material = Damaged[1]
+			elseif Entity.ACE_HealthPercent > 0.3 then
+				Entity.ACE_Material = Damaged[2]
+			elseif Entity.ACE_HealthPercent <= 0.3 then
+				Entity.ACE_Material = Damaged[3]
 			end
 
-			ACF_HealthRenderList[Entity:EntIndex()] = Entity
+			ACE_HealthRenderList[Entity:EntIndex()] = Entity
 
 		end
 	end)

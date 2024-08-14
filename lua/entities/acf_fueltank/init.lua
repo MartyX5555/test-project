@@ -23,8 +23,8 @@ do
 	function ENT:Initialize()
 
 		self.CanUpdate        = true
-		self.SpecialHealth    = true  --If true, use the ACF_Activate function defined by this ent
-		self.SpecialDamage    = true  --If true, use the ACF_OnDamage function defined by this ent
+		self.SpecialHealth    = true  --If true, use the ACE_Activate function defined by this ent
+		self.SpecialDamage    = true  --If true, use the ACE_OnDamage function defined by this ent
 		self.IsExplosive      = true
 		self.Exploding        = false
 
@@ -61,7 +61,7 @@ do
 
 end
 
-function ENT:ACF_Activate( Recalc )
+function ENT:ACE_Activate( Recalc )
 
 	self.ACE = self.ACE or {}
 
@@ -98,17 +98,17 @@ function ENT:ACF_Activate( Recalc )
 
 end
 
-function ENT:ACF_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
+function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
 	local Mul = (((Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS") and ACE.HEATMulFuel) or 1) --Heat penetrators deal bonus damage to fuel
-	local HitRes = ACF_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
+	local HitRes = ACE_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 	local NoExplode = self.FuelType == "Diesel" and not (Type == "HE" or Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS")
 	if self.Exploding or NoExplode or not self.IsExplosive then return HitRes end
 
 	if HitRes.Kill then
 
-		if hook.Run( "ACF_FuelExplode", self ) == false then return HitRes end
+		if hook.Run( "ACE_FuelExplode", self ) == false then return HitRes end
 
 		self.Exploding = true
 
@@ -116,7 +116,7 @@ function ENT:ACF_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	-
 			self.Inflictor = Inflictor
 		end
 
-		ACF_ScaledExplosion( self )
+		ACE_ScaledExplosion( self )
 
 		return HitRes
 	end
@@ -127,14 +127,14 @@ function ENT:ACF_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	-
 	--it's gonna blow
 	if math.Rand(0, 1.2) < (ExplodeChance + Ratio) then
 
-		if hook.Run( "ACF_FuelExplode", self ) == false then return HitRes end
+		if hook.Run( "ACE_FuelExplode", self ) == false then return HitRes end
 
 		self.Inflictor = Inflictor
 		self.Exploding = true
 
 		timer.Simple(math.Rand(0.1, 1), function()
 			if IsValid(self) then
-				ACF_ScaledExplosion( self )
+				ACE_ScaledExplosion( self )
 			end
 		end )
 
@@ -198,7 +198,7 @@ do
 		return Scale
 	end
 
-	function MakeACF_FuelTank(Owner, Pos, Angle, Id, Data1, Data2, Data3)
+	function MakeACE_FuelTank(Owner, Pos, Angle, Id, Data1, Data2, Data3)
 
 		if IsValid(Owner) and not Owner:CheckLimit("_acf_misc") then return false end
 
@@ -290,7 +290,7 @@ do
 end
 
 list.Set( "ACFCvars", "acf_fueltank", {"id", "data1", "data2", "data3"} )
-duplicator.RegisterEntityClass("acf_fueltank", MakeACF_FuelTank, "Pos", "Angle", "Id", "SizeId", "FuelType", "Shape" )
+duplicator.RegisterEntityClass("acf_fueltank", MakeACE_FuelTank, "Pos", "Angle", "Id", "SizeId", "FuelType", "Shape" )
 
 
 local Wall = 0.03937 --wall thickness in inches (1mm)

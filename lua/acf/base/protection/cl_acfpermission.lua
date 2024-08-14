@@ -7,7 +7,7 @@ local this = ACE.Permissions
 
 local getPanelChecks = function() return {} end
 
-net.Receive("ACF_refreshfriends", function()
+net.Receive("ACE_refreshfriends", function()
 	--Msg("\ncl refreshfriends\n")
 	local perms = net.ReadTable()
 	local checks = getPanelChecks()
@@ -21,7 +21,7 @@ net.Receive("ACF_refreshfriends", function()
 	end
 end)
 
-net.Receive("ACF_refreshfeedback", function()
+net.Receive("ACE_refreshfeedback", function()
 	local success = net.ReadBit()
 	local str, notify
 
@@ -44,7 +44,7 @@ function this.ApplyPermissions(checks)
 		perms[check.steamid] = check:GetChecked()
 	end
 
-	net.Start("ACF_dmgfriends")
+	net.Start("ACE_dmgfriends")
 		net.WriteTable(perms)
 	net.SendToServer()
 end
@@ -83,7 +83,7 @@ function this.ClientPanel(Panel)
 	local button = Panel:Button("Give Damage Permission")
 	button.DoClick = function() this.ApplyPermissions(Panel.playerChecks) end
 
-	net.Start("ACF_refreshfriends")
+	net.Start("ACE_refreshfriends")
 		net.WriteBit(true)
 	net.SendToServer(ply)
 end

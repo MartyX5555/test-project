@@ -3,7 +3,7 @@ local Clamp = math.Clamp
 
 --Calculates a position along a catmull-rom spline (as defined on https://www.mvps.org/directx/articles/catmull/)
 --This is used for calculating engine torque curves
-function ACF_CalcCurve(Points, Pos)
+function ACE_CalcCurve(Points, Pos)
 	local Count = #Points
 
 	if Count < 3 then return 0 end
@@ -39,7 +39,7 @@ function ACE_CalcEnginePerformanceData(curve, maxTq, idle, redline)
 	for i = 0, res do
 		local rpm = i / res * redline
 		local perc = math.Remap(rpm, idle, redline, 0, 1)
-		local curTq = ACF_CalcCurve(curve, perc)
+		local curTq = ACE_CalcCurve(curve, perc)
 		local power = maxTq * curTq * rpm / 9548.8
 
 		powerTable[i] = power
@@ -127,13 +127,13 @@ function ACE_GetMaterialName( Mat )
 end
 
 -- changes here will be automatically reflected in the armor properties tool
-function ACF_CalcArmor( Area, Ductility, Mass )
+function ACE_CalcArmor( Area, Ductility, Mass )
 
 	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACE.ArmorMod
 
 end
 
-function ACF_MuzzleVelocity( Propellant, Mass )
+function ACE_MuzzleVelocity( Propellant, Mass )
 
 	local PEnergy	= ACE.PBase * ((1 + Propellant) ^ ACE.PScale-1)
 	local Speed	= ((PEnergy * 2000 / Mass) ^ ACE.MVScale)
@@ -142,7 +142,7 @@ function ACF_MuzzleVelocity( Propellant, Mass )
 	return Final
 end
 
-function ACF_Kinetic( Speed , Mass, LimitVel )
+function ACE_Kinetic( Speed , Mass, LimitVel )
 
 	LimitVel = LimitVel or 99999
 	Speed = Speed / 39.37
@@ -171,7 +171,7 @@ do
 	}
 
 	-- Global Ratio Setting Function
-	function ACF_CalcMassRatio( obj, pwr )
+	function ACE_CalcMassRatio( obj, pwr )
 		if not IsValid(obj) then return end
 		local Mass		= 0
 		local PhysMass	= 0
@@ -182,16 +182,16 @@ do
 		local PercentMat	= {}
 
 		-- find the physical parent highest up the chain
-		local Parent = ACF_GetPhysicalParent(obj)
+		local Parent = ACE_GetPhysicalParent(obj)
 
 		-- get the shit that is physically attached to the vehicle
-		local PhysEnts = ACF_GetAllPhysicalConstraints( Parent )
+		local PhysEnts = ACE_GetAllPhysicalConstraints( Parent )
 
 		-- add any parented but not constrained props you sneaky bastards
 		local AllEnts = table.Copy( PhysEnts )
 		for _, v in pairs( AllEnts ) do
 
-			table.Merge( AllEnts, ACF_GetAllChildren( v ) )
+			table.Merge( AllEnts, ACE_GetAllChildren( v ) )
 
 		end
 
@@ -270,7 +270,7 @@ do
 end
 
 --Checks if theres new versions for ACE
-function ACF_UpdateChecking( )
+function ACE_UpdateChecking( )
 	http.Fetch("https://raw.githubusercontent.com/RedDeadlyCreeper/ArmoredCombatExtended/master/lua/autorun/acf_globals.lua",function(contents)
 		if true then return end
 		--maybe not the best way to get git but well......
@@ -409,7 +409,7 @@ do
 end
 
 timer.Simple(1, function()
-	ACF_UpdateChecking()
+	ACE_UpdateChecking()
 end )
 
 
@@ -617,7 +617,7 @@ if SERVER then
 
 	end
 
-	function ACF_SendNotify( ply, success, msg )
+	function ACE_SendNotify( ply, success, msg )
 		net.Start( "ACE_Notify" )
 		net.WriteBit( success )
 		net.WriteString( msg or "" )

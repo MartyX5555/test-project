@@ -54,8 +54,8 @@ function ACFM_ModifyRoundDisplayFuncs()
 				local slugMV2 = data.SlugMV2
 
 				data.MuzzleVel = 0
-				data.SlugMV = (slugMV or 0) * (ACF_GetGunValue(data.Id, "penmul") or 1.2)
-				data.SlugMV2 = (slugMV2 or 0) * (ACF_GetGunValue(data.Id, "penmul") or 1.2)
+				data.SlugMV = (slugMV or 0) * (ACE_GetGunValue(data.Id, "penmul") or 1.2)
+				data.SlugMV2 = (slugMV2 or 0) * (ACE_GetGunValue(data.Id, "penmul") or 1.2)
 
 				local ret = oldDisplayData(data)
 
@@ -159,10 +159,10 @@ end
 
 function ACFM_ModifyRoundBaseGunpowder()
 
-	local oldGunpowder = ACFM_ModifiedRoundBaseGunpowder and oldGunpowder or ACF_RoundBaseGunpowder
+	local oldGunpowder = ACFM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE_RoundBaseGunpowder
 
 
-	ACF_RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
+	ACE_RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
 
 		PlayerData, Data, ServerData, GUIData = oldGunpowder(PlayerData, Data, ServerData, GUIData)
 

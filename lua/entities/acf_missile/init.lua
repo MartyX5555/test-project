@@ -26,8 +26,8 @@ function ENT:Initialize()
 	self.PhysObj:EnableGravity( false )
 	self.PhysObj:EnableMotion( false )
 
-	self.SpecialDamage = true	-- If true needs a special ACF_OnDamage function
-	self.SpecialHealth = true	-- If true needs a special ACF_Activate function
+	self.SpecialDamage = true	-- If true needs a special ACE_OnDamage function
+	self.SpecialHealth = true	-- If true needs a special ACE_Activate function
 
 	self.CanTrack	= false		-- Used when the missile has waited the required time to guide
 	self.Timer	= false
@@ -53,7 +53,7 @@ function ENT:SetBulletData(bdata) -- Called before to Initialize()
 
 	self:ParseBulletData(bdata)
 
-	local roundWeight = ACF_GetGunValue(bdata, "weight") or 10
+	local roundWeight = ACE_GetGunValue(bdata, "weight") or 10
 
 	self.PhysObj = self:GetPhysicsObject()
 
@@ -295,7 +295,7 @@ function ENT:CalcFlight()
 
 				else -- Press F to pay respects for the low end PCs by this. USE CFW.
 
-					local RootTarget = ACF_GetPhysicalParent( HitTarget ) or game.GetWorld()
+					local RootTarget = ACE_GetPhysicalParent( HitTarget ) or game.GetWorld()
 					local RootLauncher = self.Launcher.BaseEntity
 
 					if RootLauncher == RootTarget then
@@ -400,7 +400,7 @@ function ENT:Launch()
 	self:ConfigureFlight()
 	self.PhysObj:EnableMotion(false)
 
-	ACF_ActiveMissiles[self] = true
+	ACE_ActiveMissiles[self] = true
 
 	self:Think()
 end
@@ -451,7 +451,7 @@ do
 			end )
 		elseif not GunData.prepush then
 
-			local noThrust  = ACF_GetGunValue(BulletData, "nothrust")
+			local noThrust  = ACE_GetGunValue(BulletData, "nothrust")
 			local Time	= CurTime()
 
 			if noThrust then
@@ -568,7 +568,7 @@ function ENT:Think()
 
 			if not (self:WaterLevel() == 3 and self.NotDrownable) then
 
-				local effect = ACF_GetGunValue(self.BulletData, "effect")
+				local effect = ACE_GetGunValue(self.BulletData, "effect")
 
 				if effect then
 					ParticleEffectAttach( effect, PATTACH_POINT_FOLLOW, self, self:LookupAttachment("exhaust") or 0 )
@@ -616,7 +616,7 @@ function ENT:ForceDetonate()
 	-- careful not to conflict with base class's self.Detonated
 	self.MissileDetonated = true
 
-	ACF_ActiveMissiles[self] = nil
+	ACE_ActiveMissiles[self] = nil
 
 	self.DetonateOffset = self.LastVel and self.LastVel:GetNormalized() * -1
 	self.BaseClass.Detonate(self, self.BulletData)
@@ -627,7 +627,7 @@ function ENT:Dud()
 
 	self.MissileDetonated = true
 
-	ACF_ActiveMissiles[self] = nil
+	ACE_ActiveMissiles[self] = nil
 
 	local Dud = self
 	Dud:SetPos( self.CurPos )
@@ -658,7 +658,7 @@ end
 function ENT:LaunchEffect()
 	local Effect = EffectData()
 		Effect:SetEntity( self )
-	util.Effect( "acf_missilelaunch", Effect, true, true )
+	util.Effect( "ace_missile_motor", Effect, true, true )
 end
 
 function ENT:UpdateSkin()
@@ -667,7 +667,7 @@ function ENT:UpdateSkin()
 
 		local warhead = self.BulletData.Type
 
-		local skins = ACF_GetGunValue(self.BulletData, "skinindex")
+		local skins = ACE_GetGunValue(self.BulletData, "skinindex")
 		if not skins then return end
 
 		local skin = skins[warhead] or 0
@@ -715,7 +715,7 @@ end
 --===========================================================================================
 ----- OnDamage functions
 --===========================================================================================
-function ENT:ACF_Activate( Recalc )
+function ENT:ACE_Activate( Recalc )
 
 	local EmptyMass = self.RoundWeight or self.Mass or 10
 
@@ -731,7 +731,7 @@ function ENT:ACF_Activate( Recalc )
 		self.ACE.Volume = PhysObj:GetVolume() * 16.38
 	end
 
-	local ForceArmour = ACF_GetGunValue(self.BulletData, "armour")
+	local ForceArmour = ACE_GetGunValue(self.BulletData, "armour")
 
 	local Armour = ForceArmour or (EmptyMass * 1000 / self.ACE.Area / 0.78)	--So we get the equivalent thickness of that prop in mm if all it's weight was a steel plate
 	local Health = self.ACE.Volume / ACE.Threshold							--Setting the threshold of the prop Area gone
@@ -758,18 +758,18 @@ do
 
 	local nullhit = {Damage = 0, Overkill = 1, Loss = 0, Kill = false}
 
-	function ENT:ACF_OnDamage( Entity , Energy , FrArea , Angle , Inflictor )	--This function needs to return HitRes
+	function ENT:ACE_OnDamage( Entity , Energy , FrArea , Angle , Inflictor )	--This function needs to return HitRes
 
 		if self.Detonated or self.DisableDamage then return table.Copy(nullhit) end
 
-		local HitRes = ACF_PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
+		local HitRes = ACE_PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
 
 		-- Detonate if the shot penetrates the casing.
 		HitRes.Kill = HitRes.Kill or HitRes.Overkill > 0
 
 		if HitRes.Kill then
 
-			local CanDo = hook.Run("ACF_AmmoExplode", self, self.BulletData )
+			local CanDo = hook.Run("ACE_AmmoExplode", self, self.BulletData )
 			if CanDo == false then return HitRes end
 
 			self.Exploding = true
@@ -804,6 +804,6 @@ function ENT:OnRemove()
 
 	self.BaseClass.OnRemove(self)
 
-	ACF_ActiveMissiles[self] = nil
+	ACE_ActiveMissiles[self] = nil
 
 end

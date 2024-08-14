@@ -111,7 +111,7 @@ function ENT:Think()
 	self.AnglePenalty = clamp(remap(curSeatAngle, startPenalty, maxPenalty, 0, 1), 0, 1)
 
 	if self.ACE.Health <= self.ACE.MaxHealth * 0.97 then
-		ACF_HEKill(self, VectorRand(), 0)
+		ACE_HEKill(self, VectorRand(), 0)
 		self:EmitSound("npc/combine_soldier/die" .. tostring(random(1, 3)) .. ".wav", 60)
 	end
 

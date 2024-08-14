@@ -39,7 +39,7 @@ function TOOL:LeftClick( trace )
 
 		local success, msg = ent:Update( self.GearboxCopyData );
 
-		ACF_SendNotify( pl, success, msg );
+		ACE_SendNotify( pl, success, msg );
 
 	end
 
@@ -47,7 +47,7 @@ function TOOL:LeftClick( trace )
 
 		local success, msg = ent:Update( self.AmmoCopyData );
 
-		ACF_SendNotify( pl, success, msg );
+		ACE_SendNotify( pl, success, msg );
 
 	end
 
@@ -92,7 +92,7 @@ function TOOL:RightClick( trace )
 
 		self.GearboxCopyData = ArgsTable;
 
-		ACF_SendNotify( pl, true, ACFTranslation.CopyToolText[5] );
+		ACE_SendNotify( pl, true, ACFTranslation.CopyToolText[5] );
 
 	end
 
@@ -125,7 +125,7 @@ function TOOL:RightClick( trace )
 
 		self.AmmoCopyData = ArgsTable;
 
-		ACF_SendNotify( pl, true, ACFTranslation.CopyToolText[6] );
+		ACE_SendNotify( pl, true, ACFTranslation.CopyToolText[6] );
 
 	end
 

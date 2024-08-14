@@ -14,7 +14,7 @@ local DebugTime = 1
 --[[------------------------------------------------------------------------------------------------
 	creates a new bullet being fired
 ]]--------------------------------------------------------------------------------------------------
-function ACF_CreateBullet( BulletData )
+function ACE_CreateBullet( BulletData )
 
 	-- Increment the index
 	ACE.CurBulletIndex = ACE.CurBulletIndex + 1
@@ -35,7 +35,7 @@ function ACF_CreateBullet( BulletData )
 	BulletData.FuseLength	= type(BulletData.FuseLength) == "number" and BulletData.FuseLength or 0
 
 	--Check the Gun's velocity and add a modifier to the flighttime so the traceback system doesn't hit the originating contraption if it's moving along the shell path
-	local Parent = ACF_GetPhysicalParent(BulletData.Gun)
+	local Parent = ACE_GetPhysicalParent(BulletData.Gun)
 
 	if IsValid(Parent) then
 		local physObj = Parent:GetPhysicsObject()
@@ -52,8 +52,8 @@ function ACF_CreateBullet( BulletData )
 
 	BulletData.Index		= ACE.CurBulletIndex
 	ACE.Bullet[ACE.CurBulletIndex] = table.Copy(BulletData)	--Place the bullet at the current index pos
-	ACF_BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
-	ACF_CalcBulletFlight( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex] )
+	ACE_BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
+	ACE_CalcBulletFlight( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex] )
 
 end
 
@@ -61,24 +61,24 @@ end
 	global update function where acf updates ALL bullets at once.
 	this runs once per tick, handling bullet physics for all bullets in table.
 ]]--------------------------------------------------------------------------------------------------
-function ACF_ManageBullets()
+function ACE_ManageBullets()
 
 	if next(ACE.Bullet) then
 
 		for Index,Bullet in pairs(ACE.Bullet) do
 			if not Bullet.HandlesOwnIteration then
-				ACF_CalcBulletFlight( Index, Bullet )		--This is the bullet entry in the table, the Index var omnipresent refers to this
+				ACE_CalcBulletFlight( Index, Bullet )		--This is the bullet entry in the table, the Index var omnipresent refers to this
 			end
 		end
 	end
 end
-hook.Remove( "Tick", "ACF_ManageBullets" )
-hook.Add("Tick", "ACF_ManageBullets", ACF_ManageBullets)
+hook.Remove( "Tick", "ACE_ManageBullets" )
+hook.Add("Tick", "ACE_ManageBullets", ACE_ManageBullets)
 
 --[[------------------------------------------------------------------------------------------------
 	removes the bullet from acf
 ]]--------------------------------------------------------------------------------------------------
-function ACF_RemoveBullet( Index )
+function ACE_RemoveBullet( Index )
 
 	local Bullet = ACE.Bullet[Index]
 	ACE.Bullet[Index] = nil
@@ -130,12 +130,12 @@ do
 	--[[------------------------------------------------------------------------------------------------
 	handles non-terminal ballistics and fusing of bullets
 	]]--------------------------------------------------------------------------------------------------
-	function ACF_CalcBulletFlight( Index, Bullet, BackTraceOverride )
+	function ACE_CalcBulletFlight( Index, Bullet, BackTraceOverride )
 
 		-- perf concern: use direct function call stored on bullet over hook system.
 		if Bullet.PreCalcFlight then Bullet:PreCalcFlight() end
 
-		if not Bullet.LastThink then ACF_RemoveBullet( Index ) end
+		if not Bullet.LastThink then ACE_RemoveBullet( Index ) end
 
 		if BackTraceOverride then Bullet.FlightTime = 0 end
 		Bullet.DeltaTime = ACE.SysTime - Bullet.LastThink
@@ -159,7 +159,7 @@ do
 		Bullet.LastThink = ACE.SysTime
 		Bullet.FlightTime = Bullet.FlightTime + Bullet.DeltaTime
 
-		ACF_DoBulletsFlight( Index, Bullet )
+		ACE_DoBulletsFlight( Index, Bullet )
 
 		-- perf concern: use direct function call stored on bullet over hook system.
 		if Bullet.PostCalcFlight then
@@ -176,7 +176,7 @@ do
 
 	local MaxvisclipPerBullet = 50
 
-	local function ACF_PerformTrace( Bullet )
+	local function ACE_PerformTrace( Bullet )
 
 		-- perform the trace for damage
 		local RetryTrace = true
@@ -292,18 +292,18 @@ do
 					--Removes the bullet if it could impact more than the specified
 					if Bullet.ImpactCount and Bullet.ImpactCount > MaxImpacts then
 
-						ACF_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-						ACF_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-						ACF_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+						ACE_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+						ACE_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+						ACE_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 					else
 
-						ACF_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
-						ACF_DoBulletsFlight( Index, Bullet )
+						ACE_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+						ACE_DoBulletsFlight( Index, Bullet )
 					end
 				else
 
-					ACF_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
-					ACF_CalcBulletFlight( Index, Bullet, true )		--The world ain't going to move, so we say True for the backtrace override
+					ACE_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+					ACE_CalcBulletFlight( Index, Bullet, true )		--The world ain't going to move, so we say True for the backtrace override
 				end
 			end,
 
@@ -324,13 +324,13 @@ do
 				--Removes the bullet if it could impact more than the specified
 				if Bullet.ImpactCount and Bullet.ImpactCount > MaxImpacts then
 
-					ACF_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-					ACF_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-					ACF_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+					ACE_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+					ACE_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+					ACE_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 				else
 
-					ACF_BulletClient( Index, Bullet, "Update" , 3 , FlightRes.HitPos  )
-					ACF_CalcBulletFlight( Index, Bullet, true )
+					ACE_BulletClient( Index, Bullet, "Update" , 3 , FlightRes.HitPos  )
+					ACE_CalcBulletFlight( Index, Bullet, true )
 				end
 			end,
 
@@ -342,9 +342,9 @@ do
 					Bullet.OnEndFlight(Index, Bullet, FlightRes)
 				end
 
-				ACF_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-				ACF_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-				ACF_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+				ACE_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+				ACE_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+				ACE_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 
 			end
 		}
@@ -354,12 +354,12 @@ do
 		end
 	end
 
-	function ACF_DoBulletsFlight( Index, Bullet )
+	function ACE_DoBulletsFlight( Index, Bullet )
 
-		local CanDo = hook.Run("ACF_BulletsFlight", Index, Bullet )
+		local CanDo = hook.Run("ACE_BulletsFlight", Index, Bullet )
 		if CanDo == false then return end
 
-		ACF_PerformTrace( Bullet )
+		ACE_PerformTrace( Bullet )
 
 		--Fuse detonation. Note: Its possible that the bullet prefers to hit the incoming prop instead of detonate. Not a big concern.
 		if Bullet.FuseLength and Bullet.FuseLength > 0 and Bullet.FlightTime > Bullet.FuseLength then
@@ -373,16 +373,16 @@ do
 			end
 
 			if not util.IsInWorld(ScaledPos) then
-				ACF_RemoveBullet( Index )
+				ACE_RemoveBullet( Index )
 			else
 
 			if Bullet.OnEndFlight then
 				Bullet.OnEndFlight(Index, Bullet, nil)
 			end -- nil was flightres, garbage data this early in code
 
-				ACF_BulletClient( Index, Bullet, "Update" , 1 , ScaledPos  ) -- defined at bottom
-				ACF_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-				ACF_BulletEndFlight( Index, Bullet, ScaledPos, Bullet.Flight:GetNormalized() )
+				ACE_BulletClient( Index, Bullet, "Update" , 1 , ScaledPos  ) -- defined at bottom
+				ACE_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+				ACE_BulletEndFlight( Index, Bullet, ScaledPos, Bullet.Flight:GetNormalized() )
 
 				debugoverlay.Sphere(ScaledPos, 10, DebugTime, Color(255,100,0,255) )
 				debugoverlay.Text(ScaledPos, "Orange Sphere: Bullet Detonated here!", DebugTime )
@@ -397,7 +397,7 @@ do
 
 			--We don't want to calculate bullets that will never come back to map
 			if (ACE.CurTime - Bullet.LifeTime) > 100 then
-				ACF_RemoveBullet( Index )
+				ACE_RemoveBullet( Index )
 				return
 			end
 
@@ -408,7 +408,7 @@ do
 
 			--We do want rounds outside of the world but not skybox top to be deleted
 			elseif not util.IsInWorld(Bullet.NextPos) then
-				ACF_RemoveBullet( Index )
+				ACE_RemoveBullet( Index )
 				return
 			--We fall back to this default
 			else
@@ -430,7 +430,7 @@ do
 		elseif FlightRes.HitNonWorld then
 
 			--If we hit stuff then send the resolution to the bullets damage function
-			local ACF_BulletPropImpact = ACE.RoundTypes[Bullet.Type]["propimpact"]
+			local ACE_BulletPropImpact = ACE.RoundTypes[Bullet.Type]["propimpact"]
 
 			--Added to calculate change in shell velocity through air gaps. Required for HEAT jet dissipation since a HEAT jet can move through most tanks in 1 tick.
 			local DTImpact = ((FlightRes.HitPos - Bullet.Pos):Length() / (Bullet.Flight * ACE.VelScale * engine.TickInterval()):Length()) * engine.TickInterval() --i would rather use tickinterval over deltatime
@@ -440,7 +440,7 @@ do
 
 			Bullet.Flight = Bullet.Flight - Drag * DTImpact
 
-			local Retry = ACF_BulletPropImpact( Index, Bullet, FlightRes.Entity , FlightRes.HitNormal , FlightRes.HitPos , FlightRes.HitGroup )
+			local Retry = ACE_BulletPropImpact( Index, Bullet, FlightRes.Entity , FlightRes.HitNormal , FlightRes.HitPos , FlightRes.HitGroup )
 
 			--don't process ACE.TraceFilter ents
 			if ACE.TraceFilter[FlightRes.Entity:GetClass()] and Retry == "Penetrated" then
@@ -456,9 +456,9 @@ do
 			--If we hit the world then try to see if it's thin enough to penetrate
 			if not FlightRes.HitSky then
 
-				local ACF_BulletWorldImpact = ACE.RoundTypes[Bullet.Type]["worldimpact"]
+				local ACE_BulletWorldImpact = ACE.RoundTypes[Bullet.Type]["worldimpact"]
 
-				local Retry = ACF_BulletWorldImpact( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+				local Retry = ACE_BulletWorldImpact( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 
 				--If we should do the same trace again, then do so
 				ACE_PerformHitResolution(Index, Bullet, FlightRes, Retry, "worldimpact")
@@ -474,7 +474,7 @@ do
 						Bullet.LifeTime = ACE.CurTime
 						Bullet.Pos      = Bullet.NextPos
 					else
-						ACF_RemoveBullet( Index )
+						ACE_RemoveBullet( Index )
 						return
 					end
 				end
@@ -484,7 +484,7 @@ do
 		else
 			--If its an infinite map. Remove any bullet if it passed 1 source map distance
 			if InfMap and Bullet.NextPos.z < (-32760 * 2) then
-				ACF_RemoveBullet( Index )
+				ACE_RemoveBullet( Index )
 				return
 			end
 
@@ -498,7 +498,7 @@ end
 --[[------------------------------------------------------------------------------------------------
 	Provides the data for the bullet effect
 ]]--------------------------------------------------------------------------------------------------
-function ACF_BulletClient( Index, Bullet, Type, Hit, HitPos )
+function ACE_BulletClient( Index, Bullet, Type, Hit, HitPos )
 
 	--Uncheck this to disable effects
 	--if Index then return end
@@ -515,7 +515,7 @@ function ACF_BulletClient( Index, Bullet, Type, Hit, HitPos )
 			end
 
 			Effect:SetScale( Hit )  --Hit Type
-		util.Effect( "ACF_BulletEffect", Effect, true, true )
+		util.Effect( "ace_bullet", Effect, true, true )
 
 	elseif Type == "Init" then
 
@@ -532,7 +532,7 @@ function ACF_BulletClient( Index, Bullet, Type, Hit, HitPos )
 			Effect:SetEntity( Entity(Bullet["Crate"]) )
 			Effect:SetScale( 0 )
 			Effect:SetAttachment( IsMissile or 0 )
-		util.Effect( "ACF_BulletEffect", Effect, true, true )
+		util.Effect( "ace_bullet", Effect, true, true )
 
 	end
 end

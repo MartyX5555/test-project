@@ -69,10 +69,10 @@ do
 		if not validPhysics(ent) then return false end
 		local entClass = ent:GetClass()
 	
-		return ACF_E2_LinkTables[entClass] ~= nil
+		return ACE_E2_LinkTables[entClass] ~= nil
 	end
 
-	ACF_E2_LinkTables = ACF_E2_LinkTables or
+	ACE_E2_LinkTables = ACE_E2_LinkTables or
 	{ -- link resources within each ent type.  should point to an ent: true if adding link.Ent, false to add link itself
 		acf_engine		= {GearLink = true, FuelLink = false},
 		acf_gearbox		= {WheelLink = true, Master = false},
@@ -85,7 +85,7 @@ do
 	local function getLinks(ent, enttype)
 		local ret = {}
 		-- find the link resources available for this ent type
-		for entry, mode in pairs(ACF_E2_LinkTables[enttype]) do
+		for entry, mode in pairs(ACE_E2_LinkTables[enttype]) do
 			if not ent[entry] then
 				error("Couldn't find link resource " .. entry .. " for entity " .. tostring(ent))
 
@@ -128,7 +128,7 @@ do
 
 		local class = this:GetClass()
 
-		if not ACF_E2_LinkTables[class] then
+		if not ACE_E2_LinkTables[class] then
 			return searchForGearboxLinks(this)
 		end
 
@@ -141,7 +141,7 @@ do
 
 		local wheels = {}
 
-		for _, ent in pairs(ACF_GetLinkedWheels(this)) do
+		for _, ent in pairs(ACE_GetLinkedWheels(this)) do
 			wheels[#wheels + 1] = ent
 		end
 
@@ -369,7 +369,7 @@ do
 		end
 
 		if notify > 0 then
-			ACF_SendNotify(self.player, success, msg)
+			ACE_SendNotify(self.player, success, msg)
 		end
 
 		return success and 1 or 0
@@ -400,7 +400,7 @@ do
 		end
 
 		if notify > 0 then
-			ACF_SendNotify(self.player, success, msg)
+			ACE_SendNotify(self.player, success, msg)
 		end
 
 		return success and 1 or 0
@@ -1305,7 +1305,7 @@ do
 			if not check then return 0 end
 		end
 
-		local eff = ent.ACE.Armour / abs(cos(rad(ACF_GetHitAngle(this.HitNormal, this.HitPos - this.StartPos))))
+		local eff = ent.ACE.Armour / abs(cos(rad(ACE_GetHitAngle(this.HitNormal, this.HitPos - this.StartPos))))
 		return round(eff, 1)
 	end
 

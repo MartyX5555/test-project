@@ -22,8 +22,8 @@ local Outputs = {
 
 function ENT:Initialize()
 
-	self.SpecialHealth       = true  --If true needs a special ACF_Activate function
-	self.SpecialDamage       = true  --If true needs a special ACF_OnDamage function
+	self.SpecialHealth       = true  --If true needs a special ACE_Activate function
+	self.SpecialDamage       = true  --If true needs a special ACE_OnDamage function
 
 	self.IsExplosive         = true
 	self.Exploding           = false
@@ -62,7 +62,7 @@ function ENT:Initialize()
 
 end
 
-function ENT:ACF_Activate( Recalc )
+function ENT:ACE_Activate( Recalc )
 
 	local EmptyMass = math.max(self.EmptyMass, self:GetPhysicsObject():GetMass() - self.AmmoMassMax)
 
@@ -118,16 +118,16 @@ do
 		HEFS	= true
 	}
 
-	function ENT:ACF_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
+	function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
 		local Mul	= (( HEATtbl[Type] and ACE.HEATMulAmmo ) or 1) --Heat penetrators deal bonus damage to ammo
-		local HitRes	= ACF_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
+		local HitRes	= ACE_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 		if self.Exploding or not self.IsExplosive then return HitRes end
 
 		if HitRes.Kill then
 
-			if hook.Run("ACF_AmmoExplode", self, self.BulletData ) == false then return HitRes end
+			if hook.Run("ACE_AmmoExplode", self, self.BulletData ) == false then return HitRes end
 
 			self.Exploding = true
 
@@ -136,7 +136,7 @@ do
 			end
 
 			if self.Ammo > 1 and self.BulletData.Type ~= "Refill" then
-				ACF_ScaledExplosion( self )
+				ACE_ScaledExplosion( self )
 			else
 				self:Remove()
 			end
@@ -249,7 +249,7 @@ do
 		return Scale
 	end
 
-	function MakeACF_Ammo(Owner, Pos, Angle, Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13, Data14, Data15)
+	function MakeACE_Ammo(Owner, Pos, Angle, Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13, Data14, Data15)
 
 		if not Owner:CheckLimit("_acf_ammo") then return false end
 
@@ -351,7 +351,7 @@ do
 end
 
 list.Set( "ACFCvars", "acf_ammo", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
-duplicator.RegisterEntityClass("acf_ammo", MakeACF_Ammo, "Pos", "Angle", "Id", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10" , "RoundData11", "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
+duplicator.RegisterEntityClass("acf_ammo", MakeACE_Ammo, "Pos", "Angle", "Id", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10" , "RoundData11", "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
 
 
 function ENT:Update( ArgsTable )
@@ -741,14 +741,14 @@ function ENT:Think()
 		-- immediately detonate if there's 1 or 0 shells
 		elseif self.Ammo <= 1 or self.Damaged < CurTime() then
 
-			ACF_ScaledExplosion( self ) -- going to let empty crates harmlessly poot still, as an audio cue it died
+			ACE_ScaledExplosion( self ) -- going to let empty crates harmlessly poot still, as an audio cue it died
 
 		else
 
 			if math.Rand(0,150) > self.BulletData.RoundVolume ^ 0.5 and math.Rand(0,1) < self.Ammo / math.max(self.Capacity,1) and ACE.RoundTypes[CrateType] then
 
 				self:EmitSound( "ambient/explosions/explode_4.wav", 350, math.max(255 - self.BulletData.PropMass * 100,60)  )
-				self.BulletCookSpeed	= self.BulletCookSpeed or ACF_MuzzleVelocity( self.BulletData.PropMass, self.BulletData.ProjMass / 2, self.Caliber )
+				self.BulletCookSpeed	= self.BulletCookSpeed or ACE_MuzzleVelocity( self.BulletData.PropMass, self.BulletData.ProjMass / 2, self.Caliber )
 
 				self.BulletData.Pos = self:LocalToWorld(self:OBBCenter() + VectorRand() * (self:OBBMaxs() - self:OBBMins()) / 2)
 				self.BulletData.Flight  = (VectorRand()):GetNormalized() * self.BulletCookSpeed * 39.37 + self:GetVelocity()
@@ -823,17 +823,17 @@ function ENT:Think()
 
 end
 
-util.AddNetworkString("ACF_RefillEffect")
+util.AddNetworkString("ACE_RefillEffect")
 function ENT:RefillEffect( Target )
-	net.Start("ACF_RefillEffect")
+	net.Start("ACE_RefillEffect")
 		net.WriteUInt( self:EntIndex(), 14 )
 		net.WriteUInt( Target:EntIndex(), 14 )
 	net.Broadcast()
 end
 
-util.AddNetworkString("ACF_StopRefillEffect")
+util.AddNetworkString("ACE_StopRefillEffect")
 function ENT:StopRefillEffect( TargetID )
-	net.Start("ACF_StopRefillEffect")
+	net.Start("ACE_StopRefillEffect")
 		net.WriteUInt( self:EntIndex(), 14 )
 		net.WriteUInt( TargetID, 14 )
 	net.Broadcast()

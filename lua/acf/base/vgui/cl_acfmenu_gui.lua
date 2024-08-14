@@ -577,7 +577,7 @@ function ACFCLGUICreate()
 	Effects:CheckBox("Allow lighting rendering", "acf_enable_lighting")
 	Effects:ControlHelp( "Enables lighting for explosions, muzzle flashes and rocket motors, increasing the inmersion during combat, however, may impact heavily the performance and it's possible it doesn't render properly in certain map surfaces." )
 
-	Effects:CheckBox("Draw Mobility rope links", "ACF_MobilityRopeLinks")
+	Effects:CheckBox("Draw Mobility rope links", "ACE_MobilityRopeLinks")
 	Effects:ControlHelp( "Allow you to see the links between engines and gearboxes (requires dupe restart)" )
 
 	acfmenupanel.CustomDisplay:AddItem( Effects )

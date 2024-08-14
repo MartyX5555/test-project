@@ -14,7 +14,7 @@ Round.Type  = "HEATFS"
 
 function Round.create( _, BulletData )
 
-	ACF_CreateBullet( BulletData )
+	ACE_CreateBullet( BulletData )
 
 end
 
@@ -45,7 +45,7 @@ function Round.convert( _, PlayerData )
 
 
 	PlayerData.Type = "HEATFS"
-	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
+	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 	local ConeThick = Data.Caliber / 50
 	--local ConeLength = 0
@@ -57,13 +57,13 @@ function Round.convert( _, PlayerData )
 
 	--Volume of the projectile as a cylinder - Volume of the filler - Volume of the crush cone * density of steel + Volume of the filler * density of TNT + Area of the cone * thickness * density of steel
 	Data.ProjMass = math.max(GUIData.ProjVolume - PlayerData.Data5, 0) * 7.9 / 1000 + math.min(PlayerData.Data5, GUIData.ProjVolume) * ACE.HEDensity / 1000 + ConeArea * ConeThick * 7.9 / 1000
-	Data.MuzzleVel = ACF_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
-	local Energy = ACF_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
+	Data.MuzzleVel = ACE_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
+	local Energy = ACE_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
 
 	local MaxVol = 0
 	--local MaxLength = 0
 	--local MaxRadius = 0
-	MaxVol, MaxLength, MaxRadius = ACF_RoundShellCapacity( Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength )
+	MaxVol, MaxLength, MaxRadius = ACE_RoundShellCapacity( Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength )
 
 	GUIData.MinConeAng = 0
 	GUIData.MaxConeAng = math.deg(math.atan((Data.ProjLength - ConeThick) / (Data.Caliber / 2)))
@@ -84,8 +84,8 @@ function Round.convert( _, PlayerData )
 	Data.FillerMass = GUIData.FillerVol * ACE.HEDensity / 1450
 	Data.BoomFillerMass = Data.FillerMass / 3 --manually update function "pierceeffect" with the divisor
 	Data.ProjMass = math.max(GUIData.ProjVolume - GUIData.FillerVol - AirVol - ConeVol, 0) * 7.9 / 1000 + Data.FillerMass + ConeVol * 7.9 / 1000
-	Data.MuzzleVel = ACF_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
-	--local Energy = ACF_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
+	Data.MuzzleVel = ACE_MuzzleVelocity(Data.PropMass, Data.ProjMass, Data.Caliber)
+	--local Energy = ACE_Kinetic(Data.MuzzleVel * 39.37, Data.ProjMass, Data.LimitVel)
 
 	--Let's calculate the actual HEAT slug
 	Data.SlugMass = ConeVol * 7.9 / 1000
@@ -132,7 +132,7 @@ end
 function Round.getDisplayData(Data)
 	local GUIData = {}
 
-	local SlugEnergy = ACF_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999)
+	local SlugEnergy = ACE_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999)
 	GUIData.MaxPen = (SlugEnergy.Penetration / Data.SlugPenArea) * ACE.KEtoRHA
 	--GUIData.BlastRadius = (Data.FillerMass/2) ^ 0.33 * 5*10
 	GUIData.BlastRadius = Data.BoomFillerMass ^ 0.33 * 8 -- * 39.37
@@ -185,7 +185,7 @@ end
 
 function Round.detonate( _, Bullet, HitPos, HitNormal )
 
-	ACF_HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.BoomFillerMass, Bullet.CasingMass, Bullet.Owner, nil, Bullet.Gun )
+	ACE_HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.BoomFillerMass, Bullet.CasingMass, Bullet.Owner, nil, Bullet.Gun )
 
 	Bullet.Detonated = true
 	Bullet.InitTime = SysTime()
@@ -216,12 +216,12 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 			Bullet.NotFirstPen = true
 
 			local Speed = Bullet.Flight:Length() / ACE.VelScale
-			local Energy = ACF_Kinetic( Speed , Bullet.ProjMass, 999999 )
-			local HitRes = ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
+			local Energy = ACE_Kinetic( Speed , Bullet.ProjMass, 999999 )
+			local HitRes = ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
 			if HitRes.Overkill > 0 then
 				table.insert( Bullet.Filter , Target )					--"Penetrate" (Ingoring the prop for the retry trace)
-				ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss + 0.2 , Bullet.CannonCaliber * 2 , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
+				ACE_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss + 0.2 , Bullet.CannonCaliber * 2 , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 				Bullet.Flight = Bullet.Flight:GetNormalized() * math.sqrt(Energy.Kinetic * (1 - HitRes.Loss) * ((Bullet.NotFirstPen and ACE.HEATPenLayerMul) or 1) * 2000 / Bullet.ProjMass) * 39.37
 
 				return "Penetrated"
@@ -237,8 +237,8 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 --			print("Speed Reduction: "..(1-math.Min( ACE.HEATAirGapFactor * distanceTraveled / 39.37 ,0.99 )).."x") --
 
 			local Speed = Bullet.Flight:Length() / ACE.VelScale
-			local Energy = ACF_Kinetic( Speed , Bullet.ProjMass - Bullet.FillerMass, Bullet.LimitVel )
-			local HitRes = ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
+			local Energy = ACE_Kinetic( Speed , Bullet.ProjMass - Bullet.FillerMass, Bullet.LimitVel )
+			local HitRes = ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
 			if HitRes.Ricochet then
 				return "Ricochet"
@@ -264,8 +264,8 @@ function Round.worldimpact( Index, Bullet, HitPos, HitNormal )
 		return "Penetrated"
 	end
 
-	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, 999999 )
-	local HitRes = ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
+	local Energy = ACE_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, 999999 )
+	local HitRes = ACE_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 	if HitRes.Penetrated then
 		return "Penetrated"
 	--elseif HitRes.Ricochet then  --penetrator won't ricochet
@@ -279,10 +279,10 @@ end
 function Round.endflight( Index, Bullet, HitPos, HitNormal )
 
 	if not Bullet.Detonated then
-		ACF_HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.FillerMass, Bullet.ProjMass - Bullet.FillerMass, Bullet.Owner, nil, Bullet.Gun )
+		ACE_HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.FillerMass, Bullet.ProjMass - Bullet.FillerMass, Bullet.Owner, nil, Bullet.Gun )
 	end
 
-	ACF_RemoveBullet( Index )
+	ACE_RemoveBullet( Index )
 
 end
 
@@ -295,7 +295,7 @@ function Round.endeffect( _, Bullet )
 			Flash:SetOrigin( Bullet.SimPos )
 			Flash:SetNormal( Bullet.SimFlight:GetNormalized() )
 			Flash:SetRadius( math.max( Radius, 1 ) )
-		util.Effect( "ACF_Scaled_Explosion", Flash )
+		util.Effect( "ace_explosion", Flash )
 
 	else
 
@@ -305,7 +305,7 @@ function Round.endeffect( _, Bullet )
 			Impact:SetNormal( (Bullet.SimFlight):GetNormalized() )
 			Impact:SetScale( Bullet.SimFlight:Length() )
 			Impact:SetMagnitude( Bullet.RoundMass )
-		util.Effect( "acf_ap_impact", Impact )
+		util.Effect( "ace_impact", Impact )
 
 	end
 
@@ -321,7 +321,7 @@ function Round.pierceeffect( Effect, Bullet )
 			Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 			Spall:SetScale( Bullet.SimFlight:Length() )
 			Spall:SetMagnitude( Bullet.RoundMass )
-		util.Effect( "acf_ap_penetration", Spall )
+		util.Effect( "ace_penetration", Spall )
 
 	else
 
@@ -347,7 +347,7 @@ function Round.ricocheteffect( _, Bullet )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "acf_ap_ricochet", Spall )
+	util.Effect( "ace_ricochet", Spall )
 
 end
 
@@ -426,14 +426,14 @@ function Round.guiupdate( Panel )
 	acfmenupanel:CPanelText("RicoDisplay", "Max Detonation angle: " .. Data.DetonatorAngle .. "°")
 
 	-------------------------------------------------------------------------------
-	local R1V, R1P = ACF_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 100)
-	R1P = (ACF_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
-	local R2V, R2P = ACF_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 200)
-	R2P = (ACF_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
-	local R3V, R3P = ACF_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 400)
-	R3P = (ACF_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
-	local R4V, R4P = ACF_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 800)
-	R4P = (ACF_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
+	local R1V, R1P = ACE_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 100)
+	R1P = (ACE_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
+	local R2V, R2P = ACE_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 200)
+	R2P = (ACE_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
+	local R3V, R3P = ACE_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 400)
+	R3P = (ACE_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
+	local R4V, R4P = ACE_PenRanging(Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel, 800)
+	R4P = (ACE_Kinetic(Data.SlugMV * 39.37, Data.SlugMass, 999999).Penetration / Data.SlugPenArea) * ACE.KEtoRHA
 
 	acfmenupanel:CPanelText("SlugDisplay", "Penetrator Mass : " .. (math.floor(Data.SlugMass * 10000) / 10) .. " g \nPenetrator Caliber : " .. (math.floor(Data.SlugCaliber * 100) / 10) .. " mm \nPenetrator Velocity : " .. math.floor(Data.MuzzleVel + Data.SlugMV) .. " m/s \nMax Penetration : " .. math.floor(Data.MaxPen) .. " mm RHA\n\n100m pen: " .. math.floor(R1P, 0) .. "mm @ " .. math.floor(R1V, 0) .. " m\\s\n200m pen: " .. math.floor(R2P, 0) .. "mm @ " .. math.floor(R2V, 0) .. " m\\s\n400m pen: " .. math.floor(R3P, 0) .. "mm @ " .. math.floor(R3V, 0) .. " m\\s\n800m pen: " .. math.floor(R4P, 0) .. "mm @ " .. math.floor(R4V, 0) .. " m\\s\n\nThe range data is an approximation and may not be entirely accurate.\n") --Proj muzzle penetration (Name, Desc)
 end

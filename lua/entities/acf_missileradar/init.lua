@@ -100,7 +100,7 @@ end
 
 
 
-function MakeACF_MissileRadar(Owner, Pos, Angle, Id)
+function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 
 	if not Owner:CheckLimit("_acf_missileradar") then return false end
 
@@ -143,7 +143,7 @@ function MakeACF_MissileRadar(Owner, Pos, Angle, Id)
 
 end
 list.Set( "ACFCvars", "acf_missileradar", {"id"} )
-duplicator.RegisterEntityClass("acf_missileradar", MakeACF_MissileRadar, "Pos", "Angle", "Id" )
+duplicator.RegisterEntityClass("acf_missileradar", MakeACE_MissileRadar, "Pos", "Angle", "Id" )
 
 function ENT:CreateRadar(ACFName, ConeDegs)
 
@@ -286,7 +286,7 @@ end
 function ENT:EmitRadarSound()
 	local Effect = EffectData()
 		Effect:SetEntity( self )
-	util.Effect( "acf_radar_noise", Effect, true, true )
+	util.Effect( "ace_radar_noise", Effect, true, true )
 end
 
 function ENT:ClearOutputs()

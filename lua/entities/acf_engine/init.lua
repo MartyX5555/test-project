@@ -74,7 +74,7 @@ do
 		["AVDS-1790-1500"]                        = "27.0-V12"
 	}
 
-	function MakeACF_Engine(Owner, Pos, Angle, Id)
+	function MakeACE_Engine(Owner, Pos, Angle, Id)
 
 		if not Owner:CheckLimit("_acf_misc") then return false end
 
@@ -152,12 +152,12 @@ do
 		Owner:AddCount("_acf_misc", Engine)
 		Owner:AddCleanup( "acfmenu", Engine )
 
-		ACF_Activate( Engine, 0 )
+		ACE_Activate( Engine, 0 )
 
 		return Engine
 	end
 	list.Set( "ACFCvars", "acf_engine", {"id"} )
-	duplicator.RegisterEntityClass("acf_engine", MakeACF_Engine, "Pos", "Angle", "Id")
+	duplicator.RegisterEntityClass("acf_engine", MakeACE_Engine, "Pos", "Angle", "Id")
 
 end
 
@@ -232,7 +232,7 @@ function ENT:Update( ArgsTable )
 	self:SetNWString( "WireName", Lookup.name )
 	self:UpdateOverlayText()
 
-	ACF_Activate( self, 1 )
+	ACE_Activate( self, 1 )
 
 	return true, "Engine updated successfully!" .. Feedback
 end
@@ -314,7 +314,7 @@ function ENT:TriggerInput( iname, value )
 	end
 end
 
-function ENT:ACF_Activate()
+function ENT:ACE_Activate()
 	--Density of steel = 7.8g cm3 so 7.8kg for a 1mx1m plate 1m thick
 	local Entity = self
 	Entity.ACE = Entity.ACE or {}
@@ -360,10 +360,10 @@ function ENT:ACF_Activate()
 
 end
 
-function ENT:ACF_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
+function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
 	local Mul = (((Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS") and ACE.HEATMulEngine) or 1) --Heat penetrators deal bonus damage to engines
-	local HitRes = ACF_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
+	local HitRes = ACE_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 	return HitRes --This function needs to return HitRes
 end
@@ -438,10 +438,10 @@ function ENT:CalcMassRatio()
 	local Check = nil
 
 	-- get the shit that is physically attached to the vehicle
-	local PhysEnts = ACF_GetAllPhysicalConstraints( self )
+	local PhysEnts = ACE_GetAllPhysicalConstraints( self )
 
 	-- get the wheels directly connected to the drivetrain
-	local Wheels = ACF_GetLinkedWheels(self)
+	local Wheels = ACE_GetLinkedWheels(self)
 
 	-- check if any wheels aren't in the physicalconstraint tree
 	for _,Ent in pairs( Wheels ) do
@@ -455,13 +455,13 @@ function ENT:CalcMassRatio()
 	-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
 	if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
 		table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
-		ACF_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
+		ACE_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
 	end
 
 	-- add any parented but not constrained props you sneaky bastards
 	local AllEnts = table.Copy( PhysEnts )
 	for _, v in pairs( PhysEnts ) do
-		table.Merge( AllEnts, ACF_GetAllChildren( v ) )
+		table.Merge( AllEnts, ACE_GetAllChildren( v ) )
 	end
 
 	for _, v in pairs( AllEnts ) do
@@ -570,7 +570,7 @@ function ENT:CalcRPM()
 
 	-- Calculate the current torque from flywheel RPM.
 	local perc = math.Remap(self.FlyRPM, self.IdleRPM, self.LimitRPM, 0, 1)
-	self.Torque = boost * self.Throttle * ACF_CalcCurve(self.TorqueCurve, perc) * self.PeakTorque * (self.FlyRPM < self.LimitRPM and 1 or 0)
+	self.Torque = boost * self.Throttle * ACE_CalcCurve(self.TorqueCurve, perc) * self.PeakTorque * (self.FlyRPM < self.LimitRPM and 1 or 0)
 
 	-- Let's accelerate the flywheel based on that torque.
 	-- Calculate drag
@@ -616,7 +616,7 @@ function ENT:CalcRPM()
 		if HealthRatio > 0.025 then
 			local PhysObj = self:GetPhysicsObject()
 			local Mass = PhysObj:GetMass()
-			HitRes = ACF_Damage(self, {
+			HitRes = ACE_Damage(self, {
 				Kinetic = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100,
 				Momentum = 0,
 				Penetration = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100
@@ -794,7 +794,7 @@ do
 		local OutPos = self:LocalToWorld( self.Out ) 	--the engine output
 
 		local Rope = nil
-		if self:CPPIGetOwner():GetInfoNum( "ACF_MobilityRopeLinks", 1) == 1 then
+		if self:CPPIGetOwner():GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
 			Rope = ACE_CreateLinkRope( OutPos, self, self.Out, Target, Target.In )
 		end
 

@@ -23,7 +23,7 @@ local function CalcArmor( Area, Ductility, Thickness, Mat )
 	local MassMod    = MatData.massMod
 
 	local mass       = Area * ( 1 + Ductility ) ^ 0.5 * Thickness * 0.00078 * MassMod
-	local armor      = ACF_CalcArmor( Area, Ductility, mass / MassMod )
+	local armor      = ACE_CalcArmor( Area, Ductility, mass / MassMod )
 	local health     = ( Area + Area * Ductility ) / ACE.Threshold
 
 	return mass, armor, health
@@ -318,7 +318,7 @@ function TOOL:Reload( trace )
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
 
-	local data		= ACF_CalcMassRatio(ent, true)
+	local data		= ACE_CalcMassRatio(ent, true)
 
 	local total		= ent.acftotal
 	local phystotal	= ent.acfphystotal

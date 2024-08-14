@@ -16,7 +16,7 @@ end
 
 
 local nullhit = {Damage = 0, Overkill = 0, Loss = 0, Kill = false}
-function ENT:ACF_OnDamage()
+function ENT:ACE_OnDamage()
 	return table.Copy(nullhit)
 end
 

@@ -29,7 +29,7 @@ function SWEP:ACEFireBullet(Position, Direction)
 		self:BeforeFire()
 	end
 
-	ACF_CreateBullet(self.BulletData)
+	ACE_CreateBullet(self.BulletData)
 end
 
 local nosplode = {
@@ -74,7 +74,7 @@ function SWEP:DoAmmoStatDisplay()
 	local sendInfo = string.format("%smm %s ammo: %im/s speed", tostring(bdata.Caliber * 10), roundType, self.ThrowVel or bdata.MuzzleVel)
 
 	if not nopen[bdata.Type] then
-		local Energy = ACF_Kinetic(bdata.MuzzleVel * 39.37, bdata.ProjMass, bdata.LimitVel)
+		local Energy = ACE_Kinetic(bdata.MuzzleVel * 39.37, bdata.ProjMass, bdata.LimitVel)
 		local MaxPen = (Energy.Penetration / bdata.PenArea) * ACE.KEtoRHA
 		sendInfo = sendInfo .. string.format(", %.1fmm pen", MaxPen)
 	end
@@ -85,7 +85,7 @@ function SWEP:DoAmmoStatDisplay()
 
 	if heat[bdata.Type] then
 		sendInfo = sendInfo .. string.format(", %.1fm blast", bdata.BoomFillerMass ^ 0.33 * 8)
-		local Energy = ACF_Kinetic(bdata.SlugMV * 39.37, bdata.SlugMass, 999999)
+		local Energy = ACE_Kinetic(bdata.SlugMV * 39.37, bdata.SlugMass, 999999)
 		local MaxPen = (Energy.Penetration / bdata.SlugPenArea) * ACE.KEtoRHA
 		sendInfo = sendInfo .. string.format(", %.1fmm pen", MaxPen)
 	end
@@ -93,11 +93,11 @@ function SWEP:DoAmmoStatDisplay()
 	if heatt[bdata.Type] then
 		sendInfo = sendInfo .. string.format(", %.1fm blast", bdata.BoomFillerMass ^ 0.33 * 8)
 
-		local Energy = ACF_Kinetic(bdata.SlugMV * 39.37, bdata.SlugMass, 999999)
+		local Energy = ACE_Kinetic(bdata.SlugMV * 39.37, bdata.SlugMass, 999999)
 		local MaxPen = (Energy.Penetration / bdata.SlugPenArea) * ACE.KEtoRHA
 		sendInfo = sendInfo .. string.format(", (1)%.1fmm pen", MaxPen)
 
-		Energy = ACF_Kinetic(bdata.SlugMV2 * 39.37, bdata.SlugMass2, 999999)
+		Energy = ACE_Kinetic(bdata.SlugMV2 * 39.37, bdata.SlugMass2, 999999)
 		MaxPen = (Energy.Penetration / bdata.SlugPenArea2) * ACE.KEtoRHA
 		sendInfo = sendInfo .. string.format(", (2)%.1fmm pen", MaxPen)
 	end

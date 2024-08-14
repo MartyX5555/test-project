@@ -47,7 +47,7 @@ function ENT:isLegal()
 	if self:GetPhysicsObject():GetMass() < 165 then return false end
 	if not self:IsSolid() then return false end
 
-	ACF_GetPhysicalParent(self)
+	ACE_GetPhysicalParent(self)
 
 	self.IsLegal = self.acfphysparent:IsSolid()
 

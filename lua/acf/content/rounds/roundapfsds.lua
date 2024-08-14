@@ -12,7 +12,7 @@ Round.netid = 16 --Unique ammotype ID for network transmission
 Round.Type  = "APFSDS"
 
 function Round.create( _, BulletData )
-	ACF_CreateBullet( BulletData )
+	ACE_CreateBullet( BulletData )
 end
 
 -- Function to convert the player's slider data into the complete round data
@@ -30,7 +30,7 @@ function Round.convert( _, PlayerData )
 	PlayerData.Data5		= PlayerData.Data5	or 0.2  --caliber in mm count
 
 
-	PlayerData, Data, ServerData, GUIData = ACF_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
+	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 	Data.MinCalMult		= 0.2
 	Data.MaxCalMult		= 1.0
@@ -51,7 +51,7 @@ function Round.convert( _, PlayerData )
 	Data.CaliberMod	= Data.Caliber * math.min(PlayerData.Data5,Data.MaxCalMult)
 	Data.LimitVel	= 1150									--Most efficient penetration speed in m/s
 	Data.KETransfert	= 0.2								--Kinetic energy transfert to the target for movement purposes
-	Data.MuzzleVel	= ACF_MuzzleVelocity( Data.PropMass * 0.5 , Data.ProjMass * 2.5, Data.Caliber ) * Data.VelModifier
+	Data.MuzzleVel	= ACE_MuzzleVelocity( Data.PropMass * 0.5 , Data.ProjMass * 2.5, Data.Caliber ) * Data.VelModifier
 	Data.BoomPower	= Data.PropMass
 
 	--Only the crates need this part
@@ -72,7 +72,7 @@ end
 
 function Round.getDisplayData(Data)
 	local GUIData = {}
-	local Energy = ACF_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
+	local Energy = ACE_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
 	GUIData.MaxPen = (Energy.Penetration / Data.PenArea) * ACE.KEtoRHA
 	return GUIData
 end
@@ -113,13 +113,13 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 	if ACE_Check( Target ) then
 
 		local Speed	= Bullet.Flight:Length() / ACE.VelScale
-		local Energy	= ACF_Kinetic( Speed , Bullet.ProjMass, Bullet.LimitVel )
-		local HitRes	= ACF_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
+		local Energy	= ACE_Kinetic( Speed , Bullet.ProjMass, Bullet.LimitVel )
+		local HitRes	= ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone )
 
 		if HitRes.Overkill > 0 then
 			table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
 
-			ACF_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
+			ACE_Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 
 			Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1-HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 
@@ -140,8 +140,8 @@ end
 
 function Round.worldimpact( _, Bullet, HitPos, HitNormal )
 
-	local Energy = ACF_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, Bullet.LimitVel )
-	local HitRes = ACF_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
+	local Energy = ACE_Kinetic( Bullet.Flight:Length() / ACE.VelScale, Bullet.ProjMass, Bullet.LimitVel )
+	local HitRes = ACE_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 	if HitRes.Penetrated then
 		return "Penetrated"
 	elseif HitRes.Ricochet then
@@ -154,7 +154,7 @@ end
 
 function Round.endflight( Index )
 
-	ACF_RemoveBullet( Index )
+	ACE_RemoveBullet( Index )
 
 end
 
@@ -167,7 +167,7 @@ function Round.endeffect( _, Bullet )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACF_AP_Impact", Spall )
+	util.Effect( "ace_impact", Spall )
 
 end
 
@@ -180,7 +180,7 @@ function Round.pierceeffect( _, Bullet )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACF_AP_Penetration", Spall )
+	util.Effect( "ace_penetration", Spall )
 
 end
 
@@ -193,7 +193,7 @@ function Round.ricocheteffect( _, Bullet )
 		Spall:SetNormal( (Bullet.SimFlight):GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACF_AP_Ricochet", Spall )
+	util.Effect( "ace_ricochet", Spall )
 
 end
 

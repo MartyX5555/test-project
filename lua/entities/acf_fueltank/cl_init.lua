@@ -1,13 +1,13 @@
 
 include("shared.lua")
 
-CreateClientConVar("ACF_FuelInfoWhileSeated", 0, true, false)
+CreateClientConVar("ACE_FuelInfoWhileSeated", 0, true, false)
 
 -- copied from base_wire_entity: DoNormalDraw's notip arg isn't accessible from ENT:Draw defined there.
 function ENT:Draw()
 
 	local lply = LocalPlayer()
-	local hideBubble = not GetConVar("ACF_FuelInfoWhileSeated"):GetBool() and IsValid(lply) and lply:InVehicle()
+	local hideBubble = not GetConVar("ACE_FuelInfoWhileSeated"):GetBool() and IsValid(lply) and lply:InVehicle()
 
 	self.BaseClass.DoNormalDraw(self, false, hideBubble)
 	Wire_Render(self)

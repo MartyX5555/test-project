@@ -57,7 +57,7 @@ local function DisableNoclipPressInBattle( ply, wantsNoclipOn )
 
 	return perms.IsInSafezone(ply:GetPos()) ~= false
 end
-hook.Add( "PlayerNoClip", "ACF_DisableNoclipPressInBattle", DisableNoclipPressInBattle )
+hook.Add( "PlayerNoClip", "ACE_DisableNoclipPressInBattle", DisableNoclipPressInBattle )
 
 
 local function modethink()

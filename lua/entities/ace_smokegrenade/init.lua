@@ -36,7 +36,7 @@ local function MakeSmoke(size, pos)
 	Flash:SetMagnitude(size)
 
 	Flash:SetStart(Vector(255, 255, 255))
-	util.Effect("ACF_Smoke", Flash)
+	util.Effect("ace_smoke", Flash)
 end
 
 function ENT:Think()

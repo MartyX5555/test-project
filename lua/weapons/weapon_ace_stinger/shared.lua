@@ -137,7 +137,7 @@ function SWEP:InitBulletData()
 	self.BulletData.DragCoef = ((self.BulletData.FrArea / 10000) / self.BulletData.ProjMass)
 --	print(self.BulletData.SlugDragCoef)
 	--Don't touch below here
-	self.BulletData.MuzzleVel = ACF_MuzzleVelocity(self.BulletData.PropMass, self.BulletData.ProjMass, self.BulletData.Caliber)
+	self.BulletData.MuzzleVel = ACE_MuzzleVelocity(self.BulletData.PropMass, self.BulletData.ProjMass, self.BulletData.Caliber)
 	self.BulletData.ShovePower = 0.2
 	self.BulletData.KETransfert = 0.3
 	self.BulletData.PenArea = self.BulletData.FrArea ^ ACE.PenAreaMod
@@ -146,8 +146,8 @@ function SWEP:InitBulletData()
 	self.BulletData.Ricochet = 999
 	self.BulletData.Flight = Vector(0, 0, 0)
 	self.BulletData.BoomPower = self.BulletData.PropMass + self.BulletData.FillerMass
-	--		local SlugEnergy = ACF_Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
-	local SlugEnergy = ACF_Kinetic(self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37, self.BulletData.SlugMass, 999999)
+	--		local SlugEnergy = ACE_Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
+	local SlugEnergy = ACE_Kinetic(self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37, self.BulletData.SlugMass, 999999)
 	self.BulletData.MaxPen = (SlugEnergy.Penetration / self.BulletData.SlugPenArea) * ACE.KEtoRHA
 	--		print("SlugPen: " .. self.BulletData.MaxPen)
 	--For Fake Crate
@@ -414,8 +414,8 @@ function SWEP:Think()
 
 		if IsValid(lasttarget) then
 
-			local RootCTarget	= ACF_GetPhysicalParent( CurTarget )
-			local RootLastTarget = ACF_GetPhysicalParent( lasttarget ) --looking for the physical entity of the last target.
+			local RootCTarget	= ACE_GetPhysicalParent( CurTarget )
+			local RootLastTarget = ACE_GetPhysicalParent( lasttarget ) --looking for the physical entity of the last target.
 
 			if IsValid(RootCTarget) and IsValid(RootLastTarget) then
 

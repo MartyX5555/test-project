@@ -328,7 +328,7 @@ do
 
 		local success, msg = this:Link(tar)
 		if notify then
-			ACF_SendNotify(instance.player, success, msg)
+			ACE_SendNotify(instance.player, success, msg)
 		end
 
 		return success, msg
@@ -352,7 +352,7 @@ do
 
 		local success, msg = this:Unlink(tar)
 		if notify then
-			ACF_SendNotify(instance.player, success, msg)
+			ACE_SendNotify(instance.player, success, msg)
 		end
 
 		return success, msg
@@ -920,17 +920,17 @@ do
 		local Energy
 
 		if Type == "AP" or Type == "APHE" then
-			Energy = ACF_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["ProjMass"] - (this.BulletData["FillerMass"] or 0), this.BulletData["LimitVel"])
+			Energy = ACE_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["ProjMass"] - (this.BulletData["FillerMass"] or 0), this.BulletData["LimitVel"])
 
 			return round((Energy.Penetration / this.BulletData["PenArea"]) * ACE.KEtoRHA, 3)
 		elseif Type == "HEAT" then
 			local Crushed, HEATFillerMass, _ = ACE.RoundTypes["HEAT"].CrushCalc(this.BulletData.MuzzleVel, this.BulletData.FillerMass)
 			if Crushed == 1 then return 0 end -- no HEAT jet to fire off, it was all converted to HE
-			Energy = ACF_Kinetic(ACE.RoundTypes["HEAT"].CalcSlugMV(this.BulletData, HEATFillerMass) * 39.37, this.BulletData["SlugMass"], 9999999)
+			Energy = ACE_Kinetic(ACE.RoundTypes["HEAT"].CalcSlugMV(this.BulletData, HEATFillerMass) * 39.37, this.BulletData["SlugMass"], 9999999)
 
 			return round((Energy.Penetration / this.BulletData["SlugPenArea"]) * ACE.KEtoRHA, 3)
 		elseif Type == "FL" then
-			Energy = ACF_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["FlechetteMass"], this.BulletData["LimitVel"])
+			Energy = ACE_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["FlechetteMass"], this.BulletData["LimitVel"])
 
 			return round((Energy.Penetration / this.BulletData["FlechettePenArea"]) * ACE.KEtoRHA, 3)
 		end
@@ -1050,7 +1050,7 @@ do
 		end
 
 		local wheels = {}
-		for _, ent in pairs(ACF_GetLinkedWheels(this)) do
+		for _, ent in pairs(ACE_GetLinkedWheels(this)) do
 			wheels[#wheels + 1] = ent
 		end
 

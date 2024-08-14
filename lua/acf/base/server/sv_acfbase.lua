@@ -1,7 +1,7 @@
 --visual concept: Here's where should be every acf function
 
 -- returns last parent in chain, which has physics
-function ACF_GetPhysicalParent( obj )
+function ACE_GetPhysicalParent( obj )
 	if not IsValid(obj) then return nil end
 
 	--check for fresh cached parent
@@ -42,11 +42,11 @@ do
 end
 
 --Creates or updates the ACF entity data in a passive way. Meaning this entity wont be updated unless it really requires it (like a shot, damage, looking it using armor tool, etc)
-function ACF_Activate( Entity , Recalc )
+function ACE_Activate( Entity , Recalc )
 
 	--Density of steel = 7.8g cm3 so 7.8kg for a 1mx1m plate 1m thick
 	if Entity.SpecialHealth then
-		Entity:ACF_Activate( Recalc )
+		Entity:ACE_Activate( Recalc )
 		return
 	end
 
@@ -80,7 +80,7 @@ function ACF_Activate( Entity , Recalc )
 
 	local massMod	= MatData.massMod
 
-	local Armour	= ACF_CalcArmor( Area, Ductility, Entity:GetPhysicsObject():GetMass() / massMod ) -- So we get the equivalent thickness of that prop in mm if all its weight was a steel plate
+	local Armour	= ACE_CalcArmor( Area, Ductility, Entity:GetPhysicsObject():GetMass() / massMod ) -- So we get the equivalent thickness of that prop in mm if all its weight was a steel plate
 	local Health	= ( Area / ACE.Threshold ) * ( 1 + Ductility ) -- Setting the threshold of the prop Area gone
 
 	local Percent	= 1
@@ -116,35 +116,35 @@ function ACE_Check( Entity )
 	if ( Class == "gmod_ghost" or Class == "ace_debris" or Class == "prop_ragdoll" or string.find( Class , "func_" )  ) then return false end
 
 	if not Entity.ACE or (Entity.ACE and isnumber(Entity.ACE.Material)) then
-		ACF_Activate( Entity )
+		ACE_Activate( Entity )
 	elseif Entity.ACE.Mass ~= physobj:GetMass() then
-		ACF_Activate( Entity , true )
+		ACE_Activate( Entity , true )
 	end
 
 	return Entity.ACE.Type
 end
 
-function ACF_Damage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun, Type )
+function ACE_Damage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun, Type )
 
 	local Activated = ACE_Check( Entity )
-	local CanDo = hook.Run("ACF_BulletDamage", Activated, Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun )
+	local CanDo = hook.Run("ACE_BulletDamage", Activated, Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun )
 	if CanDo == false or Activated == false then -- above (default) hook does nothing with activated. Excludes godded players.
 		return { Damage = 0, Overkill = 0, Loss = 0, Kill = false }
 	end
 
 	if Entity.SpecialDamage then
-		return Entity:ACF_OnDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Type )
+		return Entity:ACE_OnDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Type )
 	elseif Activated == "Prop" then
 
-		return ACF_PropDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone , Type)
+		return ACE_PropDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone , Type)
 
 	elseif Activated == "Vehicle" then
 
-		return ACF_VehicleDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
+		return ACE_VehicleDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
 
 	elseif Activated == "Squishy" then
 
-		return ACF_SquishyDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
+		return ACE_SquishyDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
 
 	end
 
@@ -152,7 +152,7 @@ end
 
 
 
-function ACF_CalcDamage( Entity , Energy , FrArea , Angle , Type) --y=-5/16x + b
+function ACE_CalcDamage( Entity , Energy , FrArea , Angle , Type) --y=-5/16x + b
 
 	local HitRes			= {}
 	local armor			= Entity.ACE.Armour																						-- Armor
@@ -181,9 +181,9 @@ function ACF_CalcDamage( Entity , Energy , FrArea , Angle , Type) --y=-5/16x + b
 end
 
 -- replaced with _ due to lack of use: Inflictor, Bone
-function ACF_PropDamage( Entity , Energy , FrArea , Angle , _, _, Type)
+function ACE_PropDamage( Entity , Energy , FrArea , Angle , _, _, Type)
 
-	local HitRes = ACF_CalcDamage( Entity , Energy , FrArea , Angle  , Type)
+	local HitRes = ACE_CalcDamage( Entity , Energy , FrArea , Angle  , Type)
 
 	HitRes.Kill = false
 	if HitRes.Damage >= Entity.ACE.Health then
@@ -207,9 +207,9 @@ function ACF_PropDamage( Entity , Energy , FrArea , Angle , _, _, Type)
 end
 
 -- replaced with _ due to lack of use: Bone
-function ACF_VehicleDamage(Entity, Energy, FrArea, Angle, Inflictor, _, Gun, Type)
+function ACE_VehicleDamage(Entity, Energy, FrArea, Angle, Inflictor, _, Gun, Type)
 
-	local HitRes = ACF_CalcDamage( Entity , Energy , FrArea , Angle  , Type)
+	local HitRes = ACE_CalcDamage( Entity , Energy , FrArea , Angle  , Type)
 	local Driver = Entity:GetDriver()
 	local validd = Driver:IsValid()
 
@@ -235,7 +235,7 @@ function ACF_VehicleDamage(Entity, Energy, FrArea, Angle, Inflictor, _, Gun, Typ
 	return HitRes
 end
 
-function ACF_SquishyDamage(Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun, Type)
+function ACE_SquishyDamage(Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun, Type)
 	local Size = Entity:BoundingRadius()
 	local Mass = Entity:GetPhysicsObject():GetMass()
 	local HitRes = {}
@@ -252,56 +252,56 @@ function ACF_SquishyDamage(Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun, 
 		--This means we hit the head
 		if Bone == 1 then
 			Target.ACE.Armour = Mass * 0.02 --Set the skull thickness as a percentage of Squishy weight, this gives us 2mm for a player, about 22mm for an Antlion Guard. Seems about right
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, Angle, Type) --This is hard bone, so still sensitive to impact angle
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, Angle, Type) --This is hard bone, so still sensitive to impact angle
 			Damage = HitRes.Damage * 20
 
 			--If we manage to penetrate the skull, then MASSIVE DAMAGE
 			if HitRes.Overkill > 0 then
 				Target.ACE.Armour = Size * 0.25 * 0.01 --A quarter the bounding radius seems about right for most critters head size
-				HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0, Type)
+				HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0, Type)
 				Damage = Damage + HitRes.Damage * 100
 			end
 
 			Target.ACE.Armour = Mass * 0.065 --Then to check if we can get out of the other side, 2x skull + 1x brains
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, Angle, Type)
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, Angle, Type)
 			Damage = Damage + HitRes.Damage * 20
 		elseif Bone == 0 or Bone == 2 or Bone == 3 then
 			--This means we hit the torso. We are assuming body armour/tough exoskeleton/zombie don't give fuck here, so it's tough
 			Target.ACE.Armour = Mass * 0.04 --Set the armour thickness as a percentage of Squishy weight, this gives us 8mm for a player, about 90mm for an Antlion Guard. Seems about right
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, Angle, Type) --Armour plate,, so sensitive to impact angle
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, Angle, Type) --Armour plate,, so sensitive to impact angle
 			Damage = HitRes.Damage * 5
 
 			if HitRes.Overkill > 0 then
 				Target.ACE.Armour = Size * 0.5 * 0.02 --Half the bounding radius seems about right for most critters torso size
-				HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0, Type)
+				HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0, Type)
 				Damage = Damage + HitRes.Damage * 25 --If we penetrate the armour then we get into the important bits inside, so DAMAGE
 			end
 
 			Target.ACE.Armour = Mass * 0.185 --Then to check if we can get out of the other side, 2x armour + 1x guts
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, Angle, Type)
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, Angle, Type)
 			Damage = Damage + HitRes.Damage * 5
 		elseif Bone == 4 or Bone == 5 then
 			--This means we hit an arm or appendage, so ormal damage, no armour
 			Target.ACE.Armour = Size * 0.2 * 0.02 --A fitht the bounding radius seems about right for most critters appendages
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0, Type) --This is flesh, angle doesn't matter
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0, Type) --This is flesh, angle doesn't matter
 			Damage = HitRes.Damage * 10 --Limbs are somewhat less important
 		elseif Bone == 6 or Bone == 7 then
 			Target.ACE.Armour = Size * 0.2 * 0.02 --A fitht the bounding radius seems about right for most critters appendages
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0, Type) --This is flesh, angle doesn't matter
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0, Type) --This is flesh, angle doesn't matter
 			Damage = HitRes.Damage * 10 --Limbs are somewhat less important
 		elseif Bone == 10 then
 			--This means we hit a backpack or something
 			Target.ACE.Armour = Size * 0.1 * 0.02 --Arbitrary size, most of the gear carried is pretty small
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0, Type) --This is random junk, angle doesn't matter
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0, Type) --This is random junk, angle doesn't matter
 			Damage = HitRes.Damage * 1 --Damage is going to be fright and shrapnel, nothing much
 		else --Just in case we hit something not standard
 			Target.ACE.Armour = Size * 0.2 * 0.02
-			HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0)
+			HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0)
 			Damage = HitRes.Damage * 10
 		end
 	else --Just in case we hit something not standard
 		Target.ACE.Armour = Size * 0.2 * 0.02
-		HitRes = ACF_CalcDamage(Target, Energy, FrArea, 0, Type)
+		HitRes = ACE_CalcDamage(Target, Energy, FrArea, 0, Type)
 		Damage = HitRes.Damage * 10
 	end
 
@@ -322,7 +322,7 @@ end
 -- Returns a table of all physically connected entities
 -- ignoring ents attached by only nocollides
 ----------------------------------------------------------
-function ACF_GetAllPhysicalConstraints( ent, ResultTable )
+function ACE_GetAllPhysicalConstraints( ent, ResultTable )
 
 	ResultTable = ResultTable or {}
 
@@ -338,7 +338,7 @@ function ACF_GetAllPhysicalConstraints( ent, ResultTable )
 		-- skip shit that is attached by a nocollide
 		if con.Type ~= "NoCollide" then
 			for _, Ent in pairs( con.Entity ) do
-				ACF_GetAllPhysicalConstraints( Ent.Entity, ResultTable )
+				ACE_GetAllPhysicalConstraints( Ent.Entity, ResultTable )
 			end
 		end
 
@@ -349,7 +349,7 @@ function ACF_GetAllPhysicalConstraints( ent, ResultTable )
 end
 
 -- for those extra sneaky bastards
-function ACF_GetAllChildren( ent, ResultTable )
+function ACE_GetAllChildren( ent, ResultTable )
 
 	--if not ent.GetChildren then return end  --shouldn't need to check anymore, built into glua now
 
@@ -364,7 +364,7 @@ function ACF_GetAllChildren( ent, ResultTable )
 
 	for _, v in pairs( ChildTable ) do
 
-		ACF_GetAllChildren( v, ResultTable )
+		ACE_GetAllChildren( v, ResultTable )
 
 	end
 
@@ -373,7 +373,7 @@ function ACF_GetAllChildren( ent, ResultTable )
 end
 
 -- returns any wheels linked to this or child gearboxes
-function ACF_GetLinkedWheels( MobilityEnt )
+function ACE_GetLinkedWheels( MobilityEnt )
 	if not IsValid( MobilityEnt ) then return {} end
 
 	local ToCheck = {}
@@ -416,7 +416,7 @@ function ACF_GetLinkedWheels( MobilityEnt )
 
 				end
 			else
-				Wheels[Ent] = Ent -- indexing it same as ACF_GetAllPhysicalConstraints, for easy merge.  whoever indexed by entity in that function, uuuuuuggghhhhh
+				Wheels[Ent] = Ent -- indexing it same as ACE_GetAllPhysicalConstraints, for easy merge.  whoever indexed by entity in that function, uuuuuuggghhhhh
 			end
 		end
 	end

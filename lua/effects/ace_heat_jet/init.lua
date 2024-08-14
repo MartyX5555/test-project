@@ -73,7 +73,7 @@ function EFFECT:Init( data )
 		Flash:SetOrigin( self.Origin )
 		Flash:SetScale( self.Radius )
 		Flash:SetNormal( self.DirVec )
-	util.Effect( "ACF_Scaled_Explosion", Flash )
+	util.Effect( "ace_explosion", Flash )
 
 end
 

@@ -12,7 +12,7 @@
 ]]
 
 -- Lookup table of all currently flying missiles.
-ACF_ActiveMissiles = ACF_ActiveMissiles or {}
+ACE_ActiveMissiles = ACE_ActiveMissiles or {}
 
 --[[
 	Differences with the default bullet function:
@@ -44,7 +44,7 @@ function ACFM_BulletLaunch(BulletData)
 
 	BulletData.Index		= ACE.CurBulletIndex
 	ACE.Bullet[ACE.CurBulletIndex] = table.Copy(BulletData)	--Place the bullet at the current index pos
-	ACF_BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
+	ACE_BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
 
 end
 
@@ -170,8 +170,8 @@ function ACE_DoReplicatedPropHit(Missile, Bullet)
 	local FlightRes = { Entity = Missile, HitNormal = Missile.HitNorm, HitPos = Bullet.Pos, HitGroup = HITGROUP_GENERIC }
 	local Index = Bullet.Index
 
-	local ACF_BulletPropImpact = ACE.RoundTypes[Bullet.Type]["propimpact"]
-	local Retry = ACF_BulletPropImpact( Index, Bullet, FlightRes.Entity ,  FlightRes.HitNormal , FlightRes.HitPos , FlightRes.HitGroup )				--If we hit stuff then send the resolution to the damage function
+	local ACE_BulletPropImpact = ACE.RoundTypes[Bullet.Type]["propimpact"]
+	local Retry = ACE_BulletPropImpact( Index, Bullet, FlightRes.Entity ,  FlightRes.HitNormal , FlightRes.HitPos , FlightRes.HitGroup )				--If we hit stuff then send the resolution to the damage function
 
 	--This is crucial, to avoid 2nd tandem munitions spawn on 1st Bullet hitpos
 	Bullet.FirstPos = FlightRes.HitPos
@@ -183,15 +183,15 @@ function ACE_DoReplicatedPropHit(Missile, Bullet)
 
 		if Bullet.OnPenetrated then Bullet.OnPenetrated(Index, Bullet, FlightRes) end
 
-		ACF_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
-		ACF_CalcBulletFlight( Index, Bullet, true )
+		ACE_BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+		ACE_CalcBulletFlight( Index, Bullet, true )
 	else
 
 		if Bullet.OnEndFlight then Bullet.OnEndFlight(Index, Bullet, FlightRes) end
 
-		ACF_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-		ACF_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-		ACF_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+		ACE_BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+		ACE_BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+		ACE_BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 	end
 
 end
@@ -211,7 +211,7 @@ do
 
 			bdata.Flight:Normalize()
 
-			local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77	--local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77
+			local penmul = (bdata.penmul or ACE_GetGunValue(bdata, "penmul") or 1.2) * 0.77	--local penmul = (bdata.penmul or ACE_GetGunValue(bdata, "penmul") or 1.2) * 0.77
 
 			bdata.Flight = bdata.Flight * (bdata.SlugMV * penmul) * 39.37
 			bdata.NotFirstPen = false
@@ -223,7 +223,7 @@ do
 
 			bdata.Flight:Normalize()
 
-			local penmul = (bdata.penmul or ACF_GetGunValue(bdata, "penmul") or 1.2) * 0.77
+			local penmul = (bdata.penmul or ACE_GetGunValue(bdata, "penmul") or 1.2) * 0.77
 
 			if DetCount == 1 then
 				--print("Detonation1")
@@ -263,8 +263,8 @@ end )
 hook.Add( "InitPostEntity", "ACFMissiles_AddLinkable", function()
 	-- Need to ensure this is called after InitPostEntity because Adv. Dupe 2 resets its whitelist upon this event.
 	timer.Simple(1, function()
-		if ACF_E2_LinkTables and istable(ACF_E2_LinkTables) then
-			ACF_E2_LinkTables["acf_rack"] = {AmmoLink = false}
+		if ACE_E2_LinkTables and istable(ACE_E2_LinkTables) then
+			ACE_E2_LinkTables["acf_rack"] = {AmmoLink = false}
 		end
 	end)
 end )

@@ -43,7 +43,7 @@ function ACE_ReceiveDPStatus()
 end
 net.Receive( "ACE_DPStatus", ACE_ReceiveDPStatus )
 
-net.Receive("ACF_refreshpermissions", function()
+net.Receive("ACE_refreshpermissions", function()
 
 	PermissionModes	= net.ReadTable()
 	CurrentPermission	= net.ReadString()
@@ -138,7 +138,7 @@ function Menu.MakePanel(Panel)
 			end
 
 			local mode = line and line:GetValue(1)
-			RunConsoleCommand("ACF_setpermissionmode",mode)
+			RunConsoleCommand("ACE_setpermissionmode",mode)
 		end
 		Panel:AddItem(button)
 
@@ -152,7 +152,7 @@ function Menu.MakePanel(Panel)
 			end
 
 			local mode = line and line:GetValue(1)
-			RunConsoleCommand("ACF_setdefaultpermissionmode",mode)
+			RunConsoleCommand("ACE_setdefaultpermissionmode",mode)
 		end
 		Panel:AddItem(button2)
 	end
@@ -221,7 +221,7 @@ end
 
 
 function Permissions:RequestUpdate()
-	net.Start("ACF_refreshpermissions")
+	net.Start("ACE_refreshpermissions")
 		net.WriteBit(true)
 	net.SendToServer()
 end

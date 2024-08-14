@@ -139,7 +139,7 @@ do
 			missile.BulletData["CasingMass"] 	= missile.BulletData.ProjMass + missile.BulletData.FillerMass + (missile.BulletData.ConeVol * 1000 / 7.9)
 			missile.BulletData["BoomFillerMass"] = missile.BulletData.FillerMass / 1.5
 
-			--local SlugEnergy = ACF_Kinetic( missile.BulletData.MuzzleVel * 39.37 + missile.BulletData.SlugMV * 39.37 , missile.BulletData.SlugMass, 999999 )
+			--local SlugEnergy = ACE_Kinetic( missile.BulletData.MuzzleVel * 39.37 + missile.BulletData.SlugMV * 39.37 , missile.BulletData.SlugMass, 999999 )
 			--local  MaxPen = (SlugEnergy.Penetration/missile.BulletData.SlugPenArea) * ACE.KEtoRHA
 			--print(MaxPen)
 
@@ -172,7 +172,7 @@ do
 			Flash:SetOrigin( missile:GetPos() )
 			Flash:SetNormal( missile:GetForward() )
 			Flash:SetRadius( math.max( Radius, 1 ) )
-		util.Effect( "ACF_Scaled_Explosion", Flash )
+		util.Effect( "ace_explosion", Flash )
 
 	end
 
