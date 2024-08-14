@@ -62,7 +62,7 @@ function EFFECT:Init( data )
 	--Main explosion
 	self:Core( self.HitWater )
 	ACE_SBlast( self.Origin, self.Radius, self.HitWater, Ground.HitWorld )
-	ACF_RenderLight( 0, self.Radius * 500, Color(255, 128, 48), self.Origin, 0.1) -- idx 0: world
+	ACE_RenderLight( 0, self.Radius * 500, Color(255, 128, 48), self.Origin, 0.1) -- idx 0: world
 
 	if IsValid(self.Emitter) then self.Emitter:Finish() end
 end
@@ -209,7 +209,6 @@ local TextureTb = {
 }
 
 function EFFECT:Water( Water )
-
 	if not self.Emitter then return end
 
 	local WaterColor = Color(255,255,255,100)
@@ -270,7 +269,6 @@ function EFFECT:Water( Water )
 end
 
 function EFFECT:Concrete( SmokeColor )
-
 	if not self.Emitter then return end
 
 	for _ = 0, 5 * self.Radius do --Flying Debris
@@ -318,7 +316,6 @@ function EFFECT:Concrete( SmokeColor )
 end
 
 function EFFECT:Dirt( SmokeColor )
-
 	if not self.Emitter then return end
 
 	for _ = 0, 3 * self.Radius do
@@ -353,7 +350,6 @@ function EFFECT:Dirt( SmokeColor )
 end
 
 function EFFECT:Sand( SmokeColor )
-
 	if not self.Emitter then return end
 
 	for _ = 0, 3 * self.Radius * 2 do
@@ -387,7 +383,6 @@ function EFFECT:Sand( SmokeColor )
 end
 
 function EFFECT:Airburst()
-
 	if not self.Emitter then return end
 
 	local Radius = self.Radius

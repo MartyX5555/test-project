@@ -75,7 +75,7 @@ do
 	end
 
 	--[[
-		ACF_RenderLight(idx, lightSize, colour, pos, duration)
+		ACE_RenderLight(idx, lightSize, colour, pos, duration)
 
 		- idx		: the index of this light. Use the entity index, or 0 for the world.
 		- lightSize	: sets the scale size factor of the light.
@@ -83,7 +83,7 @@ do
 		- pos 		: the position
 		- duration	: the duration, in seconds, that this light will stand before turning off.
 	]]
-	function ACF_RenderLight(idx, lightSize, colour, pos, duration)
+	function ACE_RenderLight(idx, lightSize, colour, pos, duration)
 		if not CanEmitLight(lightSize) then return end
 
 		local dlight = DynamicLight( idx )

@@ -19,7 +19,7 @@ function ENT:Draw()
 
 	if CurTime() > self.LightUpdate then
 		self.LightUpdate = CurTime() + 0.05
-		ACF_RenderLight( self:EntIndex(), 750, Color(255, 128, 48), self:GetAttachment(1).Pos)
+		ACE_RenderLight( self:EntIndex(), 750, Color(255, 128, 48), self:GetAttachment(1).Pos)
 	end
 
 end

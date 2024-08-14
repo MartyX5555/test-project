@@ -15,8 +15,8 @@ do
 				BulletEnt:Remove()
 			end
 
-			if ACF.BulletEffect[Index] then
-				ACF.BulletEffect[Index] = nil
+			if ACE.BulletEffect[Index] then
+				ACE.BulletEffect[Index] = nil
 			end
 		end
 	end
@@ -35,7 +35,7 @@ do
 		self.CreateTime = ACF.CurTime
 
 		local Hit = data:GetScale()
-		local BulletData = ACF.BulletEffect[self.Index]
+		local BulletData = ACE.BulletEffect[self.Index]
 
 		--Scale encodes the hit type, so if it's 0 it's a new bullet, else it's an update so we need to remove the effect
 		if (Hit > 0 and BulletData) then
@@ -50,7 +50,7 @@ do
 
 				self.HitEnd = ACF.RoundTypes[BulletData.AmmoType]["endeffect"]
 				self:HitEnd( BulletData )
-				ACF.BulletEffect[self.Index] = nil		--This is crucial, to effectively remove the bullet flight model from the client
+				ACE.BulletEffect[self.Index] = nil		--This is crucial, to effectively remove the bullet flight model from the client
 
 				if IsValid(BulletData.Tracer) then BulletData.Tracer:Finish() end
 
@@ -73,7 +73,7 @@ do
 				BulletData.Counter = 0
 			end
 
-			ACF_SimBulletFlight( BulletData, self.Index )
+			ACE_SimBulletFlight( BulletData, self.Index )
 			RemoveBulletEffect( self )
 
 		else
@@ -120,10 +120,10 @@ do
 			self:SetModel( BulletData.BulletModel )
 
 			--Add all that data to the bullet table, overwriting if needed
-			ACF.BulletEffect[self.Index] = BulletData
+			ACE.BulletEffect[self.Index] = BulletData
 			self.Alive = true
 
-			ACF_SimBulletFlight( BulletData, self.Index )
+			ACE_SimBulletFlight( BulletData, self.Index )
 
 		end
 
@@ -135,22 +135,22 @@ end
 
 function EFFECT:HitEnd()
 	--You overwrite this with your own function, defined in the ammo definition file
-	ACF.BulletEffect[self.Index] = nil		--Failsafe
+	ACE.BulletEffect[self.Index] = nil		--Failsafe
 end
 
 function EFFECT:HitPierce()
 	--You overwrite this with your own function, defined in the ammo definition file
-	ACF.BulletEffect[self.Index] = nil		--Failsafe
+	ACE.BulletEffect[self.Index] = nil		--Failsafe
 end
 
 function EFFECT:HitRicochet()
 	--You overwrite this with your own function, defined in the ammo definition file
-	ACF.BulletEffect[self.Index] = nil		--Failsafe
+	ACE.BulletEffect[self.Index] = nil		--Failsafe
 end
 
 function EFFECT:Think()
 
-	local Bullet = ACF.BulletEffect[self.Index]
+	local Bullet = ACE.BulletEffect[self.Index]
 
 	if self.Alive and Bullet and self.CreateTime > ACF.CurTime-30 then
 		return true
@@ -248,7 +248,7 @@ end
 
 function EFFECT:Render()
 
-	local Bullet = ACF.BulletEffect[self.Index]
+	local Bullet = ACE.BulletEffect[self.Index]
 
 	if (Bullet) then
 		self.Entity:SetModelScale( Bullet.Caliber / 10 , 0 )

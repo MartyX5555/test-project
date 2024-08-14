@@ -12,8 +12,6 @@ net.Receive("ACF_refreshfriends", function()
 	local perms = net.ReadTable()
 	local checks = getPanelChecks()
 
-	--PrintTable(perms)
-
 	for _, check in pairs(checks) do
 		if perms[check.steamid] then
 			check:SetChecked(true)

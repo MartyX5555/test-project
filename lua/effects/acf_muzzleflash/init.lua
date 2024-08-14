@@ -52,7 +52,7 @@ function EFFECT:Init( data )
 		ParticleEffect( MuzzleEffect , Muzzle.Pos, Muzzle.Ang, Gun )
 
 		if Gun:WaterLevel() ~= 3 and not ClassData.nolights then
-			ACF_RenderLight(Gun:EntIndex(), Caliber * 75, Color(255, 128, 48), Muzzle.Pos + Muzzle.Ang:Forward() * (Caliber / 5))
+			ACE_RenderLight(Gun:EntIndex(), Caliber * 75, Color(255, 128, 48), Muzzle.Pos + Muzzle.Ang:Forward() * (Caliber / 5))
 		end
 
 		if Gun.Animate then

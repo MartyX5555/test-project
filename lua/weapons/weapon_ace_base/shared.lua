@@ -241,7 +241,7 @@ function SWEP:DoSPClientEffects()
 		self:EmitSound(MainSound)
 	end
 
-	ACF_RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
+	ACE_RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
 
 end
 
@@ -277,7 +277,7 @@ function SWEP:PrimaryAttack()
 			end
 
 			if CLIENT then
-				ACF_RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
+				ACE_RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
 			end
 		end
 
