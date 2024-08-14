@@ -584,7 +584,7 @@ function ACF_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 
 			local phys = SpallRes.Entity:GetPhysicsObject()
 
-			if IsValid(phys) and ACF_CheckClips( SpallRes.Entity, SpallRes.HitPos ) then
+			if IsValid(phys) and ACE_CheckClips( SpallRes.Entity, SpallRes.HitPos ) then
 
 				table.insert( ACE.Spall[Index].filter , SpallRes.Entity )
 

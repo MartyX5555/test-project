@@ -2,8 +2,8 @@
 -- http://www.facepunch.com/showthread.php?t=1221183
 
 ACF = ACF or {}
-ACF.Permissions = ACF.Permissions or {}
-local this = ACF.Permissions
+ACE.Permissions = ACE.Permissions or {}
+local this = ACE.Permissions
 
 local getPanelChecks = function() return {} end
 

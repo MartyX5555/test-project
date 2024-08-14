@@ -1,8 +1,8 @@
 -- This file defines damage permission with all ACF weaponry
 
 ACF = ACF or {}
-ACF.Permissions = ACF.Permissions or {}
-local this = ACF.Permissions
+ACE.Permissions = ACE.Permissions or {}
+local this = ACE.Permissions
 
 --TODO: make player-customizable
 this.Selfkill = true

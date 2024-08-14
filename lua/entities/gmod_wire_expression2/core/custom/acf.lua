@@ -206,7 +206,7 @@ do
 	[nodiscard]
 	e2function number entity:acfHitClip(vector hitPos)
 		if not this:CPPICanTool(self.player, "acfmenu") then return self:throw("You cannot target this entity", 0) end
-		return ACF_CheckClips(this, hitPos) and 1 or 0
+		return ACE_CheckClips(this, hitPos) and 1 or 0
 	end
 
 	__e2setcost(2)

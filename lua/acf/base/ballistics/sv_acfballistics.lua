@@ -100,7 +100,7 @@ local ValidClipEnts = {
 	["primitive_ladder"]         = true
 }
 
-function ACF_CheckClips( Ent, HitPos )
+function ACE_CheckClips( Ent, HitPos )
 
 	if not IsValid(Ent) or Ent.ClipData == nil then return false end		-- only valid visclipped ents
 	if not ValidClipEnts[Ent:GetClass()] then return false end			-- only props
@@ -220,7 +220,7 @@ do
 			--util.TraceLine(FlightTr)
 
 			--if our shell hits visclips, convert the tracehull on traceline.
-			if ACF_CheckClips( FlightRes.Entity, FlightRes.HitPos ) then
+			if ACE_CheckClips( FlightRes.Entity, FlightRes.HitPos ) then
 
 				--print("") -- not wanting linter annoys me.
 				-- trace result is stored in supplied output FlightRes (at top of file)
@@ -237,7 +237,7 @@ do
 			end
 
 			--We hit something that's not world, if it's visclipped, filter it out and retry
-			if FlightRes.HitNonWorld and ACF_CheckClips( FlightRes.Entity, FlightRes.HitPos ) then	--our shells hit the visclip as traceline, no more double bounds.
+			if FlightRes.HitNonWorld and ACE_CheckClips( FlightRes.Entity, FlightRes.HitPos ) then	--our shells hit the visclip as traceline, no more double bounds.
 
 				table.insert( Bullet.Filter, FlightRes.Entity )
 				RetryTrace = true	--re-enabled for retry trace. Bullet will start as tracehull again unless other visclip is detected!

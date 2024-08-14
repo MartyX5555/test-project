@@ -250,7 +250,7 @@ do
 		hitpos = vunwrap(hitpos)
 
 		checkpermission(instance, this, "entities.acf")
-		if ACF_CheckClips(nil, nil, this, hitpos) then
+		if ACE_CheckClips(nil, nil, this, hitpos) then
 			return true
 		else
 			return false
