@@ -1,5 +1,5 @@
 --define the class
-ACF_defineGunClass("FGL", {
+ACE_defineGunClass("FGL", {
 	type = "Gun",
 	spread = 3,
 	name = "Flare Launcher",
@@ -13,7 +13,7 @@ ACF_defineGunClass("FGL", {
 } )
 
 --add a gun to the class
-ACF_defineGun("40mmFGL", { --id
+ACE_defineGun("40mmFGL", { --id
 	name = "40mm Flare Launcher",
 	desc = "Put on an all-American fireworks show with this flare launcher: high fire rate, low distraction rate.  Fill the air with flare.  Careful of your reload time.",
 	model = "models/missiles/blackjellypod.mdl",

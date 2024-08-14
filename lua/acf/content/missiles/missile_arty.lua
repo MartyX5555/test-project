@@ -1,6 +1,6 @@
 
 --define the class
-ACF_defineGunClass("ARTY", {
+ACE_defineGunClass("ARTY", {
 	type           = "missile",
 	spread         = 1,
 	name           = "[ARTY] - Artillery Rockets",
@@ -15,7 +15,7 @@ ACF_defineGunClass("ARTY", {
 } )
 
 
-ACF_defineGun("Type 63 RA", {							-- id
+ACE_defineGun("Type 63 RA", {							-- id
 
 	name             = "Type 63 Rocket",
 	desc             = "A common artillery rocket in the third world, able to be launched from a variety of platforms with a painful whallop and a very arced trajectory.\nContrary to appearances and assumptions, does not in fact werf nebel.",
@@ -72,7 +72,7 @@ ACF_defineGun("Type 63 RA", {							-- id
 
 
 
-ACF_defineGun("SAKR-10 RA", {							-- id
+ACE_defineGun("SAKR-10 RA", {							-- id
 
 	name             = "SAKR-10 Rocket",
 	desc             = "A short-range but formidable artillery rocket, based upon the Grad.  Well suited to the backs of trucks.",
@@ -129,7 +129,7 @@ ACF_defineGun("SAKR-10 RA", {							-- id
 
 
 
-ACF_defineGun("SS-40 RA", {								-- id
+ACE_defineGun("SS-40 RA", {								-- id
 
 	name             = "SS-40 Rocket",
 	desc             = "A large, heavy, guided artillery rocket for taking out stationary or dug-in targets.  Slow to load, slow to fire, slow to guide, and slow to arrive.",
@@ -185,7 +185,7 @@ ACF_defineGun("SS-40 RA", {								-- id
 } )
 
 
-ACF_defineGun("RW61 RA", {								-- id
+ACE_defineGun("RW61 RA", {								-- id
 
 	name             = "Raketwerfer-61",
 	desc             = "A heavy, demolition-oriented rocket-assisted mortar, devastating against field works but takes a very, VERY long time to load.\n\n\nDon't miss.",

@@ -1,5 +1,5 @@
 --define the class
-ACF_defineGunClass("ATR", {
+ACE_defineGunClass("ATR", {
 	type = "Gun",
 	spread = 0.02,
 	name = "Anti-Tank Rifle",
@@ -12,7 +12,7 @@ ACF_defineGunClass("ATR", {
 } )
 
 --add a gun to the class
-ACF_defineGun("7.92mmATR", { --id
+ACE_defineGun("7.92mmATR", { --id
 	name = "7.92mm Anti Tank Rifle",
 	desc = "The 7.92 Anti Tank Rifle is somone's desperate attempt to fend off hordes of tracked beasts in the trenches",
 	model = "models/machinegun/machinegun_762mm.mdl",
@@ -30,7 +30,7 @@ ACF_defineGun("7.92mmATR", { --id
 	}
 } )
 
-ACF_defineGun("14.5mmATR", { --id
+ACE_defineGun("14.5mmATR", { --id
 	name = "14.5mm Anti Tank Rifle",
 	desc = "Commonly used by soviets as a budget way to kill tanks, still worthless.",
 	model = "models/machinegun/machinegun_145mm.mdl",
@@ -48,7 +48,7 @@ ACF_defineGun("14.5mmATR", { --id
 	}
 } )
 
-ACF_defineGun("20mmATR", { --id
+ACE_defineGun("20mmATR", { --id
 	name = "20mm Anti Tank Rifle",
 	desc = "Collosal anti tank rifle, good for putting a hole through side armor at point blank, that is if you can carry it.",
 	model = "models/machinegun/machinegun_20mm.mdl",

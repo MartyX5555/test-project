@@ -1,5 +1,5 @@
 --define the class
-ACF_defineGunClass("SC", {
+ACE_defineGunClass("SC", {
 	type = "Gun",
 	spread = 0.20,
 	name = "Short-Barrel Cannon",
@@ -13,7 +13,7 @@ ACF_defineGunClass("SC", {
 } )
 
 --add a gun to the class
-ACF_defineGun("37mmSC", {
+ACE_defineGun("37mmSC", {
 	name = "37mm Short Cannon",
 	desc = "Quick-firing and light, but penetration is laughable.  You're better off throwing rocks.",
 	model = "models/tankgun/tankgun_short_37mm.mdl",
@@ -30,7 +30,7 @@ ACF_defineGun("37mmSC", {
 	}
 } )
 
-ACF_defineGun("50mmSC", {
+ACE_defineGun("50mmSC", {
 	name = "50mm Short Cannon",
 	desc = "The 50mm is a quick-firing pea-shooter, good for scouts, and common on old interwar tanks.",
 	model = "models/tankgun/tankgun_short_50mm.mdl",
@@ -46,7 +46,7 @@ ACF_defineGun("50mmSC", {
 	}
 } )
 
-ACF_defineGun("75mmSC", {
+ACE_defineGun("75mmSC", {
 	name = "75mm Short Cannon",
 	desc = "The 75mm is common WW2 medium tank armament, and still useful in many other applications.",
 	model = "models/tankgun/tankgun_short_75mm.mdl",
@@ -62,7 +62,7 @@ ACF_defineGun("75mmSC", {
 	}
 } )
 
-ACF_defineGun("85mmSC", {
+ACE_defineGun("85mmSC", {
 	name = "85mm Short Cannon",
 	desc = "Like the 85mm Cannon except shorter and mildly angrier.",
 	model = "models/tankgun/tankgun_short_85mm.mdl",
@@ -77,7 +77,7 @@ ACF_defineGun("85mmSC", {
 	}
 } )
 
-ACF_defineGun("100mmSC", {
+ACE_defineGun("100mmSC", {
 	name = "100mm Short Cannon",
 	desc = "The 100mm is an effective infantry-support or antitank weapon, with a lot of uses and surprising lethality.",
 	model = "models/tankgun/tankgun_short_100mm.mdl",
@@ -93,7 +93,7 @@ ACF_defineGun("100mmSC", {
 	}
 } )
 
-ACF_defineGun("120mmSC", {
+ACE_defineGun("120mmSC", {
 	name = "120mm Short Cannon",
 	desc = "The 120mm is a formidable yet lightweight weapon, with excellent performance against larger vehicles.",
 	model = "models/tankgun/tankgun_short_120mm.mdl",
@@ -109,7 +109,7 @@ ACF_defineGun("120mmSC", {
 	}
 } )
 
-ACF_defineGun("140mmSC", {
+ACE_defineGun("140mmSC", {
 	name = "140mm Short Cannon",
 	desc = "A specialized weapon, developed from dark magic and anti-heavy tank hatred.  Deal with it.",
 	model = "models/tankgun/tankgun_short_140mm.mdl",
@@ -125,7 +125,7 @@ ACF_defineGun("140mmSC", {
 	}
 } )
 
-ACF_defineGun("170mmSC", {
+ACE_defineGun("170mmSC", {
 	name = "170mm Short Cannon",
 	desc = "A specialized weapon, developed from dark magic and anti-heavy tank hatred.  Deal with it.",
 	model = "models/tankgun/tankgun_short_170mm.mdl",

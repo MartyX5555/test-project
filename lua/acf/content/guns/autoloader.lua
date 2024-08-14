@@ -1,5 +1,5 @@
 --define the class
-ACF_defineGunClass("AL", {
+ACE_defineGunClass("AL", {
 	type = "Gun",
 	spread = 0.1,
 	name = "Autoloader",
@@ -13,7 +13,7 @@ ACF_defineGunClass("AL", {
 } )
 
 --add a gun to the class
-ACF_defineGun("75mmAL", { --id
+ACE_defineGun("75mmAL", { --id
 	name = "75mm Autoloading Cannon",
 	desc = "A quick-firing 75mm gun, pops off a number of rounds in relatively short order.",
 	model = "models/tankgun/tankgun_al_75mm.mdl",
@@ -32,7 +32,7 @@ ACF_defineGun("75mmAL", { --id
 	}
 } )
 
-ACF_defineGun("100mmAL", {
+ACE_defineGun("100mmAL", {
 	name = "100mm Autoloading Cannon",
 	desc = "The 100mm is good for rapidly hitting medium armor, then running like your ass is on fire to reload.",
 	model = "models/tankgun/tankgun_al_100mm.mdl",
@@ -51,7 +51,7 @@ ACF_defineGun("100mmAL", {
 	}
 } )
 
-ACF_defineGun("120mmAL", {
+ACE_defineGun("120mmAL", {
 	name = "120mm Autoloading Cannon",
 	desc = "The 120mm autoloader can do serious damage before reloading, but the reload time is killer.",
 	model = "models/tankgun/tankgun_al_120mm.mdl",
@@ -70,7 +70,7 @@ ACF_defineGun("120mmAL", {
 	}
 } )
 
-ACF_defineGun("140mmAL", {
+ACE_defineGun("140mmAL", {
 	name = "140mm Autoloading Cannon",
 	desc = "The 140mm can shred a medium tank's armor with one magazine, and even function as shoot & scoot artillery, with its useful HE payload.",
 	model = "models/tankgun/tankgun_al_140mm.mdl",
@@ -90,7 +90,7 @@ ACF_defineGun("140mmAL", {
 } )
 
 
-ACF_defineGun("170mmAL", {
+ACE_defineGun("170mmAL", {
 	name = "170mm Autoloading Cannon",
 	desc = "The 170mm can shred an average 40ton tank's armor with one magazine.",
 	model = "models/tankgun/tankgun_al_170mm.mdl",

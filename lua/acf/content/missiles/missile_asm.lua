@@ -1,6 +1,6 @@
 
 --define the class
-ACF_defineGunClass("ASM", {
+ACE_defineGunClass("ASM", {
 	type           = "missile",
 	spread         = 1,
 	name           = "[ASM] - Air-To-Surface Missile",
@@ -18,7 +18,7 @@ ACF_defineGunClass("ASM", {
 
 
 -- The AGM-114, a laser guided missile with high anti-tank effectiveness.
-ACF_defineGun("AGM-114 ASM", {						--id
+ACE_defineGun("AGM-114 ASM", {						--id
 	name             = "AGM-114 Hellfire Missile",
 	desc             = "The AGM-114 Hellfire is an air-to-surface missile first developed for anti-armor use, but later models were developed for precision strikes against other target types. Bringer of Hell.",
 	model            = "models/missiles/agm_114.mdl",
@@ -69,7 +69,7 @@ ACF_defineGun("AGM-114 ASM", {						--id
 } )
 
 -- The AGM-45 shrike, a vietnam war-era antiradiation missile built off the AIM-7 airframe.
-ACF_defineGun("AGM-45 ASM", {						-- id
+ACE_defineGun("AGM-45 ASM", {						-- id
 	name             = "AGM-45 Shrike Missile",
 	desc             = "The body of an AIM-7 sparrow, an air-to-ground seeker kit, and a far larger warhead than its ancestor.\nWith its homing radar seeker option, thicker skin, and long range, it is a great weapon for long-range, precision standoff attack versus squishy things, like those pesky sam sites.",
 	model            = "models/missiles/aim120.mdl",
@@ -124,7 +124,7 @@ ACF_defineGun("AGM-45 ASM", {						-- id
 } )
 
 --Sidearm, a lightweight anti-radar missile used by helicopters in the 80s
-ACF_defineGun("AGM-122 ASM", {						-- id
+ACE_defineGun("AGM-122 ASM", {						-- id
 	name             = "AGM-122 Sidearm Missile",
 	desc             = "A refurbished early-model AIM-9, for attacking ground targets.  Less well-known than the bigger Shrike, it provides easy-to-use blind-fire anti-SAM performance for helicopters and light aircraft, with far heavier a punch than its ancestor.",
 	model            = "models/missiles/aim9.mdl",
@@ -179,7 +179,7 @@ ACF_defineGun("AGM-122 ASM", {						-- id
 } )
 
 -- Maverick. A heavy missile which excels at destroying armoured ground targets. Used by ground attack aircrafts like the A-10
-ACF_defineGun("AGM-65 ASM", {						-- id
+ACE_defineGun("AGM-65 ASM", {						-- id
 	name             = "AGM-65 Maverick Missile",
 	desc             = "You see that tank over there a mile away? I want you to lock onto it and forget about it.",
 	model            = "models/missiles/aim54.mdl",

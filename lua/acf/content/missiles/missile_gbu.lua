@@ -1,5 +1,5 @@
 --define the class
-ACF_defineGunClass("GBU", {
+ACE_defineGunClass("GBU", {
 	type			= "missile",  -- i know i know
 	spread		= 1,
 	name			= "[GBU] - Guided Bomb Unit",
@@ -21,7 +21,7 @@ ACF_defineGunClass("GBU", {
 -- 116kg removed for now - looking for candidate to replace
 -- good idea before axing a bomb to check its specs! https://www.onwar.com/weapons/rocket/missiles/USA_AGM62.html http://www.designation-systems.net/dusrm/m-62.html
 -- walleye: for fucking missile sites up
-ACF_defineGun("WalleyeGBU", {						-- id
+ACE_defineGun("WalleyeGBU", {						-- id
 	name			= "Guided Weapon AGM-62 Walleye",
 	desc			= "An early guided bomb of yield roughly between the 454kg and 1000kg, used over Vietnam by American strike aircraft and by other countries.  Unlike other GBUs, the larger fins let it glide more like an unpowered missile, allowing drops at far greater distances in a more stand-off role.  For this reason, it performs best when released at higher speeds.\nBecause of its large fins, obsolete guidance equipment, and thicker casing, it has greater size and weight than comparable guided bombs.",
 	model			= "models/bombs/gbu/agm62.mdl",
@@ -68,7 +68,7 @@ ACF_defineGun("WalleyeGBU", {						-- id
 	armdelay	= 0.00								-- minimum fuse arming delay
 } )
 
-ACF_defineGun("227kgGBU", {						-- id
+ACE_defineGun("227kgGBU", {						-- id
 	name			= "227kg GBU-12 Paveway II",
 	desc			= "Based on the Mk 82 500-pound general-purpose bomb, but with the addition of a nose-mounted laser seeker and fins for guidance.",
 	model			= "models/bombs/gbu/gbu12.mdl",
@@ -115,7 +115,7 @@ ACF_defineGun("227kgGBU", {						-- id
 	armdelay	= 0.00								-- minimum fuse arming delay
 } )
 
-ACF_defineGun("454kgGBU", {						-- id
+ACE_defineGun("454kgGBU", {						-- id
 	name			= "454kg GBU-16 Paveway II",
 	desc			= "Based on the Mk 83 general-purpose bomb, but with laser seeker and wings for guidance.",
 	model			= "models/bombs/gbu/gbu16.mdl",
@@ -162,7 +162,7 @@ ACF_defineGun("454kgGBU", {						-- id
 	armdelay	= 0.00								-- minimum fuse arming delay
 } )
 
-ACF_defineGun("909kgGBU", {						-- id
+ACE_defineGun("909kgGBU", {						-- id
 	name			= "909kg GBU-10 Paveway II",
 	desc			= "Based on the Mk 84 general-purpose bomb, but with laser seeker and wings for guidance.",
 	model			= "models/bombs/gbu/gbu10.mdl",

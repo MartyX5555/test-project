@@ -1,5 +1,5 @@
 --define the class
-ACF_defineGunClass("SAM", {
+ACE_defineGunClass("SAM", {
 	type           = "missile",  -- i know i know
 	spread         = 1,
 	name           = "[SAM] - Surface-To-Air Missile",
@@ -15,7 +15,7 @@ ACF_defineGunClass("SAM", {
 } )
 
 -- The FIM-92, a lightweight, medium-speed short-range anti-air missile.
-ACF_defineGun("FIM-92 SAM", {								-- id
+ACE_defineGun("FIM-92 SAM", {								-- id
 	name             = "FIM-92 Missile",
 	desc             = "The FIM-92 Stinger is a lightweight and versatile close-range air defense missile.\nWith a seek cone of 15 degrees and a sharply limited range that makes it useless versus high-flying targets, it is best to aim before firing and choose shots carefully.",
 	model            = "models/missiles/fim_92.mdl",
@@ -67,7 +67,7 @@ ACF_defineGun("FIM-92 SAM", {								-- id
 } )
 
 -- The Mistral missile is a faster short range missile with greater range than fim92 but less agility
-ACF_defineGun("Mistral SAM", {								-- id
+ACE_defineGun("Mistral SAM", {								-- id
 	name             = "Mistral Missile",
 	desc             = "A very fast short range missile, faster and less agile than FIM-92. Mostly for Anti-Aircraft and Anti-Missile operations.",
 	model            = "models/missiles/fim_92_folded.mdl",
@@ -116,7 +116,7 @@ ACF_defineGun("Mistral SAM", {								-- id
 } )
 
 -- The 9M31 Strela-1, a bulky, slow medium-range anti-air missile.
-ACF_defineGun("Strela-1 SAM", {								-- id
+ACE_defineGun("Strela-1 SAM", {								-- id
 	name             = "9M31 Strela-1",
 	desc             = "The 9M31 Strela-1 is a medium-range homing SAM with a much bigger payload than the FIM-92. Bulk, it is best suited to ground vehicles or stationary units.\nWith its 30 degree seek cone, the strela is fast-reacting, while its missiles are surprisingly deadly and able to defend an acceptable area.",
 	model            = "models/missiles/9m31.mdl",
@@ -169,7 +169,7 @@ ACF_defineGun("Strela-1 SAM", {								-- id
 } )
 
 --Tunguska Missile
-ACF_defineGun("9M311 SAM", {										-- id
+ACE_defineGun("9M311 SAM", {										-- id
 	name             = "9M311 Missile",
 	desc             = "The 9M311 missile is a supersonic Anti Air missile that while is not agile enough to hit maneuvering planes, excels against helicopters.",
 	model            = "models/missiles/aim9.mdl",

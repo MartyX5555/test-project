@@ -1,5 +1,5 @@
 --define the class
-ACF_DefineRackClass("POD", {
+ACE_DefineRackClass("POD", {
 	spread		= 0.5,
 	name			= "Rocket Pod",
 	desc			= "An accurate, lightweight rocket launcher which can explode if its armour is pierced.",
@@ -20,7 +20,7 @@ ACF_DefineRackClass("POD", {
 
 
 -- MAKE SURE THE CALIBER MATCHES THE ROCKETS YOU WANT TO LOAD!
-ACF_DefineRack("40mm7xPOD", {
+ACE_DefineRack("40mm7xPOD", {
 	name		= "7x 40mm FFAR Pod",
 	desc		= "A lightweight pod for small rockets which is vulnerable to shots and explosions.",
 	model	= "models/missiles/launcher7_40mm.mdl",
@@ -51,7 +51,7 @@ ACF_DefineRack("40mm7xPOD", {
 
 
 -- MAKE SURE THE CALIBER MATCHES THE ROCKETS YOU WANT TO LOAD!
-ACF_DefineRack("70mm7xPOD", {
+ACE_DefineRack("70mm7xPOD", {
 	name		= "7x 70mm FFAR Pod",
 	desc		= "A lightweight pod for rockets which is vulnerable to shots and explosions.",
 	model	= "models/missiles/launcher7_70mm.mdl",
@@ -82,7 +82,7 @@ ACF_DefineRack("70mm7xPOD", {
 
 
 -- MAKE SURE THE CALIBER MATCHES THE ROCKETS YOU WANT TO LOAD!
-ACF_DefineRack("1x BGM-71E", {
+ACE_DefineRack("1x BGM-71E", {
 	name = "BGM-71E Single Tube",
 	desc = "A single BGM-71E round.",
 	model = "models/missiles/bgm_71e_round.mdl",
@@ -105,7 +105,7 @@ ACF_DefineRack("1x BGM-71E", {
 
 
 -- MAKE SURE THE CALIBER MATCHES THE ROCKETS YOU WANT TO LOAD!
-ACF_DefineRack("2x BGM-71E", {
+ACE_DefineRack("2x BGM-71E", {
 	name = "BGM-71E 2x Rack",
 	desc = "A BGM-71E rack designed to carry 2 rounds.",
 	model = "models/missiles/bgm_71e_2xrk.mdl",
@@ -129,7 +129,7 @@ ACF_DefineRack("2x BGM-71E", {
 
 
 -- MAKE SURE THE CALIBER MATCHES THE ROCKETS YOU WANT TO LOAD!
-ACF_DefineRack("4x BGM-71E", {
+ACE_DefineRack("4x BGM-71E", {
 	name = "BGM-71E 4x Rack",
 	desc = "A BGM-71E rack designed to carry 4 rounds.",
 	model = "models/missiles/bgm_71e_4xrk.mdl",
@@ -153,7 +153,7 @@ ACF_DefineRack("4x BGM-71E", {
 } )
 
 -- MAKE SURE THE CALIBER MATCHES THE yeah yeah I know I can read the code mate whitelist only mmkay?
-ACF_DefineRack("380mmRW61", {
+ACE_DefineRack("380mmRW61", {
 	name		= "380mm rocket asisted mortar",
 	desc		= "A lightweight pod for rocket-asisted mortars which is vulnerable to shots and explosions.",
 	model	= "models/launcher/RW61.mdl",
@@ -178,7 +178,7 @@ ACF_DefineRack("380mmRW61", {
 -- New-old racks became pods:
 
 
-ACF_DefineRack("3xUARRK", {
+ACE_DefineRack("3xUARRK", {
 	name = "A-20 3x HVAR Rocket pod",
 	desc = "A lightweight rack for bombs which is vulnerable to shots and explosions.",
 	model	= "models/missiles/rk3uar.mdl",
@@ -199,7 +199,7 @@ ACF_DefineRack("3xUARRK", {
 	}
 } )
 
-ACF_DefineRack("6xUARRK", {
+ACE_DefineRack("6xUARRK", {
 	name = "M27 6x Artillery Launcher",
 	desc = "6-pack of death, used to efficiently carry artillery rockets",
 	model	= "models/missiles/6pod_rk.mdl",
@@ -228,7 +228,7 @@ ACF_DefineRack("6xUARRK", {
 	}
 } )
 
-ACF_DefineRack("1x FIM-92", {
+ACE_DefineRack("1x FIM-92", {
 	name = "Single Munition FIM-92 Rack",
 	desc = "A FIM-92 rack designed to carry 1 missile.",
 	model	= "models/missiles/fim_92_1xrk.mdl",
@@ -247,7 +247,7 @@ ACF_DefineRack("1x FIM-92", {
 	}
 } )
 
-ACF_DefineRack("2x FIM-92", {
+ACE_DefineRack("2x FIM-92", {
 	name = "Double Munition FIM-92 Rack",
 	desc = "A FIM-92 rack designed to carry 2 missiles.",
 	model	= "models/missiles/fim_92_2xrk.mdl",
@@ -269,7 +269,7 @@ ACF_DefineRack("2x FIM-92", {
 	}
 } )
 
-ACF_DefineRack("4x FIM-92", {
+ACE_DefineRack("4x FIM-92", {
 	name = "Quad Munition FIM-92 Rack",
 	desc = "A FIM-92 rack designed to carry 4 missile.",
 	model	= "models/missiles/fim_92_4xrk.mdl",
@@ -293,7 +293,7 @@ ACF_DefineRack("4x FIM-92", {
 } )
 
 
-ACF_DefineRack("1x Strela-1", {
+ACE_DefineRack("1x Strela-1", {
 	name = "Single Munition 9M31 Rack",
 	desc = "An 9M31 rack designed to carry 1 missile.",
 	model	= "models/missiles/9m31_rk1.mdl",
@@ -313,7 +313,7 @@ ACF_DefineRack("1x Strela-1", {
 	}
 } )
 
-ACF_DefineRack("2x Strela-1", {
+ACE_DefineRack("2x Strela-1", {
 	name = "Double Munition 9M31 Rack",
 	desc = "An 9M31 rack designed to carry 2 missiles.",
 	model	= "models/missiles/9m31_rk2.mdl",
@@ -335,7 +335,7 @@ ACF_DefineRack("2x Strela-1", {
 } )
 
 --strela-1
-ACF_DefineRack("4x Strela-1", {
+ACE_DefineRack("4x Strela-1", {
 	name = "Quad Munition 9M31 Rack",
 	desc = "An 9m31 rack designed to carry until 4 missiles.",
 	model	= "models/missiles/9m31_rk4.mdl",
@@ -359,7 +359,7 @@ ACF_DefineRack("4x Strela-1", {
 } )
 
 --ataka tube
-ACF_DefineRack("1x Ataka", {
+ACE_DefineRack("1x Ataka", {
 	name = "Single Munition 9M120 Rack",
 	desc = "An 9M120 rack designed to carry 1 missile.",
 	model	= "models/missiles/9m120_rk1.mdl",
@@ -380,7 +380,7 @@ ACF_DefineRack("1x Ataka", {
 } )
 
 --spg9 tube
-ACF_DefineRack("1x SPG9", {
+ACE_DefineRack("1x SPG9", {
 	name = "SPG-9 Launch Tube",
 	desc = "Launch tube for SPG-9 recoilless rocket.",
 	model	= "models/spg9/spg9.mdl",
@@ -402,7 +402,7 @@ ACF_DefineRack("1x SPG9", {
 } )
 
 -- 1 Kornet tube
-ACF_DefineRack("1x Kornet", {
+ACE_DefineRack("1x Kornet", {
 	name       = "Kornet Launch Tube",
 	desc       = "Launch tube for Kornet antitank missile.",
 	model      = "models/kali/weapons/kornet/parts/9m133 kornet tube.mdl",
@@ -423,7 +423,7 @@ ACF_DefineRack("1x Kornet", {
 } )
 
 -- 2 Kornet tube
-ACF_DefineRack("2x Kornet", {
+ACE_DefineRack("2x Kornet", {
 	name       = "Kornet Launch Tube",
 	desc       = "A double Launch tube for 2 Kornet missiles.",
 	model      = "models/missiles/kornetrack2.mdl",
@@ -445,7 +445,7 @@ ACF_DefineRack("2x Kornet", {
 } )
 
 -- 4 Kornet tube
-ACF_DefineRack("4x Kornet", {
+ACE_DefineRack("4x Kornet", {
 	name       = "Kornet Launch Tube",
 	desc       = "A Quad Launch tube for 4 Kornet missiles.",
 	model      = "models/missiles/kornetrack4.mdl",
@@ -470,7 +470,7 @@ ACF_DefineRack("4x Kornet", {
 
 
 --Zuni pod
-ACF_DefineRack("127mm4xPOD", {
+ACE_DefineRack("127mm4xPOD", {
 	name = "5.0 Inch Zuni Pod",
 	desc = "LAU-10/A Pod for the Zuni rocket.",
 	model	= "models/ghosteh/lau10.mdl",
@@ -494,7 +494,7 @@ ACF_DefineRack("127mm4xPOD", {
 } )
 
 --9m311 pod
-ACF_DefineRack("1x 9m311", {
+ACE_DefineRack("1x 9m311", {
 	name = "9m311 Round",
 	desc = "A single 9m311 round.",
 	model = "models/missiles/bgm_71e_round.mdl",
@@ -515,7 +515,7 @@ ACF_DefineRack("1x 9m311", {
 } )
 
 --Javelin pod. Using the unfixed model since in the new one, missile is created at 90° degrees from original direction. I wonder why.
-ACF_DefineRack("1x Javelin", {
+ACE_DefineRack("1x Javelin", {
 	name = "FGM-148 Javelin Launch Tube",
 	desc = "A launch tube designed for the javelin.",
 	model = "models/mac/Javelin_straight.mdl",

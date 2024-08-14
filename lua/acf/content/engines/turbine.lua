@@ -1,7 +1,7 @@
 
 -- Gas turbines
 
-ACF_DefineEngine( "Turbine-Small-Trans", {
+ACE_DefineEngine( "Turbine-Small-Trans", {
 	name = "Gas Turbine, Small, Transaxial",
 	desc = "A small gas turbine, high power and a very wide powerband\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.\n\nOutputs to the side instead of rear.",
 	model = "models/engines/turbine_s.mdl",
@@ -20,7 +20,7 @@ ACF_DefineEngine( "Turbine-Small-Trans", {
 	flywheeloverride = 4167
 } )
 
-ACF_DefineEngine( "Turbine-Medium-Trans", {
+ACE_DefineEngine( "Turbine-Medium-Trans", {
 	name = "Gas Turbine, Medium, Transaxial",
 	desc = "A medium gas turbine, moderate power but a very wide powerband\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.\n\nOutputs to the side instead of rear.",
 	model = "models/engines/turbine_m.mdl",
@@ -39,7 +39,7 @@ ACF_DefineEngine( "Turbine-Medium-Trans", {
 	flywheeloverride = 5000
 } )
 
-ACF_DefineEngine( "Turbine-Large-Trans", {
+ACE_DefineEngine( "Turbine-Large-Trans", {
 	name = "Gas Turbine, Large, Transaxial",
 	desc = "A large gas turbine, powerful with a wide powerband\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.\n\nOutputs to the side instead of rear.",
 	model = "models/engines/turbine_l.mdl",
@@ -58,7 +58,7 @@ ACF_DefineEngine( "Turbine-Large-Trans", {
 	flywheeloverride = 5625
 } )
 
-ACF_DefineEngine( "Turbine-Small", {
+ACE_DefineEngine( "Turbine-Small", {
 	name = "Gas Turbine, Small",
 	desc = "A small gas turbine, high power and a very wide powerband\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.",
 	model = "models/engines/gasturbine_s.mdl",
@@ -76,7 +76,7 @@ ACF_DefineEngine( "Turbine-Small", {
 	flywheeloverride = 4167
 } )
 
-ACF_DefineEngine( "Turbine-Medium", {
+ACE_DefineEngine( "Turbine-Medium", {
 	name = "Gas Turbine, Medium",
 	desc = "A medium gas turbine, moderate power but a very wide powerband\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.",
 	model = "models/engines/gasturbine_m.mdl",
@@ -94,7 +94,7 @@ ACF_DefineEngine( "Turbine-Medium", {
 	flywheeloverride = 5000
 } )
 
-ACF_DefineEngine( "Turbine-Large", {
+ACE_DefineEngine( "Turbine-Large", {
 	name = "Gas Turbine, Large",
 	desc = "A large gas turbine, powerful with a wide powerband\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.",
 	model = "models/engines/gasturbine_l.mdl",
@@ -114,7 +114,7 @@ ACF_DefineEngine( "Turbine-Large", {
 
 --Forward facing ground turbines
 
-ACF_DefineEngine( "Turbine-Ground-Small", {
+ACE_DefineEngine( "Turbine-Ground-Small", {
 	name = "Ground Gas Turbine, Small",
 	desc = "A small gas turbine, fitted with ground-use air filters and tuned for ground use.\n\nGround-use turbines have excellent low-rev performance and are deceptively powerful, easily propelling loads that would have equivalent reciprocating engines struggling; however, they have sluggish throttle response, high gearbox demands, high fuel usage, and low tolerance to damage.",
 	model = "models/engines/gasturbine_s.mdl",
@@ -132,7 +132,7 @@ ACF_DefineEngine( "Turbine-Ground-Small", {
 	flywheeloverride = 1667
 } )
 
-ACF_DefineEngine( "Turbine-Ground-Medium", {
+ACE_DefineEngine( "Turbine-Ground-Medium", {
 	name = "Ground Gas Turbine, Medium",
 	desc = "A medium gas turbine, fitted with ground-use air filters and tuned for ground use.\n\nGround-use turbines have excellent low-rev performance and are deceptively powerful, easily propelling loads that would have equivalent reciprocating engines struggling; however, they have sluggish throttle response, high gearbox demands, high fuel usage, and low tolerance to damage.",
 	model = "models/engines/gasturbine_m.mdl",
@@ -151,7 +151,7 @@ ACF_DefineEngine( "Turbine-Ground-Medium", {
 	pitch = 115
 } )
 
-ACF_DefineEngine( "Turbine-Ground-Large", {
+ACE_DefineEngine( "Turbine-Ground-Large", {
 	name = "Ground Gas Turbine, Large",
 	desc = "A large gas turbine, fitted with ground-use air filters and tuned for ground use. Doesn't have the sheer power output of an aero gas turbine, but compensates with an imperial fuckload of torque.\n\nGround-use turbines have excellent low-rev performance and are deceptively powerful, easily propelling loads that would have equivalent reciprocating engines struggling; however, they have sluggish throttle response, high gearbox demands, high fuel usage, and low tolerance to damage.",
 	model = "models/engines/gasturbine_l.mdl",
@@ -172,7 +172,7 @@ ACF_DefineEngine( "Turbine-Ground-Large", {
 
 --Transaxial Ground Turbines
 
-ACF_DefineEngine( "Turbine-Small-Ground-Trans", {
+ACE_DefineEngine( "Turbine-Small-Ground-Trans", {
 	name = "Ground Gas Turbine, Small, Transaxial",
 	desc = "A small gas turbine, fitted with ground-use air filters and tuned for ground use.\n\nGround-use turbines have excellent low-rev performance and are deceptively powerful, easily propelling loads that would have equivalent reciprocating engines struggling; however, they have sluggish throttle response, high gearbox demands, high fuel usage, and low tolerance to damage.  Outputs to the side instead of rear.",
 	model = "models/engines/turbine_s.mdl",
@@ -191,7 +191,7 @@ ACF_DefineEngine( "Turbine-Small-Ground-Trans", {
 	flywheeloverride = 1667
 } )
 
-ACF_DefineEngine( "Turbine-Medium-Ground-Trans", {
+ACE_DefineEngine( "Turbine-Medium-Ground-Trans", {
 	name = "Ground Gas Turbine, Medium, Transaxial",
 	desc = "A medium gas turbine, fitted with ground-use air filters and tuned for ground use.\n\nGround-use turbines have excellent low-rev performance and are deceptively powerful, easily propelling loads that would have equivalent reciprocating engines struggling; however, they have sluggish throttle response, high gearbox demands, high fuel usage, and low tolerance to damage.  Outputs to the side instead of rear.",
 	model = "models/engines/turbine_m.mdl",
@@ -211,7 +211,7 @@ ACF_DefineEngine( "Turbine-Medium-Ground-Trans", {
 	pitch = 115
 } )
 
-ACF_DefineEngine( "Turbine-Large-Ground-Trans", {
+ACE_DefineEngine( "Turbine-Large-Ground-Trans", {
 	name = "Ground Gas Turbine, Large, Transaxial",
 	desc = "A large gas turbine, fitted with ground-use air filters and tuned for ground use.  Doesn't have the sheer power output of an aero gas turbine, but compensates with an imperial fuckload of torque.\n\nGround-use turbines have excellent low-rev performance and are deceptively powerful, easily propelling loads that would have equivalent reciprocating engines struggling; however, they have sluggish throttle response, high gearbox demands, high fuel usage, and low tolerance to damage.  Outputs to the side instead of rear.",
 	model = "models/engines/turbine_l.mdl",
@@ -234,7 +234,7 @@ ACF_DefineEngine( "Turbine-Large-Ground-Trans", {
 
 
 
-ACF_DefineEngine( "(+)Turbine-Small-SuperAero", {
+ACE_DefineEngine( "(+)Turbine-Small-SuperAero", {
 	name = "(+)Turboshaft, Small",
 	desc = "Gaghr Aerobine, notorious for being used in littlebirds. Experimental.",
 	model = "models/engines/gasturbine_s.mdl",
@@ -255,7 +255,7 @@ ACF_DefineEngine( "(+)Turbine-Small-SuperAero", {
 
 
 
-ACF_DefineEngine( "AGT 1500 Large Turbine", {
+ACE_DefineEngine( "AGT 1500 Large Turbine", {
 	name = "AGT 1500 Large Turbine",
 	desc = "A large gas turbine, powerful with a wide powerband.\n\nThese turbines are optimized for aero use, but can be used in other specialized roles, being powerful but suffering from poor throttle response and fuel consumption.",
 	model = "models/engines/gasturbine_l.mdl",
