@@ -54,15 +54,15 @@ function this.ClientPanel(Panel)
 	if IsValid(Panel) then Panel:Clear() end
 
 	if not this.ClientCPanel then this.ClientCPanel = Panel end
-	Panel:SetName("ACF Damage Permissions")
+	Panel:SetName("ACE Damage Permissions")
 
-	local txt = Panel:Help("ACF Damage Permission Panel")
+	local txt = Panel:Help("ACE Damage Permission Panel")
 	txt:SetContentAlignment( TEXT_ALIGN_CENTER )
 	txt:SetFont("DermaDefaultBold")
 	--txt:SetAutoStretchVertical(false)
 	--txt:SetHeight
 
-	local txt = Panel:Help("Allow or deny ACF damage to your props using this panel.\n\nThese preferences only work during the Build and Strict Build modes.")
+	local txt = Panel:Help("Allow or deny ACE damage to your props using this panel.\n\nThese preferences only work during the Build and Strict Build modes.")
 	txt:SetContentAlignment( TEXT_ALIGN_CENTER )
 	--txt:SetAutoStretchVertical(false)
 

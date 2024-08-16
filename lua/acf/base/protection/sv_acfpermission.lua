@@ -1,4 +1,4 @@
--- This file defines damage permission with all ACF weaponry
+-- This file defines damage permission with all ACE weaponry
 
 ACE = ACE or {}
 ACE.Permissions = ACE.Permissions or {}
