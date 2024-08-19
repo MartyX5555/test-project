@@ -147,7 +147,7 @@ function Round.endeffect( _, Bullet )
 		Flash:SetOrigin( Bullet.SimPos )
 		Flash:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Flash:SetRadius( math.max( Radius, 1 ) )
-	util.Effect( "ACE_Scaled_Explosion", Flash )
+	util.Effect( "ace_explosion", Flash )
 
 end
 
@@ -181,7 +181,7 @@ function Round.ricocheteffect( _, Bullet )
 		Spall:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Spall:SetScale( Bullet.SimFlight:Length() )
 		Spall:SetMagnitude( Bullet.RoundMass )
-	util.Effect( "ACE_AP_Ricochet", Spall )
+	util.Effect( "ace_ricochet", Spall )
 
 end
 

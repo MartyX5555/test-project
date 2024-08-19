@@ -243,7 +243,7 @@ function ACE_SquishyDamage(Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun, 
 
 	--We create a dummy table to pass armour values to the calc function
 	local Target = {
-		ACF = {
+		ACE = {
 			Armour = 0.1
 		}
 	}
