@@ -244,3 +244,17 @@ function TOOL:Reload()
 
 	return self:GetStage() == 1
 end
+
+function TOOL:Think()
+	if SERVER then
+		local Amongos = ACE_Effectdata()
+			Amongos:Set("radius", 100)
+			Amongos:Set("position", Vector(10,10,10))
+			Amongos:Set("Orientation", Angle(90,180,0))
+			Amongos:Set("Entity", self:GetOwner())
+			Amongos:Set("Color", Color(255,0,0,100))
+			Amongos:Set("textnotice", "oh, a text")
+		ACE_CreateEffect( "test", Amongos )
+	end
+
+end

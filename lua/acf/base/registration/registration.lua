@@ -235,3 +235,7 @@ function ACE_DefineMine(id, data)
 	ACE.MineData[id] = data
 end
 
+function ACE_DefineParticles(id, data )
+	data.id = id
+	ACE.ParticleEffects[id] = data
+end

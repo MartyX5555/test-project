@@ -22,6 +22,7 @@ ACE.AmmoBlacklist     = {}
 ACE.ArmorMaterials    = {}
 ACE.GSounds           = {}
 ACE.MuzzleFlashes 	  = {}
+ACE.ParticleEffects   = {}
 
 ---------------------------------- Legacy Global DataTables ----------------------------------
 
