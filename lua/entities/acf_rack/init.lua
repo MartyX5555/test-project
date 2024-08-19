@@ -7,162 +7,193 @@ include("shared.lua")
 
 DEFINE_BASECLASS( "base_wire_entity" )
 
-local GunClasses	= ACE.Classes.GunClass
-local RackClasses	= ACE.Classes.Rack
+--local Classes = ACE.Classes
+--local GunClasses	= Classes.GunClass
+--local RackClasses	= Classes.Rack
 
 local GunTable	= ACE.Weapons.Guns
 local RackTable	= ACE.Weapons.Racks
 
-local AmmoLinkDistBase = 512
+local FireSound = "ace_weapons/multi_sound/40mm_multi.mp3" -- Not the Missile ignition sound but the tick the rack does to deploy the missile.
+local ReadySound = "acf_extra/airfx/weapon_select.wav"
+local ReloadSound = "acf_extra/tankfx/resupply_single.wav"
+local EmptySound = "weapons/pistol/pistol_empty.wav"
 
-function ENT:GetReloadTime(nextMsl)
+--[[
 
-	local Rack = RackTable[self.Id]
-	local reloadMul = Rack.reloadmul or self.ReloadMultiplier or 1
+	Expected behaviour - RACK
 
-	local reloadBonus = (self.ReloadMultiplierBonus or 0)
-	local mag = (self.MagSize or 1)
+	1.- Spawn it as usual. The model and its data is according to how it was before. Updates as usual too.
+	2.- The reload system is manual. This means, you must input the reload to keep it ready to fire. While the reload is ON, the rack must fill until all the rackpos are ready.
+	3.- Must have a dual reference among both entities (launcher and missile). This, to allow communications from one point to the other.
+	4.- Ability to define if you want to fire a missile PER click or fire them while holding the button under a defined ROF.
+	5.- Ability to set the ROF CORRECTLY, meaning you can fire all the missiles at the rate that you want. Note that reload speed will be same.
+	6.- The input 'Target Pos' and 'Track Delay' must persist as usual.
 
-	reloadMul = (reloadMul - (reloadMul - 1) * reloadBonus) / (mag ^ 1.1)
+]]
 
-	local ret = math.max(self:GetFireDelay(nextMsl) * reloadMul, 0.5)
-	self:SetNWFloat(	"Reload",	ret)
+do
 
-	return ret
+	local Inputs = {
+		"Fire",
+		"Reload (Arms this rack. Its mandatory to set this since racks don't reload automatically)",
+		"Target Pos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
+		"Fire Delay (Defines a sequence delay at which missiles will be fired.)",
+		"Track Delay (Sets a specific delay to guidance control over the default one in seconds.\n Note that you cannot override lower values than default.)",
+		"Fire Mode (Defines how missiles will be fired.)"
+	}
+	local Outputs = {
+		"Ready (if its ready)",
+		"AmmoCount",
+	}
+
+	function ENT:Initialize()
+
+		self.BaseClass.Initialize(self)
+
+		self.Ready              = false
+		self.MissilePorts       = {}
+		self.TimeDelay          = CurTime()
+		self.NextFire           = CurTime()
+		self.WaitTime           = CurTime()
+
+		self.CurCrate           = 0
+		self.CurAmmo            = 0
+
+		self.TargetPos          = vector_origin
+
+		self.DefaultFireDelay   = 1
+		self.FireDelay          = 2
+		self.FireMode           = 0
+		self.OnFireCycle        = false -- Determine if the fire was set into AUTO or not
+
+		self.IsMaster           = true --acf menu jank requirements
+		self.Inputs             = WireLib.CreateInputs( self, Inputs )
+		self.Outputs            = WireLib.CreateOutputs( self, Outputs )
+
+		self.CurPort            = 1
+		self.MissilePorts       = {}
+		self.AvailableAmmo      = 0
+		self.AmmoLink           = {}
+
+
+	end
 
 end
 
-function ENT:GetFireDelay(nextMsl)
-
-	if not IsValid(nextMsl) then
-		return self.LastValidFireDelay or 1
-	end
-
-	local bdata = nextMsl.BulletData
-	local gun = GunTable[bdata.Id]
-
-	if not gun then
-		return self.LastValidFireDelay or 1
-	end
-
-	local class = GunClasses[gun.gunclass]
-
-	local interval =  math.max(( (bdata.RoundVolume / 500) ^ 0.60 ) * (gun.rofmod or 1) * (class.rofmod or 1), 0.1)
-	self.LastValidFireDelay = interval
-	self:SetNWFloat( "Interval", interval)
-
-	return interval
-
+local function SetReady( Rack, bool )
+	Rack.Ready = bool
+	Wire_TriggerOutput(Rack, "Ready", bool and 1 or 0)
 end
 
---Inputs
-local WireInputs = {
-	"Fire",
-	"Reload (Arms this rack. Its mandatory to set this since racks don't reload automatically.)",
-	"Delay (Sets a specific delay to guidance control over the default one in seconds.\n Note that you cannot override lower values than default.)",
-	"TargetPos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
-}
-
---Outputs
-local WireOutputs = {
-	"Ready (Returns if the rack is ready to fire.)",
-	"Entity (The rack itself) [ENTITY]",
-	"Shots Left",
-	"Position [VECTOR]",
-}
-
-function ENT:Initialize()
-
-	self.BaseClass.Initialize(self)
-
-	self.SpecialHealth   = false	--If true needs a special ACE_Activate function
-	self.SpecialDamage   = false	--If true needs a special ACE_OnDamage function --NOTE: you can't "fix" missiles with setting this to false, it acts like a prop!!!!
-	self.ReloadTime      = 1
-	self.RackStatus      = "Empty"
-	self.Ready           = true
-	self.Firing          = nil
-	self.NextFire        = 1
-	self.PostReloadWait  = CurTime()
-	self.WaitFunction    = self.GetFireDelay
-	self.NextLegalCheck  = ACE.CurTime + math.random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
-	self.Legal           = true
-	self.LegalIssues     = ""
-	self.LastSend        = 0
-	self:CPPISetOwner(self)
-
-	self.IsMaster              = true
-	self.CurAmmo               = 1
-	self.Sequence              = 1
-	self.LastThink             = CurTime()
-
-	self.BulletData            = {}
-	self.BulletData.Type       = "Empty"
-	self.BulletData.PropMass   = 0
-	self.BulletData.ProjMass   = 0
-
-	self.ForceTdelay           = 0
-	self.Inaccuracy            = 1
-
-	self.Inputs = WireLib.CreateInputs( self, WireInputs )
-	self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
-
-	Wire_TriggerOutput(self, "Entity", self)
-	Wire_TriggerOutput(self, "Ready", 1)
-	self.WireDebugName = "ACE Rack"
-
-	self.lastCol = self:GetColor() or Color(255, 255, 255)
-	self.nextColCheck = CurTime() + 2
-
-	self.Missiles = {}
-
-	self.AmmoLink = {}
-
-	self:GetOverlayText()
-
+local function SqrtRetDist( enta, entb )
+	if not (IsValid(enta) or IsValid(entb)) then return 0 end
+	return (enta:GetPos() - entb:GetPos()):LengthSqr()
 end
 
-function ENT:CanLoadCaliber(cal)
-	return ACE_RackCanLoadCaliber(self.Id, cal)
+local function SetNextFire( Rack, delay )
+	Rack.NextFire = CurTime() + delay
 end
 
-function ENT:CanLinkCrate(crate)
+local function HasAmmoOnRack( Rack )
+	return Rack.CurAmmo > 0
+end
 
-	local bdata = crate.BulletData
+-- Calcs the total ammo as indicator and unlinks crates if they are distant
+local function ValidateAmmoCount( Rack )
 
-	-- Don't link if it's a refill crate
-	if bdata["RoundType"] == "Refill" or bdata["Type"] == "Refill" then
-		return false, "Refill crates cannot be linked!"
-	end
-
-
-	-- Don't link if it's a blacklisted round type for this rack
-	local class = ACE_GetGunValue(bdata, "gunclass")
-	local Blacklist = ACE.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
-
-	if not class or table.HasValue( Blacklist, class ) then
-		return false, "That round type cannot be used with this rack!"
-	end
-
-
-	-- Dont't link if it's too far from this rack
-	if RetDist( self, crate ) >= AmmoLinkDistBase then
-		return false, "That crate is too far to be connected with this rack!"
-	end
-
-
-	-- Don't link if it's not a missile.
-	local ret, msg = ACE_CanLinkRack(self.Id, bdata.Id, bdata, self)
-	if not ret then return ret, msg end
-
-
-	-- Don't link if it's already linked
-	for _, v in pairs( self.AmmoLink ) do
-		if v == crate then
-			return false, "That crate is already linked to this rack!"
+	local AvailableAmmo = 0
+	for _, Crate in pairs(Rack.AmmoLink) do -- UnlinkDistance
+		if IsValid( Crate ) and Crate.Load then
+			if SqrtRetDist( Rack, Crate ) < 512 ^ 2 then
+				AvailableAmmo = AvailableAmmo + (Crate.Ammo or 0)
+			else
+				Rack:Unlink( Crate )
+				Rack:EmitSound("physics/metal/metal_box_impact_bullet" .. tostring(math.random(1, 3)) .. ".wav",500,100)
+			end
 		end
 	end
 
+	Rack.AvailableAmmo = AvailableAmmo
+	Wire_TriggerOutput(Rack, "AmmoCount", AvailableAmmo)
+
+end
+
+--Builds/Rebuilds the Missile Ports. Meant to be used only when the rack is created
+local function BuildMissilePorts( Rack )
+
+	for i, portdata in ipairs(Rack.mountpoints) do
+
+		Rack.MissilePorts[i] = {
+			Missile    = NULL,
+			IsDamaged  = false,
+			Pos        = portdata.pos + portdata.offset,
+			ScaleDir   = portdata.scaledir
+		}
+
+	end
+
+end
+
+--Check to see if the rack is not damaged and, if its meant for loading purposes, empty.
+local function CheckPortStatus(portdata, mode)
+
+	if portdata.IsDamaged then return false end
+
+	if mode == "load" and IsValid(portdata.Missile) then
+		return false
+	end
 	return true
+end
+
+--Tries to find an available port in the rack. Returns nil if nothing was found
+local function FindAvailablePort( Rack )
+
+	local Id, Port
+
+	for i, portdata in ipairs( Rack.MissilePorts ) do
+
+		if CheckPortStatus(portdata, "load") then
+			Port = portdata
+			Id = i
+			break
+		end
+	end
+
+	return Port, Id
+end
+
+--Returns the current port according to the internal self.CurPort or via the given portId.
+local function GetCurrentPort( Rack, PortId )
+	return Rack.MissilePorts[ PortId or Rack.CurPort ] or {}
+end
+
+--Note: global function. Meant to be an independant function. So missiles can be created easily from anywhere (apart of being used in racks.)
+local function CreateMissile( Rack, Pos, Ang, BulletData )
+
+	local Missile = ents.Create("ace_missile")
+	if IsValid(Missile) then
+
+		local MissileData = GunTable[BulletData.Id]
+
+		Missile:CPPISetOwner(Rack:CPPIGetOwner())
+		Missile:SetPos(Pos)
+		Missile:SetAngles(Ang)
+
+		Missile:SetModel( MissileData.round.model or MissileData.model )
+		Missile:PhysicsInit( SOLID_VPHYSICS )
+		Missile:SetMoveType( MOVETYPE_VPHYSICS )
+		Missile:SetSolid( SOLID_VPHYSICS )
+
+		Missile.DoNotDuplicate  = true
+		Missile.BulletData = BulletData
+		Missile.Launcher = Rack
+
+		Missile:Spawn()
+
+		return Missile
+	end
+	return NULL
 end
 
 function ENT:Link( Target )
@@ -175,24 +206,46 @@ function ENT:Link( Target )
 	-- Don't link if it's a blacklisted round type for this gun
 	local Blacklist = ACE.AmmoBlacklist[ Target.RoundType ] or {}
 
-	if table.HasValue( Blacklist, self.Class ) then
+	if table.HasValue( Blacklist, self.gunclass ) then
 		return false, "That round type cannot be used with this gun!"
 	end
 
-	local ret, msg = self:CanLinkCrate(Target)
-	if not ret then
-		return false, msg
+	local bdata = Target.BulletData
+
+	-- Don't link if it's a refill crate
+	if bdata["RoundType"] == "Refill" or bdata["Type"] == "Refill" then
+		return false, "Refill crates cannot be linked!"
 	end
 
+	-- Don't link if it's a blacklisted round type for this rack
+	local class = ACE_GetGunValue(bdata, "gunclass")
+	local Blacklist = ACE.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
+
+	if not class or table.HasValue( Blacklist, class ) then
+		return false, "That round type cannot be used with this rack!"
+	end
+
+	-- Dont't link if it's too far from this rack
+	if SqrtRetDist( self, Target ) >= 512 ^ 2 then
+		return false, "That crate is too far to be connected with this rack!"
+	end
+
+	-- Don't link if it's not a missile.
+	local ret, msg = ACE_CanLinkRack(self.Id, bdata.Id, bdata, self)
+	if not ret then return ret, msg end
+
+
+	-- Don't link if it's already linked
+	for _, v in pairs( self.AmmoLink ) do
+		if v == Target then
+			return false, "That crate is already linked to this rack!"
+		end
+	end
 
 	table.insert( self.AmmoLink, Target )
 	table.insert( Target.Master, self )
 
-	self:SetOverlayText(txt)
-
 	return true, "Link successful!"
-
-
 
 end
 
@@ -207,9 +260,6 @@ function ENT:Unlink( Target )
 	end
 
 	if Success then
-
-		self:GetOverlayText()
-
 		return true, "Unlink successful!"
 	else
 		return false, "That entity is not linked to this gun!"
@@ -217,258 +267,77 @@ function ENT:Unlink( Target )
 
 end
 
-function ENT:UnloadAmmo()
-	-- we're ok with mixed munitions.
-end
+function ENT:FireMissile()
 
-function ENT:TriggerInput( iname , value )
+	if not self.Reloading then
 
-	if ( iname == "Fire" and value ~= 0 and ACE.GunfireEnabled and self.Legal ) then
-		if self.NextFire >= 1 then
-			self.User = ACE_GetWeaponUser( self, self.Inputs.Fire.Src )
-			if not IsValid(self.User) then self.User = self:CPPIGetOwner() end
-			self:FireMissile()
-			self:Think()
-		end
-		self.Firing = true
-	elseif iname == "Fire" and value == 0 then
-		self.Firing = false
-	elseif iname == "Reload" and value ~= 0 then
-		self:Reload()
-	elseif iname == "Target Pos" then
-		Wire_TriggerOutput(self, "Position", value)
-	elseif iname == "Track Delay" then
-		self.ForceTdelay = math.max(value,0)
+		SetReady( self, false )
 
-		if not table.IsEmpty(self.Missiles) then
-			--ENT:TrimNullMissiles() could be used here, but i need to update force track delay to each missile, sad.
-			for k, missile in ipairs(self.Missiles) do
-				if not IsValid(missile) then table.remove(self.Missiles, k) end
-				missile.ForceTdelay = self.ForceTdelay
+		if HasAmmoOnRack( self ) then
+
+			local portdata = GetCurrentPort( self )
+			if CheckPortStatus(portdata) then
+
+				if IsValid(portdata.Missile) then
+					portdata.Missile:Launch()
+					portdata.Missile = NULL
+
+					self:EmitSound( FireSound, 500, 100 )
+				else
+					self:EmitSound( EmptySound )
+				end
 			end
-		end
-	end
-end
 
-function ENT:Reload()
+			self.CurAmmo = self.CurAmmo - 1
+			self.CurPort = self.CurPort - 1
+			self.WaitTime = CurTime() + self.FireDelay * 1.5
 
-
-	if self.Ready or not IsValid(self:PeekMissile()) then
-		self:LoadAmmo(true)
-	end
-
-end
-
-function RetDist( enta, entb )
-	if not ((enta and enta:IsValid()) or (entb and entb:IsValid())) then return 0 end
-	return enta:GetPos():Distance(entb:GetPos())
-end
-
-function ENT:SetStatusString()
-
-	local Missile = self:PeekMissile()
-
-	if not IsValid(Missile) then
-		self.RackStatus = "Empty"
-		--self:SetNWString("Status", "Empty")
-		self:GetOverlayText()
-		return
-	else
-		if not self.Ready then
-
-		self.RackStatus = "Loading"
-		--self:SetNWString("Status", "Loading")
-		self:GetOverlayText()
-		return
 		else
-
-		self.RackStatus = "Ready"
-		--self:SetNWString("Status", "Ready")
-		self:GetOverlayText()
-		return
-		end
-	end
-	self:SetNWString("Linked", "")
-	self:SetNWString("Status", "")
-	self:GetOverlayText()
-
-end
-
-function ENT:TrimDistantCrates()
-
-	for _, Crate in pairs(self.AmmoLink) do
-		if IsValid( Crate ) and Crate.Load and RetDist( self, Crate ) >= AmmoLinkDistBase then
-			self:Unlink( Crate )
-			soundstr =  "physics/metal/metal_box_impact_bullet" .. tostring(math.random(1, 3)) .. ".wav"
-			self:EmitSound(soundstr, 500, 100)
-		end
-	end
-
-end
-
-function ENT:UpdateRefillBonus()
-
-	local totalBonus			= 0
-	local selfPos			= self:GetPos()
-
-	local Efficiency			= 0.11 * ACE.AmmoMod		-- Copied from acf_ammo, beware of changes!
-	local minFullEfficiency	= 50000 * Efficiency	-- The minimum crate volume to provide full efficiency bonus all by itself.
-	local maxDist			= ACE.RefillDistance
-
-	for _, crate in pairs(ACE.AmmoCrates or {}) do
-
-		if crate.RoundType ~= "Refill" then
-			continue
-
-		elseif crate.Ammo > 0 and crate.Load then
-			local dist = selfPos:Distance(crate:GetPos())
-
-			if dist < maxDist then
-
-				dist = math.max(0, dist * 2 - maxDist)
-
-				local bonus = ( (crate.Volume or 0.1) / minFullEfficiency ) * ( maxDist - dist ) / maxDist
-
-				totalBonus = totalBonus + bonus
-
+			if CurTime() > self.WaitTime then
+				self:EmitSound( EmptySound )
 			end
 		end
-
 	end
-
-
-	self.ReloadMultiplierBonus = math.min(totalBonus, 1)
-	--self:SetNWFloat(  "ReloadBonus", self.ReloadMultiplierBonus)
-
-	return self.ReloadMultiplierBonus
-
 end
 
+function ENT:CanReload()
 
-
-
-function ENT:Think()
-
-	if ACE.CurTime > self.NextLegalCheck then
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, nil, math.Round(self.Mass,2), self.ModelInertia, nil, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
-		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
-
-		if not self.Legal and self.Firing then
-			self.Firing = false
-		end
+	--Must be allowed to do so.
+	if not self.AllowReload then
+		return false
 	end
 
-	local Ammo = table.Count(self.Missiles or {})
-
-	local Time = CurTime()
-	if self.LastSend + 1 <= Time then
-
-		self:TrimDistantCrates()
-		self:UpdateRefillBonus()
-
-		self:TrimNullMissiles()
-		Wire_TriggerOutput(self, "Shots Left", Ammo)
-
-		self:SetNWString("GunType",	self.Id)
-		self:SetNWInt(  "Ammo",		Ammo)
-
-		self:GetReloadTime(self:PeekMissile())
-		self:SetStatusString()
-
-		self.LastSend = Time
-
+	--When the rack finishes firing, theres a time where the reload must wait before proceeding.
+	if self.WaitTime > CurTime() then
+		return false
 	end
 
-	self.NextFire = math.min(self.NextFire + (Time - self.LastThink) / self:WaitFunction(self:PeekMissile()), 1)
-
-	if self.NextFire >= 1 and Ammo > 0 and Ammo <= self.MagSize then
-		self.Ready = true
-		Wire_TriggerOutput(self, "Ready", 1)
-		if self.Firing then
-			self.ReloadTime = nil
-			self:FireMissile()
-		elseif (self.Inputs.Reload and self.Inputs.Reload.Value ~= 0) and self:CanReload() then
-			self.ReloadTime = nil
-			self:Reload()
-		elseif self.ReloadTime and self.ReloadTime > 1 then
-			self:EmitSound( "acf_extra/airfx/weapon_select.wav", 75, 100 )
-			self.ReloadTime = nil
-		end
-	elseif self.NextFire >= 1 and Ammo == 0 then
-		if (self.Inputs.Reload and self.Inputs.Reload.Value ~= 0) and self:CanReload() then
-			self.ReloadTime = nil
-			self:Reload()
-		end
+	--Do nothing if theres no ammo available in crates.
+	if self.AvailableAmmo == 0 then
+		return false
 	end
 
-	self:GetOverlayText()
-
-	self:NextThink(Time + 0.5)
-
-	self.LastThink = Time
-
+	--Stop if the rack is already reloaded.
+	if self.CurAmmo >= self.MaxAmmo then
+		return false
+	end
 
 	return true
-
 end
 
-function ENT:TrimNullMissiles()
-	for k, v in pairs(self.Missiles) do
-		if not IsValid(v) then
-			table.remove(self.Missiles, k)
-		end
-	end
-end
-
-
-
-
-function ENT:PeekMissile()
-
-	self:TrimNullMissiles()
-
-	local NextIdx = #self.Missiles
-	if NextIdx <= 0 then return false end
-
-	local missile = self.Missiles[NextIdx]
-
-	return missile, NextIdx
-
-end
-
-
-
-
-function ENT:PopMissile()
-
-	local missile, curShot = self:PeekMissile()
-
-	if missile == false then return false end
-
-	self.Missiles[curShot] = nil
-
-	return missile, curShot
-
-end
-
-
-
-
-function ENT:FindNextCrate( doSideEffect )
+function ENT:FindNextCrate()
 
 	local MaxAmmo = #self.AmmoLink
 	local AmmoEnt = nil
 	local i = 0
 
-	local curAmmo = self.CurAmmo
+	while i <= MaxAmmo and not (IsValid(AmmoEnt) and AmmoEnt.Ammo > 0) do -- need to check ammoent here? returns if found
 
-	while i <= MaxAmmo and not (AmmoEnt and AmmoEnt:IsValid() and AmmoEnt.Ammo > 0) do
+		self.CurCrate = self.CurCrate + 1
+		if self.CurCrate > MaxAmmo then self.CurCrate = 1 end
 
-		curAmmo = curAmmo + 1
-		if curAmmo > MaxAmmo then curAmmo = 1 end
-
-		AmmoEnt = self.AmmoLink[curAmmo]
-		if AmmoEnt and AmmoEnt:IsValid() and AmmoEnt.Ammo > 0 and AmmoEnt.Load then
+		AmmoEnt = self.AmmoLink[self.CurCrate]
+		if IsValid(AmmoEnt) and AmmoEnt.Ammo > 0 and AmmoEnt.Load and AmmoEnt.Legal then
 			return AmmoEnt
 		end
 		AmmoEnt = nil
@@ -476,221 +345,177 @@ function ENT:FindNextCrate( doSideEffect )
 		i = i + 1
 	end
 
-	if doSideEffect then
-		self.CurAmmo = curAmmo
-	end
-
 	return false
 end
 
-
-
-
-function ENT:CanReload()
-
-	local Ammo = table.Count(self.Missiles)
-	if Ammo >= self.MagSize then return false end
+function ENT:LoadMissile()
 
 	local Crate = self:FindNextCrate()
-	if not IsValid(Crate) then return false end
+	if IsValid(Crate) then
 
-	if self.NextFire < 1 then return false end
+		SetReady( self, false )
 
-	return true
+		--CODE to create missile here
+		local portData, Id = FindAvailablePort( self )
+		if not portData then self.Reloading = false return end
 
-end
+		self.CurPort = Id
 
+		local BulletData = table.Copy(Crate.BulletData)
+		local MissileData = GunTable[BulletData.Id]
 
+		local offset = (MissileData.modeldiameter or MissileData.caliber) / (2.54 * 2)
+		local MissilePos = portData.Pos + portData.ScaleDir * offset
 
+		local ReloadTime = 1-- math.max( (BulletData.RoundVolume / 500) ^ 0.60, 0.1)
+		local Missile = CreateMissile( self, self:LocalToWorld(MissilePos), self:GetAngles(), BulletData )
+		if IsValid(Missile) then
 
-function ENT:SetLoadedWeight()
+			if self.missileCover then
+				Missile:SetModel( self.missileCover )
+			end
 
-	self:TrimNullMissiles()
+			Missile:SetParent(self)
+			portData.Missile = Missile
 
-	for _, missile in pairs(self.Missiles) do
+			timer.Simple(ReloadTime, function()
+				if IsValid(self) then
 
-		local phys = missile:GetPhysicsObject()
-		if (IsValid(phys)) then
-			phys:SetMass( missile.RoundWeight ) --phys:SetMass( 5 )  -- Will result in slightly heavier rack but is probably a good idea to have some mass for any damage calcs.
+					self.Reloading = false
+					--Emits a sound if the reload cannot continue but the final load is ready
+					if not self:CanReload() then
+						SetReady( self, true )
+						self:EmitSound( ReadySound )
+					end
+				end
+			end)
+
+			self.CurAmmo = self.CurAmmo + 1
+			Crate.Ammo = Crate.Ammo - 1
+
+			self:EmitSound( ReloadSound )
+			print("Loading Round", self.CurAmmo, self.CurPort)
+
+		else
+			self.Reloading = false
 		end
+	else
+		self.Reloading = false
 	end
 
 end
 
+function ENT:TriggerInput( iname , value )
 
+	if iname == "Fire" then
 
+		if value ~= 0 then
 
-function ENT:AddMissile()
+			if self.FireMode == 0 then --auto fire
+				self.OnFireCycle = true
+			elseif self.FireMode >= 1 then --semi-auto fire
+				self:FireMissile()
+			end
 
-	self:EmitSound( "acf_extra/tankfx/resupply_single.wav", 75, 100 )
+		else
+			self.OnFireCycle = false
+		end
 
-	self:TrimNullMissiles()
-
-	local Ammo = table.Count(self.Missiles)
-	if Ammo >= self.MagSize then return false end
-
-	local Crate = self:FindNextCrate(true)
-	if not IsValid(Crate) then return false end
-
-	local ply = self:CPPIGetOwner()
-
-	local missile = ents.Create("acf_missile")
-	missile:CPPISetOwner(ply)
-	missile.DoNotDuplicate  = true
-	missile.Launcher		= self
-	missile.ForceTdelay	= self.ForceTdelay
-
-	missile.ContrapId = ACE_Check( self ) and self.ACE.ContraptionId or 1
-
-	local BulletData = ACFM_CompactBulletData(Crate)
-	BulletData.IsShortForm  = true
-	BulletData.Owner		= ply
-	missile:SetBulletData(BulletData)
-
-	--For pod based launchers
-	local rackmodel = ACE_GetRackValue(self.Id, "rackmdl") or ACE_GetGunValue(BulletData.Id, "rackmdl")
-	if rackmodel then
-		missile:SetModelEasy( rackmodel )
-		missile.RackModelApplied = true
+	elseif iname == "Reload" then
+		self.AllowReload = value and true or false
+	elseif iname == "Target Pos" then
+		self.TargetPos = value
+		Wire_TriggerOutput(self, "Position", value)
+	elseif iname == "Fire Delay" then
+		if value <= 0 then
+			value = self.DefaultFireDelay
+		end
+		self.FireDelay = math.max(value, 0.05)
+	elseif iname == "Track Delay" then
+		self.TrackDelay = value
+	elseif iname == "Fire Mode" then
+		self.FireMode = math.Clamp(value,0,1)
 	end
-
-	local NextIdx = #self.Missiles
-	local _, _, pos = self:GetMuzzle( NextIdx , missile )
-
-	missile:SetPos(pos)
-	missile:SetAngles(self:GetAngles())
-
-	missile:SetParent(self)
-	missile:SetParentPhysNum(0)
-
-	if self.HideMissile then missile:SetNoDraw(true) end
-	if self.ProtectMissile then missile:SetNotSolid(true) end
-
-	missile:SetNWEntity( "Launcher", missile.Launcher )
-	missile:Spawn()
-
-	self.Missiles[NextIdx + 1] = missile
-
-	Crate.Ammo = Crate.Ammo - 1
-
-	self:SetLoadedWeight()
-
-	return missile
-
 end
 
+function ENT:Think()
 
+	local Time = CurTime()
 
+	-- Overlays, non insta refresh features should go here.
+	if Time >= self.TimeDelay then
 
-function ENT:LoadAmmo()
+		ValidateAmmoCount( self )
+		self:UpdateWireOverlay()
 
-	self:TrimDistantCrates()
-
-	if not self:CanReload() then return false end
-
-	local missile = self:AddMissile()
-
-	self:TrimNullMissiles()
-	Ammo = table.Count(self.Missiles)
-	self:SetNWInt("Ammo",	Ammo)
-
-	local ReloadTime = 1
-
-	if IsValid(missile) then
-		ReloadTime = self:GetReloadTime(missile)
+		self.TimeDelay = Time + 0.5
 	end
 
-	self.NextFire = 0
-	self.PostReloadWait = CurTime() -- + 5 --CurTime() + 4.5
-	self.WaitFunction = self.GetReloadTime
+	-- Cycling fire is at 66 ticks here. The max RPM possible: 6000 RPM
+	if Time >= self.NextFire and not self.Reloading then
 
-	self.Ready = false
-	self.ReloadTime = ReloadTime
+		if HasAmmoOnRack( self ) then
+			SetReady( self, true )
+		end
 
-	Wire_TriggerOutput(self, "Ready", 0)
+		if self.OnFireCycle and self.FireMode == 0 then -- This is like self.Firing, but meant for automatic mode only.
+			self:FireMissile()
+			SetNextFire( self, self.FireDelay)
+		end
 
-	self:GetOverlayText()
+	end
 
-	self:Think()
+	-- AllowReload is sent via input. It will be constant if no ammo is available.
+	if self:CanReload() and not self.Reloading then
+		self.Reloading = true
+		self:LoadMissile()
+	end
+
+	self:NextThink(Time)
 	return true
 
 end
 
-function MakeACE_Rack(Owner, Pos, Angle, Id)
+function MakeACE_Rack(Owner, Pos, Angle, Id )
 
 	if not Owner:CheckLimit("_acf_rack") then return false end
-
 	local Rack = ents.Create("acf_rack")
-
 	if not IsValid(Rack) then return false end
 
+	Rack:CPPISetOwner(Owner)
 	Rack:SetAngles(Angle)
 	Rack:SetPos(Pos)
 	Rack:Spawn()
-
-	Owner:AddCount("_acf_rack", Rack)
-	Owner:AddCleanup( "acfmenu", Rack )
 
 	if not ACE_CheckRack( Id ) then
 		Id = "1xRK"
 	end
 
-	local gundef = RackTable[Id]
+	local rackdef = RackTable[Id]
 
-	Rack:CPPISetOwner(Owner)
-	Rack.Id	= Id
+	Rack.Id          = Id
+	Rack.model       = rackdef.model
+	Rack.gunclass    = rackdef.gunclass
+	Rack.weight      = rackdef.weight
+	Rack.missileCover = rackdef.rackmdl --could be invalid if this value doesnt exist
+	Rack.mountpoints = rackdef.mountpoints
+	Rack.MaxAmmo     = rackdef.magsize or 1
 
-	Rack.MinCaliber	= gundef.mincaliber
-	Rack.MaxCaliber	= gundef.maxcaliber
-	Rack.Caliber		= gundef.caliber
-	Rack.Model		= gundef.model
-	Rack.Mass		= gundef.weight
-	Rack.name		= gundef.name
-	Rack.Class		= gundef.gunclass
+	BuildMissilePorts( Rack )
 
-	-- Custom BS for karbine. Per Rack ROF.
-	Rack.PGRoFmod = 1
-	if gundef["rofmod"] then
-		Rack.PGRoFmod = math.max(0, gundef["rofmod"])
-	end
-
-	-- Custom BS for karbine. Magazine Size, Mag reload Time
-	Rack.MagSize = table.Count(gundef.mountpoints) or 1
-	Rack.MagReload = gundef.magreload or 0
-
-	local gunclass = RackClasses[Rack.Class] or ErrorNoHalt("Couldn't find the " .. tostring(Rack.Class) .. " gun-class!")
-
-	Rack.Muzzleflash       = gundef.muzzleflash	or gunclass.muzzleflash	or ""
-	Rack.RoFmod            = gunclass["rofmod"]								or 1
-	Rack.Sound             = gundef.sound		or gunclass.sound		or "acf_extra/airfx/rocket_fire2.wav"
-	Rack.DefaultSound      = Rack.Sound
-	Rack.SoundPitch        = 100
-	Rack.Inaccuracy        = gundef["spread"]	or gunclass["spread"]	or 1
-
-	Rack.HideMissile       = ACE_GetRackValue(Id, "hidemissile")			or false
-	Rack.ProtectMissile    = gundef.protectmissile or gunclass.protectmissile  or false
-	Rack.CustomArmour      = gundef.armour		or gunclass.armour		or 1
-
-	Rack.ReloadMultiplier  = ACE_GetRackValue(Id, "reloadmul")
-	Rack.WhitelistOnly     = ACE_GetRackValue(Id, "whitelistonly")
-
-	Rack:SetNWString("WireName",Rack.name)
-	Rack:SetNWString( "Class",  Rack.Class )
-	Rack:SetNWString( "ID",	Rack.Id )
-	Rack:SetNWString( "Sound",  Rack.Sound )
-	Rack:SetNWInt( "SoundPitch",  Rack.SoundPitch )
-
-	Rack:SetModel( Rack.Model )
+	Rack:SetModel( Rack.model )
 	Rack:PhysicsInit( SOLID_VPHYSICS )
 	Rack:SetMoveType( MOVETYPE_VPHYSICS )
 	Rack:SetSolid( SOLID_VPHYSICS )
 
 	local phys = Rack:GetPhysicsObject()
-	if (phys:IsValid()) then
-		phys:SetMass(Rack.Mass or 1)
+	if IsValid(phys) then
+		phys:SetMass(Rack.weight)
 	end
 
-	hook.Call("ACE_RackCreate", nil, Rack)
+	Rack:SetNWString("WireName",Rack.name)
+
+	hook.Call("ACF_RackCreate", nil, Rack)
 
 	undo.Create( "acf_rack" )
 		undo.AddEntity( Rack )
@@ -700,105 +525,8 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	return Rack
 
 end
-
 list.Set( "ACFCvars", "acf_rack" , {"id"} )
 duplicator.RegisterEntityClass("acf_rack", MakeACE_Rack, "Pos", "Angle", "Id")
-
-function ENT:GetInaccuracy()
-	return self.Inaccuracy * ACE.GunInaccuracyScale
-end
-
-function ENT:FireMissile()
-
-	if self.Ready and self.Legal and (self.PostReloadWait < CurTime()) then
-
-		self.BaseEntity = ACE_GetPhysicalParent(self) or game.GetWorld()
-
-		local nextMsl = self:PeekMissile()
-
-		local CanDo = true
-		if nextMsl then CanDo = hook.Run("ACE_FireShell", self, nextMsl.BulletData ) end
-		if CanDo == false then return end
-
-		local ReloadTime = 0.5
-		local missile, curShot = self:PopMissile()
-
-		if missile then
-
-			ReloadTime = self:GetFireDelay(missile)
-
-			local attach, inverted, pos = self:GetMuzzle(curShot - 1, missile)
-
-			local MuzzleVec		= self:GetAngles():Forward()
-
-			local coneAng		= math.tan(math.rad(self:GetInaccuracy()))
-			local randUnitSquare	= (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-			local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
-			local ShootVec		= (MuzzleVec + spread):GetNormalized()
-
-			local filter = {}
-			for _, v in pairs(self.Missiles) do
-				filter[#filter + 1] = v
-			end
-			filter[#filter + 1] = self
-			filter[#filter + 1] = missile
-
-			missile.Filter = filter
-
-			missile:SetParent(nil)
-			missile:SetNoDraw(false)
-			missile:SetNotSolid(false)
-
-			local bdata = missile.BulletData
-
-			bdata.Pos = pos
-			bdata.Flight = (self:GetAngles():Forward() + spread):GetNormalized() * (bdata.MuzzleVel or missile.MinimumSpeed or 1) * (inverted and -1 or 1)
-
-			if missile.RackModelApplied then
-				local model = ACE_GetGunValue(bdata.Id, "model")
-				missile:SetModelEasy( model )
-				missile.RackModelApplied = nil
-			end
-
-			local phys = missile:GetPhysicsObject()
-			if (IsValid(phys)) then
-				phys:SetMass( missile.RoundWeight )
-			end
-
-			if self.Sound and self.Sound ~= "" then
-				missile.BulletData.Sound = self.Sound
-				missile.BulletData.Pitch = self.SoundPitch
-			end
-
-			missile:DoFlight(pos, ShootVec)
-			missile:Launch()
-
-			self:SetLoadedWeight()
-
-			self:MuzzleEffect( attach, missile.BulletData )
-
-			Ammo = table.Count(self.Missiles)
-			self:SetNWInt("Ammo",	Ammo)
-
-		else
-			self:EmitSound("weapons/shotgun/shotgun_empty.wav",68,100)
-		end
-
-		self.Ready = false
-		Wire_TriggerOutput(self, "Ready", 0)
-		self.NextFire = 0
-		self.WaitFunction = self.GetFireDelay
-		self.ReloadTime = ReloadTime
-
-	else
-		self:EmitSound("weapons/shotgun/shotgun_empty.wav",68,100)
-	end
-
-end
-
-function ENT:MuzzleEffect()
-	self:EmitSound( "phx/epicmetal_hard.wav", 75, 100 )
-end
 
 function ENT:PreEntityCopy()
 
@@ -817,12 +545,18 @@ function ENT:PreEntityCopy()
 		duplicator.StoreEntityModifier( self, "ACFAmmoLink", info )
 	end
 
+	duplicator.StoreEntityModifier( self, "ACFRackInfo", {Id = self.Id} )
+
 	--Wire dupe info
 	self.BaseClass.PreEntityCopy( self )
 
 end
 
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
+
+	self.Id = Ent.EntityMods.ACFRackInfo.Id
+
+	--MakeACF_Rack(self:CPPIGetOwner(), self:GetPos(), self:GetAngles(), self.Id, self)
 
 	if Ent.EntityMods and Ent.EntityMods.ACFAmmoLink and Ent.EntityMods.ACFAmmoLink.entities then
 		local AmmoLink = Ent.EntityMods.ACFAmmoLink
@@ -842,22 +576,35 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 
 end
 
-function ENT:OnRemove()
-	Wire_Remove(self)
-end
+local function GetStatus( Rack )
 
-function ENT:OnRestore()
-	Wire_Restored(self)
+	local Status = "Amongos"
+
+	if Rack.Ready then
+		Status = "Ready"
+	else
+		if Rack.Reloading and Rack.AvailableAmmo > 0 then
+			Status = "Loading"
+		else
+			if Rack.WaitTime > CurTime() then
+				Status = "Firing"
+			else
+				Status = "Empty"
+			end
+		end
+	end
+
+	return Status
 end
 
 --New Overlay text that is shown when you are looking at the rack.
-function ENT:GetOverlayText()
+function ENT:UpdateWireOverlay()
 
-	local Ammo		= table.Count(self.Missiles)	-- Ammo count
-	local FireRate	= self.LastValidFireDelay or 1	-- How many time take one lauch from another. in secs
-	local Reload		= self:GetNWFloat("Reload")		-- reload time. in secs
-	local ReloadBonus	= self.ReloadMultiplierBonus or 0  -- the word explains by itself
-	local Status		= self.RackStatus				-- this was used to show ilegality issues before. Now this shows about rack state (reloading?, ready?, empty and so on...)
+	local Ammo		= self.CurAmmo	-- Ammo count
+	local FireRate	= self.FireDelay or 1	-- How many time take one lauch from another. in secs
+	--local Reload		= self:GetNWFloat("Reload")		-- reload time. in secs
+	--local ReloadBonus	= self.ReloadMultiplierBonus or 0  -- the word explains by itself
+	local Status		= GetStatus( self )				-- this was used to show ilegality issues before. Now this shows about rack state (reloading?, ready?, empty and so on...)
 
 	local txt = "-  " .. Status .. "  -"
 
@@ -869,11 +616,11 @@ function ENT:GetOverlayText()
 		end
 
 		txt = txt .. "\n\nFire Rate: " .. math.Round(FireRate, 2) .. " secs"
-		txt = txt .. "\nReload Time: " .. math.Round(Reload, 2) .. " secs"
+		--txt = txt .. "\nReload Time: " .. math.Round(Reload, 2) .. " secs"
 
-		if ReloadBonus > 0 then
-			txt = txt .. "\n" .. math.floor(ReloadBonus * 100) .. "% Reload Time Decreased"
-		end
+		--if ReloadBonus > 0 then
+		--	txt = txt .. "\n" .. math.floor(ReloadBonus * 100) .. "% Reload Time Decreased"
+		--end
 	else
 		if #self.AmmoLink ~= 0 then
 			txt = txt .. "\n\nProvided with ammo.\n"
@@ -882,9 +629,9 @@ function ENT:GetOverlayText()
 		end
 	end
 
-	if not self.Legal then
-		txt = txt .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
-	end
+	--if not self.Legal then
+		--txt = txt .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACF.CurTime) .. "s\nIssues: " .. self.LegalIssues
+	--end
 
 	self:SetOverlayText(txt)
 
