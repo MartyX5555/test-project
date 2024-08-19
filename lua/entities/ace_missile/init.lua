@@ -3,9 +3,9 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-local GunTable	= ACF.Weapons.Guns
-local GuidanceTable = ACF.Guidance
-local FuseTable	= ACF.Fuse
+local GunTable	= ACE.Weapons.Guns
+--local GuidanceTable = ACE.Guidance
+--local FuseTable	= ACE.Fuse
 
 function ENT:Initialize()
 
@@ -24,7 +24,7 @@ function ENT:Initialize()
 end
 
 local function RocketThrust( Missile )
-	return Missile.Thrust * Missile.ThrustRatio 
+	return Missile.Thrust * Missile.ThrustRatio
 end
 
 local function ConfigureFlightParameters( Missile )
@@ -33,7 +33,7 @@ local function ConfigureFlightParameters( Missile )
 	Missile.NextPos = Missile:GetPos()
 	Missile.RotAxis = vector_origin
 	Missile.LastThink = CurTime()
-	
+
 
 end
 
@@ -58,7 +58,7 @@ function ENT:Launch()
 	local BulletData = self.BulletData
 
 	self.Maxlength       = MissileData.length
-	self.Thrust          = 1--MissileRound.thrust
+	self.Thrust          = MissileRound.thrust * 5
 	self.ThrustRatio  	 = 1
 	self.FinMul          = MissileRound.finmul
 	self.Resistance      = 10-- MissileData.rotmult

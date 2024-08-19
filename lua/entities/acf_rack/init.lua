@@ -52,6 +52,7 @@ do
 		self.BaseClass.Initialize(self)
 
 		self.Ready              = false
+		self.CurPort 			= 0
 		self.MissilePorts       = {}
 		self.TimeDelay          = CurTime()
 		self.NextFire           = CurTime()
@@ -63,7 +64,7 @@ do
 		self.TargetPos          = vector_origin
 
 		self.DefaultFireDelay   = 1
-		self.FireDelay          = 2
+		self.FireDelay          = 0.5
 		self.FireMode           = 0
 		self.OnFireCycle        = false -- Determine if the fire was set into AUTO or not
 
@@ -96,7 +97,13 @@ local function SetNextFire( Rack, delay )
 end
 
 local function HasAmmoOnRack( Rack )
-	return Rack.CurAmmo > 0
+
+	for _, portdata in ipairs(Rack.MissilePorts) do
+		if not IsValid(portdata.Missile) then continue end
+		return true
+	end
+
+	return false
 end
 
 -- Calcs the total ammo as indicator and unlinks crates if they are distant
@@ -124,45 +131,52 @@ local function BuildMissilePorts( Rack )
 
 	for i, portdata in ipairs(Rack.mountpoints) do
 
+		local pos = portdata.pos or vector_origin
+		local offset = portdata.offset or vector_origin
+
 		Rack.MissilePorts[i] = {
 			Missile    = NULL,
 			IsDamaged  = false,
-			Pos        = portdata.pos + portdata.offset,
+			Pos        = pos + offset,
 			ScaleDir   = portdata.scaledir
 		}
 
 	end
+	Rack.TotalPorts = #Rack.MissilePorts
 
 end
 
---Check to see if the rack is not damaged and, if its meant for loading purposes, empty.
-local function CheckPortStatus(portdata, mode)
-
+-- Check if the provided port can potentially fire, regardless if its ready or not
+local function CanFireInPort(portdata)
+	if not portdata then return false end
+	if not next(portdata) then return false end
 	if portdata.IsDamaged then return false end
 
-	if mode == "load" and IsValid(portdata.Missile) then
-		return false
-	end
+	return true
+end
+
+-- Check if the provided port can potentially reload, regardless if its ready or not
+local function CanReloadInPort(portdata)
+	if not portdata then return false end
+	if not next(portdata) then return false end
+	if portdata.IsDamaged then return false end
+	if IsValid(portdata.Missile) then return false end
+
 	return true
 end
 
 --Tries to find an available port in the rack. Returns nil if nothing was found
 local function FindAvailablePort( Rack )
 
-	local Id, Port
+	for i, portdata in ipairs(Rack.MissilePorts) do
 
-	for i, portdata in ipairs( Rack.MissilePorts ) do
-
-		if CheckPortStatus(portdata, "load") then
-			Port = portdata
-			Id = i
-			break
+		if CanReloadInPort(portdata) then
+			return i, portdata
 		end
 	end
 
-	return Port, Id
+	return
 end
-
 --Returns the current port according to the internal self.CurPort or via the given portId.
 local function GetCurrentPort( Rack, PortId )
 	return Rack.MissilePorts[ PortId or Rack.CurPort ] or {}
@@ -276,7 +290,7 @@ function ENT:FireMissile()
 		if HasAmmoOnRack( self ) then
 
 			local portdata = GetCurrentPort( self )
-			if CheckPortStatus(portdata) then
+			if CanFireInPort(portdata) then
 
 				if IsValid(portdata.Missile) then
 					portdata.Missile:Launch()
@@ -288,9 +302,8 @@ function ENT:FireMissile()
 				end
 			end
 
-			self.CurAmmo = self.CurAmmo - 1
 			self.CurPort = self.CurPort - 1
-			self.WaitTime = CurTime() + self.FireDelay * 1.5
+			self.WaitTime = CurTime() + math.max(self.FireDelay * 1.5, 2)
 
 		else
 			if CurTime() > self.WaitTime then
@@ -318,7 +331,7 @@ function ENT:CanReload()
 	end
 
 	--Stop if the rack is already reloaded.
-	if self.CurAmmo >= self.MaxAmmo then
+	if not FindAvailablePort(self) then
 		return false
 	end
 
@@ -355,11 +368,8 @@ function ENT:LoadMissile()
 
 		SetReady( self, false )
 
-		--CODE to create missile here
-		local portData, Id = FindAvailablePort( self )
-		if not portData then self.Reloading = false return end
+		local Id, portData = FindAvailablePort( self )
 
-		self.CurPort = Id
 
 		local BulletData = table.Copy(Crate.BulletData)
 		local MissileData = GunTable[BulletData.Id]
@@ -390,15 +400,17 @@ function ENT:LoadMissile()
 				end
 			end)
 
-			self.CurAmmo = self.CurAmmo + 1
 			Crate.Ammo = Crate.Ammo - 1
 
+
 			self:EmitSound( ReloadSound )
-			print("Loading Round", self.CurAmmo, self.CurPort)
+			print("Loading Round", self.CurPort)
 
 		else
 			self.Reloading = false
 		end
+		self.CurPort = Id
+
 	else
 		self.Reloading = false
 	end
