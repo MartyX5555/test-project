@@ -70,6 +70,8 @@ end
 
 function util.TraceLine(TraceData, ...)
 
+	TraceData = table.Copy(TraceData)
+
 	if istable(TraceData) then
 		TraceData.mins = Zero
 		TraceData.maxs = Zero
