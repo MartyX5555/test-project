@@ -51,6 +51,7 @@ function ENT:Launch()
 	self.Launched        = true
 
 	self.InRack = true
+	self.CanDetonate = false
 	self.PodLengthDistance = 126 or 0 -- 126 will be a value coming from the plataform if the delay ignition is 0. Otherwise, its 0
 
 	local MissileData = GunTable[self.BulletData.Id]
