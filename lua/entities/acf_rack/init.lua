@@ -370,14 +370,13 @@ function ENT:LoadMissile()
 
 		local Id, portData = FindAvailablePort( self )
 
-
 		local BulletData = table.Copy(Crate.BulletData)
 		local MissileData = GunTable[BulletData.Id]
 
 		local offset = (MissileData.modeldiameter or MissileData.caliber) / (2.54 * 2)
 		local MissilePos = portData.Pos + portData.ScaleDir * offset
 
-		local ReloadTime = 1-- math.max( (BulletData.RoundVolume / 500) ^ 0.60, 0.1)
+		local ReloadTime = 0.5--math.max( (BulletData.RoundVolume / 500) ^ 0.60, 0.1)
 		local Missile = CreateMissile( self, self:LocalToWorld(MissilePos), self:GetAngles(), BulletData )
 		if IsValid(Missile) then
 
@@ -389,23 +388,19 @@ function ENT:LoadMissile()
 			portData.Missile = Missile
 
 			timer.Simple(ReloadTime, function()
-				if IsValid(self) then
+				if not IsValid(self) then return end
 
-					self.Reloading = false
-					--Emits a sound if the reload cannot continue but the final load is ready
-					if not self:CanReload() then
-						SetReady( self, true )
-						self:EmitSound( ReadySound )
-					end
+				self.Reloading = false
+				--Emits a sound if the reload cannot continue but the final load is ready
+				if not self:CanReload() then
+					SetReady( self, true )
+					self:EmitSound( ReadySound )
+					self.CurPort = #self.MissilePorts
 				end
 			end)
 
-			Crate.Ammo = Crate.Ammo - 1
-
-
 			self:EmitSound( ReloadSound )
-			print("Loading Round", self.CurPort)
-
+			Crate.Ammo = Crate.Ammo - 1
 		else
 			self.Reloading = false
 		end

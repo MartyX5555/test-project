@@ -51,17 +51,18 @@ function ENT:Launch()
 	self.Launched        = true
 
 	self.InRack = true
-	self.PodLengthDistance = 126
+	self.PodLengthDistance = 126 or 0 -- 126 will be a value coming from the plataform if the delay ignition is 0. Otherwise, its 0
 
 	local MissileData = GunTable[self.BulletData.Id]
 	local MissileRound = MissileData.round
 	local BulletData = self.BulletData
 
 	self.Maxlength       = MissileData.length
-	self.Thrust          = MissileRound.thrust * 5
+	self.Thrust          = 1000--MissileRound.thrust
 	self.ThrustRatio  	 = 1
-	self.FinMul          = MissileRound.finmul
-	self.Resistance      = 10-- MissileData.rotmult
+	self.CritSpeed 		 = 10000 -- Define the minimal speed for the components to work. Increasing it means you must increase
+	self.MaxFin          = 50000--MissileRound.finmul
+	self.Resistance      = 0.1--MissileData.rotmult
 	self.BurnRate        = MissileRound.burnrate
 	self.MaxMotorFuel    = BulletData.PropMass / (MissileRound.burnrate / 1000)
 	self.MotorFuel       = self.MaxMotorFuel
@@ -83,6 +84,7 @@ end
 function ENT:PerformTrace()
 
 	if not self.Launched then return end
+	if self.InRack then return end
 
 	local tr = {}
 	tr.start = self:GetPos() - self:GetForward() * (self.Maxlength / 5)
@@ -147,43 +149,39 @@ end
 --The real flight calc is here. I recycled some parts from ACF-2 missile code, but well structured for future part replacement.
 local function RealFlight( Missile, Speed, DeltaTime )
 
+	Missile.CanDetonate = true
+
 	local Dir = Missile:GetForward()
 	local CurPos = Missile:GetPos()
 	local VelNorm = Missile.DVel / Speed
 	local Gravity = physenv.GetGravity()
 
 	-- Cualquier code para definir Dir deberia ir aca
+	local CritSpeed = Missile.CritSpeed
+	local Drag = Dir * -500
 
 	do
-		-- Calculo de caida del misil
 		local DirAng = Dir:Angle()
-		local AimDiff = Dir - VelNorm
-		local DiffLength = AimDiff:Length()
-
-		--We only accept to calc this if the missile has diff greater than 0.01 but less than 1.9, in case the missile/bomb is falling backwards (setang doesnt work really good there)
-		if DiffLength >= 0.01 and DiffLength < 1.9 then
-
-			local Torque = DiffLength * Speed
-			local AngVelDiff = Torque / ( Missile.Maxlength * Missile.Resistance ) * DeltaTime --BoxSize here means the missile's length, multipled with a value.
-			local DiffAxis = AimDiff:Cross(Dir):GetNormalized()
-
-			Missile.RotAxis = (Missile.RotAxis + DiffAxis * AngVelDiff) * 0.99
-
-			DirAng:RotateAroundAxis(Missile.RotAxis, Missile.RotAxis:Length())
-			Dir = DirAng:Forward()
-
-		end
+		local GravFactor = 0.1
+		local Ratio = math.max( (CritSpeed - Speed) / CritSpeed, 0.1 ) -- keep 10% of the GravFactor to affect the missile anyways.
+		local pitchAdjustment = -GravFactor * Ratio print(pitchAdjustment)
+		DirAng:RotateAroundAxis(DirAng:Right(), pitchAdjustment)
+		Dir = DirAng:Forward()
 	end
+
+
+	local FinRatio = math.min(Speed / CritSpeed, 1) --print("FINRATIO:", FinRatio)
+	local FinPower = Missile.MaxFin * FinRatio
 
 	-- Fin force calculation. A modified extract from ACF2 missile code.
 	local Up = Dir:Cross(Missile.DVel):Cross(Dir):GetNormalized()
 	local Dot1 = Up * VelNorm
 	local DotSimple = Dot1.x + Dot1.y + Dot1.z
-	local Fin = -Up * Speed * DotSimple * Missile.FinMul
+	local Fin = -Up * DotSimple * FinPower
 
 	-- Final force sum
 	local RocketDir = Dir * RocketThrust( Missile )
-	local Vel = Missile.DVel + (RocketDir + Gravity + Fin ) * DeltaTime
+	local Vel = Missile.DVel + (RocketDir + Gravity + Drag + Fin ) * DeltaTime
 
 	local NextPos = CurPos + Vel * DeltaTime
 
@@ -200,8 +198,7 @@ end
 function ENT:PerformFlight()
 	if not self.Launched then return end
 
-	local Time = CurTime()
-	local DeltaTime = Time - self.LastThink
+	local DeltaTime = FrameTime()
 
 	-- GLOBAL variables
 	local Speed = math.max(self.DVel:Length(), 1) --finally, a unified way to get the speed
@@ -213,8 +210,6 @@ function ENT:PerformFlight()
 	end
 
 	self:BurnFuel()
-
-	self.LastThink = Time
 
 end
 
