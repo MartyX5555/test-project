@@ -90,7 +90,7 @@ do
 		Engine:SetAngles(Angle)
 		Engine:SetPos(Pos)
 		Engine:Spawn()
-		Engine:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(Engine, Owner)
 		Engine.Id = Id
 
 		Engine.Model            = Lookup.model
@@ -620,7 +620,7 @@ function ENT:CalcRPM()
 				Kinetic = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100,
 				Momentum = 0,
 				Penetration = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100
-			}, 2, 0, self:CPPIGetOwner())
+			}, 2, 0, ACE.GetEntityOwner(self))
 		else
 			--Turns Off due to massive damage
 			self:TriggerInput("Active", 0)
@@ -794,7 +794,7 @@ do
 		local OutPos = self:LocalToWorld( self.Out ) 	--the engine output
 
 		local Rope = nil
-		if self:CPPIGetOwner():GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
+		if ACE.GetEntityOwner(self):GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
 			Rope = ACE_CreateLinkRope( OutPos, self, self.Out, Target, Target.In )
 		end
 

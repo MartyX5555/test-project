@@ -96,7 +96,7 @@ function ENT:Detonate()
 
 	self.Bulletdata["Flight"] = self:GetForward():GetNormalized() * self.Bulletdata["MuzzleVel"] * 39.37
 	self.Bulletdata.Pos = self:GetPos() + self:GetForward()
-	self.Bulletdata.Owner = self:CPPIGetOwner()
+	self.Bulletdata.Owner = ACE.GetEntityOwner(self)
 
 	self.CreateShell = ACE.RoundTypes[self.Bulletdata.Type].create
 	self:CreateShell( self.Bulletdata )

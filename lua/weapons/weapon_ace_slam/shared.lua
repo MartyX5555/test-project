@@ -193,9 +193,7 @@ function SWEP:PrimaryAttack()
 				ent.Bulletdata = self.BulletData
 				owner:AddCleanup( "aceexplosives", ent )
 
-				if CPPI then
-					ent:CPPISetOwner( Entity(0) )
-				end
+				ACE.SetEntityOwner(ent, Entity(0))
 
 				if IsValid(traceEnt) then
 					ent:SetParent(traceEnt)

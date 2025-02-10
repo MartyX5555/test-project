@@ -55,7 +55,7 @@ function MakeACE_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5,
 	Bomb:SetPos(Pos)
 	Bomb:Spawn()
 	Bomb:SetPlayer(Owner)
-	Bomb:CPPISetOwner(Owner)
+	ACE.SetEntityOwner(Bomb, Owner)
 
 
 	Mdl = Mdl or ACE.Weapons.Guns[Id].model
@@ -157,7 +157,7 @@ function ENT:ConfigBulletDataShortForm(bdata)
 	self.BulletData = bdata
 	self.BulletData.Entity = self
 	self.BulletData.Crate = self:EntIndex()
-	self.BulletData.Owner = self.BulletData.Owner or self:CPPIGetOwner()
+	self.BulletData.Owner = self.BulletData.Owner or ACE.GetEntityOwner(self)
 
 	local phys = self:GetPhysicsObject()
 	if (IsValid(phys)) then

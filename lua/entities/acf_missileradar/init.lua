@@ -128,7 +128,7 @@ function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 	Radar:Spawn()
 	Radar:SetPlayer(Owner)
 
-	Radar:CPPISetOwner(Owner)
+	ACE.SetEntityOwner(Radar, Owner)
 
 	Radar:SetModelEasy(radar.model)
 

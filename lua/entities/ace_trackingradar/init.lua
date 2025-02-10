@@ -74,7 +74,7 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
 	Radar:Spawn()
 
-	Radar:CPPISetOwner(Owner)
+	ACE.SetEntityOwner(Radar, Owner)
 
 	Radar:SetModelEasy(radar.model)
 
@@ -307,7 +307,7 @@ function ENT:Think()
 								end
 
 								--For Owner table
-								local Owner = scanEnt:CPPIGetOwner()
+								local Owner = ACE.GetEntityOwner(scanEnt)
 								local NickName = IsValid(Owner) and Owner:GetName() or ""
 
 								table.insert(ownArray , NickName)

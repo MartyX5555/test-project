@@ -85,9 +85,7 @@ function SWEP:ThrowNade(power, heightoffset)
 		ent:SetAngles(owner:EyeAngles())
 		ent:Spawn()
 		ent:GetPhysicsObject():ApplyForceCenter(aim * power + owner:GetVelocity() * ent:GetPhysicsObject():GetMass())
-		if CPPI then
-			ent:CPPISetOwner( Entity(0) )
-		end
+		ACE.SetEntityOwner(ent, Entity(0))
 		ent.DamageOwner = owner -- Done to avoid owners from manipulating the entity, but allowing the damage to be credited by him.
 	end)
 end

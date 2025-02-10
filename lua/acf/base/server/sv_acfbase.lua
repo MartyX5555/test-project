@@ -511,6 +511,6 @@ function ACE_GetWeaponUser( Weapon, inp )
 		end
 	end
 
-	return inp:CPPIGetOwner()
+	return ACE.GetEntityOwner(inp)
 end
 

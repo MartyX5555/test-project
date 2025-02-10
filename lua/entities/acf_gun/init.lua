@@ -157,7 +157,7 @@ do
 		Gun:SetAngles(Angle)
 		Gun:SetPos(Pos)
 		Gun:Spawn()
-		Gun:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(Gun, Owner)
 		Gun.Id              = Id
 		Gun.Caliber         = Lookup.caliber
 		Gun.Model           = Lookup.model
@@ -518,7 +518,7 @@ function ENT:TriggerInput(iname, value)
 			-- Check if it's time to fire
 			self.User = ACE_GetWeaponUser(self, self.Inputs.Fire.Src)
 			if not IsValid(self.User) then
-				self.User = self:CPPIGetOwner()
+				self.User = ACE.GetEntityOwner(self)
 			end
 			self:FireShell()
 			self:Think()
@@ -573,7 +573,7 @@ function ENT:Heat_Function()
 			Kinetic = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1)),
 			Momentum = 0,
 			Penetration = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1))
-		}, 2, 0, self:CPPIGetOwner())
+		}, 2, 0, ACE.GetEntityOwner(self))
 
 		if HitRes.Kill then
 			ACE_HEKill( self, VectorRand() , 0)

@@ -260,7 +260,7 @@ do
 			local Weight
 			local Dimensions
 
-			Ammo:CPPISetOwner(Owner)
+			ACE.SetEntityOwner(Ammo, Owner)
 			Ammo:SetAngles(Angle)
 			Ammo:SetPos(Pos)
 			Ammo:Spawn()
@@ -753,7 +753,7 @@ function ENT:Think()
 				self.BulletData.Pos = self:LocalToWorld(self:OBBCenter() + VectorRand() * (self:OBBMaxs() - self:OBBMins()) / 2)
 				self.BulletData.Flight  = (VectorRand()):GetNormalized() * self.BulletCookSpeed * 39.37 + self:GetVelocity()
 
-				self.BulletData.Owner	= self.BulletData.Owner or self.Inflictor or self:CPPIGetOwner()
+				self.BulletData.Owner	= self.BulletData.Owner or self.Inflictor or ACE.GetEntityOwner(self)
 				self.BulletData.Gun	= self.BulletData.Gun	or self
 				self.BulletData.Crate	= self.BulletData.Crate or self:EntIndex()
 

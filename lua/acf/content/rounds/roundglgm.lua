@@ -16,9 +16,8 @@ function Round.create( Gun, BulletData )
 		ACE_CreateBullet( BulletData )
 	else
 
-		local ply				= Gun:CPPIGetOwner()
+		local ply				= ACE.GetEntityOwner(Gun)
 		local glatgm			= ents.Create("acf_glatgm")
-		glatgm:SetOwner(ply)
 		glatgm.DoNotDuplicate	= true
 		glatgm.Guidance		= Gun
 

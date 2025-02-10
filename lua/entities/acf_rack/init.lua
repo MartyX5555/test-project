@@ -60,7 +60,7 @@ local WireInputs = {
 	"Fire",
 	"Reload (Arms this rack. Its mandatory to set this since racks don't reload automatically.)",
 	"Delay (Sets a specific delay to guidance control over the default one in seconds.\n Note that you cannot override lower values than default.)",
-	"TargetPos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
+	"Target Pos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
 }
 
 --Outputs
@@ -88,7 +88,6 @@ function ENT:Initialize()
 	self.Legal           = true
 	self.LegalIssues     = ""
 	self.LastSend        = 0
-	self:CPPISetOwner(self)
 
 	self.IsMaster              = true
 	self.CurAmmo               = 1
@@ -103,8 +102,11 @@ function ENT:Initialize()
 	self.ForceTdelay           = 0
 	self.Inaccuracy            = 1
 
-	self.Inputs = WireLib.CreateInputs( self, WireInputs )
-	self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
+	--self.Inputs = WireLib.CreateInputs( self, WireInputs )
+	--self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
+
+	WireLib.CreateInputs( self, WireInputs )
+	WireLib.CreateOutputs( self, WireOutputs )
 
 	Wire_TriggerOutput(self, "Entity", self)
 	Wire_TriggerOutput(self, "Ready", 1)
@@ -222,11 +224,10 @@ function ENT:UnloadAmmo()
 end
 
 function ENT:TriggerInput( iname , value )
-
 	if ( iname == "Fire" and value ~= 0 and ACE.GunfireEnabled and self.Legal ) then
 		if self.NextFire >= 1 then
 			self.User = ACE_GetWeaponUser( self, self.Inputs.Fire.Src )
-			if not IsValid(self.User) then self.User = self:CPPIGetOwner() end
+			if not IsValid(self.User) then self.User = ACE.GetEntityOwner(self) end
 			self:FireMissile()
 			self:Think()
 		end
@@ -532,10 +533,10 @@ function ENT:AddMissile()
 	local Crate = self:FindNextCrate(true)
 	if not IsValid(Crate) then return false end
 
-	local ply = self:CPPIGetOwner()
+	local ply = ACE.GetEntityOwner(self)
 
 	local missile = ents.Create("acf_missile")
-	missile:CPPISetOwner(ply)
+	ACE.SetEntityOwner(missile, ply)
 	missile.DoNotDuplicate  = true
 	missile.Launcher		= self
 	missile.ForceTdelay	= self.ForceTdelay
@@ -637,7 +638,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	local gundef = RackTable[Id]
 
-	Rack:CPPISetOwner(Owner)
+	ACE.SetEntityOwner(Rack, Owner)
 	Rack.Id	= Id
 
 	Rack.MinCaliber	= gundef.mincaliber

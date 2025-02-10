@@ -43,9 +43,9 @@ function ENT:Think()
 			rackId = GunClass.rack
 		end
 
-
-		local Res = MakeACE_Rack(self:CPPIGetOwner(), pos, ang, rackId)
-		if not IsValid(Res) then ACE_SendNotify(self:CPPIGetOwner(), false, ACFTranslation.ACFMenuTool[15]) end
+		local Owner = ACE.GetEntityOwner(self)
+		local Res = MakeACE_Rack(Owner, pos, ang, rackId)
+		if not IsValid(Res) then ACE_SendNotify(Owner, false, ACFTranslation.ACFMenuTool[15]) end
 
 	end
 
@@ -74,7 +74,7 @@ function MakeACE_MissileToRack(owner, pos, ang, id, rackid)
 	converter:SetPos(pos)
 
 	converter.Id = id
-	converter:CPPISetOwner(owner)
+	ACE.SetEntityOwner(converter, owner)
 	converter.RackID = rackid
 
 	converter:Spawn()

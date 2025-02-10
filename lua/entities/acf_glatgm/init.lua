@@ -53,7 +53,7 @@ function ENT:Initialize()
 	self.offsetLength = self.velocity * self.secondsOffset
 
 	--You need to declare the CPPI owner before seeing if the optic's owner is equal to the GLATGM's owner!
-	self:CPPISetOwner(self.BulletData.Owner)
+	ACE.SetEntityOwner(self, self.BulletData.Owner)
 
 	--Gets the Closest computer to spawned missile to override gun´s guidance
 	--Dont bother at using this if the table is empty
@@ -67,7 +67,7 @@ function ENT:Initialize()
 			end
 
 			--Range: 250. Note im using squared distance. So 250 ^ 2 means distance is 250
-			if Optical:GetPos():DistToSqr(self:GetPos()) < 250 ^ 2 and Optical:CPPIGetOwner() == self:CPPIGetOwner() then
+			if Optical:GetPos():DistToSqr(self:GetPos()) < 250 ^ 2 and ACE.GetEntityOwner(Optical) == ACE.GetEntityOwner(self) then
 
 				--print("Attaching Nearest Computer...")
 				--debugoverlay.Cross(Optical:GetPos(), 10, 10, Color(255,100,0), true)

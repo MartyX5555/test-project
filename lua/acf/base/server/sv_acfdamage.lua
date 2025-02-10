@@ -1042,7 +1042,7 @@ do
 		local MaxHE       = ACE.ScaledHEMax	-- Max amount of HE to be cached. This is useful when we dont want nukes being created by large amounts of clipped ammo.
 
 		local Inflictor   = ent.Inflictor or nil
-		local Owner       = ent:CPPIGetOwner() or NULL
+		local Owner       = ACE.GetEntityOwner(ent) or NULL
 
 		if ent:GetClass() == "acf_fueltank" then
 
@@ -1085,7 +1085,7 @@ do
 
 				if not Found.Exploding then
 
-					local EOwner = Found:CPPIGetOwner() or NULL
+					local EOwner = ACE.GetEntityOwner(Found) or NULL
 
 					--Don't detonate explosives which we are not allowed to.
 					if Owner ~= EOwner then continue end

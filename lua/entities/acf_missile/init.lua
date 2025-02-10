@@ -17,8 +17,8 @@ function ENT:Initialize()
 
 	self.BaseClass.Initialize(self)
 
-	if not IsValid(self:CPPIGetOwner()) then
-		self:CPPISetOwner(player.GetAll()[1])
+	if not IsValid(ACE.GetEntityOwner(self)) then
+		ACE.SetEntityOwner(self, player.GetAll()[1])
 	end
 
 	self.DetonateOffset = nil
@@ -114,7 +114,7 @@ function ENT:CalcFlight()
 
 	-- Guidance calculations
 	local Guidance  = self.Guidance:GetGuidance(self)
-	local TargetPos = self.CanTrack and Guidance.TargetPos or nil
+	local TargetPos = self.CanTrack and Guidance.TargetPos or nil --print("track:", self.CanTrack, Guidance.TargetPos)
 	local Tdelay	= self.ForceTdelay >= self.TrackDelay and self.ForceTdelay or self.TrackDelay
 
 	-- Track delay calculation
@@ -317,10 +317,7 @@ function ENT:CalcFlight()
 								IsPart = true
 								break
 							end
-
-
 						end
-
 					end
 				end
 
@@ -335,8 +332,6 @@ function ENT:CalcFlight()
 
 			end
 		end
-
-
 
 		--Detonation by fuse, if available
 		if Time > self.GhostPeriod and self.Fuse:GetDetonate(self, self.Guidance) then
@@ -796,7 +791,7 @@ hook.Add("CanDrive", "acf_missile_CanDrive", function(_, ent)
 end)
 
 function ENT:CanTool(ply, _, mode)
-	if mode ~= "wire_adv" or (CPPI and ply ~= self:CPPIGetOwner()) then return false end
+	if mode ~= "wire_adv" or (ply ~= ACE.GetEntityOwner(self)) then return false end
 	return true
 end
 

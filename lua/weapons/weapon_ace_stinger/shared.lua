@@ -378,7 +378,7 @@ function SWEP:PrimaryAttack()
 			ent.LeadMul = 1.5 --A higher leadmul means it's easier to force the missile to bleed a missile's energy. Lower can potentially be more efficient by reducing overcorrection
 
 			ent:SetOwner(owner)
-			ent:CPPISetOwner(owner)
+			ACE.SetEntityOwner(ent, owner)
 		end
 
 		self:EmitSound(self.Primary.Sound)

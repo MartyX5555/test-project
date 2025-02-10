@@ -78,7 +78,7 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 
 		IRST:Spawn()
 
-		IRST:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(IRST, Owner)
 
 		IRST:SetNWNetwork()
 		IRST:SetModelEasy(radar.model)
@@ -299,7 +299,7 @@ function ENT:AcquireLock()
 			local angerr = Angle(finalerror, finalerror, finalerror) * randanginac
 
 			--For Owner table
-			local Owner = scanEnt:CPPIGetOwner()
+			local Owner = ACE.GetEntityOwner(scanEnt)
 			local NickName = IsValid(Owner) and Owner:GetName() or ""
 
 

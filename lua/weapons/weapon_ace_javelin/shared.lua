@@ -433,7 +433,7 @@ function SWEP:PrimaryAttack()
 
 
 			ent:SetOwner(owner)
-			ent:CPPISetOwner(owner)
+			ACE.SetEntityOwner(ent, owner)
 		end
 
 		self:EmitSound(self.Primary.Sound)

@@ -208,7 +208,7 @@ do
 			local Model
 			local Dimensions
 
-			Tank:CPPISetOwner(Owner)
+			ACE.SetEntityOwner(Tank, Owner)
 			Tank:SetAngles(Angle)
 			Tank:SetPos(Pos)
 			Tank:Spawn()
