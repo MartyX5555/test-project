@@ -16,10 +16,9 @@ function Round.create( Gun, BulletData )
 		ACE_CreateBullet( BulletData )
 	else
 
-		local ply				= ACE.GetEntityOwner(Gun)
-		local glatgm			= ents.Create("acf_glatgm")
-		glatgm.DoNotDuplicate	= true
-		glatgm.Guidance		= Gun
+		local glatgm = ents.Create("acf_glatgm")
+		glatgm.DoNotDuplicate = true
+		glatgm.Guidance = Gun
 
 		glatgm:SetAngles(Gun:GetAngles())
 		glatgm:SetPos(Gun:GetAttachment(1).Pos + Gun:GetForward() * 39.37)
