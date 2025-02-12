@@ -115,7 +115,7 @@ end
 function this:GetWhitelistedEntsInCone(missile)
 
 	local ScanArray = ACE.GlobalEntities
-	if table.IsEmpty(ScanArray) then return {} end
+	if not next(ScanArray) then return {} end
 
 	local missilePos       = missile:GetPos()
 	local WhitelistEnts    = {}
@@ -174,7 +174,7 @@ function this:AcquireLock(missile)
 	local found = self:GetWhitelistedEntsInCone(missile)
 
 	--Part 2: get a good seek target
-	if table.IsEmpty(found) then return NULL end
+	if not next(found) then return NULL end
 
 	local missilePos	= missile:GetPos()
 

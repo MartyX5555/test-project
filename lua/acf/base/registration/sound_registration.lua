@@ -55,7 +55,7 @@ for _, Data in pairs(TableTypes) do
 			local TxtToFind = "sound/acf_other/" .. Path .. "/" .. Category[Iteration] .. "/" .. Distance[Iteration2] .. "/*.mp3"	--print( "\n" .. TxtToFind .. "\n" )
 			local ExSounds = file.Find( TxtToFind, "GAME" )
 
-			--if table.IsEmpty(ExSounds) then print("No se encontro nada!") end
+			--if not next(ExSounds) then print("No se encontro nada!") end
 
 			ACE.Sounds[Data["Type"]][Category[Iteration]] = ACE.Sounds[Data["Type"]][Category[Iteration]] or {}
 

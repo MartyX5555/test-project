@@ -362,7 +362,7 @@ end
 function ACE_PropShockwave( HitPos, HitVec, Filter, Caliber )
 
 	--Don't even bother at calculating something that doesn't exist
-	if table.IsEmpty(Filter) then return end
+	if not next(Filter) then return end
 
 	--General
 	local FindEnd	= true			--marked for initial loop

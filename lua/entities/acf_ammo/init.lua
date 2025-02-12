@@ -157,7 +157,7 @@ do
 		-- cookoff chance calculation
 		if self.Damaged then return HitRes end
 
-		if table.IsEmpty( self.BulletData or {} ) then
+		if not next( self.BulletData or {} ) then
 			self:Remove()
 		else
 
@@ -410,7 +410,7 @@ function ENT:UpdateOverlayText()
 
 	local roundType = self.BulletData.Type
 
-	if table.IsEmpty( self.BulletData or {} ) then  return end
+	if not next( self.BulletData or {} ) then  return end
 
 	local text = ""
 
@@ -418,7 +418,7 @@ function ENT:UpdateOverlayText()
 
 		text = " - " .. roundType .. " - "
 
-		if self.SupplyingTo and not table.IsEmpty(self.SupplyingTo) then
+		if self.SupplyingTo and not next(self.SupplyingTo) then
 			text = text .. "\nSupplying " .. #self.SupplyingTo .. " Ammo Crates"
 		end
 

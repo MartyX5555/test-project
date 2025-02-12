@@ -241,7 +241,7 @@ function ENT:TriggerInput( iname , value )
 	elseif iname == "Track Delay" then
 		self.ForceTdelay = math.max(value,0)
 
-		if not table.IsEmpty(self.Missiles) then
+		if not next(self.Missiles) then
 			--ENT:TrimNullMissiles() could be used here, but i need to update force track delay to each missile, sad.
 			for k, missile in ipairs(self.Missiles) do
 				if not IsValid(missile) then table.remove(self.Missiles, k) end

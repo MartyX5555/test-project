@@ -333,7 +333,7 @@ end
 function ENT:GetWhitelistedEntsInCone()
 
 	local ScanArray = ACE.GlobalEntities
-	if table.IsEmpty(ScanArray) then return {} end
+	if not next(ScanArray) then return {} end
 
 	local WhitelistEnts = {}
 	local LOSdata	= {}
