@@ -1,5 +1,5 @@
 --define the class
-ACE_defineGunClass("GL", {
+ACE.RegisterWeaponClass("GL", {
 	type = "Gun",
 	spread = 0.4,
 	name = "Grenade Launcher",
@@ -14,7 +14,7 @@ ACE_defineGunClass("GL", {
 } )
 
 --add a gun to the class
-ACE_defineGun("40mmGL", { --id
+ACE.RegisterWeapon("40mmGL", { --id
 	name = "40mm Grenade Launcher",
 	desc = "The 40mm chews up infantry but is about as useful as tits on a nun for fighting armor.  Often found on 4x4s rolling through the third world.",
 	model = "models/launcher/40mmgl.mdl",
@@ -31,7 +31,7 @@ ACE_defineGun("40mmGL", { --id
 	}
 } )
 
-ACE_defineGun("20mmGL", { --id
+ACE.RegisterWeapon("20mmGL", { --id
 	name = "20mm Grenade Launcher",
 	desc = "The 20mm is the embodyment of wimpy weapons, although it has a large clip and can fire HE it is bloody weak							using 40mm GL as placeholder bc the 20mm mini is borked",
 	model = "models/launcher/20mmgl.mdl",
@@ -48,7 +48,7 @@ ACE_defineGun("20mmGL", { --id
 	}
 } )
 
-ACE_defineGun("40mmGLSingle", { --id
+ACE.RegisterWeapon("40mmGLSingle", { --id
 	name = "40mm Single Grenade Launcher",
 	desc = "The 40mm grenade projecter excels at launching a small 40mm charge at nearby infantry or defending a tank from an incoming rocket.",
 	model = "models/launcher/40mmsl.mdl",

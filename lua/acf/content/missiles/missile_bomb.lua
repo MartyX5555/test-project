@@ -1,5 +1,5 @@
 --define the class
-ACE_defineGunClass("BOMB", {
+ACE.RegisterWeaponClass("BOMB", {
 	type           = "missile",  -- i know i know
 	spread         = 1,
 	name           = "[Bomb] - General Purpose Bomb",
@@ -17,7 +17,7 @@ ACE_defineGunClass("BOMB", {
 
 
 -- Balance the round in line with the 40mm pod rocket.
-ACE_defineGun("50kgBOMB", {						-- id
+ACE.RegisterWeapon("50kgBOMB", {						-- id
 	name             = "50kg Free Falling Bomb",
 	desc             = "Old 100lb bomb, most effective vs exposed infantry and light trucks.",
 	model            = "models/bombs/fab50.mdl",
@@ -62,7 +62,7 @@ ACE_defineGun("50kgBOMB", {						-- id
 } )
 
 
-ACE_defineGun("100kgBOMB", {						-- id
+ACE.RegisterWeapon("100kgBOMB", {						-- id
 	name             = "100kg Free Falling Bomb",
 	desc             = "An old 250lb WW2 bomb, as used by Soviet bombers to destroy enemies of the Motherland.",
 	model            = "models/bombs/fab100.mdl",
@@ -106,7 +106,7 @@ ACE_defineGun("100kgBOMB", {						-- id
 	armdelay	= 0.00							-- minimum fuse arming delay
 } )
 
-ACE_defineGun("250kgBOMB", {						-- id
+ACE.RegisterWeapon("250kgBOMB", {						-- id
 	name             = "250kg Free Falling Bomb",
 	desc             = "A heavy 500lb bomb, widely used as a tank buster on various WW2 aircraft.",
 	model            = "models/bombs/fab250.mdl",
@@ -150,7 +150,7 @@ ACE_defineGun("250kgBOMB", {						-- id
 	armdelay	= 0.00							-- minimum fuse arming delay
 } )
 
-ACE_defineGun("500kgBOMB", {						-- id
+ACE.RegisterWeapon("500kgBOMB", {						-- id
 	name             = "500kg Free Falling Bomb",
 	desc             = "A 1000lb bomb, as found in the heavy bombers of late WW2. Best used against fortifications or immobile targets.",
 	model            = "models/bombs/fab500.mdl",
@@ -191,7 +191,7 @@ ACE_defineGun("500kgBOMB", {						-- id
 	armdelay	= 0.00							-- minimum fuse arming delay
 } )
 
-ACE_defineGun("1000kgBOMB", {					-- id
+ACE.RegisterWeapon("1000kgBOMB", {					-- id
 	name             = "1000kg Free Falling Bomb",
 	desc             = "A 2000lb bomb. As close to a nuke as you can get in ACF, this munition will turn everything it touches to ashes. Handle with care.",
 	model            = "models/bombs/an_m66.mdl",
@@ -232,7 +232,7 @@ ACE_defineGun("1000kgBOMB", {					-- id
 } )
 
 
-ACE_defineGun("100kgGBOMB", {					-- id
+ACE.RegisterWeapon("100kgGBOMB", {					-- id
 	name             = "100kg Glide Bomb",
 	desc             = "A 250-pound bomb, fitted with fins for a longer reach.  Well suited to dive bombing, but bulkier and heavier from its fins.",
 	model            = "models/missiles/micro.mdl",
@@ -277,7 +277,7 @@ ACE_defineGun("100kgGBOMB", {					-- id
 })
 
 
-ACE_defineGun("250kgGBOMB", {					-- id
+ACE.RegisterWeapon("250kgGBOMB", {					-- id
 	name             = "250kg Glide Bomb",
 	desc             = "A heavy 500lb bomb, fitted with fins for a gliding trajectory better suited to striking point targets.",
 	model            = "models/missiles/fab250.mdl",

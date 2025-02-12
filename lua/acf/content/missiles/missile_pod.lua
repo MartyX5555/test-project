@@ -1,6 +1,6 @@
 
 --define the class
-ACE_defineGunClass("FFAR", {
+ACE.RegisterWeaponClass("FFAR", {
 	type			= "missile",
 	spread		= 1,
 	name			= "[FFAR] - Folding-Fin Aerial Rockets",
@@ -17,7 +17,7 @@ ACE_defineGunClass("FFAR", {
 
 
 
-ACE_defineGun("40mmFFAR", { --id
+ACE.RegisterWeapon("40mmFFAR", { --id
 
 	name		= "40mm Pod Rocket",
 	desc		= "A tiny, unguided rocket.  Useful for anti-infantry, smoke and suppression.  Folding fins allow the rocket to be stored in pods, which defend them from damage.",
@@ -61,7 +61,7 @@ ACE_defineGun("40mmFFAR", { --id
 
 
 
-ACE_defineGun("70mmFFAR", { --id
+ACE.RegisterWeapon("70mmFFAR", { --id
 
 	name		= "70mm Pod Rocket",
 	desc		= "A small, optionally guided rocket.  Useful against light vehicles and infantry.  Folding fins allow the rocket to be stored in pods, which defend them from damage.",

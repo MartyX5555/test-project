@@ -1,5 +1,5 @@
 --define the class
-ACE_defineGunClass("RAC", {
+ACE.RegisterWeaponClass("RAC", {
 	type = "Gun",
 	spread = 0.35,
 	name = "Rotary Autocannon",
@@ -13,7 +13,7 @@ ACE_defineGunClass("RAC", {
 	color = {135, 135, 135}
 } )
 
-ACE_defineGun("14.5mmRAC", { --id
+ACE.RegisterWeapon("14.5mmRAC", { --id
 	name = "14.5mm Rotary Autocannon",
 	desc = "A lightweight rotary autocannon, a great support weapon for effortlessly shredding infantry and technicals alike.",
 	model = "models/rotarycannon/kw/14_5mmrac.mdl",
@@ -29,7 +29,7 @@ ACE_defineGun("14.5mmRAC", { --id
 	}
 } )
 
-ACE_defineGun("20mmRAC", {
+ACE.RegisterWeapon("20mmRAC", {
 	name = "20mm Rotary Autocannon",
 	desc = "The 20mm is able to chew up light armor with decent penetration or put up a big flak screen. Typically mounted on ground attack aircraft, SPAAGs and the ocassional APC.",
 	model = "models/rotarycannon/kw/20mmrac.mdl",
@@ -45,7 +45,7 @@ ACE_defineGun("20mmRAC", {
 	}
 } )
 
-ACE_defineGun("30mmRAC", {
+ACE.RegisterWeapon("30mmRAC", {
 	name = "30mm Rotary Autocannon",
 	desc = "The 30mm is the bane of ground-attack aircraft, able to tear up light armor without giving one single fuck.  Also seen in the skies above dead T-72s.",
 	model = "models/rotarycannon/kw/30mmrac.mdl",

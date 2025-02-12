@@ -1,5 +1,5 @@
 --define the class
-ACE_defineGunClass("MO", {
+ACE.RegisterWeaponClass("MO", {
 	type = "Gun",
 	spread = 0.7,
 	name = "Mortar",
@@ -12,7 +12,7 @@ ACE_defineGunClass("MO", {
 
 } )
 
-ACE_defineGun("50mmM", { --id
+ACE.RegisterWeapon("50mmM", { --id
 	name = "50mm Mortar",
 	desc = "The 50mm is an uncommon light mortar often seen at or before the begening of ww2, it fires a light 50mm rounds that is good for splatting infantry.",
 	model = "models/mortar/mortar_50mm.mdl",
@@ -29,7 +29,7 @@ ACE_defineGun("50mmM", { --id
 	}
 } )
 
-ACE_defineGun("60mmM", { --id
+ACE.RegisterWeapon("60mmM", { --id
 	name = "60mm Mortar",
 	desc = "The 60mm is a common light infantry support weapon, with a high rate of fire but a puny payload.",
 	model = "models/mortar/mortar_60mm.mdl",
@@ -46,7 +46,7 @@ ACE_defineGun("60mmM", { --id
 	}
 } )
 
-ACE_defineGun("80mmM", {
+ACE.RegisterWeapon("80mmM", {
 	name = "80mm Mortar",
 	desc = "The 80mm is a common infantry support weapon, with a good bit more boom than its little cousin.",
 	model = "models/mortar/mortar_80mm.mdl",
@@ -62,7 +62,7 @@ ACE_defineGun("80mmM", {
 	}
 } )
 
-ACE_defineGun("120mmM", {
+ACE.RegisterWeapon("120mmM", {
 	name = "120mm Mortar",
 	desc = "The versatile 120 is sometimes vehicle-mounted to provide quick boomsplat to support the infantry.  Carries more boom in its boomsplat, has good HEAT performance, and is more accurate in high-angle firing.",
 	model = "models/mortar/mortar_120mm.mdl",
@@ -78,7 +78,7 @@ ACE_defineGun("120mmM", {
 	}
 } )
 
-ACE_defineGun("150mmM", {
+ACE.RegisterWeapon("150mmM", {
 	name = "150mm Mortar",
 	desc = "The perfect balance between the 120mm and the 200mm. Can prove a worthy main gun weapon, as well as a mighty good mortar emplacement",
 	model = "models/mortar/mortar_150mm.mdl",
@@ -94,7 +94,7 @@ ACE_defineGun("150mmM", {
 	}
 } )
 
-ACE_defineGun("200mmM", {
+ACE.RegisterWeapon("200mmM", {
 	name = "200mm Mortar",
 	desc = "The 200mm is a beast, often used against fortifications.  Though enormously powerful, feel free to take a nap while it reloads",
 	model = "models/mortar/mortar_200mm.mdl",
@@ -110,7 +110,7 @@ ACE_defineGun("200mmM", {
 	}
 } )
 
-ACE_defineGun("280mmM", {
+ACE.RegisterWeapon("280mmM", {
 	name = "280mm Mortar",
 	desc = "Massive payload, with a reload time to match. Found in rare WW2 siege artillery pieces. It's the perfect size for a jeep.",
 	model = "models/mortar/mortar_280mm.mdl",
@@ -126,7 +126,7 @@ ACE_defineGun("280mmM", {
 	}
 } )
 
-ACE_defineGun("380mmM", {
+ACE.RegisterWeapon("380mmM", {
 	name = "380mm Mortar",
 	desc = "Massive payload, with a reload time to match. Found in rare WW2 siege artillery pieces.",
 	model = "models/mortar/mortar_300mm.mdl",

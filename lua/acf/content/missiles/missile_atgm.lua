@@ -1,4 +1,4 @@
-ACE_defineGunClass("ATGM", {
+ACE.RegisterWeaponClass("ATGM", {
 	type			= "missile",
 	spread			= 1,
 	name			= "[ATGM] - Anti-Tank Guided Missile",
@@ -15,7 +15,7 @@ ACE_defineGunClass("ATGM", {
 } )
 
 -- The BGM-71E, a wire guided missile with medium anti-tank effectiveness.
-ACE_defineGun("BGM-71E ASM", {								-- id
+ACE.RegisterWeapon("BGM-71E ASM", {								-- id
 	name			= "BGM-71E Missile",
 	desc			= "The BGM-71E missile is a lightweight, wire guided anti-tank munition. It can be used in both air-to-surface and surface-to-surface combat, making it a decent alternative for ground vehicles.",
 	model			= "models/missiles/bgm_71e.mdl",
@@ -64,7 +64,7 @@ ACE_defineGun("BGM-71E ASM", {								-- id
 	armdelay		= 0.00										-- minimum fuse arming delay
 } )
 
-ACE_defineGun("9M133 ASM", {									-- id
+ACE.RegisterWeapon("9M133 ASM", {									-- id
 	name			= "9M133 Kornet Missile",
 	desc			= "The Kornet is a modern antitank missile, with good range and a very powerful warhead, but somewhat limited maneuverability.",
 	model			= "models/kali/weapons/kornet/parts/9m133 kornet missile.mdl",
@@ -118,7 +118,7 @@ ACE_defineGun("9M133 ASM", {									-- id
 } )
 
 -- The AT-3, a short-range wire-guided missile with better anti-tank effectiveness than the BGM-71E but much slower.
-ACE_defineGun("AT-3 ASM", { --id
+ACE.RegisterWeapon("AT-3 ASM", { --id
 	name			= "AT-3 Sagger Missile",
 	desc			= "The AT-3 missile (9M14P1) is a short-range wire-guided anti-tank munition. While powerful and lightweight its speed will make you die of old age before you hit the target.",
 	model			= "models/missiles/at3.mdl",
@@ -172,7 +172,7 @@ ACE_defineGun("AT-3 ASM", { --id
 } )
 
 -- The 9M120 Ataka, a laser guided missile with high anti-tank effectiveness.
-ACE_defineGun("Ataka ASM", { --id
+ACE.RegisterWeapon("Ataka ASM", { --id
 	name			= "9M120 Ataka Missile",
 	desc			= "The 9M120 Ataka is a high-speed anti tank missile used by soviet helicopters and ground vehicles.  It has very limited maneuverability but excellent range and speed, and can be armed with HE and HEAT warheads",
 	model			= "models/missiles/9m120.mdl",
@@ -225,7 +225,7 @@ ACE_defineGun("Ataka ASM", { --id
 	armdelay		= 0.00										-- minimum fuse arming delay
 } )
 
-ACE_defineGun("AT-2 ASM", { --id
+ACE.RegisterWeapon("AT-2 ASM", { --id
 	name			= "AT-2 Fleyta Missile",
 	desc			= "The AT-2 Missile (9M17P) is a more powerful, yet light, Anti-Tank Missile, the big brother of the Sagger. Being agile, deliveries a powerful payload at the cost of being slower than the AT-3",
 	model			= "models/missiles/at2.mdl",
@@ -277,7 +277,7 @@ ACE_defineGun("AT-2 ASM", { --id
 	armdelay		= 0.00									-- minimum fuse arming delay
 } )
 
-ACE_defineGun("FGM-148 ASM", {
+ACE.RegisterWeapon("FGM-148 ASM", {
 	name			= "FGM-148 Javelin Missile",
 	desc			= "A powerful medium-range multi-purpose Missile, being extremely agile, its able to be used vs low altitude aircraft and for attacking top of tanks. But its somewhat slow.",
 	model			= "models/mcace/Jevelinemissile.mdl",		-- model to spawn on menu

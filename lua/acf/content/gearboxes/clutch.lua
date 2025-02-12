@@ -18,7 +18,7 @@ local CDesc = "A standalone clutch for when a full size gearbox is unnecessary o
 
 -- Straight-through
 
-ACE_DefineGearbox( "Clutch-S-T", {
+ACE.RegisterGearbox( "Clutch-S-T", {
 	name = "Clutch, Straight, Tiny",
 	desc = CDesc,
 	model = "models/engines/flywheelclutcht.mdl",
@@ -34,7 +34,7 @@ ACE_DefineGearbox( "Clutch-S-T", {
 	}
 } )
 
-ACE_DefineGearbox( "Clutch-S-S", {
+ACE.RegisterGearbox( "Clutch-S-S", {
 	name = "Clutch, Straight, Small",
 	desc = CDesc,
 	model = "models/engines/flywheelclutchs.mdl",
@@ -50,7 +50,7 @@ ACE_DefineGearbox( "Clutch-S-S", {
 	}
 } )
 
-ACE_DefineGearbox( "Clutch-S-M", {
+ACE.RegisterGearbox( "Clutch-S-M", {
 	name = "Clutch, Straight, Medium",
 	desc = CDesc,
 	model = "models/engines/flywheelclutchm.mdl",
@@ -66,7 +66,7 @@ ACE_DefineGearbox( "Clutch-S-M", {
 	}
 } )
 
-ACE_DefineGearbox( "Clutch-S-L", {
+ACE.RegisterGearbox( "Clutch-S-L", {
 	name = "Clutch, Straight, Large",
 	desc = CDesc,
 	model = "models/engines/flywheelclutchb.mdl",

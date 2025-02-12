@@ -1,6 +1,6 @@
 
 --define the class
-ACE_defineGunClass("AAM", {
+ACE.RegisterWeaponClass("AAM", {
 	type           = "missile",
 	spread         = 1,
 	name           = "[AAM] - Air-To-Air Missile",
@@ -16,7 +16,7 @@ ACE_defineGunClass("AAM", {
 } )
 
 -- The AIM-9 Sidewinder. The perfect choice for dogfights at short range. Although respectable payload, still tiny.
-ACE_defineGun("AIM-9 AAM", {								-- id
+ACE.RegisterWeapon("AIM-9 AAM", {								-- id
 	name             = "AIM-9 Missile",
 	desc             = "The gold standard in airborne jousting sticks. Agile and reliable with a rather underwhelming effective range, this homing missile is the weapon of choice for dogfights.\nSeeks 20 degrees, so well suited to dogfights.",
 	model            = "models/missiles/aim9m.mdl",
@@ -70,7 +70,7 @@ ACE_defineGun("AIM-9 AAM", {								-- id
 } )
 
 --AIM-120 Sparrow. A medium-Range AAM missile, perfect for those who really need a decent boom in a single pass. Just remember that this is not an AIM-9 and is better to aim before.
-ACE_defineGun("AIM-120 AAM", {							-- id
+ACE.RegisterWeapon("AIM-120 AAM", {							-- id
 	name             = "AIM-120 Missile",
 	desc             = "Faster than the AIM-9, but also a lot heavier. Burns hot and fast, with a good reach, but harder to lock with.  This long-range missile is sure to deliver one heck of a blast upon impact.\nSeeks only 20 degrees and less agile than its smaller stablemate, so choose your shots carefully.",
 	model            = "models/missiles/aim120c.mdl",
@@ -123,7 +123,7 @@ ACE_defineGun("AIM-120 AAM", {							-- id
 
 --AIM-54 phoenix. Being faster and bigger than AIM-120, can deliver a single big blast against the target, however, this 300kgs piece of aerial destruction has a serious trouble
 --with its seek cone and is suggested to AIM before launching.
-ACE_defineGun("AIM-54 AAM", {							-- id
+ACE.RegisterWeapon("AIM-54 AAM", {							-- id
 	name             = "AIM-54 Missile",
 	desc             = "A supersonic long-range air to air missile, an early generation to AIM-120. This 300 kgs beast is decided to reduce your first opponent that it faces to ashes, of course, if its tiny seek cone is able to see it.",
 	model            = "models/missiles/aim54.mdl",

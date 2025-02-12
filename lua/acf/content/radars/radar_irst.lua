@@ -1,10 +1,10 @@
-ACE_DefineIRSTClass("DIR-IRST", {
+ACE.RegisterIRSTClass("DIR-IRST", {
 	name = "Infrared Search and Track",
 	type = "IRST",
 	desc = "The InfraRed Search and Track (IRST) is a device which can detect targets by its heat. Has a limited range but unlike to tracking radar, the IRST will not alert to its opponent if he's being tracked, being useful for stealth applications."
 } )
 
-ACE_DefineIRST("Small-IRST", {
+ACE.RegisterIRST("Small-IRST", {
 	name			= "Small IRST Device",
 	ent				= "ace_irst",
 	desc			= "A small IRST device used by fighter jets to track its target's heat",
