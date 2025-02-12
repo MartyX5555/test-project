@@ -261,29 +261,30 @@ function SWEP:GetWhitelistedEntsInCone()
 	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
-		if IsValid(scanEnt) then
+		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
-			entpos  = scanEnt:GetPos()
-			difpos  = entpos - IRSTPos
-			dist	= difpos:Length()
+		entpos  = scanEnt:GetPos()
+		difpos  = entpos - IRSTPos
+		dist	= difpos:Length()
 
-			if dist > MinimumDistance and dist < MaximumDistance then
+		if dist > MinimumDistance and dist < MaximumDistance then
 
-				LOSdata.start             = IRSTPos
-				LOSdata.endpos            = entpos
-				LOSdata.collisiongroup    = COLLISION_GROUP_WORLD
-				LOSdata.filter            = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
-				LOSdata.mins              = vector_origin
-				LOSdata.maxs              = LOSdata.mins
+			LOSdata.start             = IRSTPos
+			LOSdata.endpos            = entpos
+			LOSdata.collisiongroup    = COLLISION_GROUP_WORLD
+			LOSdata.filter            = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
+			LOSdata.mins              = vector_origin
+			LOSdata.maxs              = LOSdata.mins
 
-				LOStr = util.TraceHull( LOSdata )
+			LOStr = util.TraceHull( LOSdata )
 
-				--Trace did not hit world
-				if not LOStr.Hit then
-					table.insert(WhitelistEnts, scanEnt)
-				end
+			--Trace did not hit world
+			if not LOStr.Hit then
+				table.insert(WhitelistEnts, scanEnt)
 			end
 		end
+
 	end
 
 	return WhitelistEnts

@@ -120,7 +120,8 @@ function this:GetWhitelistedEntsInCone(missile)
 	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
-		if not scanEnt:IsValid() then continue end
+		if not IsValid(scanEnt) then continue end
+		if ACE.HasParent(scanEnt) then continue end
 
 		-- skip any flare from vision.
 		if scanEnt:GetClass() == "ace_flare" then continue end
@@ -198,8 +199,6 @@ function this:AcquireLock(missile)
 	local bestent = nil
 
 	for _, classifyent in pairs(found) do
-
-
 
 		local entpos = classifyent:GetPos()
 		local ang = missile:WorldToLocalAngles((entpos - missilePos):Angle())	--Used for testing if inrange

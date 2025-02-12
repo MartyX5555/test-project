@@ -130,6 +130,7 @@ function this:GetWhitelistedEntsInCone(missile)
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
 		entpos  = scanEnt:GetPos()
 		difpos  = entpos - missilePos
@@ -205,7 +206,6 @@ function this:AcquireLock(missile)
 
 		--if is not a Heat Emitter, track the friction's heat
 		else
-
 			physEnt = classifyent:GetPhysicsObject()
 
 			--skip if it has not a valid physic object. It's amazing how gmod can break this. . .
@@ -213,7 +213,6 @@ function this:AcquireLock(missile)
 			if IsValid(physEnt) and not physEnt:IsMoveable() then continue end
 
 			Heat = ACE_InfraredHeatFromProp( self, classifyent , dist )
-
 		end
 
 		--Skip if not Hotter than AmbientTemp in deg C.

@@ -186,6 +186,7 @@ function ENT:GetWhitelistedEntsInCone()
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
 		--Why IRST should track itself?
 		if self == scanEnt then continue end
