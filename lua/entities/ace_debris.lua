@@ -9,6 +9,11 @@ cleanup.Register( "Debris" )
 
 if CLIENT then return end
 
+local ACE = ACE or {}
+if not ACE.Debris then
+	ACE.Debris = {}
+end
+
 function ENT:Initialize()
 
 	self:PhysicsInit( SOLID_VPHYSICS )
@@ -25,12 +30,17 @@ function ENT:Initialize()
 
 	end
 
-	if ACE.DebrisLifeTime > 0 then
-		timer.Simple(ACE.DebrisLifeTime, function()
-			if IsValid(self) then
-				self:Remove()
-			end
+	ACE.Debris[self] = true
+
+	local DebrisLifespan = ACE.DebrisLifeTime
+	if DebrisLifespan > 0 then
+		timer.Simple(DebrisLifespan, function()
+			if not IsValid(self) then return end
+			self:Remove()
 		end)
 	end
 end
 
+function ENT:OnRemove()
+	ACE.Debris[self] = nil
+end

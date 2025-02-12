@@ -395,7 +395,7 @@ function ENT:Launch()
 	self:ConfigureFlight()
 	self.PhysObj:EnableMotion(false)
 
-	ACE_ActiveMissiles[self] = true
+	ACE.Missiles[self] = true
 
 	self:Think()
 end
@@ -611,7 +611,7 @@ function ENT:ForceDetonate()
 	-- careful not to conflict with base class's self.Detonated
 	self.MissileDetonated = true
 
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 	self.DetonateOffset = self.LastVel and self.LastVel:GetNormalized() * -1
 	self.BaseClass.Detonate(self, self.BulletData)
@@ -622,7 +622,7 @@ function ENT:Dud()
 
 	self.MissileDetonated = true
 
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 	local Dud = self
 	Dud:SetPos( self.CurPos )
@@ -799,6 +799,6 @@ function ENT:OnRemove()
 
 	self.BaseClass.OnRemove(self)
 
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 end

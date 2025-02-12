@@ -5,13 +5,23 @@ include("shared.lua")
 
 ----------------------------------- The Mine Entity -----------------------------------
 do
+	local ACE = ACE or {}
+	if not ACE.Mines then
+		ACE.Mines = {}
+	end
 
 	function ENT:Initialize()
-
 		self.Ready = false
 		self.HasGround = false
 		self.PhysgunDisabled = true
+	end
 
+	function ENT:InitializeOnCollector()
+		ACE.Mines[self] = true
+	end
+
+	function ENT:OnRemoveCollectorData()
+		ACE.Mines[self] = nil
 	end
 
 	local function ArmingMode( Mine )

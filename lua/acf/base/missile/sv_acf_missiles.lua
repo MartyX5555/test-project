@@ -11,9 +11,7 @@
 	A reimplementation of XCF missiles and bombs, with guidance and more.
 ]]
 
--- Lookup table of all currently flying missiles.
-ACE_ActiveMissiles = ACE_ActiveMissiles or {}
-
+local ACE = ACE or {}
 --[[
 	Differences with the default bullet function:
 		1.- It doesnt count traceback, since the missile has no velocity and the bullet will not be hitting the initial launcher.

@@ -65,7 +65,7 @@ function ENT:Initialize()
 
 	self:EmitSound( "acf_extra/airfx/tow2.wav", 100, 100, 2, CHAN_AUTO )
 
-	ACE_ActiveMissiles[self] = true
+	ACE.Missiles[self] = true
 end
 
 local function GetRootVelocity(ent)
@@ -82,7 +82,7 @@ function ENT:Detonate()
 	if self.Exploded then return end
 
 	self.Exploded = true
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 	self:Remove()
 
@@ -110,7 +110,7 @@ function ENT:Detonate()
 end
 
 function ENT:OnRemove()
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 end
 
 function ENT:PhysicsCollide()
@@ -332,7 +332,7 @@ end
 
 function ENT:GetWhitelistedEntsInCone()
 
-	local ScanArray = ACE.contraptionEnts
+	local ScanArray = ACE.GlobalEntities
 	if table.IsEmpty(ScanArray) then return {} end
 
 	local WhitelistEnts = {}
@@ -348,7 +348,7 @@ function ENT:GetWhitelistedEntsInCone()
 	local MinimumDistance = 1	*  39.37
 	local MaximumDistance = 2400  *  39.37
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if IsValid(scanEnt) then

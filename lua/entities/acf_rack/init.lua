@@ -316,7 +316,7 @@ function ENT:UpdateRefillBonus()
 	local minFullEfficiency	= 50000 * Efficiency	-- The minimum crate volume to provide full efficiency bonus all by itself.
 	local maxDist			= ACE.RefillDistance
 
-	for _, crate in pairs(ACE.AmmoCrates or {}) do
+	for crate, _ in pairs(ACE.AmmoCrates) do
 
 		if crate.RoundType ~= "Refill" then
 			continue

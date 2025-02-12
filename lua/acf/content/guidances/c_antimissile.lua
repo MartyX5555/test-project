@@ -120,7 +120,7 @@ function this:GetGuidance(missile)
 
 	self:CheckTarget(missile)
 
-	if not IsValid(self.Target) or self.Target:GetParent():IsValid() then
+	if not IsValid(self.Target) or ACE.HasParent(self.Target) then
 		return {}
 	end
 
@@ -218,7 +218,7 @@ function this:GetWireTarget(missile)
 end
 
 function JankCone (init, forward, range, cone)
-	local Missiles = ACE_ActiveMissiles
+	local Missiles = ACE.Missiles
 	local tblout = {}
 
 	if next(Missiles) then

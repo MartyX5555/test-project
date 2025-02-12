@@ -22,6 +22,8 @@ ACE.AmmoBlacklist     = {}
 ACE.ArmorMaterials    = {}
 ACE.GSounds           = {}
 ACE.MuzzleFlashes 	  = {}
+ACE.Missiles = {} -- Current flying missiles
+ACE.Guidance = {} -- Guidances
 
 ---------------------------------- Legacy Global DataTables ----------------------------------
 

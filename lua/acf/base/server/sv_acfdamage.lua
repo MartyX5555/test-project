@@ -95,6 +95,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 			if not IsValid(Tar) then continue end
 			if Power <= 0 or Tar.Exploding then continue end
 
+
 			local Type = ACE_Check(Tar)
 			if Type then
 
@@ -106,10 +107,11 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				TraceInit.endpos   = TargetCenter
 				TraceInit.filter   = OccFilter
 
-				util.TraceLine( TraceInit )
+				util.TraceLine(TraceInit, true)
 
 				--if above failed getting the target. Try again by nearest point instead.
 				if not TraceRes.Hit then
+
 					local Hitat = Tar:NearestPoint( Hitpos )
 
 					--Done for dealing damage vs players and npcs
@@ -149,8 +151,8 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 					--if hitpos is inside of hitbox of the victim prop, nearest point will not work as intended
 					if Hitat == Hitpos then Hitat = TargetPos end
 
-					TraceInit.endpos	= Hitat + (Hitat-Hitpos):GetNormalized() * 100
-					util.TraceHull( TraceInit )
+					TraceInit.endpos = Hitat + (Hitat-Hitpos):GetNormalized() * 100
+					util.TraceLine( TraceInit )
 				end
 
 				--HE has direct view with the prop, so lets damage it
@@ -177,10 +179,9 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 					-- is it adding it too late?
 					TotalArea = TotalArea + Table.Area
-
 				end
-
 			else
+
 				Targets[i] = NULL	--Target was invalid, so let's ignore it
 				table.insert( OccFilter , Tar ) -- updates the filter in TraceInit too
 			end
@@ -855,7 +856,7 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 			local class = ent:GetClass()
 
 			-- exclude any entity that is not part of debris ents whitelist
-			if not ACE.Debris[class] then --print("removing not valid class")
+			if not ACE.AllowedDebris[class] then --print("removing not valid class")
 				children[ent] = nil continue
 			else
 
@@ -1032,6 +1033,7 @@ do
 
 	--converts what would be multiple simultaneous cache detonations into one large explosion
 	function ACE_ScaledExplosion( ent )
+		if true then return end
 
 		if ent.RoundType and ent.RoundType == "Refill" then return end
 

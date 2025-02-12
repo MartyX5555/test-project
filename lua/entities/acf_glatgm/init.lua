@@ -30,7 +30,7 @@ function ENT:Initialize()
 	self.LastVel		= Vector(0,0,0)
 	self.CurPos			= self:GetPos()
 	self.LastPos		= self.CurPos
-	ACE_ActiveMissiles[self] = true
+	ACE.Missiles[self] = true
 
 	self.LastRun = 0
 
@@ -146,7 +146,7 @@ function ENT:Detonate()
 
 	if IsValid(self) and not self.Detonated then
 
-		ACE_ActiveMissiles[self] = nil
+		ACE.Missiles[self] = nil
 		self.Detonated = true
 
 		self:Remove()

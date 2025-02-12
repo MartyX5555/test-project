@@ -5,6 +5,11 @@ include("shared.lua")
 
 DEFINE_BASECLASS( "base_wire_entity" )
 
+local ACE = ACE or {}
+
+ACE.radarEntities = ACE.radarEntities or {} --for tracking radar usage
+ACE.radarIDs = ACE.radarIDs or {} --ID radar purpose
+
 function ENT:Initialize()
 
 	self.ThinkDelay			= 0.1
@@ -35,6 +40,16 @@ function ENT:Initialize()
 		IsJammed        = 0
 	}
 
+end
+
+function ENT:InitializeOnCollector()
+	ACE.radarEntities[self] = self:EntIndex()
+	ACE.radarIDs[self] = id
+end
+
+function ENT:OnRemoveCollectorData()
+	ACE.radarEntities[self] = nil
+	ACE.radarIDs[self] = nil
 end
 
 local function SetConeParameters( Radar )
@@ -197,7 +212,7 @@ function ENT:Think()
 		if self.IsJammed <= 0 then
 
 			--Get all ents collected by contraptionScan
-			local ScanArray = ACE.contraptionEnts
+			local ScanArray = ACE.GlobalEntities
 
 			local thisPos	= self:GetPos()
 			--local thisforward	= self:GetForward()
@@ -212,7 +227,7 @@ function ENT:Think()
 			local besterr = math.huge --Hugh mungus number
 
 
-			for _, scanEnt in pairs(ScanArray) do
+			for scanEnt, _ in pairs(ScanArray) do
 
 				--check if ent is valid
 				if scanEnt:IsValid() then
@@ -224,7 +239,7 @@ function ENT:Think()
 					if scanEnt:EntIndex() == self:EntIndex() then continue end
 
 					--skip any parented entity
-					if scanEnt:GetParent():IsValid() then continue end
+					if ACE.HasParent(scanEnt) then continue end
 
 					local entvel       = scanEnt:GetVelocity()
 					local velLength    = entvel:Length()

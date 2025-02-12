@@ -114,7 +114,7 @@ end
 
 function this:GetWhitelistedEntsInCone(missile)
 
-	local ScanArray = ACE.contraptionEnts
+	local ScanArray = ACE.GlobalEntities
 	if table.IsEmpty(ScanArray) then return {} end
 
 	local missilePos       = missile:GetPos()
@@ -126,7 +126,7 @@ function this:GetWhitelistedEntsInCone(missile)
 	local difpos           = vector_origin
 	local dist             = 0
 
-	for _, scanEnt in pairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end

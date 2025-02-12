@@ -121,7 +121,6 @@ function this:GetGuidance(missile)
 	local launcher = self.InputSource
 
 	if not IsValid(launcher) then
-		--print("no launcher")
 		return {}
 	end
 
@@ -129,7 +128,6 @@ function this:GetGuidance(missile)
 	local distMsl = missile:GetPos():DistToSqr(launcherPos)		-- We're using squared distance to optimise
 
 	if distMsl > self.WireLength ^ 2 then
-		--print("cut wire")
 		self.WireSnapped = true
 		return {TargetPos = nil}
 	end
@@ -138,12 +136,10 @@ function this:GetGuidance(missile)
 	local posVec = self:GetWireTarget() --print("wire vector:", posVec)
 
 	if not posVec or type(posVec) ~= "Vector" or posVec == Vector() then
-		--print("no wire vector")
 		return {TargetPos = nil}
 	else
 		local distTrgt = posVec:DistToSqr(launcherPos)
 		if distMsl > distTrgt then
-			--print("cut wire?")
 			return {TargetPos = nil}
 		end
 	end
@@ -165,10 +161,6 @@ function this:GetWireTarget()
 	if not outputs then
 		return {}
 	end
-
-	--print("RESOLUTION =====================================")
-	--PrintTable(self.InputSource:GetTable())
-	--print("RESOLUTION =====================================")
 
 	local posVec
 

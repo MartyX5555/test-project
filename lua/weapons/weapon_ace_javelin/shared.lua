@@ -242,7 +242,7 @@ end
 function SWEP:GetWhitelistedEntsInCone()
 	local owner = self:GetOwner()
 
-	local ScanArray = ACE.contraptionEnts
+	local ScanArray = ACE.GlobalEntities
 	if table.IsEmpty(ScanArray) then return {} end
 
 	local WhitelistEnts = {}
@@ -258,7 +258,7 @@ function SWEP:GetWhitelistedEntsInCone()
 	local MinimumDistance = 1	*  39.37
 	local MaximumDistance = 2400  *  39.37
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if IsValid(scanEnt) then

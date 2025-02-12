@@ -1,4 +1,11 @@
 --visual concept: Here's where should be every acf function
+local ACE = ACE or {}
+
+-- Helper function if a entity has a parent.
+-- Use it if you dont need the parent entity for anything else
+function ACE.HasParent(ent)
+	return IsValid(ent:GetParent())
+end
 
 -- returns last parent in chain, which has physics
 function ACE_GetPhysicalParent( obj )
@@ -11,7 +18,7 @@ function ACE_GetPhysicalParent( obj )
 
 	local Parent = obj
 
-	while IsValid(Parent:GetParent()) do
+	while ACE.HasParent(Parent) do
 		Parent = Parent:GetParent()
 	end
 
@@ -20,25 +27,6 @@ function ACE_GetPhysicalParent( obj )
 	obj.acfphysstale = ACE.CurTime + 10 --when cached parent is considered stale and needs updating
 
 	return Parent
-end
-
-do
-
-	local function OnInitialSpawn( ply )
-		local Table = {}
-		for _, v in pairs( ents.GetAll() ) do
-			if v.ACE and v.ACE.PrHealth then
-				table.insert(Table,{ID = v:EntIndex(), Health = v.ACE.Health, v.ACE.MaxHealth})
-			end
-		end
-		if Table ~= {} then
-			net.Start("ACE_RenderDamage")
-				net.WriteTable(Table)
-			net.Send(ply)
-		end
-	end
-	hook.Add( "PlayerInitialSpawn", "renderdamage", OnInitialSpawn )
-
 end
 
 --Creates or updates the ACF entity data in a passive way. Meaning this entity wont be updated unless it really requires it (like a shot, damage, looking it using armor tool, etc)
@@ -128,24 +116,23 @@ function ACE_Damage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun, T
 
 	local Activated = ACE_Check( Entity )
 	local CanDo = hook.Run("ACE_BulletDamage", Activated, Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun )
-	if CanDo == false or Activated == false then -- above (default) hook does nothing with activated. Excludes godded players.
+	if not CanDo or not Activated then -- above (default) hook does nothing with activated. Excludes godded players.
 		return { Damage = 0, Overkill = 0, Loss = 0, Kill = false }
 	end
+
+	--print("damage!!!", Entity:GetClass())
 
 	if Entity.SpecialDamage then
 		return Entity:ACE_OnDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Type )
 	elseif Activated == "Prop" then
 
 		return ACE_PropDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone , Type)
-
 	elseif Activated == "Vehicle" then
 
 		return ACE_VehicleDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
-
 	elseif Activated == "Squishy" then
 
 		return ACE_SquishyDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
-
 	end
 
 end
