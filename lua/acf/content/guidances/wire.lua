@@ -19,7 +19,6 @@ function Guidance:Configure(missile)
 
 		local names = self:GetNamedWireInputs(missile)
 
-
 		if #names > 0 then
 
 			self.InputSource = launcher

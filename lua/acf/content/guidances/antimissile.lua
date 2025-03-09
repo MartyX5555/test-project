@@ -158,7 +158,6 @@ function Guidance:GetWhitelistedEntsInCone(missile)
 	--local filter = self.Filter
 	for _, foundEnt in pairs(found) do
 
-		if (not IsValid(foundEnt)) or (not self.Filter[foundEnt:GetClass()]) then continue end
 		local foundLocalPos = foundEnt:GetPos() - missilePos
 		local foundDistSqr = foundLocalPos:LengthSqr()
 
