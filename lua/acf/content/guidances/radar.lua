@@ -1,59 +1,33 @@
+local ACE = ACE or {}
+local Guidance = {}
 
-local ClassName = "Radar"
+Guidance.Name = "Radar"
+Guidance.desc = "This guidance package detects a target-position infront of itself, and guides the munition towards it."
+Guidance.SeekDelay = 0.5 -- Guidance instance must wait this long between target seeks.
 
-
-ACE = ACE or {}
-ACE.Guidance = ACE.Guidance or {}
-
-local this = ACE.Guidance[ClassName] or inherit.NewSubOf(ACE.Guidance.Wire)
-ACE.Guidance[ClassName] = this
-
----
---GetGuidanceOverride
---models/props_c17/light_cagelight02_on.mdl --IR Jammer
---models/props_wasteland/prison_lamp001c.mdl --RWR
-
-this.Name = ClassName
+-- Callback values
+Guidance.SeekCone = 20 -- Cone to acquire targets within.
+Guidance.ViewCone = 25 -- Cone to retain targets within.
+Guidance.MinimumDistance = 393.7 -- Minimum distance for a target to be considered. around 10m
 
 --Currently acquired target.
-this.Target = nil
+--Guidance.Target = nil
 
--- Cone to acquire targets within.
-this.SeekCone = 20
-
--- Cone to retain targets within.
-this.ViewCone = 25
-
--- This instance must wait this long between target seeks.
-this.SeekDelay = 0.5 -- Re-seek drastically reduced cost so we can re-seek
-
--- Minimum distance for a target to be considered
-this.MinimumDistance = 393.7	--10m
-
-this.desc = "This guidance package detects a target-position infront of itself, and guides the munition towards it."
-
-function this:Init()
+function Guidance:Init()
 	self.LastSeek = CurTime() - self.SeekDelay - 0.000001
 	self.LastTargetPos = Vector()
 end
 
-function this:Configure(missile)
+function Guidance:Configure(missile)
 
-	self:super().Configure(self, missile)
-
-	self.ViewCone = ACE_GetGunValue(missile.BulletData, "viewcone") or this.ViewCone
+	self.ViewCone = ACE_GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone
 	self.ViewConeCos = math.cos(math.rad(self.ViewCone))
-	self.SeekCone = ACE_GetGunValue(missile.BulletData, "seekcone") or this.SeekCone
+	self.SeekCone = ACE_GetGunValue(missile.BulletData, "seekcone") or Guidance.SeekCone
 
 end
 
 --TODO: still a bit messy, refactor this so we can check if a flare exits the viewcone too.
-function this:GetGuidance(missile)
-
-	self:PreGuidance(missile)
-
-	local override = self:ApplyOverride(missile)
-	if override then self.Target = nil return override end
+function Guidance:GetGuidance(missile)
 
 	self:CheckTarget(missile)
 
@@ -62,8 +36,6 @@ function this:GetGuidance(missile)
 	end
 
 	local missilePos = missile:GetPos()
-	--local missileForward = missile:GetForward()
-	--local targetPhysObj = self.Target:GetPhysicsObject()
 	local targetPos = self.Target:GetPos() + Vector(0,0,25)
 
 	local mfo	= missile:GetForward()
@@ -80,25 +52,9 @@ function this:GetGuidance(missile)
 
 end
 
-function this:ApplyOverride(missile)
+function Guidance:CheckTarget(missile)
 
-	if self.Override then
-
-		local ret = self.Override:GetGuidanceOverride(missile, self)
-
-		if ret then
-			ret.ViewCone = self.ViewCone
-			ret.ViewConeRad = math.rad(self.ViewCone)
-			return ret
-		end
-
-	end
-
-end
-
-function this:CheckTarget(missile)
-
-	if not (self.Target or self.Override) then
+	if not self.Target then
 		local target = self:AcquireLock(missile)
 
 		if IsValid(target) then
@@ -109,7 +65,7 @@ function this:CheckTarget(missile)
 end
 
 --Gets all valid targets, does not check angle
-function this:GetWhitelistedEntsInCone(missile)
+function Guidance:GetWhitelistedEntsInCone(missile)
 
 	local missilePos = missile:GetPos()
 	local DPLRFAC = 65 - (self.SeekCone / 2)
@@ -180,7 +136,7 @@ function this:GetWhitelistedEntsInCone(missile)
 end
 
 -- Return the first entity found within the seek-tolerance, or the entity within the seek-cone closest to the seek-tolerance.
-function this:AcquireLock(missile)
+function Guidance:AcquireLock(missile)
 
 	local curTime = CurTime()
 
@@ -231,7 +187,7 @@ function this:AcquireLock(missile)
 end
 
 --Another Stupid Workaround. Since guidance degrees are not loaded when ammo is created
-function this:GetDisplayConfig(Type)
+function Guidance:GetDisplayConfig(Type)
 
 	local seekCone = ACE.Weapons.Guns[Type].seekcone * 2 or 0
 	local ViewCone = ACE.Weapons.Guns[Type].viewcone * 2 or 0
@@ -242,3 +198,5 @@ function this:GetDisplayConfig(Type)
 		["Tracking"] = math.Round(ViewCone, 1) .. " deg"
 	}
 end
+
+ACE.RegisterGuidance( Guidance.Name, Guidance )

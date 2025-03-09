@@ -1,67 +1,35 @@
+local ACE = ACE or {}
+local Guidance = {}
 
-local ClassName = "Infrared"
+Guidance.Name = "Infrared"
+Guidance.desc = "This guidance package detects hot targets infront of itself, and guides the munition towards it."
+Guidance.SeekDelay = 0.5 -- Re-seek drastically reduced cost so we can re-seek
 
+-- Callback values
+Guidance.Target = nil --Currently acquired target.
+Guidance.SeekCone = 20 -- Cone to acquire targets within.
+Guidance.ViewCone = 25 -- Cone to retain targets within.
+Guidance.MinimumDistance = 200 -- Minimum distance for a target to be considered. ~5m
+Guidance.MaximumDistance = 20000 -- -- Maximum distance for a target to be considered.
+Guidance.SeekSensitivity = 1 --Sensitivity of the IR Seeker, higher sensitivity is for aircraft
+Guidance.HeatAboveAmbient = 5 --Defines how many degrees are required above the ambient one to consider a target
 
-ACE = ACE or {}
-ACE.Guidance = ACE.Guidance or {}
-
-local this = ACE.Guidance[ClassName] or inherit.NewSubOf(ACE.Guidance.Wire)
-ACE.Guidance[ClassName] = this
-
----
-
-this.Name = ClassName
-
---Currently acquired target.
-this.Target = nil
-
--- Cone to acquire targets within.
-this.SeekCone = 20
-
--- Cone to retain targets within.
-this.ViewCone = 25
-
--- This instance must wait this long between target seeks.
-this.SeekDelay = 0.5 -- Re-seek drastically reduced cost so we can re-seek
-
---Sensitivity of the IR Seeker, higher sensitivity is for aircraft
-this.SeekSensitivity = 1
-
---Defines how many degrees are required above the ambient one to consider a target
-this.HeatAboveAmbient = 5
-
--- Minimum distance for a target to be considered
-this.MinimumDistance = 200  -- ~5m
-
--- Maximum distance for a target to be considered.
-this.MaximumDistance = 20000
-
-this.desc = "This guidance package detects hot targets infront of itself, and guides the munition towards it."
-
-
-function this:Init()
+function Guidance:Init()
 	self.LastSeek = CurTime() - self.SeekDelay - 0.000001
 	self.LastTargetPos = Vector()
 end
 
-function this:Configure(missile)
+function Guidance:Configure(missile)
 
-	self:super().Configure(self, missile)
-
-	self.ViewCone		= (ACE_GetGunValue(missile.BulletData, "viewcone") or this.ViewCone) * 1.2
+	self.ViewCone		= (ACE_GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone) * 1.2
 	self.ViewConeCos		= (math.cos(math.rad(self.ViewCone))) * 1.2
-	self.SeekCone		= (ACE_GetGunValue(missile.BulletData, "seekcone") or this.SeekCone) * 1.2
-	self.SeekSensitivity	= ACE_GetGunValue(missile.BulletData, "seeksensitivity") or this.SeekSensitivity
+	self.SeekCone		= (ACE_GetGunValue(missile.BulletData, "seekcone") or Guidance.SeekCone) * 1.2
+	self.SeekSensitivity	= ACE_GetGunValue(missile.BulletData, "seeksensitivity") or Guidance.SeekSensitivity
 
 end
 
 --TODO: still a bit messy, refactor this so we can check if a flare exits the viewcone too.
-function this:GetGuidance(missile)
-
-	self:PreGuidance(missile)
-
-	local override = self:ApplyOverride(missile)
-	if override then return override end
+function Guidance:GetGuidance(missile)
 
 	self:CheckTarget(missile)
 
@@ -88,22 +56,7 @@ function this:GetGuidance(missile)
 
 end
 
-function this:ApplyOverride(missile)
-
-	if self.Override then
-
-		local ret = self.Override:GetGuidanceOverride(missile, self)
-
-		if ret then
-			ret.ViewCone = self.ViewCone
-			ret.ViewConeRad = math.rad(self.ViewCone)
-			return ret
-		end
-
-	end
-end
-
-function this:CheckTarget(missile)
+function Guidance:CheckTarget(missile)
 
 	local target = self:AcquireLock(missile)
 
@@ -112,7 +65,7 @@ function this:CheckTarget(missile)
 	end
 end
 
-function this:GetWhitelistedEntsInCone(missile)
+function Guidance:GetWhitelistedEntsInCone(missile)
 
 	local ScanArray = ACE.GlobalEntities
 	if not next(ScanArray) then return {} end
@@ -163,7 +116,7 @@ function this:GetWhitelistedEntsInCone(missile)
 end
 
 -- Return the first entity found within the seek-tolerance, or the entity within the seek-cone closest to the seek-tolerance.
-function this:AcquireLock(missile)
+function Guidance:AcquireLock(missile)
 
 	local curTime = CurTime()
 
@@ -208,7 +161,7 @@ function this:AcquireLock(missile)
 		else
 			physEnt = classifyent:GetPhysicsObject()
 
-			--skip if it has not a valid physic object. It's amazing how gmod can break this. . .
+			--skip if it has not a valid physic object. It's amazing how gmod can break Guidance. . .
 			--check if it's not frozen. If so, skip it, unmoveable stuff should not be even considered
 			if IsValid(physEnt) and not physEnt:IsMoveable() then continue end
 
@@ -245,7 +198,7 @@ function this:AcquireLock(missile)
 end
 
 --Another Stupid Workaround. Since guidance degrees are not loaded when ammo is created
-function this:GetDisplayConfig(Type)
+function Guidance:GetDisplayConfig(Type)
 
 	local seekCone =  (ACE.Weapons.Guns[Type].seekcone or 0 ) * 2
 	local ViewCone = (ACE.Weapons.Guns[Type].viewcone or 0 ) * 2
@@ -256,3 +209,5 @@ function this:GetDisplayConfig(Type)
 		["Tracking"] = math.Round(ViewCone, 1) .. " deg"
 	}
 end
+
+ACE.RegisterGuidance( Guidance.Name, Guidance )

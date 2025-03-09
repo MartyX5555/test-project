@@ -26,8 +26,6 @@ function ACFM_CreateConfigurable(str, configurables, bdata, wlistPath)
 end
 
 
-
-
 function ACFM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 
 	-- we're parsing a string of the form "NAME:CMD=VAL:CMD=VAL"... potentially.
@@ -67,14 +65,11 @@ function ACFM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 			args[string.lower(cmd)] = val
 		end
 
-
 		-- construct new instance of configurable object
-		local instance = class()
-		if not instance.Configurable then return instance end
-
+		if not class.Configurable then return class end
 
 		-- loop through config, match up with args and set values accordingly
-		for _, config in pairs(instance.Configurable) do
+		for _, config in pairs(class.Configurable) do
 
 			local cmdName = config.CommandName
 
@@ -87,12 +82,12 @@ function ACFM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 			local type = config.Type
 
 			if Cast[type] then
-				instance[config.Name] = Cast[type](arg)
+				class[config.Name] = Cast[type](arg)
 			end
 
 		end
 
-		return instance
+		return class
 
 	end
 

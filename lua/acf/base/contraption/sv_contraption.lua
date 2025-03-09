@@ -67,7 +67,6 @@ function ACE.AddEntityToCollector(Ent, ForceInsert)
 	end
 
 	if Ent.InitializeOnCollector then
-		print("called collector init for:", class)
 		Ent:InitializeOnCollector()
 	end
 
@@ -79,7 +78,6 @@ function ACE.AddEntityToCollector(Ent, ForceInsert)
 		ACE.ScalableEnts[Ent] = nil
 
 		if Ent.OnRemoveCollectorData then
-			print("called collector removal for:", class)
 			Ent:OnRemoveCollectorData()
 		end
 

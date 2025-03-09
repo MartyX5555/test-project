@@ -383,6 +383,7 @@ function ENT:Launch()
 		self:SetFuse(FuseTable.Contact())
 	end
 
+	self.Guidance:Init()
 	self.Guidance:Configure(self)
 	self.Fuse:Configure(self, self.Guidance)
 
