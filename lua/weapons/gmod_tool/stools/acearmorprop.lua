@@ -30,6 +30,15 @@ local function CalcArmor( Area, Ductility, Thickness, Mat )
 
 end
 
+--[[
+-- changes here will be automatically reflected in the armor properties tool
+function ACE_CalcArmor( Area, Ductility, Mass )
+
+	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACE.ArmorMod
+
+end
+]]
+
 if CLIENT then
 
 	language.Add( "tool.acearmorprop.name", ACFTranslation.ArmorPropertiesText[1] )

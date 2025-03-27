@@ -180,13 +180,13 @@ do
 
 		-- add any parented but not constrained props you sneaky bastards
 		local AllEnts = table.Copy( PhysEnts )
-		for _, v in pairs( AllEnts ) do
+		for v, _ in pairs( AllEnts ) do
 
 			table.Merge( AllEnts, ACE_GetAllChildren( v ) )
 
 		end
 
-		for _, v in pairs( AllEnts ) do
+		for v, _ in pairs( AllEnts ) do
 
 			if IsValid( v ) then
 

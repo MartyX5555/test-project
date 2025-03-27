@@ -460,11 +460,11 @@ function ENT:CalcMassRatio()
 
 	-- add any parented but not constrained props you sneaky bastards
 	local AllEnts = table.Copy( PhysEnts )
-	for _, v in pairs( PhysEnts ) do
+	for v, _ in pairs( PhysEnts ) do
 		table.Merge( AllEnts, ACE_GetAllChildren( v ) )
 	end
 
-	for _, v in pairs( AllEnts ) do
+	for v, _ in pairs( AllEnts ) do
 
 		if not IsValid( v ) then continue end
 

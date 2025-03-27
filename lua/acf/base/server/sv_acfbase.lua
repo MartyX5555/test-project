@@ -336,27 +336,29 @@ function ACE_GetAllPhysicalConstraints( ent, ResultTable )
 end
 
 -- for those extra sneaky bastards
-function ACE_GetAllChildren( ent, ResultTable )
-
-	--if not ent.GetChildren then return end  --shouldn't need to check anymore, built into glua now
+function ACE_GetAllChildren( ent, ResultTable, IgnoreBase )
 
 	ResultTable = ResultTable or {}
 
-	if not IsValid( ent ) then return end
-	if ResultTable[ ent ] then return end
+	if not IsValid(ent) then return end
+	if ResultTable[ent] then return end
 
-	ResultTable[ ent ] = ent
+	print("wooow")
+
+	-- Since this function originally included the parent prop into the list.
+	if not IgnoreBase and not next(ResultTable) then
+		print("base included!")
+		ResultTable[ent] = ent
+	end
 
 	local ChildTable = ent:GetChildren()
-
 	for _, v in pairs( ChildTable ) do
-
+		print("Registering child...")
+		ResultTable[ v ] = v
 		ACE_GetAllChildren( v, ResultTable )
-
 	end
 
 	return ResultTable
-
 end
 
 -- returns any wheels linked to this or child gearboxes
