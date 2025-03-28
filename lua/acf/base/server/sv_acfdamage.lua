@@ -16,6 +16,7 @@ ACE.HEFilter = {
 	ace_debris               = true,
 	sent_tanktracks_legacy   = true,
 	sent_tanktracks_auto     = true,
+	sent_prop2mesh 			 = true,
 	ace_flares               = true
 }
 
@@ -837,81 +838,81 @@ local function RemoveEntity( Entity )
 	Entity:Remove()
 end
 
---[[
-	-- helper function to process children of an acf-destroyed prop
-	-- AP will HE-kill children props like a detonation; looks better than a directional spray of unrelated debris from the AP kill
-	local function ACE_KillChildProps( Entity, BlastPos, Energy )
 
-		if ACE.DebrisChance <= 0 then return end
-		local children = ACE_GetAllChildren(Entity, {}, true)
+-- helper function to process children of an acf-destroyed prop
+-- AP will HE-kill children props like a detonation; looks better than a directional spray of unrelated debris from the AP kill
+local function ACE_KillChildProps( Entity, BlastPos, Energy )
 
-		--why should we make use of this for ONE prop?
-		if next(children) then
+	if ACE.DebrisChance <= 0 then return end
+	local children = ACE_GetAllChildren(Entity, {}, true)
 
-			local count = 0
-			local boom = {}
+	-- Only do this if the Entity has real children with it.
+	if next(children) then
 
-			-- do an initial processing pass on children, separating out explodey things to handle last
-			for ent, _ in pairs( children ) do --print('table children: ' .. table.Count( children ))
+		local count = 0
+		local boom = {}
 
-				-- mark that it's already processed
-				ent.ACE_Killed = true
+		-- do an initial processing pass on children, separating out explodey things to handle last
+		for ent, _ in pairs( children ) do --print('table children: ' .. table.Count( children ))
 
-				local class = ent:GetClass()
+			-- mark that it's already processed
+			ent.ACE_Killed = true
 
-				-- exclude any entity that is not part of debris ents whitelist
-				if not ACE.AllowedDebris[class] then --print("removing not valid class")
-					children[ent] = nil continue
+			local class = ent:GetClass()
+
+			-- exclude any entity that is not part of debris ents whitelist
+			if not ACE.AllowedDebris[class] then --print("removing not valid class")
+				children[ent] = nil continue
+			else
+
+				-- remove this ent from children table and move it to the explosive table
+				if ACE.ExplosiveEnts[class] and not ent.Exploding then
+
+					table.insert( boom , ent )
+					children[ent] = nil
+
+					continue
 				else
-
-					-- remove this ent from children table and move it to the explosive table
-					if ACE.ExplosiveEnts[class] and not ent.Exploding then
-
-						table.insert( boom , ent )
-						children[ent] = nil
-
-						continue
-					else
-						-- can't use #table or :count() because of ent indexing...
-						count = count + 1
-					end
-				end
-			end
-
-			-- HE kill the children of this ent, instead of disappearing them by removing parent
-			if count > 0 then
-
-				local power = Energy / math.min(count,3)
-
-				for child, _ in pairs( children ) do --print('table children#2: ' .. table.Count( children ))
-
-					--Skip any invalid entity
-					if not IsValid(child) then continue end
-
-					local rand = math.random(0,100) / 100 --print(rand) print(ACE.DebrisChance)
-
-					-- ignore some of the debris props to save lag
-					if count > 10 and rand > ACE.DebrisChance then continue end
-
-					ACE_HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
-				end
-			end
-
-			-- explode stuff last, so we don't re-process all that junk again in a new explosion
-			if next( boom ) then
-
-				for _, child in pairs( boom ) do
-
-					if not IsValid(child) or child.Exploding then continue end
-
-					child.Exploding = true
-					ACE_ScaledExplosion( child ) -- explode any crates that are getting removed
-
+					-- can't use #table or :count() because of ent indexing...
+					count = count + 1
 				end
 			end
 		end
+
+		-- HE kill the children of this ent, instead of disappearing them by removing parent
+		if count > 0 then
+
+			local power = Energy / math.min(count,3)
+
+			for child, _ in pairs( children ) do --print('table children#2: ' .. table.Count( children ))
+
+				--Skip any invalid entity
+				if not IsValid(child) then continue end
+
+				local rand = math.random(0,100) / 100 --print(rand) print(ACE.DebrisChance)
+
+				-- ignore some of the debris props to save lag
+				if count > 10 and rand > ACE.DebrisChance then continue end
+
+				ACE_HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
+			end
+		end
+
+		-- explode stuff last, so we don't re-process all that junk again in a new explosion
+		if next( boom ) then
+
+			for _, child in pairs( boom ) do
+
+				if not IsValid(child) or child.Exploding then continue end
+
+				child.Exploding = true
+				ACE_ScaledExplosion( child ) -- explode any crates that are getting removed
+
+			end
+		end
 	end
-]]
+end
+
 
 local function GetPropMaterialData( Entity )
 	local Mat = (Entity.ACE and Entity.ACE.Material) or "RHA"
@@ -922,19 +923,24 @@ end
 -- Creates a debris related to explosive destruction.
 function ACE_HEKill( Entity , HitVector , Energy , BlastPos )
 
-	-- if it hasn't been processed yet, check for children
-	--if not Entity.ACE_Killed then ACE_KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy ) end
-
-	if next(Entity:GetChildren()) then
+	-- If the prop has children with it, break it but use the original prop for it.
+	if not Entity.IsExplosive and next(Entity:GetChildren()) then
 
 		if IsValid(Entity:GetParent()) then
 			local CurPos = Entity:GetPos()
 			Entity:SetParent(nil)
 			Entity:SetPos(CurPos)
+			Entity:SetMoveType( MOVETYPE_VPHYSICS )
+			Entity:PhysicsInit( SOLID_VPHYSICS )
+			Entity:PhysWake()
 		end
+		constraint.RemoveAll(Entity)
 
 		return Entity
-	end 
+	end
+
+	-- if it hasn't been processed yet, check for children
+	if not Entity.ACE_Killed then ACE_KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy ) end
 
 	do
 		--ERA props should not create debris
@@ -987,10 +993,8 @@ end
 -- Creates a debris related to kinetic destruction.
 function ACE_APKill( Entity , HitVector , Power )
 
-	-- kill the children of this ent, instead of disappearing them from removing parent
-	--ACE_KillChildProps( Entity, Entity:GetPos(), Power )
-
-	if next(Entity:GetChildren()) then
+	-- If the prop has children with it, break it but use the original prop for it.
+	if not Entity.IsExplosive and next(Entity:GetChildren()) then
 
 		if IsValid(Entity:GetParent()) then
 			local CurPos = Entity:GetPos()
@@ -999,13 +1003,14 @@ function ACE_APKill( Entity , HitVector , Power )
 			Entity:SetMoveType( MOVETYPE_VPHYSICS )
 			Entity:PhysicsInit( SOLID_VPHYSICS )
 			Entity:PhysWake()
-
-			
 		end
 		constraint.RemoveAll(Entity)
 
 		return Entity
-	end 
+	end
+
+	-- kill the children of this ent, instead of disappearing them from removing parent
+	ACE_KillChildProps( Entity, Entity:GetPos(), Power )
 
 	do
 		--ERA props should not create debris
@@ -1060,8 +1065,6 @@ do
 
 	--converts what would be multiple simultaneous cache detonations into one large explosion
 	function ACE_ScaledExplosion( ent )
-		if true then return end
-
 		if ent.RoundType and ent.RoundType == "Refill" then return end
 
 		local HEWeight
