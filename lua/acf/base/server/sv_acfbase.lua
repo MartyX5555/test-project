@@ -96,6 +96,7 @@ end
 function ACE_Check( Entity )
 
 	if not IsValid(Entity) then return false end
+	if Entity.ACE_KilledBase then return false end -- ensures dead props are no longer usable
 
 	local physobj = Entity:GetPhysicsObject()
 	if not ( physobj:IsValid() and (physobj:GetMass() or 0) > 0 and not Entity:IsWorld() and not Entity:IsWeapon() ) then return false end
@@ -343,17 +344,13 @@ function ACE_GetAllChildren( ent, ResultTable, IgnoreBase )
 	if not IsValid(ent) then return end
 	if ResultTable[ent] then return end
 
-	print("wooow")
-
 	-- Since this function originally included the parent prop into the list.
 	if not IgnoreBase and not next(ResultTable) then
-		print("base included!")
 		ResultTable[ent] = ent
 	end
 
 	local ChildTable = ent:GetChildren()
 	for _, v in pairs( ChildTable ) do
-		print("Registering child...")
 		ResultTable[ v ] = v
 		ACE_GetAllChildren( v, ResultTable )
 	end
