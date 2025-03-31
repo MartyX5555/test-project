@@ -81,6 +81,18 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 	end
 end
 
+local function CreateFakeDebris(Debris)
+	if IsValid(Debris:GetParent()) then
+		local CurPos = Debris:GetPos()
+		Debris:SetParent(nil)
+		Debris:SetPos(CurPos)
+		Debris:SetMoveType( MOVETYPE_VPHYSICS )
+		Debris:PhysicsInit( SOLID_VPHYSICS )
+		Debris:PhysWake()
+	end
+	Debris.ACE_KilledBase = true -- not the same as Entity.ACE_Killed
+	constraint.RemoveAll(Debris)
+end
 
 local function GetPropMaterialData( Entity )
 	local Mat = (Entity.ACE and Entity.ACE.Material) or "RHA"
@@ -93,18 +105,7 @@ function ACE_HEKill( Entity , HitVector , Energy , BlastPos )
 
 	-- If the prop has children with it, break it but use the original prop for it.
 	if not Entity.IsExplosive and next(Entity:GetChildren()) then
-
-		if IsValid(Entity:GetParent()) then
-			local CurPos = Entity:GetPos()
-			Entity:SetParent(nil)
-			Entity:SetPos(CurPos)
-			Entity:SetMoveType( MOVETYPE_VPHYSICS )
-			Entity:PhysicsInit( SOLID_VPHYSICS )
-			Entity:PhysWake()
-		end
-		Entity.ACE_KilledBase = true -- not the same as Entity.ACE_Killed
-		constraint.RemoveAll(Entity)
-
+		CreateFakeDebris(Entity)
 		return Entity
 	end
 
@@ -164,19 +165,7 @@ function ACE_APKill( Entity , HitVector , Power )
 
 	-- If the prop has children with it, break it but use the original prop for it.
 	if not Entity.IsExplosive and next(Entity:GetChildren()) then
-
-		if IsValid(Entity:GetParent()) then
-			local CurPos = Entity:GetPos()
-			Entity:SetParent(nil)
-			Entity:SetPos(CurPos)
-			Entity:SetMoveType( MOVETYPE_VPHYSICS )
-			Entity:PhysicsInit( SOLID_VPHYSICS )
-			Entity:PhysWake()
-		end
-
-		Entity.ACE_KilledBase = true -- not the same as Entity.ACE_Killed
-		constraint.RemoveAll(Entity)
-
+		CreateFakeDebris(Entity)
 		return Entity
 	end
 

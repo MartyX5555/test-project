@@ -431,6 +431,29 @@ function ENT:Think()
 end
 
 -- specialized calcmassratio for engines
+-- New CalcMass function. Needs to ensure engines cannot be remotely provided to vehicles....
+function ENT:CalcMassRatio()
+
+	local Mass = 0
+	local PhysMass = 0
+	local con = self:GetContraption()
+	local phys = self:GetPhysicsObject()
+	if con then
+		Mass = con.totalmass
+		PhysMass = con.acfphystotal
+		self.MassRatio = con.massratio
+	elseif IsValid(phys) then
+		local EngineMass = phys:GetMass()
+		Mass = EngineMass
+		PhysMass = EngineMass
+	end
+	Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
+	Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
+
+	print(self.MassRatio)
+end
+
+--[[
 function ENT:CalcMassRatio()
 
 	local Mass = 0
@@ -452,48 +475,50 @@ function ENT:CalcMassRatio()
 		end
 	end
 
-	-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
-	if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
-		table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
-		ACE_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
-	end
+	local con = self:GetContraption()
+	if con then
 
-	-- add any parented but not constrained props you sneaky bastards
-	local AllEnts = table.Copy( PhysEnts )
-	for v, _ in pairs( PhysEnts ) do
-		table.Merge( AllEnts, ACE_GetAllChildren( v ) )
-	end
-
-	for v, _ in pairs( AllEnts ) do
-
-		if not IsValid( v ) then continue end
-
-		local phys = v:GetPhysicsObject()
-		if not IsValid( phys ) then continue end
-
-		Mass = Mass + phys:GetMass()
-
-		if PhysEnts[ v ] then
-			PhysMass = PhysMass + phys:GetMass()
+		-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
+		if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
+			table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
+			ACE_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
 		end
 
+		-- add any parented but not constrained props you sneaky bastards
+		local AllEnts = table.Copy( PhysEnts )
+		for v, _ in pairs( PhysEnts ) do
+			table.Merge( AllEnts, ACE_GetAllChildren( v ) )
+		end
+
+		for v, _ in pairs( AllEnts ) do
+			if not IsValid(v) then continue end
+
+			local phys = v:GetPhysicsObject()
+			if not IsValid( phys ) then continue end
+
+			Mass = Mass + phys:GetMass()
+
+			if PhysEnts[ v ] then
+				PhysMass = PhysMass + phys:GetMass()
+			end
+
+		end
+
+		--phys / parented
+		--total: 6000 kgs
+		--5000/1000 = 5 ratio
+		--1000/5000 = 0.2 ratio
+		--local Tmass = PhysMass + Mass
+
+		self.MassRatio = PhysMass / Mass print("Engine Ratio:", self.MassRatio)
+		--self.MassRatio = 1 / (Tmass/10000)
+		--self.MassRatio = (PhysMass ^ 0.9225) / Mass
+
+		Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
+		Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
 	end
-
-	--phys / parented
-	--total: 6000 kgs
-	--5000/1000 = 5 ratio
-	--1000/5000 = 0.2 ratio
-	--local Tmass = PhysMass + Mass
-
-	self.MassRatio = PhysMass / Mass
-	--self.MassRatio = 1 / (Tmass/10000)
-	--self.MassRatio = (PhysMass ^ 0.9225) / Mass
-
-	Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
-	Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
-
 end
-
+]]
 function ENT:ACFInit()
 
 	self:CalcMassRatio()

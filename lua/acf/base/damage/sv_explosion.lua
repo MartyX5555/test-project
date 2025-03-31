@@ -17,20 +17,6 @@ ACE.HEFilter = {
 	ace_flares               = true
 }
 
---Used for tracebug HE workaround
-ACE.CritEnts = {
-	acf_gun                    = true,
-	acf_ammo                   = true,
-	acf_engine                 = true,
-	acf_gearbox                = true,
-	acf_fueltank               = true,
-	acf_rack                   = true,
-	acf_missile                = true,
-	ace_missile_swep_guided    = true,
-	prop_vehicle_prisoner_pod  = true,
-	gmod_wire_gate             = true
-}
-
 --I don't want HE processing every ent that it has in range
 local function FindPropsInExplosionRadius( Hitpos, Radius )
 
@@ -63,6 +49,7 @@ end
 ------------------------------------------------------------------------------]]
 
 local PI = math.pi
+local TraceLine = util.TraceLine
 
 function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
@@ -77,17 +64,16 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 	local FragArea     = (FragWeight / 7.8) ^ 0.33
 
 	local OccFilter	= istable(NoOcc) and NoOcc or { NoOcc }
-	local LoopKill	= true
-
 	local Targets	= FindPropsInExplosionRadius( Hitpos, Radius )		-- Will give tiny HE just a pinch of radius to help it hit the player
 
+	local LoopKill	= true
 	while LoopKill and Power > 0 do
 
 		LoopKill = false
 
-		local PowerSpent    = 0
-		local DamageTable        = {}
-		local TotalArea     = 0
+		local PowerSpent = 0
+		local TotalArea = 0
+		local DamageTable = {}
 
 		for i,Tar in ipairs(Targets) do
 
@@ -107,7 +93,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				TraceInit.endpos   = TargetCenter
 				TraceInit.filter   = OccFilter
 
-				util.TraceLine(TraceInit, true)
+				TraceLine(TraceInit, true)
 
 				--if above failed getting the target. Try again by nearest point instead.
 				if not TraceRes.Hit then
@@ -152,20 +138,16 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 					if Hitat == Hitpos then Hitat = TargetPos end
 
 					TraceInit.endpos = Hitat + (Hitat-Hitpos):GetNormalized() * 100
-					util.TraceLine( TraceInit )
+					TraceLine( TraceInit )
 				end
 
 				--HE has direct view with the prop, so lets damage it
 				if TraceRes.Hit and TraceRes.Entity == Tar then
 
-					Targets[i]		= nil  --Remove the thing we just hit from the table so we don't hit it again in the next round
-					local DamageData		= {}
+					Targets[i] = nil  --Remove the thing we just hit from the table so we don't hit it again in the next round
 
-					DamageData.Ent		= Tar
-
-					if ACE.CritEnts[Tar:GetClass()] then
-						DamageData.LocalHitpos = WorldToLocal(Hitpos, Angle(0,0,0), TargetPos, Tar:GetAngles())
-					end
+					local DamageData = {}
+					DamageData.Ent = Tar
 
 					DamageData.Dist = TargetDist
 					DamageData.Vec = (TargetPos - Hitpos):GetNormalized()
@@ -192,8 +174,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 		for _, Table in ipairs(DamageTable) do
 
 			local Tar              = Table.Ent
-			local TargetPos        = Tar:GetPos()
-			local Feathering       = (1-math.min(1,Table.Dist / Radius)) ^ ACE.HEFeatherExp --print("Distance:", Table.Dist, "Radius:", Radius, "Ratio:", Table.Dist / Radius)
+			local Feathering       = (1-math.min(1,Table.Dist / Radius)) ^ ACE.HEFeatherExp
 			local AreaFraction     = Table.Area / TotalArea
 			local PowerFraction    = Power * AreaFraction  --How much of the total power goes to that prop
 			local AreaAdjusted     = (Tar.ACE.Area / ACE.Threshold) * Feathering
@@ -211,69 +192,19 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				if math.Rand(0,1) > FragHit then FragHit = 1 else FragHit = 0 end
 			end
 
-			-- erroneous HE penetration bug workaround; retries trace on crit ents after a short delay to ensure a hit.
-			-- we only care about hits on critical ents, saves on processing power
-			-- not going to re-use tables in the timer, shouldn't make too much difference
+			BlastRes = ACE_Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
+			FragRes = ACE_Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
 
-			-- Really required?
+			if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
 
-			if ACE.CritEnts[Tar:GetClass()] then
+				--Add the debris created to the ignore so we don't hit it in other rounds
+				local Debris = ACE_HEKill( Tar , Table.Vec , PowerFraction , Hitpos )
+				table.insert( OccFilter , Debris )
 
-				timer.Simple(0.03, function()
-					if not IsValid(Tar) then return end
-
-					--recreate the hitpos and hitat, add slight jitter to hitpos and move it away some
-					local NewHitpos = LocalToWorld(Table.LocalHitpos + Table.LocalHitpos:GetNormalized() * 3, Angle(math.random(),math.random(),math.random()), TargetPos, Tar:GetAngles())
-					local NewHitat  = Tar:NearestPoint( NewHitpos )
-
-					local Occlusion	= {
-						start = NewHitpos,
-						endpos = NewHitat + (NewHitat-NewHitpos):GetNormalized() * 100,
-						filter = NoOcc,
-					}
-					local Occ	= util.TraceLine( Occlusion )
-
-					if not Occ.Hit and NewHitpos ~= NewHitat then
-						local NewHitat  = TargetPos
-						Occlusion.endpos	= NewHitat + (NewHitat-NewHitpos):GetNormalized() * 100
-						Occ = util.TraceLine( Occlusion )
-					end
-
-					if not (Occ.Hit and Occ.Entity:EntIndex() ~= Tar:EntIndex()) and not (not Occ.Hit and NewHitpos ~= NewHitat) then
-
-						BlastRes = ACE_Damage ( Tar	, Blast  , AreaAdjusted , 0	, Inflictor , 0	, Gun , "HE" )
-						FragRes = ACE_Damage ( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
-
-						if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
-							ACE_HEKill( Tar, (TargetPos - NewHitpos):GetNormalized(), PowerFraction , Hitpos)
-						else
-							ACE_KEShove(Tar, NewHitpos, (TargetPos - NewHitpos):GetNormalized(), PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) ) --0.333
-						end
-					end
-				end)
-
-				--calculate damage that would be applied (without applying it), so HE deals correct damage to other props
-				BlastRes = ACE_CalcDamage( Tar, Blast, AreaAdjusted, 0 )
-
+				LoopKill = true --look for fresh targets since we blew a hole somewhere
 			else
-
-				BlastRes = ACE_Damage ( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
-				FragRes = ACE_Damage ( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
-
-				if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
-
-					--Add the debris created to the ignore so we don't hit it in other rounds
-					local Debris = ACE_HEKill( Tar , Table.Vec , PowerFraction , Hitpos )
-					table.insert( OccFilter , Debris )
-
-					LoopKill = true --look for fresh targets since we blew a hole somewhere
-
-				else
-
-					--Assuming about 1/30th of the explosive energy goes to propelling the target prop (Power in KJ * 1000 to get J then divided by 33)
-					ACE_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) )
-
-				end
+				--Assuming about 1/30th of the explosive energy goes to propelling the target prop (Power in KJ * 1000 to get J then divided by 33)
+				ACE_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) )
 			end
 
 			PowerSpent = PowerSpent + PowerFraction * BlastRes.Loss / 2--Removing the energy spent killing props
@@ -417,8 +348,6 @@ do
 						end
 					end
 				end
-
-
 			end
 
 			if HEWeight > LastHE then

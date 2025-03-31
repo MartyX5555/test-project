@@ -158,35 +158,32 @@ end
 
 --Handles ACE forces (HE Push, Recoil, etc)
 function ACE_KEShove(Target, Pos, Vec, KE )
+	if not IsValid(Target) then return end
 
 	local CanDo = hook.Run("ACE_KEShove", Target, Pos, Vec, KE )
 	if CanDo == false then return end
 
 	--Gets the baseplate of target
-	local parent	= ACE_GetPhysicalParent(Target)
+	local parent = ACE_GetPhysicalParent(Target)
 	local phys	= parent:GetPhysicsObject()
-
 	if not IsValid(phys) then return end
 
-	if not Target.acflastupdatemass or ((Target.acflastupdatemass + 10) < CurTime()) then
-		ACE_CalcMassRatio(Target)
-	end
-
-	--corner case error check
-	if not Target.acfphystotal then return end
-
-	local physratio = Target.acfphystotal / Target.acftotal
-
 	local Scaling = 1
-
 	--Scale down the offset relative to chassis if the gun is parented
-	if Target:EntIndex() ~= parent:EntIndex() then
-		Scaling = 87.5
+	if Target ~= parent then
+		parent:SetColor(Color(255,255,151))
+		Scaling = 0.001
 	end
 
-	local Local	= parent:WorldToLocal(Pos) / Scaling
+	local Local	= parent:WorldToLocal(Pos) * Scaling
 	local Res	= Local + phys:GetMassCenter()
-	Pos			= parent:LocalToWorld(Res)
+	Pos = parent:LocalToWorld(Res)
 
-	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * physratio, Pos )
+	local massratio = 1
+	local con = ACE.GetContraption( parent )
+	if ACE.IsValidContraption( con ) then
+		massratio = ACE.GetContraptionMassRatio( con ) print("ratio:", massratio)
+	end
+	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
+
 end

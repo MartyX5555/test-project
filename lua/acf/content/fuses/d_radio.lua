@@ -113,42 +113,20 @@ do
 				local HitPos	= HitEnt:GetPos()
 				local tolocal	= missile:WorldToLocal(HitPos)
 
-				-- Cool
-				if CFW then
+				local conLauncher = missile.Launcher:GetContraption() or {}
+				local conTarget = HitEnt:GetContraption() or {} -- 1 prop will not have a contraption. 2 linked props (weld, parent) will do.
 
-					local conLauncher = missile.Launcher:GetContraption() or {}
-					local conTarget = HitEnt:GetContraption() or {} -- 1 prop will not have a contraption. 2 linked props (weld, parent) will do.
+				if conLauncher and conTarget then -- We only care about real contraptions. Not single props.
 
-					if conLauncher and conTarget then -- We only care about real contraptions. Not single props.
+					if conLauncher ~= conTarget and tolocal.x > 0 then
 
-						if conLauncher ~= conTarget and tolocal.x > 0 then
-
-							debugoverlay.Text(HitPos + Vector(0,0,20), "[CFW]- Valid Hit On: " .. (HitEnt:GetClass()) , 5 )
-							debugoverlay.Box(MissilePos, trace.mins, trace.maxs, 1, Color(0,255,0,10))
-
-							return true
-						end
-
-						debugoverlay.Text(HitPos + Vector(0,0,20), "[CFW] Invalid Hit on: " .. (HitEnt:GetClass()) , 5 )
-						debugoverlay.Box(MissilePos, trace.mins, trace.maxs, 1, Color(255,0,0,10))
-
-					end
-
-				-- Not Cool
-				else
-
-					local HitId	= HitEnt.ACE.ContraptionId or 1
-					local OwnId	= missile.ContrapId or 1
-
-					--Trigger the fuze if our hit was caused to an ent which is not ours, in front of it.
-					if HitId ~= OwnId and tolocal.x > 0 then
-
-						debugoverlay.Text(HitPos + Vector(0,0,20), "Valid Hit On: " .. (HitEnt:GetClass()) , 5 )
+						debugoverlay.Text(HitPos + Vector(0,0,20), "[CFW]- Valid Hit On: " .. (HitEnt:GetClass()) , 5 )
 						debugoverlay.Box(MissilePos, trace.mins, trace.maxs, 1, Color(0,255,0,10))
+
 						return true
 					end
 
-					debugoverlay.Text(HitPos + Vector(0,0,20), "Invalid Hit on: " .. (HitEnt:GetClass()) , 5 )
+					debugoverlay.Text(HitPos + Vector(0,0,20), "[CFW] Invalid Hit on: " .. (HitEnt:GetClass()) , 5 )
 					debugoverlay.Box(MissilePos, trace.mins, trace.maxs, 1, Color(255,0,0,10))
 
 				end

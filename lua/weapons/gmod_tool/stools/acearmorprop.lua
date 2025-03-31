@@ -316,12 +316,14 @@ function TOOL:Reload( trace )
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
 
-	local data		= ACE_CalcMassRatio(ent, true)
+	local data = ACE_CalcMassRatio(ent)
+	local con = ent:GetContraption()
+	if not con then return end
 
-	local total		= ent.acftotal
-	local phystotal	= ent.acfphystotal
-	local parenttotal	= ent.acftotal - ent.acfphystotal
-	local physratio	= 100 * ent.acfphystotal / ent.acftotal
+	local total = con.totalmass
+	local phystotal	= con.acfphystotal
+	local parenttotal = con.acfparenttotal
+	local physratio	= con.massratio * 100
 
 	local power		= data.Power
 	local fuel		= data.Fuel

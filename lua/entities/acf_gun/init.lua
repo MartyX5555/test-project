@@ -865,7 +865,7 @@ do
 				self:CreateShell( self.BulletData )
 
 				local Dir = -self:GetForward()
-				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 3500 * 39.37) * (GetConVar("acf_recoilpush"):GetFloat() or 1)
+				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 4000 * 39.37) * (GetConVar("acf_recoilpush"):GetFloat() or 1) -- 3500
 
 				ACE_KEShove(self, self:GetPos() , Dir , KE )
 

@@ -280,45 +280,15 @@ function ENT:CalcFlight()
 
 				local IsPart = false
 
-				if CFW then
+				local conTarget	= HitTarget:GetContraption() or {}
+				local conLauncher = self.Launcher:GetContraption() or {}
 
-					local conTarget	= HitTarget:GetContraption() or {}
-					local conLauncher = self.Launcher:GetContraption() or {}
+				if conTarget == conLauncher then -- Not required to do anything else.
 
-					if conTarget == conLauncher then -- Not required to do anything else.
+					local mi, ma = HitTarget:GetCollisionBounds()
+					debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
 
-						local mi, ma = HitTarget:GetCollisionBounds()
-						debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
-
-						IsPart = true
-					end
-
-				else -- Press F to pay respects for the low end PCs by this. USE CFW.
-
-					local RootTarget = ACE_GetPhysicalParent( HitTarget ) or game.GetWorld()
-					local RootLauncher = self.Launcher.BaseEntity
-
-					if RootLauncher == RootTarget then
-						IsPart = true
-					else
-
-						--Note: caching the filter once can be easily bypassed by putting a prop of your own vehicle in front to fill the filter, then not caching any other prop.
-						self.physentities = self.physentities or constraint.GetAllConstrainedEntities( RootTarget ) -- how expensive will be this with contraptions over 100 constrained ents?
-
-						for _, physEnt in pairs(self.physentities) do
-
-							if not IsValid(physEnt) then continue end
-
-							if physEnt == RootLauncher then
-
-								local mi, ma = physEnt:GetCollisionBounds()
-								debugoverlay.BoxAngles(physEnt:GetPos(), mi, ma, physEnt:GetAngles(), 5, Color(0,255,0,100))
-
-								IsPart = true
-								break
-							end
-						end
-					end
+					IsPart = true
 				end
 
 				if not IsPart then

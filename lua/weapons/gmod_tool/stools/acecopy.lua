@@ -35,6 +35,9 @@ function TOOL:LeftClick( trace )
 
 	local pl = self:GetOwner();
 
+
+	ACE_KEShove(ent, trace.HitPos, -trace.HitNormal, 50000 )
+
 	if ent:GetClass() == "acf_gearbox" and #self.GearboxCopyData > 1 and ent.CanUpdate then
 
 		local success, msg = ent:Update( self.GearboxCopyData );
