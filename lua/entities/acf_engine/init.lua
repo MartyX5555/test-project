@@ -356,7 +356,7 @@ function ENT:ACE_Activate()
 	Entity.ACE.Mass      = PhysObj:GetMass()
 	Entity.ACE.Type      = "Prop"
 
-	Entity.ACE.Material	= not isstring(Entity.ACE.Material) and ACE.BackCompMat[Entity.ACE.Material] or Entity.ACE.Material or "RHA"
+	Entity.ACE.Material	= ACE_VerifyMaterial(Entity.ACE.Material)
 
 end
 
@@ -424,6 +424,8 @@ function ENT:Think()
 		self:CalcRPM()
 	end
 
+	self:CheckRopes()
+
 	self.LastThink = ACE.CurTime
 	self:NextThink( ACE.CurTime )
 	return true
@@ -436,7 +438,7 @@ function ENT:CalcMassRatio()
 
 	local Mass = 0
 	local PhysMass = 0
-	local con = self:GetContraption()
+	local con = ACE.GetContraption(self)
 	local phys = self:GetPhysicsObject()
 	if con then
 		Mass = con.totalmass
@@ -450,7 +452,6 @@ function ENT:CalcMassRatio()
 	Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
 	Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
 
-	print(self.MassRatio)
 end
 
 --[[
@@ -475,7 +476,7 @@ function ENT:CalcMassRatio()
 		end
 	end
 
-	local con = self:GetContraption()
+	local con = ACE.GetContraption( self )
 	if con then
 
 		-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
@@ -679,6 +680,7 @@ end
 -------------------------- Periodic Link Engine checks --------------------------
 do
 	-- Checks the current ropes linked to this engine complies with the requirements to be valid.
+	local MinSpace = 100
 	function ENT:CheckRopes()
 
 		for _, Link in pairs( self.GearLink ) do
@@ -686,9 +688,12 @@ do
 			local Ent = Link.Ent
 			local OutPos = self:LocalToWorld( self.Out )
 			local InPos = Ent:LocalToWorld( Ent.In )
+			local Dist2 = OutPos:DistToSqr( InPos )
+			local DistDiff = math.abs(Dist2 - Link.RopeLen ^ 2)
+			local MaxTolerance = math.max(Dist2 / 6, MinSpace ^ 2)
 
-			-- make sure it is not stretched too far
-			if OutPos:Distance( InPos ) > Link.RopeLen * 1.5 then
+			-- make sure transmission cannot be tear apart without breaking a link.
+			if DistDiff > MaxTolerance then
 				self:Unlink( Ent )
 			end
 

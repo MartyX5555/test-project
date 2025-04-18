@@ -181,7 +181,7 @@ function ACE_KEShove(Target, Pos, Vec, KE )
 
 	local massratio = 1
 	local con = ACE.GetContraption( parent )
-	if ACE.IsValidContraption( con ) then
+	if con then
 		massratio = ACE.GetContraptionMassRatio( con ) print("ratio:", massratio)
 	end
 	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )

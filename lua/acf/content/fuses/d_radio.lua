@@ -113,8 +113,8 @@ do
 				local HitPos	= HitEnt:GetPos()
 				local tolocal	= missile:WorldToLocal(HitPos)
 
-				local conLauncher = missile.Launcher:GetContraption() or {}
-				local conTarget = HitEnt:GetContraption() or {} -- 1 prop will not have a contraption. 2 linked props (weld, parent) will do.
+				local conLauncher = ACE.GetContraption( missile.Launcher )
+				local conTarget = ACE.GetContraption( HitEnt ) -- 1 prop will not have a contraption. 2 linked props (weld, parent) will do.
 
 				if conLauncher and conTarget then -- We only care about real contraptions. Not single props.
 

@@ -435,7 +435,7 @@ function ENT:Link( Target )
 		end
 
 		local ReloadBuff = 1
-		if not (self.Class == "AC" or self.Class == "MG" or self.Class == "RAC" or self.Class == "HMG" or self.Class == "GL" or self.Class == "SA") then
+		if not self.noloaders then
 			ReloadBuff = 1.25-(self.LoaderCount * 0.25)
 		end
 
@@ -944,9 +944,6 @@ function ENT:LoadAmmo( AddTime, Reload )
 			maxRof = self.maxrof
 		end
 
-		-- Define a table of valid classes
-		local invalidClasses = {"AC", "MG", "RAC", "HMG", "GL", "SA"}
-
 		local fireRateModifier = self.RoFmod * self.PGRoFmod * (AmmoEnt.RoFMul + 1)
 		local defaultReloadTime = ((math.max(self.BulletData.RoundVolume, self.MinLengthBonus * Adj) / 500) ^ 0.60) * fireRateModifier
 		local lowestReloadTime = defaultReloadTime
@@ -955,10 +952,8 @@ function ENT:LoadAmmo( AddTime, Reload )
 			lowestReloadTime = 60 / maxRof
 		end
 
-		--print(maxRof)
-
-		-- Check if self.Class is in the invalidClasses table
-		if not ACE_table_contains(invalidClasses, self.Class) and self.maxrof then
+		-- Guns with ability to have loaders
+		if not self.noloaders and self.maxrof then
 
 			if self.LoaderCount > 0 and IsValid(curLoader) then -- if loaders are linked then
 

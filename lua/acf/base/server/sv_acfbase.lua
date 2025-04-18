@@ -57,15 +57,13 @@ function ACE_Activate( Entity , Recalc )
 	end
 
 	-- Setting Armor properties for the first time (or reuse old data if present)
-	Entity.ACE.Ductility	= Entity.ACE.Ductility or 0
-	Entity.ACE.Material	= not isstring(Entity.ACE.Material) and ACE.BackCompMat[Entity.ACE.Material] or Entity.ACE.Material or "RHA"
+	Entity.ACE.Ductility = Entity.ACE.Ductility or 0
+	Entity.ACE.Material	= ACE_VerifyMaterial(Entity.ACE.Material)
 
 	local Area	= Entity.ACE.Area
 	local Ductility = math.Clamp( Entity.ACE.Ductility, -0.8, 0.8 )
 
-	local Mat	= Entity.ACE.Material or "RHA"
-	local MatData	= ACE_GetMaterialData( Mat )
-
+	local MatData	= ACE_GetMaterialData( Entity.ACE.Material )
 	local massMod	= MatData.massMod
 
 	local Armour	= ACE_CalcArmor( Area, Ductility, Entity:GetPhysicsObject():GetMass() / massMod ) -- So we get the equivalent thickness of that prop in mm if all its weight was a steel plate
@@ -147,7 +145,7 @@ function ACE_CalcDamage( Entity , Energy , FrArea , Angle , Type) --y=-5/16x + b
 	local losArmor		= armor / math.abs( math.cos(math.rad(Angle)) ^ ACE.SlopeEffectFactor )									-- LOS Armor
 	local losArmorHealth = armor ^ 1.1 * (3 + math.min(1 / math.abs(math.cos(math.rad(Angle)) ^ ACE.SlopeEffectFactor), 2.8) * 0.5)	-- Bc people had to abuse armor angling, FML
 
-	local Mat			= Entity.ACE.Material or "RHA"	--very important thing
+	local Mat			= ACE_VerifyMaterial(Entity.ACE.Material)	--very important thing
 	local MatData		= ACE_GetMaterialData( Mat )
 	local damageMult		= isstring(Type) and ACE[Type .. "DamageMult"] or 1
 

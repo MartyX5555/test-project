@@ -173,7 +173,7 @@ do
 		if con then
 			local AllEnts = con.ents
 			for v, _ in pairs( AllEnts ) do
-				if not IsValid( v ) then continue end
+				if not ACE_Check( v ) then continue end
 				if not pwr then continue end
 
 				if v:GetClass() == "acf_engine" then
@@ -186,14 +186,7 @@ do
 				local PhysObj = v:GetPhysicsObject()
 				if IsValid(PhysObj) then
 
-					local material = v.ACE and v.ACE.Material or "RHA"
-
-					--ACE doesnt update their material stats actively, so we need to update it manually here.
-					if not isstring(material) then
-						local Mat_ID = material + 1
-						material = ACE.BackCompMat[Mat_ID]
-					end
-
+					local material = ACE_VerifyMaterial(v.ACE.Material)
 					Compositions[material]  = Compositions[material] or {}
 
 					table.insert(Compositions[material], PhysObj:GetMass() )
@@ -361,97 +354,67 @@ timer.Simple(1, function()
 	ACE_UpdateChecking()
 end )
 
-
---Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
-function ACE_GetMaterialData( Mat )
-
-	if not ACE_CheckMaterial( Mat ) then
-
-		Mat = not isstring(Mat) and ACE.BackCompMat[Mat] or "RHA"
-
-		if not ACE_CheckMaterial( Mat ) then
-			print("[ACE|ERROR]- No Armor material data found! Have the armor folder been renamed or removed? Unexpected results could occur!")
-			return nil
-		end
-	end
-
-	local MatData = ACE.ArmorMaterials[Mat]
-
-	return MatData
+local default_material = "RHA"
+function ACE_VerifyMaterial(mattype)
+	if ACE_CheckMaterial( mattype ) then return mattype end
+	local BackCompMat = ACE.BackCompMat[tonumber(mattype)]
+	if BackCompMat then return BackCompMat end
+	return default_material
 end
-
 
 --TODO: Use a universal function
 function ACE_CheckMaterial( MatId )
-
 	local matdata = ACE.ArmorMaterials[ MatId ]
-
 	if not matdata then return false end
-
 	return true
+end
 
+--Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
+function ACE_GetMaterialData( mattype )
+	mattype = ACE_VerifyMaterial(mattype)
+	local MatData = ACE.ArmorMaterials[mattype]
+	return MatData
 end
 
 function ACE_CheckRound( id )
-
 	local rounddata = ACE.RoundTypes[ id ]
-
 	if not rounddata then return false end
-
 	return true
 end
 
 function ACE_CheckGun( gunid )
-
 	local gundata = ACE.Weapons.Guns[ gunid ]
-
 	if not gundata then return false end
-
 	return true
 end
 
 function ACE_CheckRack( rackid )
-
 	local rackdata = ACE.Weapons.Racks[ rackid ]
-
 	if not rackdata then return false end
-
 	return true
 end
 
 function ACE_CheckAmmo( ammoid )
-
 	local Ammodata = ACE.Weapons.Ammo[ ammoid ]
-
 	if not Ammodata then return false end
-
 	return true
 end
 
 function ACE_CheckEngine( engineid )
-
 	local enginedata = ACE.Weapons.Engines[ engineid ]
-
 	if not enginedata then return false end
-
 	return true
 end
 
 function ACE_CheckGearbox( gearid )
-
 	local geardata = ACE.Weapons.Gearboxes[ gearid ]
-
 	if not geardata then return false end
-
 	return true
 end
 
 function ACE_CheckFuelTank( fueltankid )
-
 	local fueltankid = ACE.Weapons.FuelTanksSize[ fueltankid ]
-
 	if not fueltankid then return false end
-
 	return true
 end
 
@@ -529,16 +492,6 @@ function ACE_Msg( type, txt )
 
 end
 ]]
-
--- Helper function to check if a value exists in a table
-function ACE_table_contains(table, element)
-	for _, value in pairs(table) do
-		if value == element then
-			return true
-		end
-	end
-	return false
-end
 
 if SERVER then
 

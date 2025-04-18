@@ -95,7 +95,7 @@ local function CreateFakeDebris(Debris)
 end
 
 local function GetPropMaterialData( Entity )
-	local Mat = (Entity.ACE and Entity.ACE.Material) or "RHA"
+	local Mat = ACE_VerifyMaterial(Entity.ACE.Material) 
 	local MatData = ACE_GetMaterialData( Mat )
 	return MatData
 end

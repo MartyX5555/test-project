@@ -292,7 +292,6 @@ elseif CLIENT then
 
 end
 
-cleanup.Register( "aceexplosives" )
 
 do
 	-- The name of the folder for the loader. Relative to lua folder

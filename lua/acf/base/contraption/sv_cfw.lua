@@ -78,7 +78,7 @@ do
 			if oldmass == 0 then return end
 			ent.acfmass = mass
 
-			local con = ent:GetContraption()
+			local con = ACE.GetContraption(ent)
 			if con then
 
 				con.totalmass = con.totalmass + (mass - oldmass) --print("SetMass ADDMASS", con.totalmass) print("operation!!!!")
@@ -91,8 +91,8 @@ do
 				con.acfparenttotal = con.totalmass - con.acfphystotal
 				con.massratio = math.min(con.acfphystotal / con.totalmass, 1)
 
-				--print("totalmass:", con.totalmass, con.acfphystotal, con.acfparenttotal )
-				--print("originalmass:", con.totalMass)
+				print("totalmass:", con.totalmass, con.acfphystotal, con.acfparenttotal )
+				print("originalmass:", con.totalMass)
 			end
 		end)
 		self:LegacySetMass(mass, ...)
@@ -105,12 +105,7 @@ end
 -------------------------- CFW functions --------------------------
 do
 
-	local ErrorMsg = "Contraption Framework (CFW) is not installed on the Server. Check ACE has the required dependencies before using! Aborting..."
-
-	function ACE.IsValidContraption( con )
-		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return false end
-		return CFW.Contraptions[con] or false
-	end
+	local ErrorMsg = "Contraption Framework (CFW) is not installed on the Server. Check ACE meets the required dependencies before using! Aborting..."
 
 	function ACE.GetContraption( ent )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return end

@@ -280,8 +280,8 @@ function ENT:CalcFlight()
 
 				local IsPart = false
 
-				local conTarget	= HitTarget:GetContraption() or {}
-				local conLauncher = self.Launcher:GetContraption() or {}
+				local conTarget	= ACE.GetContraption(HitTarget)
+				local conLauncher = ACE.GetContraption(self.Launcher)
 
 				if conTarget == conLauncher then -- Not required to do anything else.
 
@@ -716,7 +716,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density	= (self.PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type	= "Prop"
 
-	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
+	self.ACE.Material = ACE_VerifyMaterial(self.ACE.Material)
 
 end
 

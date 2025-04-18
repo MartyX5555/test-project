@@ -75,8 +75,6 @@ function ENT:Initialize()
 
 	self.BaseClass.Initialize(self)
 
-	self.SpecialHealth   = false	--If true needs a special ACE_Activate function
-	self.SpecialDamage   = false	--If true needs a special ACE_OnDamage function --NOTE: you can't "fix" missiles with setting this to false, it acts like a prop!!!!
 	self.ReloadTime      = 1
 	self.RackStatus      = "Empty"
 	self.Ready           = true

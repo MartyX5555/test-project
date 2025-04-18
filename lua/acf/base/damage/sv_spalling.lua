@@ -27,7 +27,7 @@ function ACE_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 	--Don't use it if it's not allowed to
 	if not ACE.Spalling then return end
 
-	local Mat		= Material or "RHA"
+	local Mat		= ACE_VerifyMaterial(Material)
 	local MatData	= ACE_GetMaterialData( Mat )
 
 	-- Spall damage
@@ -87,7 +87,7 @@ end
 
 
 --Dedicated function for HESH spalling
-function ACE_PropShockwave( HitPos, HitVec, Filter, Caliber )
+local function PropShockwave( HitPos, HitVec, Filter, Caliber )
 
 	--Don't even bother at calculating something that doesn't exist
 	if not next(Filter) then return end
@@ -159,9 +159,8 @@ function ACE_PropShockwave( HitPos, HitVec, Filter, Caliber )
 				local space = math.abs( (HitFronts[iteration] - HitBacks[iteration - 1]):Length() )
 
 				--prop's material
-				local mat = tracefront.Entity.ACE and tracefront.Entity.ACE.Material or "RHA"
+				local mat = ACE_VerifyMaterial(tracefront.Entity.ACE)
 				local MatData = ACE_GetMaterialData( mat )
-
 
 				local Hasvoid = false
 				local NotOverlap = false
@@ -250,9 +249,9 @@ end
 --Handles HESH spalling
 function ACE_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
 
-	local spallPos, Armour, PEnts, fNormal = ACE_PropShockwave( HitPos, HitVec, Filter, Caliber )
+	local spallPos, Armour, PEnts, fNormal = PropShockwave( HitPos, HitVec, Filter, Caliber )
 
-	local Mat		= Material or "RHA"
+	local Mat		= ACE_VerifyMaterial(Material)
 	local MatData	= ACE_GetMaterialData( Mat )
 
 	-- Spall damage
@@ -326,7 +325,7 @@ function ACE_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 		-- Get the spalling hitAngle
 		local Angle		= ACE_GetHitAngle( SpallRes.HitNormal , HitVec )
 
-		local Mat		= SpallRes.Entity.ACE.Material or "RHA"
+		local Mat		= ACE_VerifyMaterial(SpallRes.Entity.ACE.Material)
 		local MatData	= ACE_GetMaterialData( Mat )
 
 		local spallarmor	= MatData.spallarmor
