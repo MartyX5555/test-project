@@ -91,8 +91,8 @@ do
 				con.acfparenttotal = con.totalmass - con.acfphystotal
 				con.massratio = math.min(con.acfphystotal / con.totalmass, 1)
 
-				print("totalmass:", con.totalmass, con.acfphystotal, con.acfparenttotal )
-				print("originalmass:", con.totalMass)
+				--print("totalmass:", con.totalmass, con.acfphystotal, con.acfparenttotal )
+				--print("originalmass:", con.totalMass)
 			end
 		end)
 		self:LegacySetMass(mass, ...)

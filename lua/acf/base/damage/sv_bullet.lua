@@ -16,22 +16,18 @@ function ACE_RicochetVector(Flight, HitNormal)
 	return Vec - ( 2 * Vec:Dot(HitNormal) ) * HitNormal
 end
 
+local MissileClasses = {
+	acf_missile = true,
+	ace_missile_swep_guided = true,
+}
+
 -- Handles the impact of a round on a target
 function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone  )
 
---[[
-	print("======DATA=======")
-	print(HitNormal)
-	print(Bullet["Flight"])
-	print("======DATA=======")
-
-	debugoverlay.Line(HitPos, HitPos + (Bullet["Flight"]), 5, Color(255,100,0), true )
-	debugoverlay.Line(HitPos, HitPos + (HitNormal * 100), 5, Color(255,255,0), true )
-]]
 	Bullet.Ricochets = Bullet.Ricochets or 0
 
-	local Angle	= ACE_GetHitAngle( HitNormal , Bullet["Flight"] )
-	local HitRes	= ACE_Damage( Target, Energy, Bullet["PenArea"], Angle, Bullet["Owner"], Bone, Bullet["Gun"], Bullet["Type"] )
+	local Angle	= ACE_GetHitAngle( HitNormal , Bullet.Flight )
+	local HitRes = ACE_Damage( Target, Energy, Bullet.PenArea, Angle, Bullet.Owner, Bone, Bullet.Gun, Bullet.Type )
 
 	HitRes.Ricochet = false
 
@@ -39,7 +35,8 @@ function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 	local ricoProb  = 1
 
 	--Missiles are special. This should be dealt with guns only
-	if (IsValid(Bullet["Gun"]) and Bullet["Gun"]:GetClass() ~= "acf_missile" and Bullet["Gun"]:GetClass() ~= "ace_missile_swep_guided") or not IsValid(Bullet["Gun"]) then
+	local BulletOrigin = Bullet.Gun
+	if not IsValid(BulletOrigin) or (IsValid(BulletOrigin) and not MissileClasses[BulletOrigin:GetClass()] ) then
 
 		local sigmoidCenter = Bullet.DetonatorAngle or ( (Bullet.Ricochet or 55) - math.max(Speed / 39.37 - (Bullet.LimitVel or 800),0) / 100 ) --Changed the abs to a min. Now having a bullet slower than normal won't increase chance to richochet.
 
@@ -58,32 +55,34 @@ function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 
 	-- Checking for ricochet. The angle value is clamped but can cause game crashes if this overflow check doesnt exist. Why?
 	if ricoProb < math.random() and Angle < 90 then
-		Ricochet	= math.Clamp(Angle / 90, 0.1, 1) -- atleast 10% of energy is kept
-		HitRes.Loss	= 1 - Ricochet
-		Energy.Kinetic = Energy.Kinetic * HitRes.Loss
+		Ricochet          = math.Clamp(Angle / 90, 0.1, 1) -- atleast 10% of energy is kept
+		HitRes.Loss       = 1 - Ricochet
+		Energy.Kinetic    = Energy.Kinetic * HitRes.Loss
 	end
 
 	if HitRes.Kill then
-		local Debris = ACE_APKill( Target , (Bullet["Flight"]):GetNormalized() , Energy.Kinetic )
-		table.insert( Bullet["Filter"] , Debris )
+		local Debris = ACE_APKill( Target , (Bullet.Flight):GetNormalized() , Energy.Kinetic )
+		table.insert( Bullet.Filter , Debris )
 	end
 
 	if Ricochet > 0 and Bullet.Ricochets < 3 and IsValid(Target) then
 
-		Bullet.Ricochets	= Bullet.Ricochets + 1
-		Bullet["Pos"]	= HitPos + HitNormal * 0.75
-		Bullet.FlightTime	= 0
-		Bullet.Flight	= (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
+		Bullet.Ricochets    = Bullet.Ricochets + 1
+		Bullet.Pos          = HitPos + HitNormal * 0.75
+		Bullet.FlightTime   = 0
+		Bullet.Flight       = (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
 
-		if IsValid( ACE_GetPhysicalParent(Target):GetPhysicsObject() ) then
-			Bullet.TraceBackComp = math.max(ACE_GetPhysicalParent(Target):GetPhysicsObject():GetVelocity():Dot(Bullet["Flight"]:GetNormalized()),0)
+		local TargetBase = ACE_GetPhysicalParent(Target)
+		local BaseObj = TargetBase:GetPhysicsObject()
+		if IsValid( BaseObj ) then
+			Bullet.TraceBackComp = math.max(BaseObj:GetVelocity():Dot(Bullet.Flight:GetNormalized()),0)
 		end
 
 		HitRes.Ricochet = true
 
 	end
 
-	ACE_KEShove( Target, HitPos, Bullet["Flight"]:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet["ShovePower"] * (GetConVar("acf_recoilpush"):GetFloat() or 1))
+	ACE_KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("acf_recoilpush"):GetFloat() or 1))
 
 	return HitRes
 end
@@ -182,7 +181,7 @@ function ACE_KEShove(Target, Pos, Vec, KE )
 	local massratio = 1
 	local con = ACE.GetContraption( parent )
 	if con then
-		massratio = ACE.GetContraptionMassRatio( con ) print("ratio:", massratio)
+		massratio = ACE.GetContraptionMassRatio( con )
 	end
 	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
 
