@@ -170,7 +170,6 @@ function ACE_KEShove(Target, Pos, Vec, KE )
 	local Scaling = 1
 	--Scale down the offset relative to chassis if the gun is parented
 	if Target ~= parent then
-		parent:SetColor(Color(255,255,151))
 		Scaling = 0.001
 	end
 
