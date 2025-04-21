@@ -93,7 +93,10 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				TraceInit.endpos   = TargetCenter
 				TraceInit.filter   = OccFilter
 
+				PrintTable(TraceInit)
 				TraceLine(TraceInit, true)
+
+				debugoverlay.Line(Hitpos, TraceRes.HitPos, 3, Color(255,255,255))
 
 				--if above failed getting the target. Try again by nearest point instead.
 				if not TraceRes.Hit then
@@ -192,8 +195,12 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				if math.Rand(0,1) > FragHit then FragHit = 1 else FragHit = 0 end
 			end
 
-			BlastRes = ACE_Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
-			FragRes = ACE_Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
+			Tar:SetColor(Color(255,0,0))			
+
+			--BlastRes = ACE_Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
+			--FragRes = ACE_Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
+
+			if true then continue end
 
 			if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
 
