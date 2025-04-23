@@ -49,8 +49,6 @@ end
 ------------------------------------------------------------------------------]]
 
 local PI = math.pi
-local TraceLine = util.TraceLine
-
 function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 	local Radius       = ACE_CalculateHERadius(FillerMass) -- Scalling law found on the net, based on 1PSI overpressure from 1 kg of TNT at 15m.
@@ -93,10 +91,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				TraceInit.endpos   = TargetCenter
 				TraceInit.filter   = OccFilter
 
-				PrintTable(TraceInit)
-				TraceLine(TraceInit, true)
-
-				debugoverlay.Line(Hitpos, TraceRes.HitPos, 3, Color(255,255,255))
+				util.TraceLine(TraceInit)
 
 				--if above failed getting the target. Try again by nearest point instead.
 				if not TraceRes.Hit then
@@ -141,11 +136,35 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 					if Hitat == Hitpos then Hitat = TargetPos end
 
 					TraceInit.endpos = Hitat + (Hitat-Hitpos):GetNormalized() * 100
-					TraceLine( TraceInit )
+
+					util.TraceLine( TraceInit )
 				end
 
 				--HE has direct view with the prop, so lets damage it
 				if TraceRes.Hit and TraceRes.Entity == Tar then
+
+					--Tar:SetColor(Color(0,255,0))
+--
+					--if Tar:GetClass() == "acf_fueltank" then
+--
+					--	local Dir = (TraceInit.endpos - TraceInit.start):GetNormalized()
+					--	local FakeTrace = {
+					--		start = TraceInit.start - Dir * 5000,
+					--		endpos = TraceInit.endpos,
+					--		mask = MASK_SOLID,
+					--	}
+					--	local FakeRes = util.TraceLine(FakeTrace)
+					--	if FakeRes.Hit and FakeRes.Entity == Tar then
+					--		print("broken!")
+					--		debugoverlay.Cross(FakeTrace.start, 10, 5, Color(255,0,0), true)
+					--		debugoverlay.Cross(FakeRes.HitPos, 10, 5, Color(21,0,255), true)
+					--		debugoverlay.Line(FakeTrace.start, FakeRes.HitPos, 5, Color(255,0,0), true)
+					--		Tar:SetColor(Color(255,0,0))
+					--	else
+					--		print("fixed!")
+					--		continue
+					--	end
+					--end
 
 					Targets[i] = nil  --Remove the thing we just hit from the table so we don't hit it again in the next round
 
@@ -195,12 +214,10 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				if math.Rand(0,1) > FragHit then FragHit = 1 else FragHit = 0 end
 			end
 
-			Tar:SetColor(Color(255,0,0))			
+			--if true then continue end
 
-			--BlastRes = ACE_Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
-			--FragRes = ACE_Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
-
-			if true then continue end
+			BlastRes = ACE_Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
+			FragRes = ACE_Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
 
 			if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
 
