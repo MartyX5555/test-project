@@ -264,43 +264,38 @@ function ENT:CalcFlight()
 		-- We have CFW
 		if trace.Hit then
 
+			local IsPart = false
+			local HitPos = trace.HitPos
 			local HitTarget  = trace.Entity
+			local conTarget	= HitTarget:GetContraption() or {}
+			local conLauncher = self.Launcher:GetContraption() or {}			
 
-			-- Detonate when ghost time allows to.
-			if not (IsValid(HitTarget) and Time < self.GhostPeriod) then
+			local DirToHit = (HitPos - Pos):GetNormalized()
+			local AngleDiff = math.deg(math.acos( Dir:Dot(DirToHit) )) print("Angle Diff:", AngleDiff)
 
-				self.HitNorm	= trace.HitNormal
-				self:DoFlight(trace.HitPos)
-				self.LastVel	= Vel / DeltaTime
-				self:Detonate()
-				return
+			if conTarget == conLauncher and AngleDiff > 10 then -- Not required to do anything else.
+
+				print("Fraction: ",trace.Fraction)
+				local mi, ma = HitTarget:GetCollisionBounds()
+				debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
+
+				IsPart = true
+			end
 
 			-- Determine if the detected ent is not part of the same contraption that fired this missile.
-			elseif HitTarget:GetClass() ~= "acf_missile" then
-
-				local IsPart = false
-
-				local conTarget	= ACE.GetContraption(HitTarget)
-				local conLauncher = ACE.GetContraption(self.Launcher)
-
-				if conTarget == conLauncher then -- Not required to do anything else.
-
-					local mi, ma = HitTarget:GetCollisionBounds()
-					debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
-
-					IsPart = true
-				end
-
-				if not IsPart then
-
-					self.HitNorm	= trace.HitNormal
-					self:DoFlight(trace.HitPos)
-					self.LastVel	= Vel / DeltaTime
-					self:Detonate()
-					return
-				end
-
+			-- Also check theres no props directly in front of the trayectory, even if its from the same contraption.
+			if not IsPart then
+				self:Remove()
+				return
 			end
+
+			--	self.HitNorm	= trace.HitNormal
+			--	self:DoFlight(trace.HitPos)
+			--	self.LastVel	= Vel / DeltaTime
+			--	self:Detonate()
+			--	return
+			--end
+
 		end
 
 		--Detonation by fuse, if available
