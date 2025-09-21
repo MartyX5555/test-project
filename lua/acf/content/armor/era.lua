@@ -116,7 +116,7 @@ if SERVER then
 
 			local HEWeight  = math.Min(armor * 0.25, 100) -- #nonukespls
 			local Radius	= ACE_CalculateHERadius( HEWeight )
-			local Owner	= (CPPI and Entity:CPPIGetOwner()) or NULL
+			local Owner	= ACE.GetEntityOwner(Entity) or NULL
 			local EntPos	= Entity:GetPos()
 
 			ACE_HE( EntPos , vector_up , HEWeight , HEWeight , Owner , Entity, Entity ) --ERABOOM

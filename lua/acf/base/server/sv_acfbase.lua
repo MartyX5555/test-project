@@ -1,4 +1,11 @@
 --visual concept: Here's where should be every acf function
+local ACE = ACE or {}
+
+-- Helper function if a entity has a parent.
+-- Use it if you dont need the parent entity for anything else
+function ACE.HasParent(ent)
+	return IsValid(ent:GetParent())
+end
 
 -- returns last parent in chain, which has physics
 function ACE_GetPhysicalParent( obj )
@@ -11,7 +18,7 @@ function ACE_GetPhysicalParent( obj )
 
 	local Parent = obj
 
-	while IsValid(Parent:GetParent()) do
+	while ACE.HasParent(Parent) do
 		Parent = Parent:GetParent()
 	end
 
@@ -20,25 +27,6 @@ function ACE_GetPhysicalParent( obj )
 	obj.acfphysstale = ACE.CurTime + 10 --when cached parent is considered stale and needs updating
 
 	return Parent
-end
-
-do
-
-	local function OnInitialSpawn( ply )
-		local Table = {}
-		for _, v in pairs( ents.GetAll() ) do
-			if v.ACE and v.ACE.PrHealth then
-				table.insert(Table,{ID = v:EntIndex(), Health = v.ACE.Health, v.ACE.MaxHealth})
-			end
-		end
-		if Table ~= {} then
-			net.Start("ACE_RenderDamage")
-				net.WriteTable(Table)
-			net.Send(ply)
-		end
-	end
-	hook.Add( "PlayerInitialSpawn", "renderdamage", OnInitialSpawn )
-
 end
 
 --Creates or updates the ACF entity data in a passive way. Meaning this entity wont be updated unless it really requires it (like a shot, damage, looking it using armor tool, etc)
@@ -69,15 +57,13 @@ function ACE_Activate( Entity , Recalc )
 	end
 
 	-- Setting Armor properties for the first time (or reuse old data if present)
-	Entity.ACE.Ductility	= Entity.ACE.Ductility or 0
-	Entity.ACE.Material	= not isstring(Entity.ACE.Material) and ACE.BackCompMat[Entity.ACE.Material] or Entity.ACE.Material or "RHA"
+	Entity.ACE.Ductility = Entity.ACE.Ductility or 0
+	Entity.ACE.Material	= ACE_VerifyMaterial(Entity.ACE.Material)
 
 	local Area	= Entity.ACE.Area
 	local Ductility = math.Clamp( Entity.ACE.Ductility, -0.8, 0.8 )
 
-	local Mat	= Entity.ACE.Material or "RHA"
-	local MatData	= ACE_GetMaterialData( Mat )
-
+	local MatData	= ACE_GetMaterialData( Entity.ACE.Material )
 	local massMod	= MatData.massMod
 
 	local Armour	= ACE_CalcArmor( Area, Ductility, Entity:GetPhysicsObject():GetMass() / massMod ) -- So we get the equivalent thickness of that prop in mm if all its weight was a steel plate
@@ -108,6 +94,7 @@ end
 function ACE_Check( Entity )
 
 	if not IsValid(Entity) then return false end
+	if Entity.ACE_KilledBase then return false end -- ensures dead props are no longer usable
 
 	local physobj = Entity:GetPhysicsObject()
 	if not ( physobj:IsValid() and (physobj:GetMass() or 0) > 0 and not Entity:IsWorld() and not Entity:IsWeapon() ) then return false end
@@ -128,24 +115,23 @@ function ACE_Damage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun, T
 
 	local Activated = ACE_Check( Entity )
 	local CanDo = hook.Run("ACE_BulletDamage", Activated, Entity, Energy, FrArea, Angle, Inflictor, Bone, Gun )
-	if CanDo == false or Activated == false then -- above (default) hook does nothing with activated. Excludes godded players.
+	if not CanDo or not Activated then -- above (default) hook does nothing with activated. Excludes godded players.
 		return { Damage = 0, Overkill = 0, Loss = 0, Kill = false }
 	end
+
+	--print("damage!!!", Entity:GetClass())
 
 	if Entity.SpecialDamage then
 		return Entity:ACE_OnDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Type )
 	elseif Activated == "Prop" then
 
 		return ACE_PropDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone , Type)
-
 	elseif Activated == "Vehicle" then
 
 		return ACE_VehicleDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
-
 	elseif Activated == "Squishy" then
 
 		return ACE_SquishyDamage( Entity , Energy , FrArea , Angle , Inflictor , Bone, Gun , Type)
-
 	end
 
 end
@@ -159,7 +145,7 @@ function ACE_CalcDamage( Entity , Energy , FrArea , Angle , Type) --y=-5/16x + b
 	local losArmor		= armor / math.abs( math.cos(math.rad(Angle)) ^ ACE.SlopeEffectFactor )									-- LOS Armor
 	local losArmorHealth = armor ^ 1.1 * (3 + math.min(1 / math.abs(math.cos(math.rad(Angle)) ^ ACE.SlopeEffectFactor), 2.8) * 0.5)	-- Bc people had to abuse armor angling, FML
 
-	local Mat			= Entity.ACE.Material or "RHA"	--very important thing
+	local Mat			= ACE_VerifyMaterial(Entity.ACE.Material)	--very important thing
 	local MatData		= ACE_GetMaterialData( Mat )
 	local damageMult		= isstring(Type) and ACE[Type .. "DamageMult"] or 1
 
@@ -349,27 +335,25 @@ function ACE_GetAllPhysicalConstraints( ent, ResultTable )
 end
 
 -- for those extra sneaky bastards
-function ACE_GetAllChildren( ent, ResultTable )
-
-	--if not ent.GetChildren then return end  --shouldn't need to check anymore, built into glua now
+function ACE_GetAllChildren( ent, ResultTable, IgnoreBase )
 
 	ResultTable = ResultTable or {}
 
-	if not IsValid( ent ) then return end
-	if ResultTable[ ent ] then return end
+	if not IsValid(ent) then return end
+	if ResultTable[ent] then return end
 
-	ResultTable[ ent ] = ent
+	-- Since this function originally included the parent prop into the list.
+	if not IgnoreBase and not next(ResultTable) then
+		ResultTable[ent] = ent
+	end
 
 	local ChildTable = ent:GetChildren()
-
 	for _, v in pairs( ChildTable ) do
-
+		ResultTable[ v ] = v
 		ACE_GetAllChildren( v, ResultTable )
-
 	end
 
 	return ResultTable
-
 end
 
 -- returns any wheels linked to this or child gearboxes
@@ -511,6 +495,6 @@ function ACE_GetWeaponUser( Weapon, inp )
 		end
 	end
 
-	return inp:CPPIGetOwner()
+	return ACE.GetEntityOwner(inp)
 end
 

@@ -15,7 +15,7 @@ local DDDesc = "\n\nA Double Differential transmission allows for a multitude of
 
 -- Inline
 
-ACE_DefineGearbox( "DoubleDiff-T-S", {
+ACE.RegisterGearbox( "DoubleDiff-T-S", {
 	name = "Double Differential, Small",
 	desc = "A light duty regenerative steering transmission." .. DDDesc,
 	model = "models/engines/transaxial_s.mdl",
@@ -34,7 +34,7 @@ ACE_DefineGearbox( "DoubleDiff-T-S", {
 	}
 } )
 
-ACE_DefineGearbox( "DoubleDiff-T-M", {
+ACE.RegisterGearbox( "DoubleDiff-T-M", {
 	name = "Double Differential, Medium",
 	desc = "A medium regenerative steering transmission." .. DDDesc,
 	model = "models/engines/transaxial_m.mdl",
@@ -53,7 +53,7 @@ ACE_DefineGearbox( "DoubleDiff-T-M", {
 	}
 } )
 
-ACE_DefineGearbox( "DoubleDiff-T-L", {
+ACE.RegisterGearbox( "DoubleDiff-T-L", {
 	name = "Double Differential, Large",
 	desc = "A heavy regenerative steering transmission." .. DDDesc,
 	model = "models/engines/transaxial_l.mdl",

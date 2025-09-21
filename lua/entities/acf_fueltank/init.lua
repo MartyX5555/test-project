@@ -90,7 +90,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density   = (PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type      = "Prop"
 
-	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
+	self.ACE.Material = ACE_VerifyMaterial(self.ACE.Material)
 
 	--Forces an update of mass
 	self.LastMass = 1
@@ -208,7 +208,7 @@ do
 			local Model
 			local Dimensions
 
-			Tank:CPPISetOwner(Owner)
+			ACE.SetEntityOwner(Tank, Owner)
 			Tank:SetAngles(Angle)
 			Tank:SetPos(Pos)
 			Tank:Spawn()

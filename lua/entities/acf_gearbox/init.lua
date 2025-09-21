@@ -74,7 +74,7 @@ do
 		Gearbox:SetPos(Pos)
 		Gearbox:Spawn()
 
-		Gearbox:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(Gearbox, Owner)
 		Gearbox.Id            = Id
 		Gearbox.Model         = GearboxData.model
 		Gearbox.Mass          = GearboxData.weight		or 1
@@ -791,7 +791,7 @@ function ENT:Link( Target )
 	local OutPosWorld = self:LocalToWorld( OutPos )
 
 	local Rope = nil
-	if self:CPPIGetOwner():GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
+	if ACE.GetEntityOwner(self):GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
 		Rope = ACE_CreateLinkRope( OutPosWorld, self, OutPos, Target, InPos )
 	end
 

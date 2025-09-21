@@ -157,7 +157,7 @@ do
 		Gun:SetAngles(Angle)
 		Gun:SetPos(Pos)
 		Gun:Spawn()
-		Gun:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(Gun, Owner)
 		Gun.Id              = Id
 		Gun.Caliber         = Lookup.caliber
 		Gun.Model           = Lookup.model
@@ -435,7 +435,7 @@ function ENT:Link( Target )
 		end
 
 		local ReloadBuff = 1
-		if not (self.Class == "AC" or self.Class == "MG" or self.Class == "RAC" or self.Class == "HMG" or self.Class == "GL" or self.Class == "SA") then
+		if not self.noloaders then
 			ReloadBuff = 1.25-(self.LoaderCount * 0.25)
 		end
 
@@ -518,7 +518,7 @@ function ENT:TriggerInput(iname, value)
 			-- Check if it's time to fire
 			self.User = ACE_GetWeaponUser(self, self.Inputs.Fire.Src)
 			if not IsValid(self.User) then
-				self.User = self:CPPIGetOwner()
+				self.User = ACE.GetEntityOwner(self)
 			end
 			self:FireShell()
 			self:Think()
@@ -573,7 +573,7 @@ function ENT:Heat_Function()
 			Kinetic = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1)),
 			Momentum = 0,
 			Penetration = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1))
-		}, 2, 0, self:CPPIGetOwner())
+		}, 2, 0, ACE.GetEntityOwner(self))
 
 		if HitRes.Kill then
 			ACE_HEKill( self, VectorRand() , 0)
@@ -865,7 +865,7 @@ do
 				self:CreateShell( self.BulletData )
 
 				local Dir = -self:GetForward()
-				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 3500 * 39.37) * (GetConVar("acf_recoilpush"):GetFloat() or 1)
+				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 4000 * 39.37) * (GetConVar("acf_recoilpush"):GetFloat() or 1) -- 3500
 
 				ACE_KEShove(self, self:GetPos() , Dir , KE )
 
@@ -944,9 +944,6 @@ function ENT:LoadAmmo( AddTime, Reload )
 			maxRof = self.maxrof
 		end
 
-		-- Define a table of valid classes
-		local invalidClasses = {"AC", "MG", "RAC", "HMG", "GL", "SA"}
-
 		local fireRateModifier = self.RoFmod * self.PGRoFmod * (AmmoEnt.RoFMul + 1)
 		local defaultReloadTime = ((math.max(self.BulletData.RoundVolume, self.MinLengthBonus * Adj) / 500) ^ 0.60) * fireRateModifier
 		local lowestReloadTime = defaultReloadTime
@@ -955,10 +952,8 @@ function ENT:LoadAmmo( AddTime, Reload )
 			lowestReloadTime = 60 / maxRof
 		end
 
-		--print(maxRof)
-
-		-- Check if self.Class is in the invalidClasses table
-		if not ACE_table_contains(invalidClasses, self.Class) and self.maxrof then
+		-- Guns with ability to have loaders
+		if not self.noloaders and self.maxrof then
 
 			if self.LoaderCount > 0 and IsValid(curLoader) then -- if loaders are linked then
 

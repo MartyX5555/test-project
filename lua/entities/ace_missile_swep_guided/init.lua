@@ -65,7 +65,7 @@ function ENT:Initialize()
 
 	self:EmitSound( "acf_extra/airfx/tow2.wav", 100, 100, 2, CHAN_AUTO )
 
-	ACE_ActiveMissiles[self] = true
+	ACE.Missiles[self] = true
 end
 
 local function GetRootVelocity(ent)
@@ -82,7 +82,7 @@ function ENT:Detonate()
 	if self.Exploded then return end
 
 	self.Exploded = true
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 	self:Remove()
 
@@ -96,7 +96,7 @@ function ENT:Detonate()
 
 	self.Bulletdata["Flight"] = self:GetForward():GetNormalized() * self.Bulletdata["MuzzleVel"] * 39.37
 	self.Bulletdata.Pos = self:GetPos() + self:GetForward()
-	self.Bulletdata.Owner = self:CPPIGetOwner()
+	self.Bulletdata.Owner = ACE.GetEntityOwner(self)
 
 	self.CreateShell = ACE.RoundTypes[self.Bulletdata.Type].create
 	self:CreateShell( self.Bulletdata )
@@ -110,7 +110,7 @@ function ENT:Detonate()
 end
 
 function ENT:OnRemove()
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 end
 
 function ENT:PhysicsCollide()
@@ -272,7 +272,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density	= (PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type	= "Prop"
 
-	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
+	self.ACE.Material	= ACE_VerifyMaterial(self.ACE.Material)
 
 end
 
@@ -332,8 +332,8 @@ end
 
 function ENT:GetWhitelistedEntsInCone()
 
-	local ScanArray = ACE.contraptionEnts
-	if table.IsEmpty(ScanArray) then return {} end
+	local ScanArray = ACE.GlobalEntities
+	if not next(ScanArray) then return {} end
 
 	local WhitelistEnts = {}
 	local LOSdata	= {}
@@ -348,30 +348,30 @@ function ENT:GetWhitelistedEntsInCone()
 	local MinimumDistance = 1	*  39.37
 	local MaximumDistance = 2400  *  39.37
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
-		if IsValid(scanEnt) then
+		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
-			entpos  = scanEnt:GetPos()
-			difpos  = entpos - IRSTPos
-			dist	= difpos:Length()
+		entpos  = scanEnt:GetPos()
+		difpos  = entpos - IRSTPos
+		dist	= difpos:Length()
 
-			if dist > MinimumDistance and dist < MaximumDistance then
+		if dist > MinimumDistance and dist < MaximumDistance then
 
-				LOSdata.start		= IRSTPos
-				LOSdata.endpos		= entpos
-				LOSdata.collisiongroup  = COLLISION_GROUP_WORLD
-				LOSdata.filter		= function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
-				LOSdata.mins			= vector_origin
-				LOSdata.maxs			= LOSdata.mins
+			LOSdata.start		= IRSTPos
+			LOSdata.endpos		= entpos
+			LOSdata.collisiongroup  = COLLISION_GROUP_WORLD
+			LOSdata.filter		= function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
+			LOSdata.mins			= vector_origin
+			LOSdata.maxs			= LOSdata.mins
 
-				LOStr = util.TraceHull( LOSdata )
+			LOStr = util.TraceHull( LOSdata )
 
-				--Trace did not hit world
-				if not LOStr.Hit then
-					table.insert(WhitelistEnts, scanEnt)
-				end
+			--Trace did not hit world
+			if not LOStr.Hit then
+				table.insert(WhitelistEnts, scanEnt)
 			end
 		end
 	end

@@ -410,7 +410,7 @@ function Round.pierceeffect( Effect, Bullet )
 			Flash:SetOrigin( Bullet.SimPos )
 			Flash:SetNormal( Bullet.SimFlight:GetNormalized() )
 			Flash:SetRadius( math.max( Radius, 1 ) )
-		util.Effect( "acf_heat_explosion", Flash )
+		util.Effect( "ace_heat_jet", Flash )
 
 		Bullet.Detonated = 1
 		Effect:SetModel("models/Gibs/wood_gib01e.mdl")

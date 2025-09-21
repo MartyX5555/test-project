@@ -1,88 +1,45 @@
+local ACE = ACE or {}
+local Guidance = {}
 
-local ClassName = "Antimissile"
+Guidance.Name = "Antimissile"
+Guidance.desc = "This guidance package detects a missile in front of itself, and guides the munition towards it."
+Guidance.SeekDelay = 0.5 -- This instance must wait this long between target seeks.
+Guidance.WireSeekDelay = 0.1 -- Delay between re-seeks if an entity is provided via wiremod.
 
+-- Callback values
+Guidance.SeekCone = 20 -- Cone to acquire targets within.
+Guidance.ViewCone = 25 -- Cone to retain targets within.
+Guidance.MinimumDistance = 196.85	-- Minimum distance for a target to be considered--a scant 5m
+Guidance.Target = nil --Currently acquired target.
 
-ACE = ACE or {}
-ACE.Guidance = ACE.Guidance or {}
+Guidance.SeekTolerance = math.cos( math.rad( 2 ) ) -- Targets this close to the front are good enough.
 
-local this = ACE.Guidance[ClassName] or inherit.NewSubOf(ACE.Guidance.Wire)
-ACE.Guidance[ClassName] = this
-
----
-
-
-this.Name = ClassName
-
---Currently acquired target.
-this.Target = nil
-
--- Cone to acquire targets within.
-this.SeekCone = 20
-
--- Cone to retain targets within.
-this.ViewCone = 25
-
--- Targets this close to the front are good enough.
-this.SeekTolerance = math.cos( math.rad( 2 ) )
-
--- This instance must wait this long between target seeks.
-this.SeekDelay = 0.5 -- Re-seek drastically reduced cost so we can re-seek
-
--- Delay between re-seeks if an entity is provided via wiremod.
-this.WireSeekDelay = 0.1
-
--- Minimum distance for a target to be considered
-this.MinimumDistance = 196.85	--a scant 5m
-
--- Entity class whitelist
--- thanks to Sestze for the listing.
-this.DefaultFilter =
-{
-	acf_missile					= true,
-	ace_missile_swep_guided		= true,
-	acf_glatgm					= true
-}
-
-
-this.desc = "This guidance package detects a missile in front of itself, and guides the munition towards it."
-
-
-
-function this:Init()
+function Guidance:Init()
 	self.LastSeek = CurTime() - self.SeekDelay - 0.000001
-	--self.Filter = self.DefaultFilter
-	self.Filter = table.Copy(self.DefaultFilter)
 	self.LastTargetPos = Vector()
 end
 
+function Guidance:Configure(missile)
 
+	local launcher = missile.Launcher
+	local outputs = launcher.Outputs
 
+	if outputs then
 
-function this:Configure(missile)
-
-	self:super().Configure(self, missile)
-
-	self.ViewCone = ACE_GetGunValue(missile.BulletData, "viewcone") or this.ViewCone
-	self.ViewConeCos = math.cos(math.rad(self.ViewCone))
-	self.SeekCone = ACE_GetGunValue(missile.BulletData, "seekcone") or this.SeekCone
-
-end
-
-
-
--- Use this to make sure you don't alter the shared default filter unintentionally
-function this:GetSeekFilter()
-	if self.Filter == self.DefaultFilter then
-		self.Filter = table.Copy(self.DefaultFilter)
+		local names = self:GetNamedWireInputs(missile)
+		if #names > 0 then
+			self.InputSource = launcher
+			self.InputNames = names
+		end
 	end
 
-	return self.Filter
+	self.ViewCone = ACE_GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone
+	self.ViewConeCos = math.cos(math.rad(self.ViewCone))
+	self.SeekCone = ACE_GetGunValue(missile.BulletData, "seekcone") or Guidance.SeekCone
+
 end
 
-
-
-
-function this:GetNamedWireInputs(missile)
+function Guidance:GetNamedWireInputs(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -97,42 +54,17 @@ function this:GetNamedWireInputs(missile)
 
 end
 
-
-
-
-function this:GetFallbackWireInputs()
-
-	-- Can't scan for entity outputs: a lot of ents have self-outputs.
-	return {}
-
-end
-
-
-
-
 --TODO: still a bit messy, refactor this so we can check if a flare exits the viewcone too.
-function this:GetGuidance(missile)
-
-	self:PreGuidance(missile)
-
-	local override = self:ApplyOverride(missile)
-	if override then return override end
+function Guidance:GetGuidance(missile)
 
 	self:CheckTarget(missile)
 
-	if not IsValid(self.Target) or self.Target:GetParent():IsValid() then
+	if not IsValid(self.Target) or ACE.HasParent(self.Target) then
 		return {}
 	end
 
 	local missilePos = missile:GetPos()
-	--local missileForward = missile:GetForward()
-	--local targetPhysObj = self.Target:GetPhysicsObject()
 	local targetPos = self.Target:GetPos()
-
-	-- this was causing radar to break in certain conditions, usually on parented props.
-	--if IsValid(targetPhysObj) then
-		--targetPos = util.LocalToWorld( self.Target, targetPhysObj:GetMassCenter(), nil )
-	--end
 
 	local mfo	= missile:GetForward()
 	local mdir	= (targetPos - missilePos):GetNormalized()
@@ -148,29 +80,7 @@ function this:GetGuidance(missile)
 
 end
 
-
-
-
-function this:ApplyOverride(missile)
-
-	if self.Override then
-
-		local ret = self.Override:GetGuidanceOverride(missile, self)
-
-		if ret then
-			ret.ViewCone = self.ViewCone
-			ret.ViewConeRad = math.rad(self.ViewCone)
-			return ret
-		end
-
-	end
-
-end
-
-
-
-
-function this:CheckTarget(missile)
+function Guidance:CheckTarget(missile)
 
 	if not (self.Target or self.Override) then
 		local target = self:AcquireLock(missile)
@@ -182,10 +92,7 @@ function this:CheckTarget(missile)
 
 end
 
-
-
-
-function this:GetWireTarget(missile)
+function Guidance:GetWireTarget(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -218,7 +125,7 @@ function this:GetWireTarget(missile)
 end
 
 function JankCone (init, forward, range, cone)
-	local Missiles = ACE_ActiveMissiles
+	local Missiles = ACE.Missiles
 	local tblout = {}
 
 	if next(Missiles) then
@@ -235,7 +142,7 @@ function JankCone (init, forward, range, cone)
 	return tblout
 end
 
-function this:GetWhitelistedEntsInCone(missile)
+function Guidance:GetWhitelistedEntsInCone(missile)
 
 	local missilePos = missile:GetPos()
 	local missileForward = missile:GetForward()
@@ -251,7 +158,6 @@ function this:GetWhitelistedEntsInCone(missile)
 	--local filter = self.Filter
 	for _, foundEnt in pairs(found) do
 
-		if (not IsValid(foundEnt)) or (not self.Filter[foundEnt:GetClass()]) then continue end
 		local foundLocalPos = foundEnt:GetPos() - missilePos
 		local foundDistSqr = foundLocalPos:LengthSqr()
 
@@ -271,10 +177,7 @@ function this:GetWhitelistedEntsInCone(missile)
 
 end
 
-
-
-
-function this:HasLOSVisibility(ent, missile)
+function Guidance:HasLOSVisibility(ent, missile)
 
 	local traceArgs =
 	{
@@ -294,11 +197,8 @@ function this:HasLOSVisibility(ent, missile)
 
 end
 
-
-
-
 -- Return the first entity found within the seek-tolerance, or the entity within the seek-cone closest to the seek-tolerance.
-function this:AcquireLock(missile)
+function Guidance:AcquireLock(missile)
 
 	local curTime = CurTime()
 
@@ -379,10 +279,8 @@ function this:AcquireLock(missile)
 	return mostCentralEnt
 end
 
-
-
 --Another Stupid Workaround. Since guidance degrees are not loaded when ammo is created
-function this:GetDisplayConfig(Type)
+function Guidance:GetDisplayConfig(Type)
 
 	local seekCone = ACE.Weapons.Guns[Type].seekcone * 2 or 0
 	local ViewCone = ACE.Weapons.Guns[Type].viewcone * 2 or 0
@@ -394,3 +292,4 @@ function this:GetDisplayConfig(Type)
 	}
 end
 
+ACE.RegisterGuidance( Guidance.Name, Guidance )

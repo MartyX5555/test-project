@@ -6,6 +6,11 @@ include("shared.lua")
 
 DEFINE_BASECLASS("ace_scalability") -- Required to get the local BaseClass. A workaround uses this below
 
+local ACE = ACE or {}
+if not ACE.AmmoCrates then
+	ACE.AmmoCrates = {}
+end
+
 local GunClasses = ACE.Classes.GunClass
 
 local GunTable  = ACE.Weapons.Guns
@@ -58,9 +63,16 @@ function ENT:Initialize()
 	self.Inputs              = Wire_CreateInputs( self, Inputs )
 	self.Outputs             = Wire_CreateOutputs( self, Outputs )
 
-	ACE.AmmoCrates           = ACE.AmmoCrates or {}
-
 end
+
+function ENT:InitializeOnCollector()
+	ACE.AmmoCrates[self] = true
+end
+
+function ENT:OnRemoveCollectorData()
+	ACE.AmmoCrates[self] = nil
+end
+
 
 function ENT:ACE_Activate( Recalc )
 
@@ -95,7 +107,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density   = (self:GetPhysicsObject():GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type      = "Prop"
 
-	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
+	self.ACE.Material	= ACE_VerifyMaterial(self.ACE.Material)
 
 	--Forces an update of mass
 	self.LastMass = 1
@@ -145,7 +157,7 @@ do
 		-- cookoff chance calculation
 		if self.Damaged then return HitRes end
 
-		if table.IsEmpty( self.BulletData or {} ) then
+		if not next( self.BulletData or {} ) then
 			self:Remove()
 		else
 
@@ -260,7 +272,7 @@ do
 			local Weight
 			local Dimensions
 
-			Ammo:CPPISetOwner(Owner)
+			ACE.SetEntityOwner(Ammo, Owner)
 			Ammo:SetAngles(Angle)
 			Ammo:SetPos(Pos)
 			Ammo:Spawn()
@@ -343,8 +355,6 @@ do
 			Owner:AddCount( "_acf_ammo", Ammo )
 			Owner:AddCleanup( "acfmenu", Ammo )
 
-			table.insert(ACE.AmmoCrates, Ammo)
-
 			return Ammo
 		end
 	end
@@ -400,7 +410,7 @@ function ENT:UpdateOverlayText()
 
 	local roundType = self.BulletData.Type
 
-	if table.IsEmpty( self.BulletData or {} ) then  return end
+	if not next( self.BulletData or {} ) then  return end
 
 	local text = ""
 
@@ -408,7 +418,7 @@ function ENT:UpdateOverlayText()
 
 		text = " - " .. roundType .. " - "
 
-		if self.SupplyingTo and not table.IsEmpty(self.SupplyingTo) then
+		if self.SupplyingTo and not next(self.SupplyingTo) then
 			text = text .. "\nSupplying " .. #self.SupplyingTo .. " Ammo Crates"
 		end
 
@@ -753,7 +763,7 @@ function ENT:Think()
 				self.BulletData.Pos = self:LocalToWorld(self:OBBCenter() + VectorRand() * (self:OBBMaxs() - self:OBBMins()) / 2)
 				self.BulletData.Flight  = (VectorRand()):GetNormalized() * self.BulletCookSpeed * 39.37 + self:GetVelocity()
 
-				self.BulletData.Owner	= self.BulletData.Owner or self.Inflictor or self:CPPIGetOwner()
+				self.BulletData.Owner	= self.BulletData.Owner or self.Inflictor or ACE.GetEntityOwner(self)
 				self.BulletData.Gun	= self.BulletData.Gun	or self
 				self.BulletData.Crate	= self.BulletData.Crate or self:EntIndex()
 
@@ -771,29 +781,29 @@ function ENT:Think()
 	-- Completely new, fresh, genius, beautiful, flawless refill system.
 	elseif self.BulletData.Type == "Refill" and self.Load then
 
-		for _,Ammo in pairs( ACE.AmmoCrates ) do
+		for crate, _ in pairs( ACE.AmmoCrates ) do
 
-			if Ammo.BulletData.Type ~= "Refill" then
+			if crate.BulletData.Type ~= "Refill" then
 
-				local distsqrt = self:GetPos():DistToSqr( Ammo:GetPos() )
+				local distsqrt = self:GetPos():DistToSqr( crate:GetPos() )
 
-				if distsqrt < ACE.RefillDistance ^ 2 and Ammo.Capacity > Ammo.Ammo then
+				if distsqrt < ACE.RefillDistance ^ 2 and crate.Capacity > crate.Ammo then
 
 					self.SupplyingTo = self.SupplyingTo or {}
 
-					if not table.HasValue( self.SupplyingTo, Ammo:EntIndex() ) then
+					if not table.HasValue( self.SupplyingTo, crate:EntIndex() ) then
 
-						table.insert(self.SupplyingTo, Ammo:EntIndex())
-						self:RefillEffect( Ammo )
+						table.insert(self.SupplyingTo, crate:EntIndex())
+						self:RefillEffect( crate )
 
 					end
 
-					local Supply = math.ceil((1 / ((Ammo.BulletData.ProjMass + Ammo.BulletData.PropMass) * 5000)) * self:GetPhysicsObject():GetMass() ^ 1.2)
-					local Transfert = math.min(Supply, Ammo.Capacity - Ammo.Ammo)
-					Ammo.Ammo	= Ammo.Ammo + Transfert
+					local Supply = math.ceil((1 / ((crate.BulletData.ProjMass + crate.BulletData.PropMass) * 5000)) * self:GetPhysicsObject():GetMass() ^ 1.2)
+					local Transfert = math.min(Supply, crate.Capacity - crate.Ammo)
+					crate.Ammo	= crate.Ammo + Transfert
 
-					Ammo.Supplied = true
-					Ammo.Entity:EmitSound( "weapons/shotgun/shotgun_reload" .. math.random(1,3) .. ".wav", 350, 100, 0.30 )
+					crate.Supplied = true
+					crate.Entity:EmitSound( "weapons/shotgun/shotgun_reload" .. math.random(1,3) .. ".wav", 350, 100, 0.30 )
 
 				end
 			end
@@ -865,10 +875,4 @@ function ENT:OnRemove()
 			self.Ammo = 0
 		end
 	end
-	for k,v in pairs(ACE.AmmoCrates) do
-		if v == self then
-			table.remove(ACE.AmmoCrates,k)
-		end
-	end
-
 end

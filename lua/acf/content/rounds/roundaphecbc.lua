@@ -124,7 +124,7 @@ end
 
 function Round.normalize( _, Bullet, HitPos, HitNormal, Target)
 
-	local Mat = Target.ACE.Material or "RHA"
+	local Mat = ACE_VerifyMaterial(Target.ACE.Material)
 	local NormieMult = ACE.ArmorMaterials[ Mat ].NormMult or 1
 
 	Bullet.Normalize = true

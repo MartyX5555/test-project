@@ -1,7 +1,7 @@
 
 -- Flat 6 engines
 
-ACE_DefineEngine( "2.8-B6", {
+ACE.RegisterEngine( "2.8-B6", {
 	name = "2.8L Flat 6 Petrol",
 	desc = "Car sized flat six engine, sporty and light",
 	model = "models/engines/b6small.mdl",
@@ -16,7 +16,7 @@ ACE_DefineEngine( "2.8-B6", {
 	limitrpm = 7250
 } )
 
-ACE_DefineEngine( "5.0-B6", {
+ACE.RegisterEngine( "5.0-B6", {
 	name = "5.0L Flat 6 Petrol",
 	desc = "Sports car grade flat six, renown for their smooth operation and light weight",
 	model = "models/engines/b6med.mdl",
@@ -31,7 +31,7 @@ ACE_DefineEngine( "5.0-B6", {
 	limitrpm = 6800
 } )
 
-ACE_DefineEngine( "8.3-B6", {
+ACE.RegisterEngine( "8.3-B6", {
 	name = "8.3L Flat 6 Multifuel",
 	desc = "Military-grade multifuel boxer engine.  Although heavy, it is compact, durable, and has excellent performance under adverse conditions.",
 	model = "models/engines/b6med.mdl",
@@ -46,7 +46,7 @@ ACE_DefineEngine( "8.3-B6", {
 	limitrpm = 4200
 } )
 
-ACE_DefineEngine( "10.0-B6", {
+ACE.RegisterEngine( "10.0-B6", {
 	name = "10.0L Flat 6 Petrol",
 	desc = "Aircraft grade boxer with a high rev range biased powerband",
 	model = "models/engines/b6large.mdl",
@@ -61,7 +61,7 @@ ACE_DefineEngine( "10.0-B6", {
 	limitrpm = 4500
 } )
 
-ACE_DefineEngine( "5.4-B6", {
+ACE.RegisterEngine( "5.4-B6", {
 	name = "5.4L Flat 6 Multifuel",
 	desc = "Military-grade multifuel boxer engine.  Although heavy, it is compact, durable, and has excellent performance under adverse conditions.",
 	model = "models/engines/b6med.mdl",
@@ -76,7 +76,7 @@ ACE_DefineEngine( "5.4-B6", {
 	limitrpm = 3500
 } )
 
-ACE_DefineEngine( "15.8-B6", {
+ACE.RegisterEngine( "15.8-B6", {
 	name = "15.8L Flat 6 Petrol",
 	desc = "Monstrous aircraft-grade boxer with a high rev range biased powerband",
 	model = "models/engines/b6large.mdl",

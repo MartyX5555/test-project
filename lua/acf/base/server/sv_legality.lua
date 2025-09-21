@@ -87,7 +87,7 @@ do
 		-- Allowed materials: rha, cast and aluminum
 		if IsRestricted("material") then
 
-			local material = Ent.ACE.Material or "RHA"
+			local material = ACE_VerifyMaterial(Ent.ACE.Material)
 
 			if not AllowedMaterials[material] then
 				table.insert(problems,"Material not legal")

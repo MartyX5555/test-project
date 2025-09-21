@@ -78,7 +78,7 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 
 		IRST:Spawn()
 
-		IRST:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(IRST, Owner)
 
 		IRST:SetNWNetwork()
 		IRST:SetModelEasy(radar.model)
@@ -169,7 +169,7 @@ end
 
 function ENT:GetWhitelistedEntsInCone()
 
-	local ScanArray = ACE.contraptionEnts
+	local ScanArray = ACE.GlobalEntities
 	if not next(ScanArray) then return {} end
 
 	local WhitelistEnts    = {}
@@ -182,10 +182,11 @@ function ENT:GetWhitelistedEntsInCone()
 	local difpos           = vector_origin
 	local dist             = 0
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
 		--Why IRST should track itself?
 		if self == scanEnt then continue end
@@ -299,7 +300,7 @@ function ENT:AcquireLock()
 			local angerr = Angle(finalerror, finalerror, finalerror) * randanginac
 
 			--For Owner table
-			local Owner = scanEnt:CPPIGetOwner()
+			local Owner = ACE.GetEntityOwner(scanEnt)
 			local NickName = IsValid(Owner) and Owner:GetName() or ""
 
 

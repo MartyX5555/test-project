@@ -5,6 +5,11 @@ include("shared.lua")
 
 DEFINE_BASECLASS( "base_wire_entity" )
 
+local ACE = ACE or {}
+
+ACE.radarEntities = ACE.radarEntities or {} --for tracking radar usage
+ACE.radarIDs = ACE.radarIDs or {} --ID radar purpose
+
 function ENT:Initialize()
 
 	self.ThinkDelay			= 0.1
@@ -35,6 +40,16 @@ function ENT:Initialize()
 		IsJammed        = 0
 	}
 
+end
+
+function ENT:InitializeOnCollector()
+	ACE.radarEntities[self] = self:EntIndex()
+	ACE.radarIDs[self] = id
+end
+
+function ENT:OnRemoveCollectorData()
+	ACE.radarEntities[self] = nil
+	ACE.radarIDs[self] = nil
 end
 
 local function SetConeParameters( Radar )
@@ -74,7 +89,7 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
 	Radar:Spawn()
 
-	Radar:CPPISetOwner(Owner)
+	ACE.SetEntityOwner(Radar, Owner)
 
 	Radar:SetModelEasy(radar.model)
 
@@ -197,7 +212,7 @@ function ENT:Think()
 		if self.IsJammed <= 0 then
 
 			--Get all ents collected by contraptionScan
-			local ScanArray = ACE.contraptionEnts
+			local ScanArray = ACE.GlobalEntities
 
 			local thisPos	= self:GetPos()
 			--local thisforward	= self:GetForward()
@@ -212,118 +227,115 @@ function ENT:Think()
 			local besterr = math.huge --Hugh mungus number
 
 
-			for _, scanEnt in pairs(ScanArray) do
+			for scanEnt, _ in pairs(ScanArray) do
 
 				--check if ent is valid
-				if scanEnt:IsValid() then
+				if not IsValid(scanEnt) then continue end
+				if ACE.HasParent(scanEnt) then continue end
 
-					--skip any flare from vision
-					if scanEnt:GetClass() == "ace_flare" then continue end
+				--skip any flare from vision
+				if scanEnt:GetClass() == "ace_flare" then continue end
 
-					--skip the tracking itself
-					if scanEnt:EntIndex() == self:EntIndex() then continue end
+				--skip the tracking itself
+				if scanEnt == self then continue end
 
-					--skip any parented entity
-					if scanEnt:GetParent():IsValid() then continue end
+				local entvel       = scanEnt:GetVelocity()
+				local velLength    = entvel:Length()
+				local entpos       = scanEnt:WorldSpaceCenter()
 
-					local entvel       = scanEnt:GetVelocity()
-					local velLength    = entvel:Length()
-					local entpos       = scanEnt:WorldSpaceCenter()
+				local difpos       = (entpos - thisPos)
+				local ang          = self:WorldToLocalAngles(difpos:Angle())	--Used for testing if inrange
+				local absang       = Angle(math.abs(ang.p),math.abs(ang.y),0)  --Since I like ABS so much
 
-					local difpos       = (entpos - thisPos)
-					local ang          = self:WorldToLocalAngles(difpos:Angle())	--Used for testing if inrange
-					local absang       = Angle(math.abs(ang.p),math.abs(ang.y),0)  --Since I like ABS so much
+				--Doesn't want to see through peripheral vison since its easier to focus a radar on a target front and center of an array
+				local errorFromAng = Vector(0.05 * (absang.y / self.Cone) ^ 2, 0.02 * (absang.y / self.Cone) ^ 2, 0.02 * (absang.p / self.Cone) ^ 2)
 
-					--Doesn't want to see through peripheral vison since its easier to focus a radar on a target front and center of an array
-					local errorFromAng = Vector(0.05 * (absang.y / self.Cone) ^ 2, 0.02 * (absang.y / self.Cone) ^ 2, 0.02 * (absang.p / self.Cone) ^ 2)
+				--Entity is within radar cone
+				if (absang.p < self.Cone and absang.y < self.Cone) then
 
-					--Entity is within radar cone
-					if (absang.p < self.Cone and absang.y < self.Cone) then
+					local LOStr = util.TraceLine( {
 
-						local LOStr = util.TraceLine( {
+						start = thisPos ,endpos = entpos,
+						collisiongroup = COLLISION_GROUP_WORLD,
+						filter = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end,
 
-							start = thisPos ,endpos = entpos,
-							collisiongroup = COLLISION_GROUP_WORLD,
+					}) --Hits anything in the world.
+
+					--Trace did not hit world
+					if not LOStr.Hit then
+
+						local DPLR
+						local Espeed = entvel:Length()
+
+						if Espeed > 0.5 then
+							DPLR = self:WorldToLocal(thisPos + entvel * 2)
+						else
+							Espeed = 0
+							DPLR = Vector(0.001,0.001,0.001)
+						end
+
+						--print(Espeed)
+
+						local Dopplertest = math.min(math.abs(Espeed / math.abs(DPLR.Y)) * 100, 10000)
+						local Dopplertest2 = math.min(math.abs(Espeed / math.abs(DPLR.Z)) * 100, 10000)
+
+						--Also objects not coming directly towards the radar create more error.
+						local DopplerERR = (((math.abs(DPLR.y) ^ 2 + math.abs(DPLR.z) ^ 2) ^ 0.5) / velLength / 2) * 0.1
+
+						local GCtr = util.TraceHull( {
+
+							start = entpos,
+							endpos = entpos + difpos:GetNormalized() * 2000,
+							collisiongroup  = COLLISION_GROUP_DEBRIS,
 							filter = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end,
+							mins = Vector( -self.ConeInducedGCTRSize, -self.ConeInducedGCTRSize, -self.ConeInducedGCTRSize ),
+							maxs = Vector( self.ConeInducedGCTRSize, self.ConeInducedGCTRSize, self.ConeInducedGCTRSize )
 
 						}) --Hits anything in the world.
 
-						--Trace did not hit world
-						if not LOStr.Hit then
-
-							local DPLR
-							local Espeed = entvel:Length()
-
-							if Espeed > 0.5 then
-								DPLR = self:WorldToLocal(thisPos + entvel * 2)
-							else
-								Espeed = 0
-								DPLR = Vector(0.001,0.001,0.001)
-							end
-
-							--print(Espeed)
-
-							local Dopplertest = math.min(math.abs(Espeed / math.abs(DPLR.Y)) * 100, 10000)
-							local Dopplertest2 = math.min(math.abs(Espeed / math.abs(DPLR.Z)) * 100, 10000)
-
-							--Also objects not coming directly towards the radar create more error.
-							local DopplerERR = (((math.abs(DPLR.y) ^ 2 + math.abs(DPLR.z) ^ 2) ^ 0.5) / velLength / 2) * 0.1
-
-							local GCtr = util.TraceHull( {
-
-								start = entpos,
-								endpos = entpos + difpos:GetNormalized() * 2000,
-								collisiongroup  = COLLISION_GROUP_DEBRIS,
-								filter = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end,
-								mins = Vector( -self.ConeInducedGCTRSize, -self.ConeInducedGCTRSize, -self.ConeInducedGCTRSize ),
-								maxs = Vector( self.ConeInducedGCTRSize, self.ConeInducedGCTRSize, self.ConeInducedGCTRSize )
-
-							}) --Hits anything in the world.
-
+						--returns amount of ground clutter
+						if not GCtr.HitSky then
+							GCdis = (1-GCtr.Fraction)
+							GCFr = GCtr.Fraction
+						else
 							--returns amount of ground clutter
-							if not GCtr.HitSky then
-								GCdis = (1-GCtr.Fraction)
-								GCFr = GCtr.Fraction
-							else
-								--returns amount of ground clutter
-								GCdis = 0
-								GCFr = 1
+							GCdis = 0
+							GCFr = 1
+						end
+
+						--print(GCdis)
+						--if GCdis <= 0.5 then --Get canceled by ground clutter
+
+						--Qualifies as radar target, if a target is moving towards the radar at 30 mph the radar will also classify the target
+						if ( (Dopplertest < self.DPLRFAC) or (Dopplertest2 < self.DPLRFAC) or (math.abs(DPLR.X) > 880) ) and ( (math.abs(DPLR.X / (Espeed + 0.0001)) > 0.3) or (GCFr >= 0.4) ) then
+							--1000 u = ~57 mph
+
+							--Could do pythagorean stuff but meh, works 98% of time
+							local err = absang.p + absang.y
+
+							--Sorts targets as closest to being directly in front of radar
+							if err < besterr then
+								self.ClosestToBeam = #ownArray + 1
+								besterr = err
 							end
 
-							--print(GCdis)
-							--if GCdis <= 0.5 then --Get canceled by ground clutter
+							--For Owner table
+							local Owner = ACE.GetEntityOwner(scanEnt)
+							local NickName = IsValid(Owner) and Owner:GetName() or ""
 
-							--Qualifies as radar target, if a target is moving towards the radar at 30 mph the radar will also classify the target
-							if ( (Dopplertest < self.DPLRFAC) or (Dopplertest2 < self.DPLRFAC) or (math.abs(DPLR.X) > 880) ) and ( (math.abs(DPLR.X / (Espeed + 0.0001)) > 0.3) or (GCFr >= 0.4) ) then
-								--1000 u = ~57 mph
+							table.insert(ownArray , NickName)
+							table.insert(posArray ,entpos + randinac * errorFromAng * 2000 + randinac * ((entpos - thisPos):Length() * (self.InaccuracyMul * 0.8 + GCdis * 0.1 ))) --3
 
-								--Could do pythagorean stuff but meh, works 98% of time
-								local err = absang.p + absang.y
+							--IDK if this is more intensive than length
+							local finalvel = Vector(0,0,0)
 
-								--Sorts targets as closest to being directly in front of radar
-								if err < besterr then
-									self.ClosestToBeam = #ownArray + 1
-									besterr = err
-								end
-
-								--For Owner table
-								local Owner = scanEnt:CPPIGetOwner()
-								local NickName = IsValid(Owner) and Owner:GetName() or ""
-
-								table.insert(ownArray , NickName)
-								table.insert(posArray ,entpos + randinac * errorFromAng * 2000 + randinac * ((entpos - thisPos):Length() * (self.InaccuracyMul * 0.8 + GCdis * 0.1 ))) --3
-
-								--IDK if this is more intensive than length
-								local finalvel = Vector(0,0,0)
-
-								if Espeed > 0 then
-									finalvel = entvel + velLength * ( randinac * errorFromAng + randinac2 * (DopplerERR + GCFr * 0.03) )
-									finalvel = Vector(math.Clamp(finalvel.x,-7000,7000),math.Clamp(finalvel.y,-7000,7000),math.Clamp(finalvel.z,-7000,7000))
-								end
-
-								table.insert(velArray,finalvel)
-
+							if Espeed > 0 then
+								finalvel = entvel + velLength * ( randinac * errorFromAng + randinac2 * (DopplerERR + GCFr * 0.03) )
+								finalvel = Vector(math.Clamp(finalvel.x,-7000,7000),math.Clamp(finalvel.y,-7000,7000),math.Clamp(finalvel.z,-7000,7000))
 							end
+
+							table.insert(velArray,finalvel)
+
 						end
 					end
 				end

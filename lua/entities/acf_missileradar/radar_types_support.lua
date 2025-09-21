@@ -6,7 +6,7 @@ function ACFM_GetMissilesInCone(pos, dir, degs)
 
 	local ret = {}
 
-	for missile, _ in pairs(ACE_ActiveMissiles) do
+	for missile, _ in pairs(ACE.Missiles) do
 
 		if not IsValid(missile) then continue end
 
@@ -26,7 +26,7 @@ function ACFM_GetMissilesInSphere(pos, radius)
 
 	local radSqr = radius * radius
 
-	for missile, _ in pairs(ACE_ActiveMissiles) do
+	for missile, _ in pairs(ACE.Missiles) do
 
 		if not IsValid(missile) then continue end
 

@@ -1,7 +1,7 @@
 
 -- Flat 4 engines
 
-ACE_DefineEngine( "1.4-B4", {
+ACE.RegisterEngine( "1.4-B4", {
 	name = "1.4L Flat 4 Petrol",
 	desc = "Small air cooled flat four, most commonly found in nazi insects",
 	model = "models/engines/b4small.mdl",
@@ -16,7 +16,7 @@ ACE_DefineEngine( "1.4-B4", {
 	limitrpm = 4500
 } )
 
-ACE_DefineEngine( "2.1-B4", {
+ACE.RegisterEngine( "2.1-B4", {
 	name = "2.1L Flat 4 Petrol",
 	desc = "Tuned up flat four, probably find this in things that go fast in a desert.",
 	model = "models/engines/b4small.mdl",
@@ -31,7 +31,7 @@ ACE_DefineEngine( "2.1-B4", {
 	limitrpm = 5000
 } )
 
-ACE_DefineEngine( "3.2-B4", {
+ACE.RegisterEngine( "3.2-B4", {
 	name = "3.2L Flat 4 Petrol",
 	desc = "Bored out fuckswindleton batshit flat four. Fuck yourself.",
 	model = "models/engines/b4med.mdl",
@@ -46,7 +46,7 @@ ACE_DefineEngine( "3.2-B4", {
 	limitrpm = 6500
 } )
 
-ACE_DefineEngine( "2.4-B4", {
+ACE.RegisterEngine( "2.4-B4", {
 	name = "2.4L Flat 4 Multifuel",
 	desc = "Tiny military-grade multifuel. Heavy, but grunts hard.",
 	model = "models/engines/b4small.mdl",

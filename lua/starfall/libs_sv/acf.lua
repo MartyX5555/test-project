@@ -107,7 +107,7 @@ local getent = instance.Types.Entity.GetEntity
 
 local function restrictInfo(ent)
 	if GetConVar("acf_restrictinfo"):GetInt() ~= 0 then
-		return ent:CPPIGetOwner() ~= instance.player
+		return ACE.GetEntityOwner(ent) ~= instance.player
 	end
 
 	return false

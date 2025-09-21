@@ -1,32 +1,15 @@
+local ACE = ACE or {}
+local Guidance = {}
 
-local ClassName = "GPS"
+Guidance.Name = "GPS"
+Guidance.desc = "This guidance package recieves a one-time position and guides to it regardless of LOS."
+Guidance.InputSource = nil -- An entity with a Position wire-output
+Guidance.FirstGuidance = true -- Disables guidance when true
 
-
-ACE = ACE or {}
-ACE.Guidance = ACE.Guidance or {}
-
-local this = ACE.Guidance[ClassName] or inherit.NewSubOf(ACE.Guidance.Wire)
-ACE.Guidance[ClassName] = this
-
-this.Name = ClassName
-
--- An entity with a Position wire-output
-this.InputSource = nil
-
-this.desc = "This guidance package recieves a one-time position and guides to it regardless of LOS."
-
--- Disables guidance when true
-this.FirstGuidance = true
-
-
-function this:Init()
-
+function Guidance:Init()
 end
 
-
-
-
-function this:Configure(missile)
+function Guidance:Configure(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -34,7 +17,6 @@ function this:Configure(missile)
 	if outputs then
 
 		local names = self:GetNamedWireInputs(missile)
-
 
 		if #names > 0 then
 
@@ -49,18 +31,13 @@ function this:Configure(missile)
 				self.InputSource = launcher
 				self.InputNames = names
 			end
-
 		end
-
 	end
 
-	self:super().Configure(self, missile)
-
 	self.FirstGuidance = true
-
 end
 
-function this:GetNamedWireInputs(missile)
+function Guidance:GetNamedWireInputs(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -86,7 +63,7 @@ function this:GetNamedWireInputs(missile)
 
 end
 
-function this:GetFallbackWireInputs(missile)
+function Guidance:GetFallbackWireInputs(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -112,7 +89,7 @@ function this:GetFallbackWireInputs(missile)
 end
 
 
-function this:GetGuidance(_)
+function Guidance:GetGuidance(_)
 
 	local posVec = self:GetWireTarget()
 
@@ -129,7 +106,7 @@ function this:GetGuidance(_)
 end
 
 --Another Stupid Workaround. Since guidance degrees are not loaded when ammo is created
-function this:GetDisplayConfig(_)
+function Guidance:GetDisplayConfig(_)
 
 	return
 	{
@@ -139,7 +116,7 @@ end
 
 
 
-function this:GetWireTarget()
+function Guidance:GetWireTarget()
 
 	if not IsValid(self.InputSource) then
 		return {}
@@ -176,3 +153,5 @@ function this:GetWireTarget()
 	return posVec
 
 end
+
+ACE.RegisterGuidance( Guidance.Name, Guidance )

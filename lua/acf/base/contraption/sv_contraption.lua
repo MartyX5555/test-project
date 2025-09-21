@@ -1,16 +1,11 @@
---i'll leave almost everything ready so they can be exported to acf-3 in some near future
---print("[ACE | INFO]- Loading Contraption System. . .")
---ACE               = ACE or {}
-ACE.contraptionEnts   = {} --table which will have all registered ents
-ACE.radarEntities     = {} --for tracking radar usage
-ACE.radarIDs          = {} --ID radar purpose
-ACE.ECMPods           = {} --ECM usage
-ACE.Opticals          = {} --GLATGM optical computers
-ACE.Explosives        = {} --Explosive entities like ammocrates & fueltanks go here
-ACE.Debris            = {} --Debris count
-ACE.Mines             = ACE.Mines or {}
-ACE.MineOwners  	  = ACE.MineOwners or {} -- We want to develop without losing any data inside of this.
-ACE.ScalableEnts      = ACE.ScalableEnts or {}
+
+local ACE = ACE or {}
+if not ACE.GlobalEntities then
+
+	ACE.GlobalEntities = {} -- Any entity should go here, parented or not.
+	ACE.Explosives = {} --Explosive entities like ammocrates & fueltanks go here
+	ACE.ScalableEnts = {}
+end
 
 --list of classname ents which should be added to the contraption ents.
 local AllowedEnts = {
@@ -48,7 +43,7 @@ ACE.ExplosiveEnts = {
 }
 
 -- whitelist for things that can be turned into debris
-ACE.Debris = {
+ACE.AllowedDebris = {
 	acf_gun                   = true,
 	acf_rack                  = true,
 	acf_gearbox               = true,
@@ -58,179 +53,38 @@ ACE.Debris = {
 }
 
 -- insert any new entity to the Contraption List
--- Maybe in a future: Change if-else chains by tables
-hook.Add("OnEntityCreated", "ACE_EntRegister", function(Ent)
-	timer.Simple(0, function()
-		if not IsValid(Ent) then return end
+function ACE.AddEntityToCollector(Ent, ForceInsert)
+	if not IsValid(Ent) then return end
+	local class = Ent:GetClass()
+	if not ForceInsert and not AllowedEnts[class] then return end
 
-		-- check if ent class is in whitelist
-		if AllowedEnts[Ent:GetClass()] then
-			-- include any ECM to this table
-			if Ent:GetClass() == "ace_ecm" then
-				table.insert(ACE.ECMPods, Ent) --print('[ACE | INFO]- ECM registered count: ' .. table.Count( ACE.ECMPods ))
-				-- include any Tracking Radar to this table
-			elseif Ent:GetClass() == "ace_trackingradar" then
-				table.insert(ACE.radarEntities, Ent) --print('[ACE | INFO]- Tracking radar registered count: ' .. table.Count( ACE.radarEntities ))
+	if ACE.ExplosiveEnts[class] then
+		ACE.Explosives[Ent] = true
+	end
 
-				for id, ent in pairs(ACE.radarEntities) do
-					ACE.radarIDs[ent] = id
-				end
-			elseif Ent:GetClass() == "acf_opticalcomputer" then
-				--Optical Computers go here
-				table.insert(ACE.Opticals, Ent) --print('[ACE | INFO]- GLATGM optical computer registered count: ' .. table.Count( ACE.Opticals ))
-			elseif ACE.ExplosiveEnts[Ent:GetClass()] then
-				--Insert Ammocrates and other explosive stuff here
-				table.insert(ACE.Explosives, Ent) --print('[ACE | INFO]- Explosive registered count: ' .. table.Count( ACE.Explosives ))
-			end
+	if Ent.IsScalable then
+		ACE.ScalableEnts[Ent] = true
+	end
 
-			if Ent.IsScalable then
-				table.insert( ACE.ScalableEnts, Ent)
-			end
+	if Ent.InitializeOnCollector then
+		Ent:InitializeOnCollector()
+	end
 
-			-- Finally, include the whitelisted entity to the main table ( contraptionEnts )
-			if not IsValid(Ent:GetParent()) then
-				table.insert(ACE.contraptionEnts, Ent)
-				--print("[ACE | INFO]- an entity ' .. Ent:GetClass() .. ' has been registered!")
-				--print('Total Ents registered count: ' .. table.Count( ACE.contraptionEnts ))
-			end
-		elseif Ent:GetClass() == "ace_debris" then
-			table.insert(ACE.Debris, Ent) --print('Adding - Count: ' .. #ACE.Debris)
-		elseif Ent:GetClass() == "ace_mine" then
-			table.insert(ACE.Mines, Ent) print("Adding - Count: " .. #ACE.Mines)
+	ACE.GlobalEntities[Ent] = true
+
+	Ent:CallOnRemove("ACE_PropOnRemove", function()
+
+		ACE.Explosives[Ent] = nil
+		ACE.ScalableEnts[Ent] = nil
+
+		if Ent.OnRemoveCollectorData then
+			Ent:OnRemoveCollectorData()
 		end
+
+		ACE.GlobalEntities[Ent] = nil
 	end)
-end)
-
--- Remove any entity of the Contraption List that has been removed from map
-hook.Add("EntityRemoved", "ACE_EntRemoval", function(Ent)
-
-	--Assuming that our table has whitelisted ents
-	if AllowedEnts[Ent:GetClass()] then
-
-		for i, ent in ipairs(ACE.contraptionEnts) do
-			if not IsValid(ent) or not IsValid(Ent) then continue end
-
-			-- Remove this ECM from list if deleted
-			if Ent:GetClass() == "ace_ecm" then
-
-				for i, ecm in ipairs(ACE.ECMPods) do
-
-					if IsValid(ecm) and ecm == Ent then
-						table.remove(ACE.ECMPods, i)
-						--print("ECM registered count: " .. #ACE.ECMPods)
-						break
-					end
-				end
-			-- Remove this Tracking Radar from list if deleted
-			elseif Ent:GetClass() == "ace_trackingradar" then
-
-				for i, radar in ipairs(ACE.radarEntities) do
-					if IsValid(radar) and radar == Ent then
-
-						ACE.radarIDs[Ent] = nil
-
-						table.remove(ACE.radarEntities, i)
-						--print("Tracking radar registered count: " .. #ACE.radarEntities)
-						break
-					end
-				end
-			-- Remove this GLATGM optical Computer from list if deleted
-			elseif Ent:GetClass() == "acf_opticalcomputer" then
-
-				for i, optical in ipairs(ACE.Opticals) do
-					if IsValid(optical) and optical == Ent then
-						table.remove(ACE.Opticals, i)
-						--print("Opticals registered count: " .. #ACE.Opticals)
-						break
-					end
-				end
-
-			elseif ACE.ExplosiveEnts[Ent:GetClass()] then
-
-				for i, explosive in ipairs(ACE.Explosives) do
-					if IsValid(explosive) and explosive == Ent then
-						table.remove(ACE.Explosives, i)
-						--print("Explosive registered count: " .. #ACE.Explosives)
-						break
-					end
-				end
-			end
-
-			if Ent.IsScalable then
-
-				for i, scalable in ipairs(ACE.ScalableEnts) do
-					if IsValid(scalable) and scalable == Ent then
-						table.remove(ACE.ScalableEnts, i)
-						break
-					end
-				end
-			end
-
-			-- Finally, remove this Entity from the main list
-			if ent == Ent then
-				table.remove(ACE.contraptionEnts, i)
-				--print("Global registered count: " .. #ACE.contraptionEnts )
-				return
-			end
-		end
-
-	elseif Ent:GetClass() == "ace_debris" then
-		for i, debris in ipairs(ACE.Debris) do
-			if IsValid(debris) and debris == Ent then
-				table.remove(ACE.Debris, i)
-				--print("Debris registered count: " .. #ACE.Debris )
-			end
-		end
-	elseif Ent:GetClass() == "ace_mine" then
-
-		local Owner = Ent.DamageOwner
-
-		for i, mine in ipairs(ACE.MineOwners[Owner]) do
-			if IsValid(mine) and mine == Ent then
-				table.remove(ACE.MineOwners[Owner], i)
-				--print("Mine registered count to player " .. Owner:Nick() .. ": " .. #ACE.MineOwners[Owner] )
-			end
-		end
-
-		for i, mine in ipairs(ACE.Mines) do
-			if IsValid(mine) and mine == Ent then
-				table.remove(ACE.Mines, i)
-				--print("Mine registered count: " .. #ACE.Mines )
-			end
-		end
-	end
-end)
-
--- Optimization resource, this will try to clean the main table just to reduce Ent count
-function ACE_refreshdata(Data)
-	--Not really perfect, but better than nothing. Cframepls
-	if istable(Data) and not table.IsEmpty(Data) then
-		local Entities = Data[1].CreatedEntities --wtf wire
-		local ContrId = math.random(1, 10000)
-
-		for _, ent in pairs(Entities) do
-			if not IsValid(ent) then continue end
-			ent.ACE = ent.ACE or {}
-			ent.ACE.ContraptionId = ContrId --Id is always changing.
-		end
-	end
-
-	--print("[ACE | INFO]- Starting Refreshing. . .")
-	for index, Ent in ipairs(ACE.contraptionEnts) do
-		-- check if the entity is valid
-		if not IsValid(Ent) then continue end
-
-		-- check if it has parent
-		-- if parented, check if it's not a Heat emitter
-		if Ent:GetParent():IsValid() and not Ent.Heat then
-			-- if not, remove it. Removing most of parented props will decrease cost of guidances
-			--print("[ACE | INFO]- Parented prop! removing. . .")
-			table.remove(ACE.contraptionEnts, index)
-			continue
-		end
-	end
-	--print("[ACE | INFO]- Finished refreshing!")
-	--print('Total Ents registered count: ' .. table.Count( ACE.contraptionEnts ))
 end
 
-hook.Add("AdvDupe_FinishPasting", "ACE_refresh", ACE_refreshdata)
+hook.Add("OnEntityCreated", "ACE_EntRegister", function(Ent)
+	timer.Simple(0, function() ACE.AddEntityToCollector(Ent) end)
+end)

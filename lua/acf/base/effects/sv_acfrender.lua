@@ -38,4 +38,21 @@ do
 		end
 	end
 	hook.Add("Think","ACE_RenderPropDamage", SendVisualDamage )
+
+	-- the old system
+	local function OnInitialSpawn( ply )
+		local Table = {}
+		for _, v in pairs( ents.GetAll() ) do
+			if v.ACE and v.ACE.PrHealth then
+				table.insert(Table,{ID = v:EntIndex(), Health = v.ACE.Health, v.ACE.MaxHealth})
+			end
+		end
+		if Table ~= {} then
+			net.Start("ACE_RenderDamage")
+				net.WriteTable(Table)
+			net.Send(ply)
+		end
+	end
+	hook.Add( "PlayerInitialSpawn", "renderdamage", OnInitialSpawn )
+
 end

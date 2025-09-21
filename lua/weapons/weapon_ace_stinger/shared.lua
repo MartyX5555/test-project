@@ -196,8 +196,8 @@ end
 function SWEP:GetWhitelistedEntsInCone()
 	local owner = self:GetOwner()
 
-	local ScanArray = ACE.contraptionEnts
-	if table.IsEmpty(ScanArray) then return {} end
+	local ScanArray = ACE.GlobalEntities
+	if not next(ScanArray) then return {} end
 
 	local WhitelistEnts = {}
 	local LOSdata	= {}
@@ -212,29 +212,29 @@ function SWEP:GetWhitelistedEntsInCone()
 	local MinimumDistance = 1	*  39.37
 	local MaximumDistance = 2400  *  39.37
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
-		if IsValid(scanEnt) then
+		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
-			entpos  = scanEnt:GetPos()
-			difpos  = entpos - IRSTPos
-			dist	= difpos:Length()
+		entpos  = scanEnt:GetPos()
+		difpos  = entpos - IRSTPos
+		dist	= difpos:Length()
 
-			if dist > MinimumDistance and dist < MaximumDistance then
-				LOSdata.start		= IRSTPos
-				LOSdata.endpos		= entpos
-				LOSdata.collisiongroup  = COLLISION_GROUP_WORLD
-				LOSdata.filter		= function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
-				LOSdata.mins			= vector_origin
-				LOSdata.maxs			= LOSdata.mins
+		if dist > MinimumDistance and dist < MaximumDistance then
+			LOSdata.start		= IRSTPos
+			LOSdata.endpos		= entpos
+			LOSdata.collisiongroup  = COLLISION_GROUP_WORLD
+			LOSdata.filter		= function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
+			LOSdata.mins			= vector_origin
+			LOSdata.maxs			= LOSdata.mins
 
-				LOStr = util.TraceHull( LOSdata )
+			LOStr = util.TraceHull( LOSdata )
 
-				--Trace did not hit world
-				if not LOStr.Hit then
-					table.insert(WhitelistEnts, scanEnt)
-				end
+			--Trace did not hit world
+			if not LOStr.Hit then
+				table.insert(WhitelistEnts, scanEnt)
 			end
 		end
 	end
@@ -378,7 +378,7 @@ function SWEP:PrimaryAttack()
 			ent.LeadMul = 1.5 --A higher leadmul means it's easier to force the missile to bleed a missile's energy. Lower can potentially be more efficient by reducing overcorrection
 
 			ent:SetOwner(owner)
-			ent:CPPISetOwner(owner)
+			ACE.SetEntityOwner(ent, owner)
 		end
 
 		self:EmitSound(self.Primary.Sound)

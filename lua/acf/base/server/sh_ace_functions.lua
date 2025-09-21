@@ -159,36 +159,22 @@ end
 
 do
 
-
-
 	-- Global Ratio Setting Function
-	function ACE_CalcMassRatio( obj, pwr )
+	function ACE_CalcMassRatio( obj )
 		if not IsValid(obj) then return end
-		local Mass		= 0
-		local PhysMass	= 0
 		local power		= 0
 		local fuel		= 0
-		local Compositions  = {}
-		local MatSums	= {}
-		local PercentMat	= {}
+		local Compositions = {}
+		local MatSums = {}
+		local PercentMat = {}
 
-		-- find the physical parent highest up the chain
-		local Parent = ACE_GetPhysicalParent(obj)
-
-		-- get the shit that is physically attached to the vehicle
-		local PhysEnts = ACE_GetAllPhysicalConstraints( Parent )
-
-		-- add any parented but not constrained props you sneaky bastards
-		local AllEnts = table.Copy( PhysEnts )
-		for _, v in pairs( AllEnts ) do
-
-			table.Merge( AllEnts, ACE_GetAllChildren( v ) )
-
-		end
-
-		for _, v in pairs( AllEnts ) do
-
-			if IsValid( v ) then
+		-- get all the entities of the vehicle.... but only those connected you sneaky bastards
+		local con = ACE.GetContraption( obj )
+		if con then
+			local AllEnts = con.ents
+			for v, _ in pairs( AllEnts ) do
+				if not ACE_Check( v ) then continue end
+				if not pwr then continue end
 
 				if v:GetClass() == "acf_engine" then
 					power = power + (v.peakkw * 1.34)
@@ -197,67 +183,32 @@ do
 					fuel = math.max(fuel,1)
 				end
 
-				local phys = v:GetPhysicsObject()
-				if IsValid( phys ) then
+				local PhysObj = v:GetPhysicsObject()
+				if IsValid(PhysObj) then
 
-					Mass = Mass + phys:GetMass() --print("total mass of contraption: " .. Mass)
+					local material = ACE_VerifyMaterial(v.ACE.Material)
+					Compositions[material]  = Compositions[material] or {}
 
-					if PhysEnts[ v ] then
-						PhysMass = PhysMass + phys:GetMass()
-					end
-
+					table.insert(Compositions[material], PhysObj:GetMass() )
 				end
-
-				if pwr then
-					local PhysObj = v:GetPhysicsObject()
-
-					if IsValid(PhysObj) then
-
-						local material		= v.ACE and v.ACE.Material or "RHA"
-
-						--ACE doesnt update their material stats actively, so we need to update it manually here.
-						if not isstring(material) then
-							local Mat_ID = material + 1
-							material = ACE.BackCompMat[Mat_ID]
-						end
-
-						Compositions[material]  = Compositions[material] or {}
-
-						table.insert(Compositions[material], PhysObj:GetMass() )
-
-					end
-				end
-
 			end
-		end
 
-		--Build the ratios here
-		for _, v in pairs( AllEnts ) do
-			v.acfphystotal	= PhysMass
-			v.acftotal		= Mass
-			v.acflastupdatemass = ACE.CurTime
-		end
-
-		if pwr then
 			--Get mass Material composition here
 			for material, tablemass in pairs(Compositions) do
 
 				MatSums[material] = 0
 
 				for _, mass in pairs(tablemass) do
-
 					MatSums[material] = MatSums[material] + mass
-
 				end
 
 				--Gets the actual material percent of the contraption
-				PercentMat[material] = ( MatSums[material] / obj.acftotal ) or 0
-
+				PercentMat[material] = ( MatSums[material] / con.totalmass ) or 0
 			end
-		end
-		if pwr then return { Power = power, Fuel = fuel, MaterialPercent = PercentMat, MaterialMass = MatSums } end
-	end
 
+			return { Power = power, Fuel = fuel, MaterialPercent = PercentMat, MaterialMass = MatSums }
+		end
+	end
 end
 
 --Checks if theres new versions for ACE
@@ -403,97 +354,67 @@ timer.Simple(1, function()
 	ACE_UpdateChecking()
 end )
 
-
---Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
-function ACE_GetMaterialData( Mat )
-
-	if not ACE_CheckMaterial( Mat ) then
-
-		Mat = not isstring(Mat) and ACE.BackCompMat[Mat] or "RHA"
-
-		if not ACE_CheckMaterial( Mat ) then
-			print("[ACE|ERROR]- No Armor material data found! Have the armor folder been renamed or removed? Unexpected results could occur!")
-			return nil
-		end
-	end
-
-	local MatData = ACE.ArmorMaterials[Mat]
-
-	return MatData
+local default_material = "RHA"
+function ACE_VerifyMaterial(mattype)
+	if ACE_CheckMaterial( mattype ) then return mattype end
+	local BackCompMat = ACE.BackCompMat[tonumber(mattype)]
+	if BackCompMat then return BackCompMat end
+	return default_material
 end
-
 
 --TODO: Use a universal function
 function ACE_CheckMaterial( MatId )
-
 	local matdata = ACE.ArmorMaterials[ MatId ]
-
 	if not matdata then return false end
-
 	return true
+end
 
+--Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
+function ACE_GetMaterialData( mattype )
+	mattype = ACE_VerifyMaterial(mattype)
+	local MatData = ACE.ArmorMaterials[mattype]
+	return MatData
 end
 
 function ACE_CheckRound( id )
-
 	local rounddata = ACE.RoundTypes[ id ]
-
 	if not rounddata then return false end
-
 	return true
 end
 
 function ACE_CheckGun( gunid )
-
 	local gundata = ACE.Weapons.Guns[ gunid ]
-
 	if not gundata then return false end
-
 	return true
 end
 
 function ACE_CheckRack( rackid )
-
 	local rackdata = ACE.Weapons.Racks[ rackid ]
-
 	if not rackdata then return false end
-
 	return true
 end
 
 function ACE_CheckAmmo( ammoid )
-
 	local Ammodata = ACE.Weapons.Ammo[ ammoid ]
-
 	if not Ammodata then return false end
-
 	return true
 end
 
 function ACE_CheckEngine( engineid )
-
 	local enginedata = ACE.Weapons.Engines[ engineid ]
-
 	if not enginedata then return false end
-
 	return true
 end
 
 function ACE_CheckGearbox( gearid )
-
 	local geardata = ACE.Weapons.Gearboxes[ gearid ]
-
 	if not geardata then return false end
-
 	return true
 end
 
 function ACE_CheckFuelTank( fueltankid )
-
 	local fueltankid = ACE.Weapons.FuelTanksSize[ fueltankid ]
-
 	if not fueltankid then return false end
-
 	return true
 end
 
@@ -571,16 +492,6 @@ function ACE_Msg( type, txt )
 
 end
 ]]
-
--- Helper function to check if a value exists in a table
-function ACE_table_contains(table, element)
-	for _, value in pairs(table) do
-		if value == element then
-			return true
-		end
-	end
-	return false
-end
 
 if SERVER then
 

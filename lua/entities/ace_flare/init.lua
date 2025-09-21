@@ -23,13 +23,13 @@ function ENT:Initialize()
 		phys:Wake()
 	end
 
+	ACE.AddEntityToCollector(self, true)
+
 	timer.Simple(self.Life, function()
 		if IsValid(self) then
 			self:Remove()
 		end
 	end)
-
-	table.insert( ACE.contraptionEnts, self )
 end
 
 function ENT:Think()

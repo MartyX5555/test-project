@@ -17,6 +17,11 @@ function ENT:SpawnFunction( _, trace )
 	return ent
 end
 
+local ACE = ACE or {}
+if not ACE.Opticals then
+	ACE.Opticals = {}
+end
+
 function ENT:Initialize()
 
 	self:SetModel( "models/props_lab/monitor01b.mdl" )
@@ -25,20 +30,21 @@ function ENT:Initialize()
 	self:SetUseType(SIMPLE_USE);
 	self:SetSolid(SOLID_VPHYSICS);
 
-
 end
 
+function ENT:InitializeOnCollector()
+	ACE.Opticals[self] = true
+end
 
+function ENT:OnRemoveCollectorData()
+	ACE.Opticals[self] = nil
+end
 
 function ENT:Think()
 	self:GetPhysicsObject():SetMass(65)
-
-
-
-
+	self:NextThink(curTime() + 0.5)
+	return true
 end
-
-
 
 
 

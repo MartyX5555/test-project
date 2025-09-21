@@ -1,39 +1,16 @@
+local ACE = ACE or {}
+local Guidance = {}
 
-local ClassName = "Wire"
+Guidance.Name = "Wire"
+Guidance.desc = "This guidance package is controlled by the launcher, which reads a target-position and steers the munition towards it. Has a limited guidance distance."
+Guidance.InputSource = nil -- An entity with a Position wire-output
+Guidance.WireLength = 19685	-- Length of the guidance wire		-- about 500m
+Guidance.WireSnapped = false -- Disables guidance when true
 
-ACF = ACF or {}
-ACE.Guidance = ACE.Guidance or {}
-
-local this = ACE.Guidance[ClassName] or inherit.NewSubOf(ACE.Guidance.Dumb)
-ACE.Guidance[ClassName] = this
-
-this.Name = ClassName
-
--- An entity with a Position wire-output
-this.InputSource = nil
-
--- Length of the guidance wire
-this.WireLength = 19685			-- about 500m
-
--- Disables guidance when true
-this.WireSnapped = false
-
-this.desc = "This guidance package is controlled by the launcher, which reads a target-position and steers the munition towards it. Has a limited guidance distance."
-
-function this:Init()
-
+function Guidance:Init()
 end
 
--- Use this to make sure you don't alter the shared default filter unintentionally
-function this:GetSeekFilter()
-	if self.Filter == self.DefaultFilter then
-		self.Filter = table.Copy(self.DefaultFilter)
-	end
-
-	return self.Filter
-end
-
-function this:Configure(missile)
+function Guidance:Configure(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -41,7 +18,6 @@ function this:Configure(missile)
 	if outputs then
 
 		local names = self:GetNamedWireInputs(missile)
-
 
 		if #names > 0 then
 
@@ -56,16 +32,13 @@ function this:Configure(missile)
 				self.InputSource = launcher
 				self.InputNames = names
 			end
-
 		end
-
 	end
 
 	self.WireSnapped = false
-
 end
 
-function this:GetNamedWireInputs(missile)
+function Guidance:GetNamedWireInputs(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -91,7 +64,7 @@ function this:GetNamedWireInputs(missile)
 
 end
 
-function this:GetFallbackWireInputs(missile)
+function Guidance:GetFallbackWireInputs(missile)
 
 	local launcher = missile.Launcher
 	local outputs = launcher.Outputs
@@ -116,7 +89,7 @@ function this:GetFallbackWireInputs(missile)
 
 end
 
-function this:GetGuidance(missile)
+function Guidance:GetGuidance(missile)
 
 	local launcher = self.InputSource
 
@@ -133,7 +106,7 @@ function this:GetGuidance(missile)
 	end
 
 
-	local posVec = self:GetWireTarget()
+	local posVec = self:GetWireTarget() --print("wire vector:", posVec)
 
 	if not posVec or type(posVec) ~= "Vector" or posVec == Vector() then
 		return {TargetPos = nil}
@@ -150,7 +123,7 @@ function this:GetGuidance(missile)
 
 end
 
-function this:GetWireTarget()
+function Guidance:GetWireTarget()
 
 	if not IsValid(self.InputSource) then
 		return {}
@@ -161,7 +134,6 @@ function this:GetWireTarget()
 	if not outputs then
 		return {}
 	end
-
 
 	local posVec
 
@@ -183,11 +155,11 @@ function this:GetWireTarget()
 
 	end
 
-
 	return posVec
-
 end
 
-function this:GetDisplayConfig()
+function Guidance:GetDisplayConfig()
 	return {["Wire Length"] = math.Round(self.WireLength / 39.37, 1) .. " m"}
 end
+
+ACE.RegisterGuidance( Guidance.Name, Guidance )

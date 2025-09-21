@@ -329,22 +329,20 @@ function PANEL:Init( )
 
 	end
 
+	--[[
 	do
+		-- Support button
+		
+		local Contact =  TreePanel:AddNode( "Contact Us" , "icon16/feed.png" ) --Options folder
+		Contact.mytable = {}
 
-	--[[==================================================
-					Contact & Support folder
-	]]--==================================================
+		Contact.mytable.guicreate = (function( _, Table ) ContactGUICreate( Table ) end or nil)
 
-	local Contact =  TreePanel:AddNode( "Contact Us" , "icon16/feed.png" ) --Options folder
-	Contact.mytable = {}
-
-	Contact.mytable.guicreate = (function( _, Table ) ContactGUICreate( Table ) end or nil)
-
-	function Contact:DoClick()
-		acemenupanel:UpdateDisplay(self.mytable)
-	end
-
-	end
+		function Contact:DoClick()
+			acemenupanel:UpdateDisplay(self.mytable)
+		end
+		
+	end]]
 
 	self.WeaponSelect = TreePanel
 
@@ -705,8 +703,9 @@ function ACFSVGUICreate()	--Serverside folder content
 end
 
 --[[=========================
-	Contact folder content
+	Contact folder content -- Disabled since this is another version.
 ]]--=========================
+--[[
 function ContactGUICreate()
 
 	acemenupanel["CData"]["Contact"] = vgui.Create( "DLabel" )
@@ -748,7 +747,7 @@ function ContactGUICreate()
 	acemenupanel.CustomDisplay:AddItem( Guide )
 
 end
-
+]]
 --===========================================================================================
 -----Ammo & Gun selection content
 --===========================================================================================
@@ -1059,35 +1058,35 @@ function PANEL:AmmoSlider(Name, Value, Min, Max, Decimals, Title, Desc) --Variab
 
 	if not acemenupanel["CData"][Name] then
 
-	acemenupanel["CData"][Name] = vgui.Create( "DNumSlider", acemenupanel.CustomDisplay )
-	acemenupanel["CData"][Name].Label:SetSize( 0 )  --Note : this is intentional
-	acemenupanel["CData"][Name]:SetTall( 50 )	-- make the slider taller to fit the new label
-	acemenupanel["CData"][Name]:SetMin( 0 )
-	acemenupanel["CData"][Name]:SetMax( 1000 )
-	acemenupanel["CData"][Name]:SetDark( true )
-	acemenupanel["CData"][Name]:SetDecimals( Decimals )
+		acemenupanel["CData"][Name] = vgui.Create( "DNumSlider", acemenupanel.CustomDisplay )
+		acemenupanel["CData"][Name].Label:SetSize( 0 )  --Note : this is intentional
+		acemenupanel["CData"][Name]:SetTall( 50 )	-- make the slider taller to fit the new label
+		acemenupanel["CData"][Name]:SetMin( 0 )
+		acemenupanel["CData"][Name]:SetMax( 1000 )
+		acemenupanel["CData"][Name]:SetDark( true )
+		acemenupanel["CData"][Name]:SetDecimals( Decimals )
 
-	acemenupanel["CData"][Name .. "_label"] = vgui.Create( "DLabel", acemenupanel["CData"][Name]) -- recreating the label
-	acemenupanel["CData"][Name .. "_label"]:SetPos( 0, 0)
-	acemenupanel["CData"][Name .. "_label"]:SetText( Title )
-	acemenupanel["CData"][Name .. "_label"]:SizeToContents()
-	acemenupanel["CData"][Name .. "_label"]:SetTextColor( Color( 0, 0, 0) )
+		acemenupanel["CData"][Name .. "_label"] = vgui.Create( "DLabel", acemenupanel["CData"][Name]) -- recreating the label
+		acemenupanel["CData"][Name .. "_label"]:SetPos( 0, 0)
+		acemenupanel["CData"][Name .. "_label"]:SetText( Title )
+		acemenupanel["CData"][Name .. "_label"]:SizeToContents()
+		acemenupanel["CData"][Name .. "_label"]:SetTextColor( Color( 0, 0, 0) )
 
-	if acemenupanel.AmmoData[Name] then
-			acemenupanel["CData"][Name]:SetValue(acemenupanel.AmmoData[Name])
-	end
-
-	acemenupanel["CData"][Name].OnValueChanged = function( _, val )
-
-	if acemenupanel.AmmoData[Name] ~= val then
-
-		acemenupanel.AmmoData[Name] = val
-			self:UpdateAttribs( Name )
+		if acemenupanel.AmmoData[Name] then
+				acemenupanel["CData"][Name]:SetValue(acemenupanel.AmmoData[Name])
 		end
 
-	end
+		acemenupanel["CData"][Name].OnValueChanged = function( _, val )
 
-	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name] )
+		if acemenupanel.AmmoData[Name] ~= val then
+
+			acemenupanel.AmmoData[Name] = val
+				self:UpdateAttribs( Name )
+			end
+
+		end
+
+		acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name] )
 
 	end
 
@@ -1097,11 +1096,11 @@ function PANEL:AmmoSlider(Name, Value, Min, Max, Decimals, Title, Desc) --Variab
 
 	if not acemenupanel["CData"][Name .. "_text"] and Desc then
 
-	acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
-	acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
-	acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
-	acemenupanel["CData"][Name .. "_text"]:SetTall( 20 )
-	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name .. "_text"] )
+		acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
+		acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
+		acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
+		acemenupanel["CData"][Name .. "_text"]:SetTall( 20 )
+		acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"][Name .. "_text"] )
 
 	end
 

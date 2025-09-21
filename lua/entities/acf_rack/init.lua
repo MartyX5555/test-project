@@ -60,7 +60,7 @@ local WireInputs = {
 	"Fire",
 	"Reload (Arms this rack. Its mandatory to set this since racks don't reload automatically.)",
 	"Delay (Sets a specific delay to guidance control over the default one in seconds.\n Note that you cannot override lower values than default.)",
-	"TargetPos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
+	"Target Pos (Defines the Target position for the ordnance in this rack. This only works for Wire and laser guidances.) [VECTOR]",
 }
 
 --Outputs
@@ -75,8 +75,6 @@ function ENT:Initialize()
 
 	self.BaseClass.Initialize(self)
 
-	self.SpecialHealth   = false	--If true needs a special ACE_Activate function
-	self.SpecialDamage   = false	--If true needs a special ACE_OnDamage function --NOTE: you can't "fix" missiles with setting this to false, it acts like a prop!!!!
 	self.ReloadTime      = 1
 	self.RackStatus      = "Empty"
 	self.Ready           = true
@@ -88,7 +86,6 @@ function ENT:Initialize()
 	self.Legal           = true
 	self.LegalIssues     = ""
 	self.LastSend        = 0
-	self:CPPISetOwner(self)
 
 	self.IsMaster              = true
 	self.CurAmmo               = 1
@@ -103,8 +100,11 @@ function ENT:Initialize()
 	self.ForceTdelay           = 0
 	self.Inaccuracy            = 1
 
-	self.Inputs = WireLib.CreateInputs( self, WireInputs )
-	self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
+	--self.Inputs = WireLib.CreateInputs( self, WireInputs )
+	--self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
+
+	WireLib.CreateInputs( self, WireInputs )
+	WireLib.CreateOutputs( self, WireOutputs )
 
 	Wire_TriggerOutput(self, "Entity", self)
 	Wire_TriggerOutput(self, "Ready", 1)
@@ -222,11 +222,10 @@ function ENT:UnloadAmmo()
 end
 
 function ENT:TriggerInput( iname , value )
-
 	if ( iname == "Fire" and value ~= 0 and ACE.GunfireEnabled and self.Legal ) then
 		if self.NextFire >= 1 then
 			self.User = ACE_GetWeaponUser( self, self.Inputs.Fire.Src )
-			if not IsValid(self.User) then self.User = self:CPPIGetOwner() end
+			if not IsValid(self.User) then self.User = ACE.GetEntityOwner(self) end
 			self:FireMissile()
 			self:Think()
 		end
@@ -240,7 +239,7 @@ function ENT:TriggerInput( iname , value )
 	elseif iname == "Track Delay" then
 		self.ForceTdelay = math.max(value,0)
 
-		if not table.IsEmpty(self.Missiles) then
+		if not next(self.Missiles) then
 			--ENT:TrimNullMissiles() could be used here, but i need to update force track delay to each missile, sad.
 			for k, missile in ipairs(self.Missiles) do
 				if not IsValid(missile) then table.remove(self.Missiles, k) end
@@ -315,7 +314,7 @@ function ENT:UpdateRefillBonus()
 	local minFullEfficiency	= 50000 * Efficiency	-- The minimum crate volume to provide full efficiency bonus all by itself.
 	local maxDist			= ACE.RefillDistance
 
-	for _, crate in pairs(ACE.AmmoCrates or {}) do
+	for crate, _ in pairs(ACE.AmmoCrates) do
 
 		if crate.RoundType ~= "Refill" then
 			continue
@@ -532,10 +531,10 @@ function ENT:AddMissile()
 	local Crate = self:FindNextCrate(true)
 	if not IsValid(Crate) then return false end
 
-	local ply = self:CPPIGetOwner()
+	local ply = ACE.GetEntityOwner(self)
 
 	local missile = ents.Create("acf_missile")
-	missile:CPPISetOwner(ply)
+	ACE.SetEntityOwner(missile, ply)
 	missile.DoNotDuplicate  = true
 	missile.Launcher		= self
 	missile.ForceTdelay	= self.ForceTdelay
@@ -637,7 +636,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	local gundef = RackTable[Id]
 
-	Rack:CPPISetOwner(Owner)
+	ACE.SetEntityOwner(Rack, Owner)
 	Rack.Id	= Id
 
 	Rack.MinCaliber	= gundef.mincaliber

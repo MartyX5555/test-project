@@ -33,12 +33,16 @@ ACE_DefineModelData("Wedge",{
 	DefaultSize = 12,
 	CustomMesh = { --Its a box anyways
 		{
-			Vector(-6, 6, 6),
+			Vector(-6, 6, 6), -- For some reason, traces are not working correctly in some faces of the prop. Not sure why.
 			Vector(-6, -6, 6),
+			Vector(-5.92, 6, 6), -- For some reason, traces are not working correctly in some faces of the prop. Not sure why.
+			Vector(-5.92, -6, 6),
 			Vector(6, 6, -6),
 			Vector(6, -6, -6),
+			Vector(6, 6, -5.92),
+			Vector(6, -6, -5.92),
 			Vector(-6, 6, -6),
-			Vector(-6, -6, -6)
+			Vector(-6, -6, -6),
 		},
 	},
 	volumefunction = function( L, W, H )

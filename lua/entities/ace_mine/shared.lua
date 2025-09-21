@@ -4,3 +4,5 @@ ENT.Author = "RDC & Marty"
 ENT.Category = "ACE-Explosives"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
+
+cleanup.Register( "ACE Mines" )

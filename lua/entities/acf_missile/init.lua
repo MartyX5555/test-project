@@ -17,8 +17,8 @@ function ENT:Initialize()
 
 	self.BaseClass.Initialize(self)
 
-	if not IsValid(self:CPPIGetOwner()) then
-		self:CPPISetOwner(player.GetAll()[1])
+	if not IsValid(ACE.GetEntityOwner(self)) then
+		ACE.SetEntityOwner(self, player.GetAll()[1])
 	end
 
 	self.DetonateOffset = nil
@@ -114,7 +114,7 @@ function ENT:CalcFlight()
 
 	-- Guidance calculations
 	local Guidance  = self.Guidance:GetGuidance(self)
-	local TargetPos = self.CanTrack and Guidance.TargetPos or nil
+	local TargetPos = self.CanTrack and Guidance.TargetPos or nil --print("track:", self.CanTrack, Guidance.TargetPos)
 	local Tdelay	= self.ForceTdelay >= self.TrackDelay and self.ForceTdelay or self.TrackDelay
 
 	-- Track delay calculation
@@ -264,79 +264,39 @@ function ENT:CalcFlight()
 		-- We have CFW
 		if trace.Hit then
 
+			local IsPart = false
+			local HitPos = trace.HitPos
 			local HitTarget  = trace.Entity
+			local conTarget	= HitTarget:GetContraption() or {}
+			local conLauncher = self.Launcher:GetContraption() or {}			
 
-			-- Detonate when ghost time allows to.
-			if not (IsValid(HitTarget) and Time < self.GhostPeriod) then
+			local DirToHit = (HitPos - Pos):GetNormalized()
+			local AngleDiff = math.deg(math.acos( Dir:Dot(DirToHit) )) print("Angle Diff:", AngleDiff)
 
-				self.HitNorm	= trace.HitNormal
-				self:DoFlight(trace.HitPos)
-				self.LastVel	= Vel / DeltaTime
-				self:Detonate()
-				return
+			if conTarget == conLauncher and AngleDiff > 10 then -- Not required to do anything else.
+
+				print("Fraction: ",trace.Fraction)
+				local mi, ma = HitTarget:GetCollisionBounds()
+				debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
+
+				IsPart = true
+			end
 
 			-- Determine if the detected ent is not part of the same contraption that fired this missile.
-			elseif HitTarget:GetClass() ~= "acf_missile" then
-
-				local IsPart = false
-
-				if CFW then
-
-					local conTarget	= HitTarget:GetContraption() or {}
-					local conLauncher = self.Launcher:GetContraption() or {}
-
-					if conTarget == conLauncher then -- Not required to do anything else.
-
-						local mi, ma = HitTarget:GetCollisionBounds()
-						debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
-
-						IsPart = true
-					end
-
-				else -- Press F to pay respects for the low end PCs by this. USE CFW.
-
-					local RootTarget = ACE_GetPhysicalParent( HitTarget ) or game.GetWorld()
-					local RootLauncher = self.Launcher.BaseEntity
-
-					if RootLauncher == RootTarget then
-						IsPart = true
-					else
-
-						--Note: caching the filter once can be easily bypassed by putting a prop of your own vehicle in front to fill the filter, then not caching any other prop.
-						self.physentities = self.physentities or constraint.GetAllConstrainedEntities( RootTarget ) -- how expensive will be this with contraptions over 100 constrained ents?
-
-						for _, physEnt in pairs(self.physentities) do
-
-							if not IsValid(physEnt) then continue end
-
-							if physEnt == RootLauncher then
-
-								local mi, ma = physEnt:GetCollisionBounds()
-								debugoverlay.BoxAngles(physEnt:GetPos(), mi, ma, physEnt:GetAngles(), 5, Color(0,255,0,100))
-
-								IsPart = true
-								break
-							end
-
-
-						end
-
-					end
-				end
-
-				if not IsPart then
-
-					self.HitNorm	= trace.HitNormal
-					self:DoFlight(trace.HitPos)
-					self.LastVel	= Vel / DeltaTime
-					self:Detonate()
-					return
-				end
-
+			-- Also check theres no props directly in front of the trayectory, even if its from the same contraption.
+			if not IsPart then
+				self:Remove()
+				return
 			end
+
+			--	self.HitNorm	= trace.HitNormal
+			--	self:DoFlight(trace.HitPos)
+			--	self.LastVel	= Vel / DeltaTime
+			--	self:Detonate()
+			--	return
+			--end
+
 		end
-
-
 
 		--Detonation by fuse, if available
 		if Time > self.GhostPeriod and self.Fuse:GetDetonate(self, self.Guidance) then
@@ -388,6 +348,7 @@ function ENT:Launch()
 		self:SetFuse(FuseTable.Contact())
 	end
 
+	self.Guidance:Init()
 	self.Guidance:Configure(self)
 	self.Fuse:Configure(self, self.Guidance)
 
@@ -400,7 +361,7 @@ function ENT:Launch()
 	self:ConfigureFlight()
 	self.PhysObj:EnableMotion(false)
 
-	ACE_ActiveMissiles[self] = true
+	ACE.Missiles[self] = true
 
 	self:Think()
 end
@@ -616,7 +577,7 @@ function ENT:ForceDetonate()
 	-- careful not to conflict with base class's self.Detonated
 	self.MissileDetonated = true
 
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 	self.DetonateOffset = self.LastVel and self.LastVel:GetNormalized() * -1
 	self.BaseClass.Detonate(self, self.BulletData)
@@ -627,7 +588,7 @@ function ENT:Dud()
 
 	self.MissileDetonated = true
 
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 	local Dud = self
 	Dud:SetPos( self.CurPos )
@@ -750,7 +711,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density	= (self.PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type	= "Prop"
 
-	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
+	self.ACE.Material = ACE_VerifyMaterial(self.ACE.Material)
 
 end
 
@@ -796,7 +757,7 @@ hook.Add("CanDrive", "acf_missile_CanDrive", function(_, ent)
 end)
 
 function ENT:CanTool(ply, _, mode)
-	if mode ~= "wire_adv" or (CPPI and ply ~= self:CPPIGetOwner()) then return false end
+	if mode ~= "wire_adv" or (ply ~= ACE.GetEntityOwner(self)) then return false end
 	return true
 end
 
@@ -804,6 +765,6 @@ function ENT:OnRemove()
 
 	self.BaseClass.OnRemove(self)
 
-	ACE_ActiveMissiles[self] = nil
+	ACE.Missiles[self] = nil
 
 end

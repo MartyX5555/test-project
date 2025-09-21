@@ -25,6 +25,8 @@ Weapons.Radars          = {}
 --Small reminder of Mobility table. Still being used in stuff like starfall/e2. This can change
 Weapons.Mobility        = {}
 
+ACE.Guidance = {}
+
 ACE.GSounds.GunFire     = {}
 ACE.ModelData           = {}
 ACE.MineData            = {}
@@ -94,13 +96,13 @@ end
 -- some factory functions for defining ents
 
 --Gun class definition
-function ACE_defineGunClass( id, data )
+function ACE.RegisterWeaponClass( id, data )
 	data.id = id
 	Classes.GunClass[id] = data
 end
 
 -- Gun definition
-function ACE_defineGun( id, data )
+function ACE.RegisterWeapon( id, data )
 	data.id = id
 	data.round.id = id
 	table.Inherit( data, gun_base )
@@ -125,20 +127,20 @@ function ACE_DefineLegacyAmmoCrate( id, data )
 end
 
 -- Rack definition
-function ACE_DefineRack( id, data )
+function ACE.RegisterRack( id, data )
 	data.id = id
 	table.Inherit( data, rack_base )
 	Weapons.Racks[id] = data
 end
 
 -- Rack class definition
-function ACE_DefineRackClass( id, data )
+function ACE.RegisterRackClass( id, data )
 	data.id = id
 	Classes.Rack[id] = data
 end
 
 --Engine definition
-function ACE_DefineEngine( id, data )
+function ACE.RegisterEngine( id, data )
 	if (data.year or 0) < ACE.Year then
 		local engineData = ACE_CalcEnginePerformanceData(data.torquecurve or ACE.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
 
@@ -157,7 +159,7 @@ function ACE_DefineEngine( id, data )
 end
 
 -- Gearbox definition
-function ACE_DefineGearbox( id, data )
+function ACE.RegisterGearbox( id, data )
 	data.id = id
 	table.Inherit( data, gearbox_base )
 	Weapons.Gearboxes[id] = data
@@ -165,7 +167,7 @@ function ACE_DefineGearbox( id, data )
 end
 
 -- fueltank definition
-function ACE_DefineFuelTank( id, data )
+function ACE.RegisterFuelTank( id, data )
 	data.id = id
 	table.Inherit( data, fueltank_base )
 	Weapons.FuelTanks[id] = data
@@ -173,55 +175,61 @@ function ACE_DefineFuelTank( id, data )
 end
 
 -- fueltank size definition
-function ACE_DefineFuelTankSize( id, data )
+function ACE.RegisterFuelTankSize( id, data )
 	data.id = id
 	table.Inherit( data, fueltank_base )
 	Weapons.FuelTanksSize[id] = data
 end
 
 -- Radar Class definition
-function ACE_DefineRadarClass( id, data )
+function ACE.RegisterRadarClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
 
 -- Radar definition
-function ACE_DefineRadar( id, data )
+function ACE.RegisterRadar( id, data )
 	data.id = id
 	table.Inherit( data, radar_base )
 	Weapons.Radars[id] = data
 end
 
 -- Tracking Radar Class definition
-function ACE_DefineTrackRadarClass( id, data )
+function ACE_RegisterTrackRadarClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
 
 -- Tracking Radar definition
-function ACE_DefineTrackRadar( id, data )
+function ACE.RegisterTrackRadar( id, data )
 	data.id = id
 	table.Inherit( data, trackradar_base )
 	Weapons.Radars[id] = data
 end
 
 -- Tracking Radar Class definition
-function ACE_DefineIRSTClass( id, data )
+function ACE.RegisterIRSTClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
 
 -- Tracking Radar definition
-function ACE_DefineIRST( id, data )
+function ACE.RegisterIRST( id, data )
 	data.id = id
 	table.Inherit( data, irst_base )
 	Weapons.Radars[id] = data
 end
 
 --Step 2: gather specialized sounds. Normally sounds that have associated sounds into it. Literally using the string path as id.
-function ACE_DefineGunFireSound( id, data )
+function ACE.RegisterWeaponFireSound( id, data )
 	data.id = id
 	ACE.GSounds.GunFire[id] = data
+end
+
+
+function ACE.RegisterGuidance( id, data )
+	data.id = id
+	ACE.Guidance[id] = data
 end
 
 function ACE_DefineModelData( id, data )

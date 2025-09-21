@@ -1,5 +1,5 @@
 --define the class
-ACE_defineGunClass("MG", {
+ACE.RegisterWeaponClass("MG", {
 	type = "Gun",
 	spread = 0.16,
 	name = "Machinegun",
@@ -13,7 +13,7 @@ ACE_defineGunClass("MG", {
 } )
 
 --add a gun to the class
-ACE_defineGun("7.62mmMG", { --id
+ACE.RegisterWeapon("7.62mmMG", { --id
 	name = "7.62mm Machinegun",
 	desc = "The 7.62mm is effective against infantry, but its usefulness against armor is laughable at best.",
 	model = "models/machinegun/machinegun_762mm.mdl",
@@ -29,7 +29,7 @@ ACE_defineGun("7.62mmMG", { --id
 	}
 } )
 
-ACE_defineGun("12.7mmMG", {
+ACE.RegisterWeapon("12.7mmMG", {
 	name = "12.7mm Machinegun",
 	desc = "The 12.7mm MG is still light, finding its way into a lot of mountings, including on top of tanks.",
 	model = "models/machinegun/machinegun_127mm.mdl",
@@ -45,7 +45,7 @@ ACE_defineGun("12.7mmMG", {
 	}
 } )
 
-ACE_defineGun("14.5mmMG", {
+ACE.RegisterWeapon("14.5mmMG", {
 	name = "14.5mm Machinegun",
 	desc = "The 14.5mm MG trades its smaller stablemates' rate of fire for more armor penetration and damage.",
 	model = "models/machinegun/machinegun_145mm.mdl",
@@ -62,7 +62,7 @@ ACE_defineGun("14.5mmMG", {
 } )
 
 
-ACE_defineGun("20mmMG", {
+ACE.RegisterWeapon("20mmMG", {
 	name = "20mm Machinegun",
 	desc = "The 20mm MG is practically a cannon in its own right; the weight and recoil made it difficult to mount on light land vehicles, though it was adapted for use on both aircraft and ships.",
 	model = "models/machinegun/machinegun_20mm.mdl",

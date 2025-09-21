@@ -90,7 +90,7 @@ do
 		Engine:SetAngles(Angle)
 		Engine:SetPos(Pos)
 		Engine:Spawn()
-		Engine:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(Engine, Owner)
 		Engine.Id = Id
 
 		Engine.Model            = Lookup.model
@@ -356,7 +356,7 @@ function ENT:ACE_Activate()
 	Entity.ACE.Mass      = PhysObj:GetMass()
 	Entity.ACE.Type      = "Prop"
 
-	Entity.ACE.Material	= not isstring(Entity.ACE.Material) and ACE.BackCompMat[Entity.ACE.Material] or Entity.ACE.Material or "RHA"
+	Entity.ACE.Material	= ACE_VerifyMaterial(Entity.ACE.Material)
 
 end
 
@@ -424,6 +424,8 @@ function ENT:Think()
 		self:CalcRPM()
 	end
 
+	self:CheckRopes()
+
 	self.LastThink = ACE.CurTime
 	self:NextThink( ACE.CurTime )
 	return true
@@ -431,6 +433,28 @@ function ENT:Think()
 end
 
 -- specialized calcmassratio for engines
+-- New CalcMass function. Needs to ensure engines cannot be remotely provided to vehicles....
+function ENT:CalcMassRatio()
+
+	local Mass = 0
+	local PhysMass = 0
+	local con = ACE.GetContraption(self)
+	local phys = self:GetPhysicsObject()
+	if con then
+		Mass = con.totalmass
+		PhysMass = con.acfphystotal
+		self.MassRatio = con.massratio
+	elseif IsValid(phys) then
+		local EngineMass = phys:GetMass()
+		Mass = EngineMass
+		PhysMass = EngineMass
+	end
+	Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
+	Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
+
+end
+
+--[[
 function ENT:CalcMassRatio()
 
 	local Mass = 0
@@ -452,48 +476,50 @@ function ENT:CalcMassRatio()
 		end
 	end
 
-	-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
-	if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
-		table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
-		ACE_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
-	end
+	local con = ACE.GetContraption( self )
+	if con then
 
-	-- add any parented but not constrained props you sneaky bastards
-	local AllEnts = table.Copy( PhysEnts )
-	for _, v in pairs( PhysEnts ) do
-		table.Merge( AllEnts, ACE_GetAllChildren( v ) )
-	end
-
-	for _, v in pairs( AllEnts ) do
-
-		if not IsValid( v ) then continue end
-
-		local phys = v:GetPhysicsObject()
-		if not IsValid( phys ) then continue end
-
-		Mass = Mass + phys:GetMass()
-
-		if PhysEnts[ v ] then
-			PhysMass = PhysMass + phys:GetMass()
+		-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
+		if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
+			table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
+			ACE_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
 		end
 
+		-- add any parented but not constrained props you sneaky bastards
+		local AllEnts = table.Copy( PhysEnts )
+		for v, _ in pairs( PhysEnts ) do
+			table.Merge( AllEnts, ACE_GetAllChildren( v ) )
+		end
+
+		for v, _ in pairs( AllEnts ) do
+			if not IsValid(v) then continue end
+
+			local phys = v:GetPhysicsObject()
+			if not IsValid( phys ) then continue end
+
+			Mass = Mass + phys:GetMass()
+
+			if PhysEnts[ v ] then
+				PhysMass = PhysMass + phys:GetMass()
+			end
+
+		end
+
+		--phys / parented
+		--total: 6000 kgs
+		--5000/1000 = 5 ratio
+		--1000/5000 = 0.2 ratio
+		--local Tmass = PhysMass + Mass
+
+		self.MassRatio = PhysMass / Mass print("Engine Ratio:", self.MassRatio)
+		--self.MassRatio = 1 / (Tmass/10000)
+		--self.MassRatio = (PhysMass ^ 0.9225) / Mass
+
+		Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
+		Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
 	end
-
-	--phys / parented
-	--total: 6000 kgs
-	--5000/1000 = 5 ratio
-	--1000/5000 = 0.2 ratio
-	--local Tmass = PhysMass + Mass
-
-	self.MassRatio = PhysMass / Mass
-	--self.MassRatio = 1 / (Tmass/10000)
-	--self.MassRatio = (PhysMass ^ 0.9225) / Mass
-
-	Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
-	Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
-
 end
-
+]]
 function ENT:ACFInit()
 
 	self:CalcMassRatio()
@@ -620,7 +646,7 @@ function ENT:CalcRPM()
 				Kinetic = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100,
 				Momentum = 0,
 				Penetration = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100
-			}, 2, 0, self:CPPIGetOwner())
+			}, 2, 0, ACE.GetEntityOwner(self))
 		else
 			--Turns Off due to massive damage
 			self:TriggerInput("Active", 0)
@@ -654,6 +680,7 @@ end
 -------------------------- Periodic Link Engine checks --------------------------
 do
 	-- Checks the current ropes linked to this engine complies with the requirements to be valid.
+	local MinSpace = 100
 	function ENT:CheckRopes()
 
 		for _, Link in pairs( self.GearLink ) do
@@ -661,9 +688,12 @@ do
 			local Ent = Link.Ent
 			local OutPos = self:LocalToWorld( self.Out )
 			local InPos = Ent:LocalToWorld( Ent.In )
+			local Dist2 = OutPos:DistToSqr( InPos )
+			local DistDiff = math.abs(Dist2 - Link.RopeLen ^ 2)
+			local MaxTolerance = math.max(Dist2 / 6, MinSpace ^ 2)
 
-			-- make sure it is not stretched too far
-			if OutPos:Distance( InPos ) > Link.RopeLen * 1.5 then
+			-- make sure transmission cannot be tear apart without breaking a link.
+			if DistDiff > MaxTolerance then
 				self:Unlink( Ent )
 			end
 
@@ -794,7 +824,7 @@ do
 		local OutPos = self:LocalToWorld( self.Out ) 	--the engine output
 
 		local Rope = nil
-		if self:CPPIGetOwner():GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
+		if ACE.GetEntityOwner(self):GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
 			Rope = ACE_CreateLinkRope( OutPos, self, self.Out, Target, Target.In )
 		end
 
