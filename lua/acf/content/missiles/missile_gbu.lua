@@ -50,7 +50,7 @@ ACE.RegisterWeapon("WalleyeGBU", {						-- id
 		penmul	= math.sqrt(0.2)				-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser", "GPS"},
 	fuses	= {"Contact", "Timed", "Optical", "Cluster"},
 
@@ -98,7 +98,7 @@ ACE.RegisterWeapon("227kgGBU", {						-- id
 		penmul	= math.sqrt(0.05)				-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser", "GPS"},
 	fuses	= {"Contact", "Timed", "Optical", "Cluster"},
 
@@ -145,7 +145,7 @@ ACE.RegisterWeapon("454kgGBU", {						-- id
 		penmul	= math.sqrt(0.04)				-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser", "GPS"},
 	fuses	= {"Contact", "Timed", "Optical", "Cluster"},
 
@@ -190,7 +190,7 @@ ACE.RegisterWeapon("909kgGBU", {						-- id
 		penmul	= math.sqrt(0.09)				-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack",			-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser", "GPS"},
 	fuses	= {"Contact", "Timed", "Optical", "Cluster"},
 

@@ -49,7 +49,7 @@ ACE.RegisterWeapon("40mmFFAR", { --id
 		penmul	= math.sqrt(1)
 	},
 
-	ent		= "acf_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb"},
 	fuses	= {"Contact", "Timed"},
 
@@ -94,7 +94,7 @@ ACE.RegisterWeapon("70mmFFAR", { --id
 		penmul	= math.sqrt(0.8)	-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser", "GPS"},
 	fuses	= {"Contact", "Timed"},
 

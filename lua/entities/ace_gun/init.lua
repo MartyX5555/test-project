@@ -127,7 +127,7 @@ do
 
 	function MakeACE_Gun(Owner, Pos, Angle, Id)
 
-		local Gun = ents.Create("acf_gun")
+		local Gun = ents.Create("ace_gun")
 		if not IsValid(Gun) then return false end
 
 		if not ACE_CheckGun( Id ) then
@@ -150,8 +150,8 @@ do
 			Owner:AddCount("_acf_largegun", Gun)
 
 		else
-			if not Owner:CheckLimit("_acf_gun") then return false end
-			Owner:AddCount("_acf_gun", Gun)
+			if not Owner:CheckLimit("_ace_gun") then return false end
+			Owner:AddCount("_ace_gun", Gun)
 		end
 
 		Gun:SetAngles(Angle)
@@ -267,8 +267,8 @@ do
 	end
 end
 
-list.Set( "ACFCvars", "acf_gun", {"id"} )
-duplicator.RegisterEntityClass("acf_gun", MakeACE_Gun, "Pos", "Angle", "Id")
+list.Set( "ACFCvars", "ace_gun", {"id"} )
+duplicator.RegisterEntityClass("ace_gun", MakeACE_Gun, "Pos", "Angle", "Id")
 
 function ENT:UpdateOverlayText()
 
@@ -317,7 +317,7 @@ end
 local BreakSoundTbl = {
 	ace_crewseat_gunner = "physics/metal/metal_canister_impact_hard",
 	ace_crewseat_loader = "physics/metal/metal_canister_impact_hard",
-	acf_ammo = "physics/metal/metal_box_impact_bullet",
+	ace_ammo = "physics/metal/metal_box_impact_bullet",
 }
 
 local function BreakGunLink( Gun, LinkedEnt )
@@ -396,7 +396,7 @@ function ENT:Link( Target )
 		return true, "Link successful!"
 
 	--Ammo Link
-	elseif Target:GetClass() == "acf_ammo" then
+	elseif Target:GetClass() == "ace_ammo" then
 
 		-- Don't link if it's already linked
 		for _, v in pairs( self.AmmoLink ) do
@@ -1109,7 +1109,7 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 
 				if IsValid(Ammo) then
 
-					if Ammo:GetClass() == "acf_ammo" then
+					if Ammo:GetClass() == "ace_ammo" then
 						self:Link( Ammo )
 					elseif Ammo:GetClass() == "ace_crewseat_gunner" then
 						self:Link( Ammo )

@@ -1,7 +1,7 @@
 --- Library for interfacing with ACF entities
 -- @name acf
 -- @class library
--- @libtbl acf_library
+-- @libtbl ace_library
 -- @src https://github.com/RedDeadlyCreeper/ArmoredCombatExtended/tree/master/lua/starfall/lib_sv/acf.lua
 SF.RegisterLibrary("acf")
 
@@ -19,27 +19,27 @@ registerprivilege("acf.createAmmo", "Create acf ammo", "Allows the user to creat
 registerprivilege("entities.acf", "ACF", "Allows the user to control ACF components", { entities = {} })
 
 local function isEngine(ent)
-	return ent:GetClass() == "acf_engine"
+	return ent:GetClass() == "ace_engine"
 end
 
 local function isGearbox(ent)
-	return ent:GetClass() == "acf_gearbox"
+	return ent:GetClass() == "ace_gearbox"
 end
 
 local function isGun(ent)
-	return ent:GetClass() == "acf_gun"
+	return ent:GetClass() == "ace_gun"
 end
 
 local function isAmmo(ent)
-	return ent:GetClass() == "acf_ammo"
+	return ent:GetClass() == "ace_ammo"
 end
 
 local function isFuel(ent)
-	return ent:GetClass() == "acf_fueltank"
+	return ent:GetClass() == "ace_fueltank"
 end
 
 local radarTypes = {
-	acf_missileradar = true,
+	ace_radar = true,
 	ace_irst = true,
 	ace_trackingradar = true,
 }
@@ -50,11 +50,11 @@ end
 
 -- link resources within each ent type. should point to an ent: true if adding link.Ent, false to add link itself
 local linkTables = {
-	acf_engine		= { GearLink = true, FuelLink = false },
-	acf_gearbox		= { WheelLink = true, Master = false },
-	acf_fueltank	= { Master = false },
-	acf_gun			= { AmmoLink = false },
-	acf_ammo		= { Master = false }
+	ace_engine		= { GearLink = true, FuelLink = false },
+	ace_gearbox		= { WheelLink = true, Master = false },
+	ace_fueltank	= { Master = false },
+	ace_gun			= { AmmoLink = false },
+	ace_ammo		= { Master = false }
 }
 
 local function getLinks(ent, enttype)
@@ -77,7 +77,7 @@ local function getLinks(ent, enttype)
 end
 
 local function searchForGearboxLinks(ent)
-	local boxes = ents.FindByClass("acf_gearbox")
+	local boxes = ents.FindByClass("ace_gearbox")
 	local ret = {}
 	for _, box in ipairs(boxes) do
 		if IsValid(box) then
@@ -99,7 +99,7 @@ return function(instance)
 
 
 local checktype = instance.CheckType
-local acf_library = instance.Libraries.acf
+local ace_library = instance.Libraries.acf
 local ents_methods = instance.Types.Entity.Methods
 local vec_meta, vwrap, vunwrap = instance.Types.Vector, instance.Types.Vector.Wrap, instance.Types.Vector.Unwrap
 local sanitize = instance.Sanitize
@@ -136,42 +136,42 @@ do
 	--- Returns current ACF drag divisor
 	-- @server
 	-- @return number The current drag divisor
-	function acf_library.dragDivisor()
+	function ace_library.dragDivisor()
 		return ACE.DragDiv
 	end
 
 	--- Returns true if functions returning sensitive info are restricted to owned props
 	-- @server
 	-- @return boolean True if restriced, False if not
-	function acf_library.infoRestricted()
+	function ace_library.infoRestricted()
 		return GetConVar("acf_restrictinfo"):GetInt() ~= 0
 	end
 
 	--- Returns latest version of ACF
 	-- @server
 	-- @return number Version number
-	function acf_library.getVersion()
+	function ace_library.getVersion()
 		return ACE.CurrentVersion
 	end
 
 	--- Returns server version of acf
 	-- @server
 	-- @return number Version number
-	function acf_library.getCurrentVersion()
+	function ace_library.getCurrentVersion()
 		return ACE.Version
 	end
 
 	--- Returns velocity loss for every meter traveled. 0.2x means HEAT loses 20% of its energy every 2m traveled. 1m is about typical for the sideskirt spaced armor of most tanks.
 	-- @server
 	-- @return number Air gap factor
-	function acf_library.getHEATAirGapFactor()
+	function ace_library.getHEATAirGapFactor()
 		return ACE.HEATAirGapFactor
 	end
 
 	--- Returns ACF wind direction
 	-- @server
 	-- @return vector Wind direction
-	function acf_library.getWindVector()
+	function ace_library.getWindVector()
 		return vwrap(ACE.Wind)
 	end
 
@@ -409,7 +409,7 @@ do
 	-- @param number hit The hit angle
 	-- @server
 	-- @return number The effective armor
-	function acf_library.effectiveArmor(armor, angle)
+	function ace_library.effectiveArmor(armor, angle)
 		checkluatype(armor, TYPE_NUMBER)
 		checkluatype(angle, TYPE_NUMBER)
 
@@ -513,7 +513,7 @@ do
 	-- @param string id id or name of the gun
 	-- @server
 	-- @return table The specs table
-	function acf_library.getGunSpecs(id)
+	function ace_library.getGunSpecs(id)
 		checkluatype(id, TYPE_STRING)
 
 		local listEntries = ACE.Weapons.Guns
@@ -537,7 +537,7 @@ do
 	--- Returns a list of all guns
 	-- @server
 	-- @return table The guns list
-	function acf_library.getAllGuns()
+	function ace_library.getAllGuns()
 		local tbl = {}
 
 		for id, _ in pairs(ACE.Weapons.Guns) do
@@ -975,7 +975,7 @@ do
 	-- @param string id ID or name of the engine or gearbox
 	-- @server
 	-- @return table The specs table
-	function acf_library.getMobilitySpecs(id)
+	function ace_library.getMobilitySpecs(id)
 		checkluatype(id, TYPE_STRING)
 
 		local listEntries = ACE.Weapons.Mobility
@@ -999,7 +999,7 @@ do
 	--- Returns a list of all mobility components
 	-- @server
 	-- @return table The mobility component list
-	function acf_library.getAllMobility()
+	function ace_library.getAllMobility()
 		local tbl = {}
 
 		for id, _ in pairs(ACE.Weapons.Mobility) do
@@ -1012,11 +1012,11 @@ do
 	--- Returns a list of all engines
 	-- @server
 	-- @return table The engine list
-	function acf_library.getAllEngines()
+	function ace_library.getAllEngines()
 		local tbl = {}
 
 		for id, d in pairs(ACE.Weapons.Mobility) do
-			if d.ent == "acf_engine" then
+			if d.ent == "ace_engine" then
 				tbl[#tbl + 1] = id
 			end
 		end
@@ -1027,11 +1027,11 @@ do
 	--- Returns a list of all gearboxes
 	-- @server
 	-- @return table The gearbox list
-	function acf_library.getAllGearboxes()
+	function ace_library.getAllGearboxes()
 		local tbl = {}
 
 		for id, d in pairs(ACE.Weapons.Mobility) do
-			if d.ent == "acf_gearbox" then
+			if d.ent == "ace_gearbox" then
 				tbl[#tbl + 1] = id
 			end
 		end
@@ -1771,7 +1771,7 @@ do
 		data.Detected = this.OutputData.Detected
 		data.Position = this.OutputData.Position
 
-		if radarType == "acf_missileradar" then
+		if radarType == "ace_radar" then
 			data.ClosestDistance = this.OutputData.ClosestDistance
 			data.Entities = this.OutputData.Entities
 			data.Velocity = this.OutputData.Velocity

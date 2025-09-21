@@ -51,7 +51,7 @@ ACE.RegisterWeapon("Type 63 RA", {							-- id
 		penmul            = math.sqrt(0.15)				-- 139 HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Laser", "GPS"},
 	fuses      = {"Contact", "Timed", "Optical", "Cluster"},
 
@@ -108,7 +108,7 @@ ACE.RegisterWeapon("SAKR-10 RA", {							-- id
 		penmul            = math.sqrt(0.2)					--  139 HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Laser", "GPS"},
 	fuses      = {"Contact", "Timed", "Optical", "Cluster"},
 
@@ -165,7 +165,7 @@ ACE.RegisterWeapon("SS-40 RA", {								-- id
 		penmul            = math.sqrt(0.2)					-- 139 HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Laser", "GPS"},
 	fuses      = {"Contact", "Timed", "Optical", "Cluster"},
 
@@ -220,7 +220,7 @@ ACE.RegisterWeapon("RW61 RA", {								-- id
 		penmul            = math.sqrt(0.4)						-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb"},
 	fuses      = {"Contact", "Optical", "Cluster"},		-- Because who doesn't love cluster RW61s
 

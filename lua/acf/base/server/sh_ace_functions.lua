@@ -176,10 +176,10 @@ do
 				if not ACE_Check( v ) then continue end
 				if not pwr then continue end
 
-				if v:GetClass() == "acf_engine" then
+				if v:GetClass() == "ace_engine" then
 					power = power + (v.peakkw * 1.34)
 					fuel = v.RequiresFuel and 2 or fuel
-				elseif v:GetClass() == "acf_fueltank" then
+				elseif v:GetClass() == "ace_fueltank" then
 					fuel = math.max(fuel,1)
 				end
 

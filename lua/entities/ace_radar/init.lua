@@ -5,7 +5,7 @@ AddCSLuaFile( "shared.lua" )
 include("shared.lua")
 include("radar_types_support.lua")
 
-CreateConVar("sbox_max_acf_missileradar", 6)
+CreateConVar("sbox_max_ace_radar", 6)
 
 DEFINE_BASECLASS( "base_wire_entity" )
 
@@ -44,7 +44,7 @@ function ENT:Initialize()
 
 	self.Active				= false
 
-	self:CreateRadar(self.ACFName or "Missile Radar", self.ConeDegs or 180)
+	self:CreateRadar(self.ACEName or "Missile Radar", self.ConeDegs or 180)
 
 	self:EnableClientInfo(true)
 
@@ -102,20 +102,20 @@ end
 
 function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 
-	if not Owner:CheckLimit("_acf_missileradar") then return false end
+	if not Owner:CheckLimit("_ace_radar") then return false end
 
 	local radar = ACE.Weapons.Radars[Id]
 
 	if not radar then return false end
 
-	local Radar = ents.Create("acf_missileradar")
+	local Radar = ents.Create("ace_radar")
 	if not Radar:IsValid() then return false end
 	Radar:SetAngles(Angle)
 	Radar:SetPos(Pos)
 
 	Radar.Model        = radar.model
 	Radar.Weight       = radar.weight
-	Radar.ACFName      = radar.name
+	Radar.ACEName      = radar.name
 	Radar.ConeDegs     = radar.viewcone
 	Radar.Range        = radar.range
 	Radar.Id           = Id
@@ -132,23 +132,23 @@ function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 
 	Radar:SetModelEasy(radar.model)
 
-	Owner:AddCount( "_acf_missileradar", Radar )
+	Owner:AddCount( "_ace_radar", Radar )
 	Owner:AddCleanup( "acfmenu", Radar )
 
-	Radar:SetNWString( "WireName", Radar.ACFName )
+	Radar:SetNWString( "WireName", Radar.ACEName )
 	Radar:SetNWString( "Sound", Radar.Sound )
 	Radar:SetNWInt( "SoundPitch",  Radar.SoundPitch )
 
 	return Radar
 
 end
-list.Set( "ACFCvars", "acf_missileradar", {"id"} )
-duplicator.RegisterEntityClass("acf_missileradar", MakeACE_MissileRadar, "Pos", "Angle", "Id" )
+list.Set( "ACFCvars", "ace_radar", {"id"} )
+duplicator.RegisterEntityClass("ace_radar", MakeACE_MissileRadar, "Pos", "Angle", "Id" )
 
 function ENT:CreateRadar(ACFName, ConeDegs)
 
 	self.ConeDegs = ConeDegs
-	self.ACFName = ACFName
+	self.ACEName = ACFName
 
 	self:RefreshClientInfo()
 
@@ -158,8 +158,8 @@ function ENT:RefreshClientInfo()
 
 	self:SetNWFloat("ConeDegs", self.ConeDegs)
 	self:SetNWFloat("Range", self.Range)
-	self:SetNWString("Id", self.ACFName)
-	self:SetNWString("Name", self.ACFName)
+	self:SetNWString("Id", self.ACEName)
+	self:SetNWString("Name", self.ACEName)
 
 end
 

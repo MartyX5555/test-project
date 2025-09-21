@@ -48,7 +48,7 @@ ACE.RegisterWeapon("AIM-9 AAM", {								-- id
 		finmul            = 0.025							-- fin multiplier (mostly used for unpropelled guidance)
 	},
 
-	ent        = "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Infrared"},
 	fuses      = {"Contact", "Radio"},
 
@@ -102,7 +102,7 @@ ACE.RegisterWeapon("AIM-120 AAM", {							-- id
 		finmul            = 0.025							-- fin multiplier (mostly used for unpropelled guidance)
 	},
 
-	ent        = "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Radar"},
 	fuses      = {"Contact", "Radio"},
 
@@ -155,7 +155,7 @@ ACE.RegisterWeapon("AIM-54 AAM", {							-- id
 		finmul            = 0.05							-- fin multiplier (mostly used for unpropelled guidance)
 	},
 
-	ent                = "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent                = "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance           = {"Dumb", "Radar"},
 	fuses              = {"Contact", "Radio"},
 

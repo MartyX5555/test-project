@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-DEFINE_BASECLASS("acf_explosive")
+DEFINE_BASECLASS("ace_explosive")
 
 local GunTable	= ACE.Weapons.Guns
 local GuidanceTable = ACE.Guidance
@@ -747,12 +747,12 @@ do
 end
 
 local dontDrive = {
-	acf_missile = true,
+	ace_missile = true,
 	ace_missile_swep_guided = true
 }
 
 
-hook.Add("CanDrive", "acf_missile_CanDrive", function(_, ent)
+hook.Add("CanDrive", "ace_missile_CanDrive", function(_, ent)
 	if dontDrive[ent:GetClass()] then return false end
 end)
 

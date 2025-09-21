@@ -33,32 +33,32 @@ ACE.MineData            = {}
 
 -- setup base classes
 local gun_base = {
-	ent    = "acf_gun",
+	ent    = "ace_gun",
 	type   = "Guns"
 }
 local ammo_base = {
-	ent    = "acf_ammo",
+	ent    = "ace_ammo",
 	type   = "Ammo"
 }
 local engine_base = {
-	ent    = "acf_engine",
+	ent    = "ace_engine",
 	type   = "Engines"
 }
 local gearbox_base = {
-	ent    = "acf_gearbox",
+	ent    = "ace_gearbox",
 	type   = "Gearboxes",
 	sound  = "vehicles/junker/jnk_fourth_cruise_loop2.wav"
 }
 local fueltank_base = {
-	ent    = "acf_fueltank",
+	ent    = "ace_fueltank",
 	type   = "FuelTanks"
 }
 local rack_base = {
-	ent    = "acf_rack",
+	ent    = "ace_rack",
 	type   = "Racks"
 }
 local radar_base = {
-	ent    = "acf_missileradar",
+	ent    = "ace_radar",
 	type   = "Radars"
 }
 local trackradar_base = {

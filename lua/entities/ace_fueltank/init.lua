@@ -202,7 +202,7 @@ do
 
 		if IsValid(Owner) and not Owner:CheckLimit("_acf_misc") then return false end
 
-		local Tank = ents.Create("acf_fueltank")
+		local Tank = ents.Create("ace_fueltank")
 		if IsValid(Tank) then
 
 			local Model
@@ -289,8 +289,8 @@ do
 	end
 end
 
-list.Set( "ACFCvars", "acf_fueltank", {"id", "data1", "data2", "data3"} )
-duplicator.RegisterEntityClass("acf_fueltank", MakeACE_FuelTank, "Pos", "Angle", "Id", "SizeId", "FuelType", "Shape" )
+list.Set( "ACFCvars", "ace_fueltank", {"id", "data1", "data2", "data3"} )
+duplicator.RegisterEntityClass("ace_fueltank", MakeACE_FuelTank, "Pos", "Angle", "Id", "SizeId", "FuelType", "Shape" )
 
 
 local Wall = 0.03937 --wall thickness in inches (1mm)

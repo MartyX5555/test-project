@@ -49,7 +49,7 @@ ACE.RegisterWeapon("AGM-114 ASM", {						--id
 		penmul            = math.sqrt(0.518)			-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Laser"},
 	fuses      = {"Contact", "Optical"},
 
@@ -102,7 +102,7 @@ ACE.RegisterWeapon("AGM-45 ASM", {						-- id
 		penmul            = math.sqrt(0.1)			-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Radar", "Laser", "Infrared"},
 	fuses	= {"Contact", "Timed"},
 
@@ -157,7 +157,7 @@ ACE.RegisterWeapon("AGM-122 ASM", {						-- id
 		penmul            = math.sqrt(0.075)				-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent		= "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent		= "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Radar", "Infrared"},
 	fuses	= {"Contact", "Optical"},
 
@@ -210,7 +210,7 @@ ACE.RegisterWeapon("AGM-65 ASM", {						-- id
 		penmul            = math.sqrt(0.53)			-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",				-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb" , "Infrared"},
 	fuses      = {"Contact", "Optical"},
 

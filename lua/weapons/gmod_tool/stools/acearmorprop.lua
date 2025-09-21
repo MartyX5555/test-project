@@ -243,18 +243,18 @@ local function ApplySettings( _, ent, data )
 	if data.Ductility then
 		ent.ACE = ent.ACE or {}
 		ent.ACE.Ductility = data.Ductility / 100
-		duplicator.StoreEntityModifier( ent, "acfsettings", { Ductility = data.Ductility } )
+		duplicator.StoreEntityModifier( ent, "ace_armordata", { Ductility = data.Ductility } )
 	end
 
 	if data.Material then
 		ent.ACE = ent.ACE or {}
 		ent.ACE.Material = data.Material
-		duplicator.StoreEntityModifier( ent, "acfsettings", { Material = data.Material } )
+		duplicator.StoreEntityModifier( ent, "ace_armordata", { Material = data.Material } )
 	end
 
 end
 
-duplicator.RegisterEntityModifier( "acfsettings", ApplySettings )
+duplicator.RegisterEntityModifier( "ace_armordata", ApplySettings )
 duplicator.RegisterEntityModifier( "mass", ApplySettings )
 
 -- Apply settings to prop
@@ -318,8 +318,8 @@ function TOOL:Reload( trace )
 	if not con then return end
 
 	local total = con.totalmass
-	local phystotal	= con.acfphystotal
-	local parenttotal = con.acfparenttotal
+	local phystotal	= con.acephystotal
+	local parenttotal = con.aceparenttotal
 	local physratio	= con.massratio * 100
 
 	local power		= data.Power

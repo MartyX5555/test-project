@@ -47,7 +47,7 @@ ACE.RegisterWeapon("BGM-71E ASM", {								-- id
 		penmul			= math.sqrt(0.9265)					-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)	--was 0.797
 	},
 
-	ent			= "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent			= "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Wire"},
 	fuses		= {"Contact", "Optical", "Plunging"},
 
@@ -96,7 +96,7 @@ ACE.RegisterWeapon("9M133 ASM", {									-- id
 		penmul			= math.sqrt(1.2)						-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent			= "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent			= "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser"},
 	fuses		= {"Contact", "Optical"},
 
@@ -151,7 +151,7 @@ ACE.RegisterWeapon("AT-3 ASM", { --id
 		penmul			= math.sqrt(1)						-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent			= "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent			= "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Wire"},
 	fuses		= {"Contact", "Optical"},
 
@@ -204,7 +204,7 @@ ACE.RegisterWeapon("Ataka ASM", { --id
 		penmul			= math.sqrt(1.148)					-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)	--was 0.854
 	},
 
-	ent			= "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent			= "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance	= {"Dumb", "Laser"},
 	fuses		= {"Contact", "Optical"},
 
@@ -257,7 +257,7 @@ ACE.RegisterWeapon("AT-2 ASM", { --id
 		penmul			= math.sqrt(1.3)						-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent				= "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent				= "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance		= {"Dumb", "Laser", "Wire"},
 
 	fuses			= {"Contact", "Optical"},
@@ -309,7 +309,7 @@ ACE.RegisterWeapon("FGM-148 ASM", {
 		penmul			= math.sqrt(0.55)					-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent				= "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent				= "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance		= {"Dumb", "Infrared","Laser"},				-- here you have Laser for those top attacks, feel free to build one.
 
 	fuses			= {"Contact", "Optical"},

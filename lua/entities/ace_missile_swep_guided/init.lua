@@ -89,7 +89,7 @@ function ENT:Detonate()
 	local HEWeight = 4
 	local Radius = HEWeight ^ 0.33 * 8 * 39.37
 
-	self.FakeCrate = ents.Create("acf_fakecrate2")
+	self.FakeCrate = ents.Create("ace_fakecrate2")
 	self.FakeCrate:RegisterTo(self.Bulletdata)
 	self.Bulletdata["Crate"] = self.FakeCrate:EntIndex()
 	self:DeleteOnRemove(self.FakeCrate)

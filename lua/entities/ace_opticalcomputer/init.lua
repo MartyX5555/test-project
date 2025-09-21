@@ -9,7 +9,7 @@ function ENT:SpawnFunction( _, trace )
 
 	local SPos = (trace.HitPos + Vector(0,0,1))
 
-	local ent = ents.Create( "acf_opticalcomputer" )
+	local ent = ents.Create( "ace_opticalcomputer" )
 	ent:SetPos( SPos )
 	ent:Spawn()
 	ent:Activate()

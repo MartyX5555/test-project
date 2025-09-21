@@ -385,7 +385,7 @@ function ACE_GetLinkedWheels( MobilityEnt )
 
 		if IsValid(Ent) then
 
-			if Ent:GetClass() == "acf_gearbox" then
+			if Ent:GetClass() == "ace_gearbox" then
 
 				Checked[Ent:EntIndex()] = true
 

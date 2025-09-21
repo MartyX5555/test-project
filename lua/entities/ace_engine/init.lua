@@ -78,7 +78,7 @@ do
 
 		if not Owner:CheckLimit("_acf_misc") then return false end
 
-		local Engine = ents.Create( "acf_engine" )
+		local Engine = ents.Create( "ace_engine" )
 		if not IsValid( Engine ) then return false end
 
 		if not ACE_CheckEngine( Id ) then
@@ -156,8 +156,8 @@ do
 
 		return Engine
 	end
-	list.Set( "ACFCvars", "acf_engine", {"id"} )
-	duplicator.RegisterEntityClass("acf_engine", MakeACE_Engine, "Pos", "Angle", "Id")
+	list.Set( "ACFCvars", "ace_engine", {"id"} )
+	duplicator.RegisterEntityClass("ace_engine", MakeACE_Engine, "Pos", "Angle", "Id")
 
 end
 
@@ -442,7 +442,7 @@ function ENT:CalcMassRatio()
 	local phys = self:GetPhysicsObject()
 	if con then
 		Mass = con.totalmass
-		PhysMass = con.acfphystotal
+		PhysMass = con.acephystotal
 		self.MassRatio = con.massratio
 	elseif IsValid(phys) then
 		local EngineMass = phys:GetMass()
@@ -761,8 +761,8 @@ end
 do
 
 	local AllowedEnts = {
-		acf_gearbox = true,
-		acf_fueltank = true,
+		ace_gearbox = true,
+		ace_fueltank = true,
 		ace_crewseat_driver = true,
 	}
 
@@ -773,11 +773,11 @@ do
 		end
 
 		-- Gear links
-		if Target:GetClass() == "acf_gearbox" then
+		if Target:GetClass() == "ace_gearbox" then
 			return self:LinkGearbox( Target )
 		end
 		-- Fuel links
-		if Target:GetClass() == "acf_fueltank" then
+		if Target:GetClass() == "ace_fueltank" then
 			return self:LinkFuel( Target )
 		end
 		-- Crew links
@@ -793,11 +793,11 @@ do
 		end
 
 		-- Gear links
-		if Target:GetClass() == "acf_gearbox" then
+		if Target:GetClass() == "ace_gearbox" then
 			return self:UnlinkGearbox( Target )
 		end
 		-- Fuel links
-		if Target:GetClass() == "acf_fueltank" then
+		if Target:GetClass() == "ace_fueltank" then
 			return self:UnlinkFuel( Target )
 		end
 		-- Crew links

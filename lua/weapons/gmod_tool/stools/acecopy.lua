@@ -38,7 +38,7 @@ function TOOL:LeftClick( trace )
 
 	ACE_KEShove(ent, trace.HitPos, -trace.HitNormal, 50000 )
 
-	if ent:GetClass() == "acf_gearbox" and #self.GearboxCopyData > 1 and ent.CanUpdate then
+	if ent:GetClass() == "ace_gearbox" and #self.GearboxCopyData > 1 and ent.CanUpdate then
 
 		local success, msg = ent:Update( self.GearboxCopyData );
 
@@ -46,7 +46,7 @@ function TOOL:LeftClick( trace )
 
 	end
 
-	if ent:GetClass() == "acf_ammo" and #self.AmmoCopyData > 1 and ent.CanUpdate then
+	if ent:GetClass() == "ace_ammo" and #self.AmmoCopyData > 1 and ent.CanUpdate then
 
 		local success, msg = ent:Update( self.AmmoCopyData );
 
@@ -71,7 +71,7 @@ function TOOL:RightClick( trace )
 
 	local pl = self:GetOwner();
 
-	if ent:GetClass() == "acf_gearbox" then
+	if ent:GetClass() == "ace_gearbox" then
 
 		local ArgsTable = {};
 
@@ -99,7 +99,7 @@ function TOOL:RightClick( trace )
 
 	end
 
-	if ent:GetClass() == "acf_ammo" then
+	if ent:GetClass() == "ace_ammo" then
 
 		local ArgsTable = {};
 
@@ -107,7 +107,7 @@ function TOOL:RightClick( trace )
 		ArgsTable[1] = pl;
 		ArgsTable[2] = 0;
 		ArgsTable[3] = 0;
-		ArgsTable[4] = 0; -- ArgsTable[4] isnt actually used anywhere within acf_ammo ENT:Update() and ENT:CreateAmmo(), just passed around?
+		ArgsTable[4] = 0; -- ArgsTable[4] isnt actually used anywhere within ace_ammo ENT:Update() and ENT:CreateAmmo(), just passed around?
 
 		-- build gear data
 		ArgsTable[5] = ent.RoundId;

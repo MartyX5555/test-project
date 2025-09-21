@@ -46,7 +46,7 @@ ACE.RegisterWeapon("FIM-92 SAM", {								-- id
 		finmul            = 0.05								-- fin multiplier (mostly used for unpropelled guidance)	--was 0.02
 	},
 
-	ent        = "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Infrared" ,"Antimissile"},
 	fuses      = {"Contact", "Radio"},
 
@@ -98,7 +98,7 @@ ACE.RegisterWeapon("Mistral SAM", {								-- id
 		finmul            = 0.05								-- fin multiplier (mostly used for unpropelled guidance)
 	},
 
-	ent        = "acf_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",						-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Infrared", "Antimissile"},
 	fuses      = {"Contact", "Radio"},
 
@@ -148,7 +148,7 @@ ACE.RegisterWeapon("Strela-1 SAM", {								-- id
 		finmul            = 0.15								-- fin multiplier (mostly used for unpropelled guidance)		--was 0.03
 	},
 
-	ent			= "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent			= "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance		= {"Dumb", "Infrared","Antimissile"},
 	fuses		= {"Contact", "Radio"},
 
@@ -201,7 +201,7 @@ ACE.RegisterWeapon("9M311 SAM", {										-- id
 		penmul            = math.sqrt(8.8)						-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack",					-- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb", "Laser"},
 	fuses      = {"Contact", "Radio", "Optical"},
 

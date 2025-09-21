@@ -18,36 +18,36 @@ end
 
 local function isEngine(ent)
 	if not validPhysics(ent) then return false end
-	return ent:GetClass() == "acf_engine"
+	return ent:GetClass() == "ace_engine"
 end
 
 local function isGearbox(ent)
 	if not validPhysics(ent) then return false end
-	return ent:GetClass() == "acf_gearbox"
+	return ent:GetClass() == "ace_gearbox"
 end
 
 local function isGun(ent)
 	if not validPhysics(ent) then return false end
-	return ent:GetClass() == "acf_gun"
+	return ent:GetClass() == "ace_gun"
 end
 
 local function isRack(ent)
 	if not validPhysics(ent) then return false end
-	return ent:GetClass() == "acf_rack"
+	return ent:GetClass() == "ace_rack"
 end
 
 local function isAmmo(ent)
 	if not validPhysics(ent) then return false end
-	return ent:GetClass() == "acf_ammo"
+	return ent:GetClass() == "ace_ammo"
 end
 
 local function isFuel(ent)
 	if not validPhysics(ent) then return false end
-	return ent:GetClass() == "acf_fueltank"
+	return ent:GetClass() == "ace_fueltank"
 end
 
 local radarTypes = {
-	acf_missileradar = true,
+	ace_radar = true,
 	ace_irst = true,
 	ace_trackingradar = true,
 }
@@ -74,11 +74,11 @@ do
 
 	ACE_E2_LinkTables = ACE_E2_LinkTables or
 	{ -- link resources within each ent type.  should point to an ent: true if adding link.Ent, false to add link itself
-		acf_engine		= {GearLink = true, FuelLink = false},
-		acf_gearbox		= {WheelLink = true, Master = false},
-		acf_fueltank	= {Master = false},
-		acf_gun			= {AmmoLink = false},
-		acf_ammo		= {Master = false}
+		ace_engine		= {GearLink = true, FuelLink = false},
+		ace_gearbox		= {WheelLink = true, Master = false},
+		ace_fueltank	= {Master = false},
+		ace_gun			= {AmmoLink = false},
+		ace_ammo		= {Master = false}
 	}
 	
 	
@@ -103,7 +103,7 @@ do
 	
 	
 	local function searchForGearboxLinks(ent)
-		local boxes = ents.FindByClass("acf_gearbox")
+		local boxes = ents.FindByClass("ace_gearbox")
 		local ret = {}
 
 		for _, box in pairs(boxes) do
@@ -355,7 +355,7 @@ do
 		local success, msg
 
 		if this.Link and target.Link then
-			if target:GetClass() == "acf_engine" then
+			if target:GetClass() == "ace_engine" then
 				success, msg = target:Link(this)
 			else
 				success, msg = this:Link(target)
@@ -386,7 +386,7 @@ do
 		local success, msg
 
 		if this.Unlink and target.Unlink then
-			if target:GetClass() == "acf_engine" then
+			if target:GetClass() == "ace_engine" then
 				success, msg = target:Unlink(this)
 			else
 				success, msg = this:Unlink(target)
@@ -1391,7 +1391,7 @@ do
 		if not (isEngine(this) or isFuel(this)) then return self:throw("Entity is not a valid ACF engine or fuel tank", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		if this:GetClass() == "acf_fueltank" then
+		if this:GetClass() == "ace_fueltank" then
 			return round(this.Fuel, 3)
 		else
 			if not next(this.FuelLink) then return 0 end
@@ -1414,7 +1414,7 @@ do
 		if not (isEngine(this) or isFuel(this)) then return self:throw("Entity is not a valid ACF engine or fuel tank", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		if this:GetClass() == "acf_fueltank" then
+		if this:GetClass() == "ace_fueltank" then
 			return round(this.Fuel / this.Capacity, 3)
 		else
 			if not next(this.FuelLink) then return 0 end
@@ -1510,7 +1510,7 @@ do
 		ret.s.Position = table.Copy(this.OutputData.Position)
 		ret.stypes.Position = "r"
 
-		if radarType == "acf_missileradar" then
+		if radarType == "ace_radar" then
 			ret.s.ClosestDistance = this.OutputData.ClosestDistance
 			ret.stypes.ClosestDistance = "n"
 

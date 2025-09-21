@@ -37,7 +37,7 @@ function Round.create( Gun, BulletData )
 	local MuzzleVec
 
 	--if ammo is cooking off, shoot in random direction
-	if Gun:GetClass() == "acf_ammo" then
+	if Gun:GetClass() == "ace_ammo" then
 		local Inaccuracy
 		MuzzleVec = VectorRand()
 

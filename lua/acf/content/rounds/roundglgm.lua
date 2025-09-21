@@ -12,11 +12,11 @@ Round.netid = 9 --Unique ammotype ID for network transmission
 Round.Type  = "GLATGM"
 
 function Round.create( Gun, BulletData )
-	if Gun:GetClass() == "acf_ammo" then
+	if Gun:GetClass() == "ace_ammo" then
 		ACE_CreateBullet( BulletData )
 	else
 
-		local glatgm = ents.Create("acf_glatgm")
+		local glatgm = ents.Create("ace_glatgm")
 		glatgm.DoNotDuplicate = true
 		glatgm.Guidance = Gun
 

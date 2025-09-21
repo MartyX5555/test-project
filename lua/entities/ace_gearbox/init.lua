@@ -58,7 +58,7 @@ do
 
 		if not Owner:CheckLimit("_acf_misc") then return false end
 
-		local Gearbox	= ents.Create("acf_gearbox")
+		local Gearbox	= ents.Create("ace_gearbox")
 
 		if not IsValid( Gearbox ) then return false end
 
@@ -204,8 +204,8 @@ do
 
 		return Gearbox
 	end
-	list.Set( "ACFCvars", "acf_gearbox", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
-	duplicator.RegisterEntityClass("acf_gearbox", MakeACE_Gearbox, "Pos", "Angle", "Id", "Gear1", "Gear2", "Gear3", "Gear4", "Gear5", "Gear6", "Gear7", "Gear8", "Gear9", "Gear0" )
+	list.Set( "ACFCvars", "ace_gearbox", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
+	duplicator.RegisterEntityClass("ace_gearbox", MakeACE_Gearbox, "Pos", "Angle", "Id", "Gear1", "Gear2", "Gear3", "Gear4", "Gear5", "Gear6", "Gear7", "Gear8", "Gear9", "Gear0" )
 
 end
 
@@ -760,7 +760,7 @@ end
 
 function ENT:Link( Target )
 
-	if not IsValid( Target ) or not table.HasValue( { "prop_physics", "acf_gearbox", "tire" }, Target:GetClass() ) then
+	if not IsValid( Target ) or not table.HasValue( { "prop_physics", "ace_gearbox", "tire" }, Target:GetClass() ) then
 		return false, "Can only link props or gearboxes!"
 	end
 

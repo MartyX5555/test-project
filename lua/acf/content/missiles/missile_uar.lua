@@ -50,7 +50,7 @@ ACE.RegisterWeapon("SPG-9 ASR", { --id
 
 	},
 
-	ent        = "acf_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb"},
 	fuses      = {"Contact", "Optical"},
 
@@ -95,7 +95,7 @@ ACE.RegisterWeapon("RS82 ASR", { --id
 		penmul            = math.sqrt(0.115)	--  139 HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb"},
 	fuses      = {"Contact", "Timed"},
 
@@ -141,7 +141,7 @@ ACE.RegisterWeapon("Zuni ASR", { --id
 		finmul            = 0.0001,
 		penmul            = math.sqrt(0.115)
 	},
-	ent        = "acf_missile_to_rack",
+	ent        = "ace_missile_to_rack",
 	guidance   = {"Dumb"},
 	fuses      = {"Contact", "Timed", "Optical", "Radio"},
 	racks      = {["1xRK"] = true, ["2xRK"] = true, ["3xRK"] = true, ["4xRK"] = true, ["127mm4xPOD"] = true},
@@ -186,7 +186,7 @@ ACE.RegisterWeapon("HVAR ASR", { --id
 		penmul            = math.sqrt(0.115)	-- 215.9 HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb"},
 	fuses      = {"Contact", "Timed"},
 
@@ -231,7 +231,7 @@ ACE.RegisterWeapon("S-24 ASR", { --id
 		penmul            = math.sqrt(0.115)		-- HEAT velocity multiplier. Squared relation to penetration (math.sqrt(2) means 2x pen)
 	},
 
-	ent        = "acf_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
+	ent        = "ace_missile_to_rack", -- A workaround ent which spawns an appropriate rack for the missile.
 	guidance   = {"Dumb"},
 	fuses      = {"Contact", "Timed"},
 

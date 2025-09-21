@@ -4,7 +4,7 @@ AddCSLuaFile( "shared.lua" )
 
 include("shared.lua")
 
-CreateConVar("sbox_max_acf_explosive", 20)
+CreateConVar("sbox_max_ace_explosive", 20)
 
 
 
@@ -44,12 +44,12 @@ end
 
 function MakeACE_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, Data11, Data12, Data13, Data14, Data15)
 
-	if not Owner:CheckLimit("_acf_explosive") then return false end
+	if not Owner:CheckLimit("_ace_explosive") then return false end
 
 
 	--local weapon = ACE.Weapons.Guns[Data1]
 
-	local Bomb = ents.Create("acf_explosive")
+	local Bomb = ents.Create("ace_explosive")
 	if not Bomb:IsValid() then return false end
 	Bomb:SetAngles(Angle)
 	Bomb:SetPos(Pos)
@@ -63,13 +63,13 @@ function MakeACE_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5,
 	Bomb.Id = Id
 	Bomb:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, Data11, Data12, Data13 , Data14 , Data15)
 
-	Owner:AddCount( "_acf_explosive", Bomb )
+	Owner:AddCount( "_ace_explosive", Bomb )
 	Owner:AddCleanup( "acfmenu", Bomb )
 
 	return Bomb
 end
-list.Set( "ACFCvars", "acf_explosive", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "mdl", "data11", "data12", "data13", "data14", "data15"} )
-duplicator.RegisterEntityClass("acf_explosive", MakeACE_Explosive, "Pos", "Angle", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10", "Model" , "RoundData11" , "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
+list.Set( "ACFCvars", "ace_explosive", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "mdl", "data11", "data12", "data13", "data14", "data15"} )
+duplicator.RegisterEntityClass("ace_explosive", MakeACE_Explosive, "Pos", "Angle", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10", "Model" , "RoundData11" , "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
 
 function ENT:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, bdata,Data11 ,Data12, Data13 ,Data14, Data15)
 
@@ -125,7 +125,7 @@ end
 
 function ENT:SetBulletData(bdata)
 
-	if not (bdata.IsShortForm or bdata.Data5) then error("acf_explosive requires short-form bullet-data but was given expanded bullet-data.") end
+	if not (bdata.IsShortForm or bdata.Data5) then error("ace_explosive requires short-form bullet-data but was given expanded bullet-data.") end
 
 	bdata = ACFM_CompactBulletData(bdata)
 

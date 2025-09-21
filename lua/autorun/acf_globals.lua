@@ -187,13 +187,13 @@ ACE.BackCompMat = {
 if SERVER then
 
 	--Sbox Limits
-	CreateConVar("sbox_max_acf_gun", 24)					-- Gun limit
+	CreateConVar("sbox_max_ace_gun", 24)					-- Gun limit
 	CreateConVar("sbox_max_acf_rapidgun", 4)				-- Guns like RACs, MGs, and ACs
 	CreateConVar("sbox_max_acf_largegun", 2)				-- Guns with a caliber above 100mm
 	CreateConVar("sbox_max_acf_smokelauncher", 20)			-- smoke launcher limit
-	CreateConVar("sbox_max_acf_ammo", 50)					-- ammo limit
+	CreateConVar("sbox_max_ace_ammo", 50)					-- ammo limit
 	CreateConVar("sbox_max_acf_misc", 50)					-- misc ents limit
-	CreateConVar("sbox_max_acf_rack", 12)					-- Racks limit
+	CreateConVar("sbox_max_ace_rack", 12)					-- Racks limit
 
 	CreateConVar("acf_mines_max", 10)						-- The mine limit
 	CreateConVar("acf_meshvalue", 1)
@@ -220,8 +220,8 @@ if SERVER then
 	-- New healthmod/armormod/ammomod cvars
 	CreateConVar("acf_healthmod", 1, FCVAR_ARCHIVE)
 	CreateConVar("acf_armormod", 1, FCVAR_ARCHIVE)
-	CreateConVar("acf_ammomod", 1, FCVAR_ARCHIVE)
-	CreateConVar("acf_gunfire", 1, FCVAR_ARCHIVE)
+	CreateConVar("ace_ammomod", 1, FCVAR_ARCHIVE)
+	CreateConVar("ace_gunfire", 1, FCVAR_ARCHIVE)
 
 	-- Debris
 	CreateConVar("acf_debris_lifetime", 30, FCVAR_ARCHIVE)
@@ -245,13 +245,13 @@ if SERVER then
 			ACE.Threshold = 264.7 / math.max(New, 0.01)
 		elseif CVar == "acf_armormod" then
 			ACE.ArmorMod = 1 * math.max(New, 0)
-		elseif CVar == "acf_ammomod" then
+		elseif CVar == "ace_ammomod" then
 			ACE.AmmoMod = 1 * math.max(New, 0.01)
 		elseif CVar == "acf_spalling" then
 			ACE.Spalling = math.floor(math.Clamp(New, 0, 1))
 		elseif CVar == "acf_spalling_multipler" then
 			ACE.SpallMult = math.Clamp(New, 1, 5)
-		elseif CVar == "acf_gunfire" then
+		elseif CVar == "ace_gunfire" then
 			ACE.GunfireEnabled = tobool( New )
 		elseif CVar == "acf_debris_lifetime" then
 			ACE.DebrisLifeTime = math.max( New,0)
@@ -270,10 +270,10 @@ if SERVER then
 
 	cvars.AddChangeCallback("acf_healthmod", ConvarCallback)
 	cvars.AddChangeCallback("acf_armormod", ConvarCallback)
-	cvars.AddChangeCallback("acf_ammomod", ConvarCallback)
+	cvars.AddChangeCallback("ace_ammomod", ConvarCallback)
 	cvars.AddChangeCallback("acf_spalling", ConvarCallback)
 	cvars.AddChangeCallback("acf_spalling_multipler", ConvarCallback)
-	cvars.AddChangeCallback("acf_gunfire", ConvarCallback)
+	cvars.AddChangeCallback("ace_gunfire", ConvarCallback)
 	cvars.AddChangeCallback("acf_debris_lifetime", ConvarCallback)
 	cvars.AddChangeCallback("acf_debris_children", ConvarCallback)
 	cvars.AddChangeCallback("acf_explosions_scaled_he_max", ConvarCallback)

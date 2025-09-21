@@ -35,13 +35,13 @@ if CLIENT then
 	language.Add( "Tool.acemenu.1", ACFTranslation.ACFMenuTool[5] )
 
 	language.Add( "Undone_ACF Entity", ACFTranslation.ACFMenuTool[6] )
-	language.Add( "Undone_acf_engine",ACFTranslation.ACFMenuTool[7] )
-	language.Add( "Undone_acf_gearbox", ACFTranslation.ACFMenuTool[8] )
-	language.Add( "Undone_acf_ammo", ACFTranslation.ACFMenuTool[9] )
-	language.Add( "Undone_acf_gun", ACFTranslation.ACFMenuTool[10] )
-	language.Add( "SBoxLimit_acf_gun", ACFTranslation.ACFMenuTool[11] )
-	language.Add( "SBoxLimit_acf_rack", ACFTranslation.ACFMenuTool[12] )
-	language.Add( "SBoxLimit_acf_ammo", ACFTranslation.ACFMenuTool[13] )
+	language.Add( "Undone_ace_engine",ACFTranslation.ACFMenuTool[7] )
+	language.Add( "Undone_ace_gearbox", ACFTranslation.ACFMenuTool[8] )
+	language.Add( "Undone_ace_ammo", ACFTranslation.ACFMenuTool[9] )
+	language.Add( "Undone_ace_gun", ACFTranslation.ACFMenuTool[10] )
+	language.Add( "SBoxLimit_ace_gun", ACFTranslation.ACFMenuTool[11] )
+	language.Add( "SBoxLimit_ace_rack", ACFTranslation.ACFMenuTool[12] )
+	language.Add( "SBoxLimit_ace_ammo", ACFTranslation.ACFMenuTool[13] )
 	language.Add( "SBoxLimit_acf_sensor", ACFTranslation.ACFMenuTool[14] )
 
 	-- These still need translations, hardcoding as english for now
@@ -92,9 +92,9 @@ function TOOL:LeftClick( trace )
 
 	if not TypeId then
 		if Type == "Ammo" then
-			entClass = "acf_ammo"
+			entClass = "ace_ammo"
 		elseif Type == "FuelTanks" then
-			entClass = "acf_fueltanks"
+			entClass = "ace_fueltanks"
 		end
 	else
 		entClass = TypeId["ent"]
@@ -169,7 +169,7 @@ function TOOL:DeselectAll()
 end
 
 local function linkEnts(e1, e2, unlink)
-	if e1.IsMaster and e2:GetClass() ~= "acf_engine" and (e1:GetClass() ~= "acf_gearbox" or e2:GetClass() ~= "acf_gearbox") then
+	if e1.IsMaster and e2:GetClass() ~= "ace_engine" and (e1:GetClass() ~= "ace_gearbox" or e2:GetClass() ~= "ace_gearbox") then
 		if unlink then
 			return e1:Unlink(e2)
 		else

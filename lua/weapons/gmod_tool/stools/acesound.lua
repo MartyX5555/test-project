@@ -40,7 +40,7 @@ local EngineTable = ACE.Weapons.Engines
 
 ACE.SoundToolSupport = {
 
-	acf_gun = {
+	ace_gun = {
 
 		GetSound = function(ent) return { Sound = ent.Sound, Pitch = ent.SoundPitch or 100 } end,
 
@@ -60,7 +60,7 @@ ACE.SoundToolSupport = {
 
 			local soundData = { Sound = sound, Pitch = 100 }
 
-			local setSound = ACE.SoundToolSupport["acf_gun"].SetSound
+			local setSound = ACE.SoundToolSupport["ace_gun"].SetSound
 			setSound( ent, soundData )
 		end,
 
@@ -68,7 +68,7 @@ ACE.SoundToolSupport = {
 		end
 	},
 
-	acf_engine = {
+	ace_engine = {
 
 		GetSound = function(ent) return { Sound = ent.SoundPath, Pitch = ent.SoundPitch or 100 } end,
 
@@ -85,12 +85,12 @@ ACE.SoundToolSupport = {
 
 			local soundData = { Sound = sound, Pitch = pitch }
 
-			local setSound = ACE.SoundToolSupport["acf_engine"].SetSound
+			local setSound = ACE.SoundToolSupport["ace_engine"].SetSound
 			setSound( ent, soundData )
 		end
 	},
 
-	acf_rack = {
+	ace_rack = {
 
 		GetSound = function(ent) return { Sound = ent.Sound, Pitch = ent.SoundPitch or 100 } end,
 
@@ -109,7 +109,7 @@ ACE.SoundToolSupport = {
 
 			local soundData = { Sound = sound, Pitch = 100 }
 
-			local setSound = ACE.SoundToolSupport["acf_rack"].SetSound
+			local setSound = ACE.SoundToolSupport["ace_rack"].SetSound
 			setSound( ent, soundData )
 		end,
 
@@ -118,7 +118,7 @@ ACE.SoundToolSupport = {
 
 	},
 
-	acf_missileradar = {
+	ace_radar = {
 
 		GetSound = function(ent) return { Sound = ent.Sound or ACEM.DefaultRadarSound, Pitch = ent.SoundPitch or 100 } end,
 
@@ -132,7 +132,7 @@ ACE.SoundToolSupport = {
 		ResetSound = function(ent)
 			local soundData = {Sound = ACEM.DefaultRadarSound, Pitch = 100}
 
-			local setSound = ACE.SoundToolSupport["acf_missileradar"].SetSound
+			local setSound = ACE.SoundToolSupport["ace_radar"].SetSound
 			setSound( ent, soundData )
 		end
 	},
@@ -166,11 +166,11 @@ local function ReplaceSound( _ , Entity , data)
 
 		local newdata = {sound, pitch, true}
 		support.SetSound(Entity, {Sound = sound, Pitch = pitch})
-		duplicator.StoreEntityModifier( Entity, "acf_replacesound", newdata )
+		duplicator.StoreEntityModifier( Entity, "ace_sounddata", newdata )
 	end
 end
 
-duplicator.RegisterEntityModifier( "acf_replacesound", ReplaceSound )
+duplicator.RegisterEntityModifier( "ace_sounddata", ReplaceSound )
 
 local function IsReallyValid(trace, ply)
 	if not trace.Entity:IsValid() then return false end
@@ -232,7 +232,7 @@ function TOOL:Reload( trace )
 
 	support.ResetSound(trace.Entity)
 
-	duplicator.ClearEntityModifier( trace.Entity, "acf_replacesound" )
+	duplicator.ClearEntityModifier( trace.Entity, "ace_sounddata" )
 
 	return true
 end

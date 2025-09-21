@@ -17,7 +17,7 @@ function ACE_RicochetVector(Flight, HitNormal)
 end
 
 local MissileClasses = {
-	acf_missile = true,
+	ace_missile = true,
 	ace_missile_swep_guided = true,
 }
 

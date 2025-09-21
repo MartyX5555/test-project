@@ -130,7 +130,7 @@ do
 			return Scale
 		end
 
-		--This function is a direct copy from acf_ammo code. So its expected that the result matches with the ammo count
+		--This function is a direct copy from ace_ammo code. So its expected that the result matches with the ammo count
 		--TODO: Use this same function for Existent crates? Weird to have this same code in both places.
 
 		local toInche = 2.54		--Number used for cm -> inche conversion

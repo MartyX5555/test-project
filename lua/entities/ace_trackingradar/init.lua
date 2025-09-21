@@ -62,7 +62,7 @@ end
 
 function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
-	if not Owner:CheckLimit("_acf_missileradar") then return false end
+	if not Owner:CheckLimit("_ace_radar") then return false end
 
 	Id = Id or "Large-TRACK"
 
@@ -78,7 +78,7 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
 	Radar.Model    = radar.model
 	Radar.Weight   = radar.weight
-	Radar.ACFName  = radar.name
+	Radar.ACEName  = radar.name
 	Radar.ICone    = radar.viewcone	--Note: intentional. --Recorded initial cone
 	Radar.Cone     = Radar.ICone
 
@@ -93,11 +93,11 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
 	Radar:SetModelEasy(radar.model)
 
-	Radar:SetNWString( "WireName", Radar.ACFName )
+	Radar:SetNWString( "WireName", Radar.ACEName )
 
 	Radar:UpdateOverlayText()
 
-	Owner:AddCount( "_acf_missileradar", Radar )
+	Owner:AddCount( "_ace_radar", Radar )
 	Owner:AddCleanup( "acfmenu", Radar )
 
 	return Radar

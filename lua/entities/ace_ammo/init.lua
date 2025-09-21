@@ -263,9 +263,9 @@ do
 
 	function MakeACE_Ammo(Owner, Pos, Angle, Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13, Data14, Data15)
 
-		if not Owner:CheckLimit("_acf_ammo") then return false end
+		if not Owner:CheckLimit("_ace_ammo") then return false end
 
-		local Ammo = ents.Create("acf_ammo")
+		local Ammo = ents.Create("ace_ammo")
 		if IsValid(Ammo) then
 
 			local Model
@@ -352,7 +352,7 @@ do
 			Ammo.LastMass	= 1
 			Ammo:UpdateMass()
 
-			Owner:AddCount( "_acf_ammo", Ammo )
+			Owner:AddCount( "_ace_ammo", Ammo )
 			Owner:AddCleanup( "acfmenu", Ammo )
 
 			return Ammo
@@ -360,8 +360,8 @@ do
 	end
 end
 
-list.Set( "ACFCvars", "acf_ammo", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
-duplicator.RegisterEntityClass("acf_ammo", MakeACE_Ammo, "Pos", "Angle", "Id", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10" , "RoundData11", "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
+list.Set( "ACFCvars", "ace_ammo", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
+duplicator.RegisterEntityClass("ace_ammo", MakeACE_Ammo, "Pos", "Angle", "Id", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10" , "RoundData11", "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
 
 
 function ENT:Update( ArgsTable )

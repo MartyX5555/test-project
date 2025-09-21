@@ -12,8 +12,8 @@ do
 
 	-- Contraption creation also calls the entityadded hook twice
 	hook.Add("cfw.contraption.created", "ACE.PropGroups", function(con)
-		con.acfparenttotal = 0 -- Parent ent count
-		con.acfphystotal = 0 -- Constraint ent count. It could contain parent-constrained props
+		con.aceparenttotal = 0 -- Parent ent count
+		con.acephystotal = 0 -- Constraint ent count. It could contain parent-constrained props
 
 		con.parented = {}
 		con.physical = {}
@@ -33,12 +33,12 @@ do
 
 			if IsPhysical( ent ) then
 				con.physical[ent] = true
-				con.acfphystotal = con.acfphystotal + mass
+				con.acephystotal = con.acephystotal + mass
 			else
 				con.parented[ent] = true
 			end
-			con.acfparenttotal = con.totalmass - con.acfphystotal
-			con.massratio = math.min(con.acfphystotal / con.totalmass, 1)
+			con.aceparenttotal = con.totalmass - con.acephystotal
+			con.massratio = math.min(con.acephystotal / con.totalmass, 1)
 		end
 
 		hook.Run("ACE.CFW.EntityAdded", con, ent)
@@ -53,12 +53,12 @@ do
 
 			if IsPhysical( ent ) then
 				con.physical[ent] = nil
-				con.acfphystotal = con.acfphystotal - mass
+				con.acephystotal = con.acephystotal - mass
 			else
 				con.parented[ent] = nil
 			end
-			con.acfparenttotal = con.totalmass - con.acfphystotal
-			con.massratio = math.min(con.acfphystotal / con.totalmass, 1)
+			con.aceparenttotal = con.totalmass - con.acephystotal
+			con.massratio = math.min(con.acephystotal / con.totalmass, 1)
 		end
 
 		hook.Run("ACE.CFW.EntityRemoved", con, ent)
@@ -85,13 +85,13 @@ do
 
 				if IsPhysical( ent ) then
 					--print("physical mass change!!!")
-					con.acfphystotal = con.acfphystotal + (mass - oldmass)
+					con.acephystotal = con.acephystotal + (mass - oldmass)
 				end
 
-				con.acfparenttotal = con.totalmass - con.acfphystotal
-				con.massratio = math.min(con.acfphystotal / con.totalmass, 1)
+				con.aceparenttotal = con.totalmass - con.acephystotal
+				con.massratio = math.min(con.acephystotal / con.totalmass, 1)
 
-				--print("totalmass:", con.totalmass, con.acfphystotal, con.acfparenttotal )
+				--print("totalmass:", con.totalmass, con.acephystotal, con.aceparenttotal )
 				--print("originalmass:", con.totalMass)
 			end
 		end)
@@ -122,13 +122,13 @@ do
 	function ACE.GetContraptionPhysicalMass( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
-		return con.acfphystotal
+		return con.acephystotal
 	end
 
 	function ACE.GetContraptionacfparentotal( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
-		return con.acfparenttotal
+		return con.aceparenttotal
 	end
 
 	function ACE.GetContraptionMassRatio( con )

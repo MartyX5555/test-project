@@ -65,9 +65,9 @@ end
 
 function MakeACE_MissileToRack(owner, pos, ang, id, rackid)
 
-	if not owner:CheckLimit("_acf_gun") then return false end
+	if not owner:CheckLimit("_ace_gun") then return false end
 
-	local converter = ents.Create("acf_missile_to_rack")
+	local converter = ents.Create("ace_missile_to_rack")
 
 	if not converter:IsValid() then return false end
 	converter:SetAngles(ang)
@@ -92,5 +92,5 @@ end
 
 
 
-list.Set( "ACFCvars", "acf_missile_to_rack", {"id", "data9"} )
-duplicator.RegisterEntityClass("acf_missile_to_rack", MakeACE_MissileToRack, "Pos", "Angle", "Id" )
+list.Set( "ACFCvars", "ace_missile_to_rack", {"id", "data9"} )
+duplicator.RegisterEntityClass("ace_missile_to_rack", MakeACE_MissileToRack, "Pos", "Angle", "Id" )

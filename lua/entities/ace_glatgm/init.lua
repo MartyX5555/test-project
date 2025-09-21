@@ -193,7 +193,7 @@ function ENT:Detonate()
 		btdat["BoomFillerMass"] = self.BulletData.BoomFillerMass
 
 
-		self.FakeCrate = ents.Create("acf_fakecrate2")
+		self.FakeCrate = ents.Create("ace_fakecrate2")
 		self.FakeCrate:RegisterTo(btdat)
 		btdat["Crate"] = self.FakeCrate:EntIndex()
 		self:DeleteOnRemove(self.FakeCrate)

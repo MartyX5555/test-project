@@ -47,7 +47,7 @@ end
 
 function MakeACE_IRST(Owner, Pos, Angle, Id)
 
-	if not Owner:CheckLimit("_acf_missileradar") then return false end
+	if not Owner:CheckLimit("_ace_radar") then return false end
 
 	Id = Id or "Small-IRST"
 
@@ -62,7 +62,7 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 
 		IRST.Model				= radar.model
 		IRST.Weight				= radar.weight
-		IRST.ACFName			= radar.name
+		IRST.ACEName			= radar.name
 		IRST.ICone				= radar.viewcone	--Note: intentional. --Recorded initial cone
 		IRST.Cone				= IRST.ICone
 
@@ -84,7 +84,7 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 		IRST:SetModelEasy(radar.model)
 		IRST:UpdateOverlayText()
 
-		Owner:AddCount( "_acf_missileradar", IRST )
+		Owner:AddCount( "_ace_radar", IRST )
 		Owner:AddCleanup( "acfmenu", IRST )
 
 		return IRST
@@ -96,7 +96,7 @@ list.Set( "ACFCvars", "ace_irst", {"id"} )
 duplicator.RegisterEntityClass("ace_irst", MakeACE_IRST, "Pos", "Angle", "Id" )
 
 function ENT:SetNWNetwork()
-	self:SetNWString( "WireName", self.ACFName )
+	self:SetNWString( "WireName", self.ACEName )
 end
 
 function ENT:SetModelEasy(mdl)

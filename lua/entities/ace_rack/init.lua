@@ -168,7 +168,7 @@ end
 function ENT:Link( Target )
 
 	-- Don't link if it's not an ammo crate
-	if not IsValid( Target ) or Target:GetClass() ~= "acf_ammo" then
+	if not IsValid( Target ) or Target:GetClass() ~= "ace_ammo" then
 		return false, "Racks can only be linked to ammo crates!"
 	end
 
@@ -310,7 +310,7 @@ function ENT:UpdateRefillBonus()
 	local totalBonus			= 0
 	local selfPos			= self:GetPos()
 
-	local Efficiency			= 0.11 * ACE.AmmoMod		-- Copied from acf_ammo, beware of changes!
+	local Efficiency			= 0.11 * ACE.AmmoMod		-- Copied from ace_ammo, beware of changes!
 	local minFullEfficiency	= 50000 * Efficiency	-- The minimum crate volume to provide full efficiency bonus all by itself.
 	local maxDist			= ACE.RefillDistance
 
@@ -533,7 +533,7 @@ function ENT:AddMissile()
 
 	local ply = ACE.GetEntityOwner(self)
 
-	local missile = ents.Create("acf_missile")
+	local missile = ents.Create("ace_missile")
 	ACE.SetEntityOwner(missile, ply)
 	missile.DoNotDuplicate  = true
 	missile.Launcher		= self
@@ -617,9 +617,9 @@ end
 
 function MakeACE_Rack(Owner, Pos, Angle, Id)
 
-	if not Owner:CheckLimit("_acf_rack") then return false end
+	if not Owner:CheckLimit("_ace_rack") then return false end
 
-	local Rack = ents.Create("acf_rack")
+	local Rack = ents.Create("ace_rack")
 
 	if not IsValid(Rack) then return false end
 
@@ -627,7 +627,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	Rack:SetPos(Pos)
 	Rack:Spawn()
 
-	Owner:AddCount("_acf_rack", Rack)
+	Owner:AddCount("_ace_rack", Rack)
 	Owner:AddCleanup( "acfmenu", Rack )
 
 	if not ACE_CheckRack( Id ) then
@@ -691,7 +691,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	hook.Call("ACE_RackCreate", nil, Rack)
 
-	undo.Create( "acf_rack" )
+	undo.Create( "ace_rack" )
 		undo.AddEntity( Rack )
 		undo.SetPlayer( Owner )
 	undo.Finish()
@@ -700,8 +700,8 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 end
 
-list.Set( "ACFCvars", "acf_rack" , {"id"} )
-duplicator.RegisterEntityClass("acf_rack", MakeACE_Rack, "Pos", "Angle", "Id")
+list.Set( "ACFCvars", "ace_rack" , {"id"} )
+duplicator.RegisterEntityClass("ace_rack", MakeACE_Rack, "Pos", "Angle", "Id")
 
 function ENT:GetInaccuracy()
 	return self.Inaccuracy * ACE.GunInaccuracyScale
@@ -828,7 +828,7 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 		if AmmoLink.entities and next(AmmoLink.entities) then
 			for _,AmmoID in pairs(AmmoLink.entities) do
 				local Ammo = CreatedEntities[ AmmoID ]
-				if Ammo and Ammo:IsValid() and Ammo:GetClass() == "acf_ammo" then
+				if Ammo and Ammo:IsValid() and Ammo:GetClass() == "ace_ammo" then
 					self:Link( Ammo )
 				end
 			end

@@ -145,7 +145,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
 					--Tar:SetColor(Color(0,255,0))
 --
-					--if Tar:GetClass() == "acf_fueltank" then
+					--if Tar:GetClass() == "ace_fueltank" then
 --
 					--	local Dir = (TraceInit.endpos - TraceInit.start):GetNormalized()
 					--	local FakeTrace = {
@@ -262,7 +262,7 @@ do
 		local Inflictor   = ent.Inflictor or nil
 		local Owner       = ACE.GetEntityOwner(ent) or NULL
 
-		if ent:GetClass() == "acf_fueltank" then
+		if ent:GetClass() == "ace_fueltank" then
 
 			local Fuel       = ent.Fuel	or 0
 			local Capacity   = ent.Capacity  or 0
@@ -331,7 +331,7 @@ do
 
 						local FoundHEWeight
 
-						if Found:GetClass() == "acf_fueltank" then
+						if Found:GetClass() == "ace_fueltank" then
 
 							local Fuel       = Found.Fuel	or 0
 							local Capacity   = Found.Capacity or 0
@@ -363,7 +363,7 @@ do
 						Found:Remove()
 					else
 
-						if IsValid(Occ.Entity) and Occ.Entity:GetClass() ~= "acf_ammo" and Occ.Entity:GetClass() == "acf_fueltank" then
+						if IsValid(Occ.Entity) and Occ.Entity:GetClass() ~= "ace_ammo" and Occ.Entity:GetClass() == "ace_fueltank" then
 							if vFireInstalled then
 								Occ.Entity:Ignite( _, HEWeight )
 							else

@@ -8,13 +8,13 @@ ACE.SpallMax	= 250
 
 --Used for tracebug HE workaround
 ACE.CritEnts = {
-	acf_gun                    = true,
-	acf_ammo                   = true,
-	acf_engine                 = true,
-	acf_gearbox                = true,
-	acf_fueltank               = true,
-	acf_rack                   = true,
-	acf_missile                = true,
+	ace_gun                    = true,
+	ace_ammo                   = true,
+	ace_engine                 = true,
+	ace_gearbox                = true,
+	ace_fueltank               = true,
+	ace_rack                   = true,
+	ace_missile                = true,
 	ace_missile_swep_guided    = true,
 	prop_vehicle_prisoner_pod  = true,
 	gmod_wire_gate             = true
