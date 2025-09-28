@@ -17,7 +17,7 @@ ACE.Legal.NextCheck  = function(_, Legal) return ACE.CurTime + (Legal and math.r
 
 
 local function IsLegalityActivated()
-	return math.max(GetConVar("acf_legalcheck"):GetInt(), 0) > 0
+	return math.max(GetConVar("ace_legalcheck"):GetInt(), 0) > 0
 end
 
 local factorycommand = "acf_legal_ignore_"

@@ -56,7 +56,7 @@ do
 
 	function MakeACE_Gearbox(Owner, Pos, Angle, Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10)
 
-		if not Owner:CheckLimit("_acf_misc") then return false end
+		if not Owner:CheckLimit("_ace_misc") then return false end
 
 		local Gearbox	= ents.Create("ace_gearbox")
 
@@ -186,7 +186,7 @@ do
 		Gearbox.OutL = Gearbox:WorldToLocal(Gearbox:GetAttachment(Gearbox:LookupAttachment( "driveshaftL" )).Pos)
 		Gearbox.OutR = Gearbox:WorldToLocal(Gearbox:GetAttachment(Gearbox:LookupAttachment( "driveshaftR" )).Pos)
 
-		Owner:AddCount("_acf_misc", Gearbox)
+		Owner:AddCount("_ace_misc", Gearbox)
 		Owner:AddCleanup( "acfmenu", Gearbox )
 
 		Gearbox:ChangeGear(1)

@@ -4,6 +4,17 @@ TOOL.Author		    = "Marty"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
 
+--[[
+	This tool will attempt to replace:
+	- Entity classes: for example, if the entity class was changed.
+	- Entity Modifiers: modifiers like those used to store armor or sounds inside of entities.
+
+	Stuff that might be changed too: 
+	- E2/SF functions, but the process is already expensive to include this. Also, more e2s = more lag and slower.
+	-  
+	
+	This can also remove the need for singular entities to apply backwards as this tool can do it all in one action.
+]]
 if CLIENT then
 
 	language.Add( "tool.acedupefixer.name", "ACE Dupe Fixer" )
@@ -38,17 +49,36 @@ if CLIENT then
 	local isfolder = nil
 	local current_filename = nil
 	local current_filepath = nil
+	local istreefinished = nil
 
-	local function InitCoroutine(func)
+	local function InitCoroutine(func, ondeadfunc, interval)
 		local co = coroutine.create(func)
 
+		local nextcorotime = 0
 		hook.Add("Think", "ACEDupeFixer_CoroutineControl", function()
-			if coroutine.status(co) == "suspended" then
+			local curtime = CurTime()
+			if curtime > nextcorotime and coroutine.status(co) == "suspended" then
+				print("Resume!!!!")
 				coroutine.resume(co)
+				if interval then
+					nextcorotime = curtime + (interval / 1000)
+				end
 			elseif coroutine.status(co) == "dead" then
 				hook.Remove("Think", "ACEDupeFixer_CoroutineControl")
+				if ondeadfunc then
+					ondeadfunc()
+				end
 			end
 		end)
+	end
+
+	-- Filter unreadable dupes from the folder.
+	local function IsValidDupeFile(dupefile)
+		if not string.EndsWith(dupefile, ".txt") then return false end
+		local noformat = string.sub( dupefile, 1, #dupefile - 4 )
+		local found = string.find(noformat, "%.")
+		if found then return false end
+		return true
 	end
 
 	------ Dupe list Construction ------
@@ -61,6 +91,11 @@ if CLIENT then
 		if folders then
 			for _, folderName in pairs(folders) do
 				local folderNode = parent:AddNode(folderName, foldericon)
+
+				function folderNode:DoClick()
+					isfolder = true
+				end
+
 				function folderNode:DoRightClick()
 					local Menu = DermaMenu()
 
@@ -73,7 +108,7 @@ if CLIENT then
 
 						-- Manually calling the function here.
 						local root = self:GetRoot()
-						root:OnNodeSelected( self )
+						root:OnFolderSelected()
 					end )
 					SelectBtn:SetIcon( "icon16/folder.png" )	-- Icons are in materials/icon16 folder
 
@@ -95,7 +130,7 @@ if CLIENT then
 		-- Añade archivos del directorio actual
 		if files then
 			for _, fileName in pairs(files) do
-				if string.EndsWith(fileName, ".txt") then
+				if IsValidDupeFile(fileName) then
 					local dupeNode = parent:AddNode(fileName, dupeicon)
 					function dupeNode:DoClick()
 						isfolder = nil
@@ -119,17 +154,22 @@ if CLIENT then
 		MainNode:SetExpanded( true )
 		InitCoroutine(function()
 			iterator = 0
+			istreefinished = nil
 			addFilesRecursively(MainNode, FolderDir)
+		end, function()
+			print("tree created!")
+			istreefinished = true
 		end)
 	end
 
 	------ Dupe Conversion functions ------
-
 	local function ConvertDupe(dupepath)
 		if not dupepath then return end
 
 		local read = file.Read(dupepath)
 		local success, dupe, info, _ = AdvDupe2.Decode(read)
+
+		if true then return end
 		if success then
 			for _, enttable in pairs(dupe.Entities) do
 
@@ -162,34 +202,27 @@ if CLIENT then
 		end
 	end
 
-	local iterator2 = 0
-	local dupestick = 1 -- Processed dupes per tick.
 	local function ConvertFolderContents(directory)
 		local files, folders = file.Find(directory .. "/*", "DATA")
 
 		if folders then
 			for _, folderName in pairs(folders) do
-				print("new folder found. Looking at it")
-				ConvertFolderContents(directory .. "/" .. folderName)
+				local folder_to_go = directory .. "/" .. folderName
+				ConvertFolderContents(folder_to_go)
+				print("new folder to go:", folder_to_go)
 			end
 		end
 
 		-- Añade archivos del directorio actual
 		if files then
 			for _, fileName in pairs(files) do
-				if string.EndsWith(fileName, ".txt") then
+				if IsValidDupeFile(fileName) then
 
 					local file_to_process = directory .. "/" .. fileName
 
 					print("Applying patch to the file:", file_to_process)
 					ConvertDupe(file_to_process)
-
-					if iterator2 > dupestick then
-						iterator2 = 0
-						coroutine.yield()
-					else
-						iterator2 = iterator2 + 1
-					end
+					coroutine.yield()
 				end
 			end
 		end
@@ -211,6 +244,7 @@ if CLIENT then
 		PopulateTreeFromFolder(dupelist)
 
 		local refreshbtn = panel:Button("Refresh list")
+		refreshbtn:SetTooltip( "Refresh the list" )
 		panel:AddItem(refreshbtn)
 		refreshbtn:Dock(TOP)
 		function refreshbtn:DoClick()
@@ -220,7 +254,7 @@ if CLIENT then
 		local DupeName = panel:Help("")
 
 		function dupelist:OnNodeSelected( _ )
-
+			if isfolder then return end
 			canconvert = false
 
 			local ctime = CurTime()
@@ -228,27 +262,34 @@ if CLIENT then
 			if difftime < 0.25 then -- check for double click
 				DupeName:SetText("Selected file: " .. current_filename)
 				canconvert = true
-			elseif isfolder then
-				DupeName:SetText("Selected folder: " .. current_filename)
-				canconvert = true
 			end
 			lastclick = CurTime()
 		end
+		function dupelist:OnFolderSelected()
+			DupeName:SetText("Selected folder: " .. current_filename)
+			canconvert = true
+		end
+
 
 		local convertbtn = panel:Button("Apply Conversion")
 		panel:AddItem(convertbtn)
 		convertbtn:Dock(TOP)
+		convertbtn:SetTooltip( "Apply the fixes to the selected dupe." )
 		function convertbtn:DoClick()
+			if not istreefinished then print("list must be finished before processing.") return end
 			if not canconvert then print("Double click to validate selection first.") return end
 			if isfolder then
 				print("Applying patch to all the dupes inside of the folder:", current_filepath)
 				InitCoroutine(function()
 					iterator2 = 0
 					ConvertFolderContents(current_filepath)
-				end)
+				end,
+				function()
+					print("All the dupes were processed!")
+				end, 25)
 			else
 				print("Applying patch to the single file:", current_filepath)
-				--ConvertDupe(current_filepath)
+				ConvertDupe(current_filepath)
 			end
 		end
 	end

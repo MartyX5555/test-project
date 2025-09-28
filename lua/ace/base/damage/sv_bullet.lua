@@ -82,7 +82,7 @@ function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 
 	end
 
-	ACE_KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("acf_recoilpush"):GetFloat() or 1))
+	ACE_KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("ace_recoilpush"):GetFloat() or 1))
 
 	return HitRes
 end

@@ -66,7 +66,7 @@ end
 do
 	local function CanEmitLight(lightSize)
 
-		local minLightSize = GetConVar("acf_enable_lighting"):GetFloat()
+		local minLightSize = GetConVar("ace_enable_lighting"):GetFloat()
 
 		if minLightSize == 0 then return false end
 		if lightSize == 0 then return false end

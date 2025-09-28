@@ -42,7 +42,7 @@ if CLIENT then
 	language.Add( "SBoxLimit_ace_gun", ACFTranslation.ACFMenuTool[11] )
 	language.Add( "SBoxLimit_ace_rack", ACFTranslation.ACFMenuTool[12] )
 	language.Add( "SBoxLimit_ace_ammo", ACFTranslation.ACFMenuTool[13] )
-	language.Add( "SBoxLimit_acf_sensor", ACFTranslation.ACFMenuTool[14] )
+	language.Add( "SBoxLimit_ace_sensor", ACFTranslation.ACFMenuTool[14] )
 
 	-- These still need translations, hardcoding as english for now
 	language.Add("tool.acemenu.left", "Create/Update entity")
@@ -68,7 +68,7 @@ if CLIENT then
 	--------------------------------------]]
 	function TOOL.BuildCPanel( CPanel )
 
-		local pnldef_ACFmenu = vgui.RegisterFile( "acf/base/vgui/cl_acemenu_gui.lua" )
+		local pnldef_ACFmenu = vgui.RegisterFile( "ace/base/vgui/cl_acemenu_gui.lua" )
 
 		-- create
 		local DPanel = vgui.CreateFromTable( pnldef_ACFmenu )

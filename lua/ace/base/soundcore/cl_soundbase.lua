@@ -66,7 +66,7 @@ do
 	function ACE_EmitSound( SoundTxt, Origin, SoundLevel, Pitch, Volume )
 
 		Volume = math.min( Volume, 1 )
-		local VolumeConfig = GetConVar("acf_sound_volume"):GetInt() / 100
+		local VolumeConfig = GetConVar("ace_sound_volume"):GetInt() / 100
 
 		if IsEntity(Origin) and IsValid(Origin) then
 			Origin:EmitSound( SoundTxt, SoundLevel, Pitch, Volume * VolumeConfig )
@@ -288,7 +288,7 @@ do
 
 								entply:SetDSP(33, true)
 
-								if GetConVar("acf_tinnitus"):GetInt() == 1 then
+								if GetConVar("ace_tinnitus"):GetInt() == 1 then
 
 									--See if it supress the current tinnitus and creates a new one, from 0. Should stop the HE spam tinnitus
 									entply:StopSound("acf_other/explosions/ring/tinnitus.mp3")

@@ -27,7 +27,7 @@ do
 		if IsValid(physObj) then
 
 			local mass = physObj:GetMass()
-			ent.acfmass = mass
+			ent.acemass = mass
 
 			con.totalmass = con.totalmass + mass --print("ADDMASS", con.totalmass)
 
@@ -73,10 +73,10 @@ do
 			if not IsValid(self) then return end
 			local ent = self:GetEntity()
 
-			local oldmass = ent.acfmass or 0 --print("mass:", mass, "oldmass:", oldmass, "physmass")
+			local oldmass = ent.acemass or 0 --print("mass:", mass, "oldmass:", oldmass, "physmass")
 
 			if oldmass == 0 then return end
-			ent.acfmass = mass
+			ent.acemass = mass
 
 			local con = ACE.GetContraption(ent)
 			if con then
@@ -113,7 +113,7 @@ do
 		return ent:GetContraption()
 	end
 
-	function ACE.GetContraptionacfTotalMass( con )
+	function ACE.GetContraptionaceTotalMass( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
 		return con.totalmass
@@ -125,7 +125,7 @@ do
 		return con.acephystotal
 	end
 
-	function ACE.GetContraptionacfparentotal( con )
+	function ACE.GetContraptionaceparentotal( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
 		return con.aceparenttotal

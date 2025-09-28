@@ -1,6 +1,6 @@
 --TODO: merge this file with cl_acemenu_gui.lua since having 2 files for the same function is irrevelant. Little transition has been made though
 
-local ACFEnts = ACE.Weapons
+local ACEEnts = ACE.Weapons
 
 function SetMissileGUIEnabled(_, enabled, gundata)
 
@@ -245,11 +245,11 @@ function ModifyACFMenu(panel)
 		oldAmmoSelect(panel, blacklist)
 
 		acemenupanel.CData.CaliberSelect.OnSelect = function( _ , _ , data )
-			acemenupanel.AmmoData["Data"] = ACFEnts["Guns"][data]["round"]
+			acemenupanel.AmmoData["Data"] = ACEEnts["Guns"][data]["round"]
 			acemenupanel:UpdateAttribs()
 			acemenupanel:UpdateAttribs()	--Note : this is intentional
 
-			local gunTbl = ACFEnts["Guns"][data]
+			local gunTbl = ACEEnts["Guns"][data]
 			local class = gunTbl.gunclass
 
 			local Classes = ACE.Classes
@@ -258,7 +258,7 @@ function ModifyACFMenu(panel)
 
 		local data = acemenupanel.CData.CaliberSelect:GetValue()
 		if data then
-			local gunTbl = ACFEnts["Guns"][data]
+			local gunTbl = ACEEnts["Guns"][data]
 			local class = gunTbl.gunclass
 
 			local Classes = ACE.Classes

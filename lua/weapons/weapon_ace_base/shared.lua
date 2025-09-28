@@ -332,7 +332,7 @@ end
 if CLIENT then
 	function SWEP:AdjustMouseSensitivity()
 		if self:GetZoomState() then
-			local cvar = self.HasScope and GetConVar("acf_sens_scopes") or GetConVar("acf_sens_irons")
+			local cvar = self.HasScope and GetConVar("ace_sens_scopes") or GetConVar("ace_sens_irons")
 
 			return cvar:GetFloat()
 		end

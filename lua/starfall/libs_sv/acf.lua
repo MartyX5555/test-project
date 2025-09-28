@@ -106,7 +106,7 @@ local sanitize = instance.Sanitize
 local getent = instance.Types.Entity.GetEntity
 
 local function restrictInfo(ent)
-	if GetConVar("acf_restrictinfo"):GetInt() ~= 0 then
+	if GetConVar("ace_restrictinfo"):GetInt() ~= 0 then
 		return ACE.GetEntityOwner(ent) ~= instance.player
 	end
 
@@ -144,7 +144,7 @@ do
 	-- @server
 	-- @return boolean True if restriced, False if not
 	function ace_library.infoRestricted()
-		return GetConVar("acf_restrictinfo"):GetInt() ~= 0
+		return GetConVar("ace_restrictinfo"):GetInt() ~= 0
 	end
 
 	--- Returns latest version of ACF

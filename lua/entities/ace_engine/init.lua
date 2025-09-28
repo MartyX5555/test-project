@@ -76,7 +76,7 @@ do
 
 	function MakeACE_Engine(Owner, Pos, Angle, Id)
 
-		if not Owner:CheckLimit("_acf_misc") then return false end
+		if not Owner:CheckLimit("_ace_misc") then return false end
 
 		local Engine = ents.Create( "ace_engine" )
 		if not IsValid( Engine ) then return false end
@@ -149,7 +149,7 @@ do
 		Engine:SetNWString( "WireName", Lookup.name )
 		Engine:UpdateOverlayText()
 
-		Owner:AddCount("_acf_misc", Engine)
+		Owner:AddCount("_ace_misc", Engine)
 		Owner:AddCleanup( "acfmenu", Engine )
 
 		ACE_Activate( Engine, 0 )

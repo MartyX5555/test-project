@@ -9,10 +9,10 @@
 ]]--------------------------
 
 local Classes = ACE.Classes
-local ACFEnts = ACE.Weapons
+local ACEEnts = ACE.Weapons
 
 local radarClasses    = Classes.Radar
-local radars          = ACFEnts.Radars
+local radars          = ACEEnts.Radars
 
 local MainMenuIcon = "icon16/world.png"
 local ItemIcon = "icon16/brick.png"
@@ -89,7 +89,7 @@ function PANEL:Init( )
 
 	end
 
-	for ID,Table in pairs(ACFEnts) do
+	for ID,Table in pairs(ACEEnts) do
 
 		FinalContainer[ID] = {}
 
@@ -561,10 +561,10 @@ function ACFCLGUICreate()
 	local Sounds = vgui.Create( "DForm" )
 	Sounds:SetName("Sounds")
 
-	Sounds:CheckBox("Allow Tinnitus Noise", "acf_tinnitus")
+	Sounds:CheckBox("Allow Tinnitus Noise", "ace_tinnitus")
 	Sounds:ControlHelp( "Allows the ear tinnitus effect to be applied when an explosive was detonated too close to your position, improving the inmersion during combat." )
 
-	Sounds:NumSlider( "Ambient overall sounds", "acf_sound_volume", 0, 100, 0 )
+	Sounds:NumSlider( "Ambient overall sounds", "ace_sound_volume", 0, 100, 0 )
 	Sounds:ControlHelp( "Adjusts the volume of ACE sounds like explosions, penetrations, ricochets, etc. Engines and some mechanic sounds are not affected yet." )
 
 	acemenupanel.CustomDisplay:AddItem( Sounds )
@@ -572,7 +572,7 @@ function ACFCLGUICreate()
 	local Effects = vgui.Create( "DForm" )
 	Effects:SetName("Rendering")
 
-	Effects:CheckBox("Allow lighting rendering", "acf_enable_lighting")
+	Effects:CheckBox("Allow lighting rendering", "ace_enable_lighting")
 	Effects:ControlHelp( "Enables lighting for explosions, muzzle flashes and rocket motors, increasing the inmersion during combat, however, may impact heavily the performance and it's possible it doesn't render properly in certain map surfaces." )
 
 	Effects:CheckBox("Draw Mobility rope links", "ACE_MobilityRopeLinks")
@@ -632,16 +632,16 @@ function ACFSVGUICreate()	--Serverside folder content
 	local General = vgui.Create( "DForm" )
 	General:SetName("General")
 
-	General:CheckBox("Enable HE push", "acf_hepush")
+	General:CheckBox("Enable HE push", "ace_hepush")
 	General:ControlHelp( "Allow HE to push contraptions away" )
 
-	General:CheckBox("Enable Recoil force", "acf_recoilpush")
+	General:CheckBox("Enable Recoil force", "ace_recoilpush")
 	General:ControlHelp( "Gun's recoil will push the contraption back when firing" )
 
-	General:NumSlider( "Debris Life Time", "acf_debris_lifetime", 0, 60, 2 )
+	General:NumSlider( "Debris Life Time", "ace_debris_lifetime", 0, 60, 2 )
 	General:ControlHelp( "How many seconds debris will stand on the map before being deleted (0 means never)." )
 
-	General:NumSlider( "Child debris chance", "acf_debris_children", 0, 1, 2 )
+	General:NumSlider( "Child debris chance", "ace_debris_children", 0, 1, 2 )
 	General:ControlHelp( "Adjusts the chance of create debris when a contraption's gate have been destroyed" )
 
 	--General:NumSlider( "Year", "acf_year", 1900, 2021, 0 )
@@ -652,10 +652,10 @@ function ACFSVGUICreate()	--Serverside folder content
 	local Spall = vgui.Create( "DForm" )
 	Spall:SetName("Spalling")
 
-	Spall:CheckBox("Enable Spalling", "acf_spalling")
+	Spall:CheckBox("Enable Spalling", "ace_spalling")
 	Spall:ControlHelp( "Enable additional spalling to be created during penetrations. Disable this to have better performance." )
 
-	Spall:NumSlider( "Spalling Multipler", "acf_spalling_multipler", 1, 5, 0 )
+	Spall:NumSlider( "Spalling Multipler", "ace_spalling_multipler", 1, 5, 0 )
 	Spall:ControlHelp( "How much Spalling will be created during impacts? Applies for spalling created by impacts" )
 
 	acemenupanel.CustomDisplay:AddItem( Spall )
@@ -663,10 +663,10 @@ function ACFSVGUICreate()	--Serverside folder content
 	local Scaled = vgui.Create( "DForm" )
 	Scaled:SetName("Cooking off")
 
-	Scaled:NumSlider( "Max HE per explosion", "acf_explosions_scaled_he_max", 50, 1000, 0 )
+	Scaled:NumSlider( "Max HE per explosion", "ace_explosions_scaled_he_max", 50, 1000, 0 )
 	Scaled:ControlHelp( "The maximum amount of HE weight to detonate at once." )
 
-	Scaled:NumSlider( "Max entities per explosion", "acf_explosions_scaled_ents_max", 1, 20, 0 )
+	Scaled:NumSlider( "Max entities per explosion", "ace_explosions_scaled_ents_max", 1, 20, 0 )
 	Scaled:ControlHelp( "The maximum amount of entities to detonate at once." )
 
 	acemenupanel.CustomDisplay:AddItem( Scaled )
@@ -674,28 +674,28 @@ function ACFSVGUICreate()	--Serverside folder content
 	local Legal = vgui.Create( "DForm" )
 	Legal:SetName("Legality")
 
-	Legal:CheckBox("Enable Legality checks", "acf_legalcheck")
+	Legal:CheckBox("Enable Legality checks", "ace_legalcheck")
 	Legal:ControlHelp( "Enable the legality checks, which will punish with a lock time any stuff considered illegal." )
 
-	Legal:CheckBox( "Allow not solid", "acf_legal_ignore_notsolid" )
+	Legal:CheckBox( "Allow not solid", "ace_legal_ignore_notsolid" )
 	Legal:ControlHelp( "allow to use not solid" )
 
-	Legal:CheckBox( "Allow any model", "acf_legal_ignore_model" )
+	Legal:CheckBox( "Allow any model", "ace_legal_ignore_model" )
 	Legal:ControlHelp( "Allow ace ents to use any model" )
 
-	Legal:CheckBox( "Allow any mass", "acf_legal_ignore_mass" )
+	Legal:CheckBox( "Allow any mass", "ace_legal_ignore_mass" )
 	Legal:ControlHelp( "Allow ace ents to use any weight" )
 
-	Legal:CheckBox( "Allow any material", "acf_legal_ignore_material" )
+	Legal:CheckBox( "Allow any material", "ace_legal_ignore_material" )
 	Legal:ControlHelp( "Allow ace ents to use any material type" )
 
-	Legal:CheckBox( "Allow any inertia", "acf_legal_ignore_inertia" )
+	Legal:CheckBox( "Allow any inertia", "ace_legal_ignore_inertia" )
 	Legal:ControlHelp( "Allow ace ents to have any inertia in it" )
 
-	Legal:CheckBox("Allow makesphere", "acf_legal_ignore_makesphere")
+	Legal:CheckBox("Allow makesphere", "ace_legal_ignore_makesphere")
 	Legal:ControlHelp( "Allow ace ents to have makesphere" )
 
-	Legal:CheckBox( "Allow visclip", "acf_legal_ignore_visclip" )
+	Legal:CheckBox( "Allow visclip", "ace_legal_ignore_visclip" )
 	Legal:ControlHelp( "ace ents can have visclip at any case" )
 
 	acemenupanel.CustomDisplay:AddItem( Legal )
@@ -786,7 +786,7 @@ do
 		acemenupanel.AmmoData["Type"]       = "Ammo"
 		acemenupanel.AmmoData["Classname"]  = Classes.GunClass["MG"]["name"]
 		acemenupanel.AmmoData["ClassData"]  = Classes.GunClass["MG"]["id"]
-		acemenupanel.AmmoData["Data"]       = ACFEnts["Guns"]["12.7mmMG"]["round"]
+		acemenupanel.AmmoData["Data"]       = ACEEnts["Guns"]["12.7mmMG"]["round"]
 	end
 
 	if not acemenupanel.AmmoPanelConfig then
@@ -925,7 +925,7 @@ do
 		local AmmoComboBox = vgui.Create( "DComboBox", CrateOldPanel )	--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
 		AmmoComboBox:SetSize(acemenupanel.CustomDisplay:GetWide(), 30)
 
-		for Key, Value in pairs( ACFEnts.Ammo ) do
+		for Key, Value in pairs( ACEEnts.Ammo ) do
 
 			AmmoComboBox:AddChoice( Value.id , Key ) --Creates the list
 
@@ -941,9 +941,9 @@ do
 
 			if acemenupanel.CData.CrateDisplay then
 
-			local cratemodel = ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].model
+			local cratemodel = ACEEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].model
 			acemenupanel.CData.CrateDisplay:SetModel(cratemodel)
-			acemenupanel:CPanelText("CrateDesc", ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
+			acemenupanel:CPanelText("CrateDesc", ACEEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
 
 			end
 
@@ -963,14 +963,14 @@ do
 		--Used to create the general model display
 		if not acemenupanel.CData.CrateDisplay then
 
-			acemenupanel:CPanelText("CrateDesc", ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
+			acemenupanel:CPanelText("CrateDesc", ACEEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].desc, nil, CrateOldPanel)
 
 			acemenupanel.CData.CrateDisplay = vgui.Create( "DModelPanel", CrateOldPanel )
 			acemenupanel.CData.CrateDisplay:SetSize(acemenupanel.CustomDisplay:GetWide(),acemenupanel.CustomDisplay:GetWide() / 2)
 			acemenupanel.CData.CrateDisplay:SetCamPos( Vector( 250, 500, 250 ) )
 			acemenupanel.CData.CrateDisplay:SetLookAt( Vector( 0, 0, 0 ) )
 			acemenupanel.CData.CrateDisplay:SetFOV( 10 )
-			acemenupanel.CData.CrateDisplay:SetModel(ACFEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].model)
+			acemenupanel.CData.CrateDisplay:SetModel(ACEEnts.Ammo[acemenupanel.AmmoData["IdLegacy"]].model)
 			acemenupanel.CData.CrateDisplay.LayoutEntity = function() end
 
 			CrateOldPanel:AddItem(acemenupanel.CData.CrateDisplay)
@@ -1011,7 +1011,7 @@ do
 
 		acemenupanel.CData.CaliberSelect:Clear()
 
-		for Key, Value in pairs( ACFEnts.Guns ) do
+		for Key, Value in pairs( ACEEnts.Guns ) do
 
 			if acemenupanel.AmmoData["ClassData"] == Value.gunclass then
 			acemenupanel.CData.CaliberSelect:AddChoice( Value.id , Key )
@@ -1034,7 +1034,7 @@ do
 
 	acemenupanel.CData.CaliberSelect:SetText(acemenupanel.AmmoData["Data"]["id"]  )
 
-	for Key, Value in pairs( ACFEnts.Guns ) do
+	for Key, Value in pairs( ACEEnts.Guns ) do
 
 		if acemenupanel.AmmoData["ClassData"] == Value.gunclass then
 			acemenupanel.CData.CaliberSelect:AddChoice( Value.id , Key )

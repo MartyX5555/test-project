@@ -1,6 +1,4 @@
 
-ACF = ACF or {}
-
 TOOL.Category		= "Construction"
 TOOL.Name			= "#Tool.acesound.name"
 TOOL.Command		= nil
@@ -180,7 +178,7 @@ local function IsReallyValid(trace, ply)
 	local class = trace.Entity:GetClass()
 	if not ACE.SoundToolSupport[class] then
 
-		if string.StartWith(class, "acf_") then
+		if string.StartWith(class, "ace_") then
 			ACE_SendNotify( ply, false, class .. ACFTranslation.SoundToolText[4] )
 		else
 			ACE_SendNotify( ply, false, ACFTranslation.SoundToolText[5] )

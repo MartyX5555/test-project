@@ -497,7 +497,7 @@ if SERVER then
 
 	function ACE_SendDPStatus()
 
-		local Cvar = GetConVar("acf_enable_dp"):GetInt()
+		local Cvar = GetConVar("ace_enable_dp"):GetInt()
 		local bool = tobool(Cvar)
 
 		net.Start("ACE_DPStatus")
@@ -535,7 +535,7 @@ else
 	ACE.Wind = Vector()
 	timer.Create("ACE_Wind", reset_timer, 0, function()
 		local smokeDir = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
-		ACE.Wind = (math.random() ^ curveFactor) * smokeDir * GetConVar("acf_wind"):GetFloat()
+		ACE.Wind = (math.random() ^ curveFactor) * smokeDir * GetConVar("ace_wind"):GetFloat()
 		net.Start("ACE_Wind")
 			net.WriteFloat(ACE.Wind.x)
 			net.WriteFloat(ACE.Wind.y)

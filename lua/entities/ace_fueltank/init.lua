@@ -200,7 +200,7 @@ do
 
 	function MakeACE_FuelTank(Owner, Pos, Angle, Id, Data1, Data2, Data3)
 
-		if IsValid(Owner) and not Owner:CheckLimit("_acf_misc") then return false end
+		if IsValid(Owner) and not Owner:CheckLimit("_ace_misc") then return false end
 
 		local Tank = ents.Create("ace_fueltank")
 		if IsValid(Tank) then
@@ -277,7 +277,7 @@ do
 			Tank.LastMass = 1
 			Tank:UpdateFuelTank(Id, Data1, Data2)
 
-			Owner:AddCount( "_acf_misc", Tank )
+			Owner:AddCount( "_ace_misc", Tank )
 			Owner:AddCleanup( "acfmenu", Tank )
 
 			table.insert(ACE.FuelTanks, Tank)

@@ -228,7 +228,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 				LoopKill = true --look for fresh targets since we blew a hole somewhere
 			else
 				--Assuming about 1/30th of the explosive energy goes to propelling the target prop (Power in KJ * 1000 to get J then divided by 33)
-				ACE_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("acf_hepush"):GetFloat() or 1) )
+				ACE_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("ace_hepush"):GetFloat() or 1) )
 			end
 
 			PowerSpent = PowerSpent + PowerFraction * BlastRes.Loss / 2--Removing the energy spent killing props
