@@ -1,5 +1,5 @@
 
---Copied from garrysmod CalcVehicleView function, to allow acf ents to be included into the filter
+--Copied from garrysmod CalcVehicleView function, to allow ace ents to be included into the filter
 function ACE_CalcVehicleView( Vehicle, ply, view )
 
 	--Make sure that allowed seats use this override.

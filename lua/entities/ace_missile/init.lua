@@ -73,12 +73,12 @@ function ENT:ParseBulletData(bdata)
 	local fuse	= bdata.Data8
 
 	if guidance then
-		guidance = ACFM_CreateConfigurable(guidance, GuidanceTable, bdata, "guidance")
+		guidance = ACEM_CreateConfigurable(guidance, GuidanceTable, bdata, "guidance")
 		if guidance then self:SetGuidance(guidance) end
 	end
 
 	if fuse then
-		fuse = ACFM_CreateConfigurable(fuse, FuseTable, bdata, "fuses")
+		fuse = ACEM_CreateConfigurable(fuse, FuseTable, bdata, "fuses")
 		if fuse then self:SetFuse(fuse) end
 	end
 
@@ -268,7 +268,7 @@ function ENT:CalcFlight()
 			local HitPos = trace.HitPos
 			local HitTarget  = trace.Entity
 			local conTarget	= HitTarget:GetContraption() or {}
-			local conLauncher = self.Launcher:GetContraption() or {}			
+			local conLauncher = self.Launcher:GetContraption() or {}
 
 			local DirToHit = (HitPos - Pos):GetNormalized()
 			local AngleDiff = math.deg(math.acos( Dir:Dot(DirToHit) )) print("Angle Diff:", AngleDiff)
@@ -285,16 +285,12 @@ function ENT:CalcFlight()
 			-- Determine if the detected ent is not part of the same contraption that fired this missile.
 			-- Also check theres no props directly in front of the trayectory, even if its from the same contraption.
 			if not IsPart then
-				self:Remove()
+				self.HitNorm	= trace.HitNormal
+				self:DoFlight(trace.HitPos)
+				self.LastVel	= Vel / DeltaTime
+				self:Detonate()
 				return
 			end
-
-			--	self.HitNorm	= trace.HitNormal
-			--	self:DoFlight(trace.HitPos)
-			--	self.LastVel	= Vel / DeltaTime
-			--	self:Detonate()
-			--	return
-			--end
 
 		end
 
@@ -302,6 +298,7 @@ function ENT:CalcFlight()
 		if Time > self.GhostPeriod and self.Fuse:GetDetonate(self, self.Guidance) then
 			self.LastVel = Vel / DeltaTime
 			self:Detonate()
+
 			return
 		end
 
@@ -519,8 +516,8 @@ function ENT:Think()
 		if self.FirstThink == true then
 			self.FirstThink = false
 			self.LastThink  = Time - self.ThinkDelay
-			self.LastVel	= self.Launcher.acfphysparent:GetVelocity() * self.ThinkDelay
-			self.TrueVel = self.Launcher.acfphysparent:GetVelocity()
+			self.LastVel	= self.Launcher.acephysparent:GetVelocity() * self.ThinkDelay
+			self.TrueVel = self.Launcher.acephysparent:GetVelocity()
 		end
 
 		self:CalcFlight()

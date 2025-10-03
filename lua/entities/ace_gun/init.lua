@@ -258,7 +258,7 @@ do
 
 		Gun:UpdateOverlayText()
 
-		Owner:AddCleanup("acfmenu", Gun)
+		Owner:AddCleanup("acemenu", Gun)
 
 		ACE_Activate(Gun, 0)
 
@@ -267,7 +267,7 @@ do
 	end
 end
 
-list.Set( "ACFCvars", "ace_gun", {"id"} )
+list.Set( "ACECvars", "ace_gun", {"id"} )
 duplicator.RegisterEntityClass("ace_gun", MakeACE_Gun, "Pos", "Angle", "Id")
 
 function ENT:UpdateOverlayText()

@@ -82,7 +82,7 @@ do
 	end
 
 	--Formula from https://mathscinotes.wordpress.com/2013/10/03/parameter-determination-for-pejsa-velocity-model/
-	--not terribly accurate for acf, particularly small caliber (7.62mm off by 120 m/s at 800m), but is good enough for quick indicator
+	--not terribly accurate for ace, particularly small caliber (7.62mm off by 120 m/s at 800m), but is good enough for quick indicator
 	--range in m, vel is m/s
 	function ACE_PenRanging(MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel, Range)
 		local V0 = MuzzleVel * 39.37 * ACE.VelScale -- initial velocity

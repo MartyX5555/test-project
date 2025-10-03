@@ -21,16 +21,16 @@ end
 
 
 
-function ACFM_ModifyRoundDisplayFuncs()
+function ACEM_ModifyRoundDisplayFuncs()
 
 	local roundTypes = ACE.RoundTypes
 
-	if not ACFM_RoundDisplayFuncs then
+	if not ACEM_RoundDisplayFuncs then
 
-		ACFM_RoundDisplayFuncs = {}
+		ACEM_RoundDisplayFuncs = {}
 
 		for k, v in pairs(roundTypes) do
-			ACFM_RoundDisplayFuncs[k] = v.getDisplayData
+			ACEM_RoundDisplayFuncs[k] = v.getDisplayData
 		end
 
 	end
@@ -38,7 +38,7 @@ function ACFM_ModifyRoundDisplayFuncs()
 
 	for k, v in pairs(roundTypes) do
 
-		local oldDisplayData = ACFM_RoundDisplayFuncs[k]
+		local oldDisplayData = ACEM_RoundDisplayFuncs[k]
 
 		if oldDisplayData then
 			v.getDisplayData = function(data)
@@ -88,16 +88,16 @@ end
 
 
 
-function ACFM_ModifyCrateTextFuncs()
+function ACEM_ModifyCrateTextFuncs()
 
 	local roundTypes = ACE.RoundTypes
 
-	if not ACFM_CrateTextFuncs then
+	if not ACEM_CrateTextFuncs then
 
-		ACFM_CrateTextFuncs = {}
+		ACEM_CrateTextFuncs = {}
 
 		for k, v in pairs(roundTypes) do
-			ACFM_CrateTextFuncs[k] = v.cratetxt
+			ACEM_CrateTextFuncs[k] = v.cratetxt
 		end
 
 	end
@@ -105,7 +105,7 @@ function ACFM_ModifyCrateTextFuncs()
 
 	for k, v in pairs(roundTypes) do
 
-		local oldCratetxt = ACFM_CrateTextFuncs[k]
+		local oldCratetxt = ACEM_CrateTextFuncs[k]
 
 		if oldCratetxt then
 			v.cratetxt = function(data, crate)
@@ -124,7 +124,7 @@ function ACFM_ModifyCrateTextFuncs()
 				local fuse	= IsValid(crate) and crate.RoundData8 or data.Data8
 
 				if guidance then
-					guidance = ACFM_CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
+					guidance = ACEM_CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
 					if guidance and guidance.Name ~= "Dumb" then
 						str[#str + 1] = "\n\n"
 						str[#str + 1] = guidance.Name
@@ -135,7 +135,7 @@ function ACFM_ModifyCrateTextFuncs()
 				end
 
 				if fuse then
-					fuse = ACFM_CreateConfigurable(fuse, ACE.Fuse, bdata, "fuses")
+					fuse = ACEM_CreateConfigurable(fuse, ACE.Fuse, bdata, "fuses")
 					if fuse then
 						str[#str + 1] = "\n\n"
 						str[#str + 1] = fuse.Name
@@ -157,9 +157,9 @@ end
 
 
 
-function ACFM_ModifyRoundBaseGunpowder()
+function ACEM_ModifyRoundBaseGunpowder()
 
-	local oldGunpowder = ACFM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE_RoundBaseGunpowder
+	local oldGunpowder = ACEM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE_RoundBaseGunpowder
 
 
 	ACE_RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
@@ -173,15 +173,15 @@ function ACFM_ModifyRoundBaseGunpowder()
 	end
 
 
-	ACFM_ModifiedRoundBaseGunpowder = true
+	ACEM_ModifiedRoundBaseGunpowder = true
 
 end
 
 
 
-timer.Simple(1, ACFM_ModifyRoundBaseGunpowder)
-timer.Simple(1, ACFM_ModifyRoundDisplayFuncs)
-timer.Simple(1, ACFM_ModifyCrateTextFuncs)
+timer.Simple(1, ACEM_ModifyRoundBaseGunpowder)
+timer.Simple(1, ACEM_ModifyRoundDisplayFuncs)
+timer.Simple(1, ACEM_ModifyCrateTextFuncs)
 
 
 

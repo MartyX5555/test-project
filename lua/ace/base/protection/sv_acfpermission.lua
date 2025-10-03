@@ -16,8 +16,8 @@ this.ModeThinks = {}
 this.NotifySafezones = {}
 
 --TODO: convar this
-local mapSZDir = "acf/safezones/"
-local mapDPMDir = "acf/permissions/"
+local mapSZDir = "ace/safezones/"
+local mapDPMDir = "ace/permissions/"
 file.CreateDir(mapDPMDir)
 
 

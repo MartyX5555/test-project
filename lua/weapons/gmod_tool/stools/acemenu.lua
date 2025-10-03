@@ -25,7 +25,7 @@ TOOL.ClientConVar[ "data15" ] = 0
 
 TOOL.SelectedEntities = {}
 
-cleanup.Register( "acfmenu" )
+cleanup.Register( "acemenu" )
 
 if CLIENT then
 	language.Add( "Tool.acemenu.listname", ACFTranslation.ACFMenuTool[1] )
@@ -111,7 +111,7 @@ function TOOL:LeftClick( trace )
 		debugoverlay.Cross(trace.HitPos, 5, 5, Color(255,0,0), true)
 		debugoverlay.Cross(ArgTable[1], 5, 5, Color(255,0,0), true)
 
-		local ArgList = list.Get("ACFCvars")
+		local ArgList = list.Get("ACECvars")
 
 		-- Reading the list packaged with the ent to see what client CVar it needs
 		for Number, Key in pairs( ArgList[entClass] ) do

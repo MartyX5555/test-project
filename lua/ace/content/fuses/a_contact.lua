@@ -71,7 +71,7 @@ function this:PerformDetonation( missile, bdata, phys, pos )
 
 	bdata.HandlesOwnIteration = nil
 
-	ACFM_BulletLaunch(bdata)
+	ACEM_BulletLaunch(bdata)
 
 	missile:SetSolid(SOLID_NONE)
 	phys:EnableMotion(false)

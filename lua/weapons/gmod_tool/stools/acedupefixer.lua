@@ -8,12 +8,12 @@ TOOL.ConfigName		= ""
 	This tool will attempt to replace:
 	- Entity classes: for example, if the entity class was changed.
 	- Entity Modifiers: modifiers like those used to store armor or sounds inside of entities.
+	- E2/SF functions: functions like E:acfIsAmmo() is replaced to E:aceIsAmmo.
 
-	Stuff that might be changed too: 
-	- E2/SF functions, but the process is already expensive to include this. Also, more e2s = more lag and slower.
-	-  
-	
-	This can also remove the need for singular entities to apply backwards as this tool can do it all in one action.
+	Note:
+	- Sometimes, the folder conversion can stop entirely if one of the dupes cause issues to the decoder. This is something i cannot fix from here, as thats from the advdupe2 side.
+	- While the tool can do wonders, is not a 100% dupe fixer on its own. You will need to check your dupes anyways, for example, you should check e2s/systems that looks for specific entities like the ace ones. Maybe it can change.
+	- The tool is EXPERIMENTAL. So please, i STRONGLY recommend you backup your dupes just in case. Any chosen dupe is COMPLETELY OVERWRITTEN by the tool. Overwritten dupes cannot be undone.
 ]]
 if CLIENT then
 
@@ -58,7 +58,6 @@ if CLIENT then
 		hook.Add("Think", "ACEDupeFixer_CoroutineControl", function()
 			local curtime = CurTime()
 			if curtime > nextcorotime and coroutine.status(co) == "suspended" then
-				print("Resume!!!!")
 				coroutine.resume(co)
 				if interval then
 					nextcorotime = curtime + (interval / 1000)
@@ -74,9 +73,9 @@ if CLIENT then
 
 	-- Filter unreadable dupes from the folder.
 	local function IsValidDupeFile(dupefile)
-		if not string.EndsWith(dupefile, ".txt") then return false end
+		if not string.EndsWith(dupefile, ".txt") then return false end -- wtf dont put jpg files here.
 		local noformat = string.sub( dupefile, 1, #dupefile - 4 )
-		local found = string.find(noformat, "%.")
+		local found = string.find(noformat, "%.") -- invalid dupe formats, like having extra points, cause problems to the decoder.
 		if found then return false end
 		return true
 	end
@@ -157,10 +156,15 @@ if CLIENT then
 			istreefinished = nil
 			addFilesRecursively(MainNode, FolderDir)
 		end, function()
-			print("tree created!")
 			istreefinished = true
 		end)
 	end
+
+	local E2Pattern = "(:?)acf(%w*%b())"
+
+	-- I hope to find a unified pattern.
+	local SFPattern1 = "([^%w_])acf(%u)", "%1ace%2" -- acf.example()
+	local SFPattern2 = "([^%w_])acf([%.:])", "%1ace%2" -- E:acfexample()
 
 	------ Dupe Conversion functions ------
 	local function ConvertDupe(dupepath)
@@ -169,7 +173,6 @@ if CLIENT then
 		local read = file.Read(dupepath)
 		local success, dupe, info, _ = AdvDupe2.Decode(read)
 
-		if true then return end
 		if success then
 			for _, enttable in pairs(dupe.Entities) do
 
@@ -190,6 +193,29 @@ if CLIENT then
 					end
 					enttable.EntityMods = newEntityMods
 				end
+
+				-- Replace old acf e2 functions with the ace functions.
+				if enttable.Class == "gmod_wire_expression2" and enttable["_original"] and string.find(enttable["_original"], E2Pattern) then
+					enttable["_original"] = string.gsub(enttable["_original"], E2Pattern, "%1ace%2")
+				end
+
+				-- Replace old acf sf functions with the ace functions
+				-- SF chips are compressed in this stage. So we need to decompress to edit it. Then Compress it back once edited
+				if SF and enttable.Class == "starfall_processor" then
+					local info = enttable.EntityMods.SFDupeInfo
+					local Dataname = info.starfall.mainfile
+					local Data = info.starfall.files
+					if isstring(Data) then
+						local files = SF.DecompressFiles(Data)
+						local sfcode = files[Dataname]
+						if string.find(sfcode, SFPattern1) or string.find(sfcode, SFPattern2) then -- I hope to find a unified pattern
+							sfcode = string.gsub(sfcode, SFPattern1)
+							sfcode = string.gsub(sfcode, SFPattern2)
+							files[Dataname] = sfcode
+							info.starfall.files = SF.CompressFiles(files)
+						end
+					end
+				end
 			end
 			AdvDupe2.Encode(dupe, info, function(data)
 				local writeFile = file.Open(dupepath, "wb", "DATA")
@@ -209,7 +235,6 @@ if CLIENT then
 			for _, folderName in pairs(folders) do
 				local folder_to_go = directory .. "/" .. folderName
 				ConvertFolderContents(folder_to_go)
-				print("new folder to go:", folder_to_go)
 			end
 		end
 
@@ -233,6 +258,14 @@ if CLIENT then
 	local lastclick = 0
 	local canconvert = false
 	function TOOL.BuildCPanel(panel)
+
+		if not AdvDupe2 then
+			panel:Help( "Unable to use this tool. You need Advanced Duplicator 2 to be installed on the server.")
+			if game.IsDedicated() then
+				panel:Help("If unintended, ")
+			end
+			return
+		end
 
 		panel:Help( "#tool.acedupefixer.desc")
 		panel:Help( "#tool.acedupefixer.desc2")
@@ -270,21 +303,22 @@ if CLIENT then
 			canconvert = true
 		end
 
-
 		local convertbtn = panel:Button("Apply Conversion")
 		panel:AddItem(convertbtn)
 		convertbtn:Dock(TOP)
 		convertbtn:SetTooltip( "Apply the fixes to the selected dupe." )
 		function convertbtn:DoClick()
+			if OnDupeConversion then print("You are already patching dupes. Please wait until it finishes.") return end
 			if not istreefinished then print("list must be finished before processing.") return end
 			if not canconvert then print("Double click to validate selection first.") return end
 			if isfolder then
 				print("Applying patch to all the dupes inside of the folder:", current_filepath)
 				InitCoroutine(function()
-					iterator2 = 0
+					OnDupeConversion = true
 					ConvertFolderContents(current_filepath)
 				end,
 				function()
+					OnDupeConversion = false
 					print("All the dupes were processed!")
 				end, 25)
 			else

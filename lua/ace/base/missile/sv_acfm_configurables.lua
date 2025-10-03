@@ -11,11 +11,11 @@ local Cast =
 
 
 
-function ACFM_CreateConfigurable(str, configurables, bdata, wlistPath)
+function ACEM_CreateConfigurable(str, configurables, bdata, wlistPath)
 
 	success, ret =	xpcall( -- we're eating arbitrary user input, so let's not fuck up if they fuck up
 						function()
-							return ACFM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
+							return ACEM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 						end,
 
 						ErrorNoHalt
@@ -26,7 +26,7 @@ function ACFM_CreateConfigurable(str, configurables, bdata, wlistPath)
 end
 
 
-function ACFM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
+function ACEM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 
 	-- we're parsing a string of the form "NAME:CMD=VAL:CMD=VAL"... potentially.
 

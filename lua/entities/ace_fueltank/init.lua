@@ -52,7 +52,7 @@ do
 		Wire_TriggerOutput( self, "Entity", self )
 
 		self.Master = {} --engines linked to this tank
-		ACE.FuelTanks = ACE.FuelTanks or {} --master list of acf fuel tanks
+		ACE.FuelTanks = ACE.FuelTanks or {} --master list of ace fuel tanks
 
 		self.LastThink = 0
 		self.NextThink = CurTime() +  1
@@ -278,7 +278,7 @@ do
 			Tank:UpdateFuelTank(Id, Data1, Data2)
 
 			Owner:AddCount( "_ace_misc", Tank )
-			Owner:AddCleanup( "acfmenu", Tank )
+			Owner:AddCleanup( "acemenu", Tank )
 
 			table.insert(ACE.FuelTanks, Tank)
 
@@ -289,7 +289,7 @@ do
 	end
 end
 
-list.Set( "ACFCvars", "ace_fueltank", {"id", "data1", "data2", "data3"} )
+list.Set( "ACECvars", "ace_fueltank", {"id", "data1", "data2", "data3"} )
 duplicator.RegisterEntityClass("ace_fueltank", MakeACE_FuelTank, "Pos", "Angle", "Id", "SizeId", "FuelType", "Shape" )
 
 

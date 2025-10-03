@@ -133,7 +133,7 @@ function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 	Radar:SetModelEasy(radar.model)
 
 	Owner:AddCount( "_ace_radar", Radar )
-	Owner:AddCleanup( "acfmenu", Radar )
+	Owner:AddCleanup( "acemenu", Radar )
 
 	Radar:SetNWString( "WireName", Radar.ACEName )
 	Radar:SetNWString( "Sound", Radar.Sound )
@@ -142,7 +142,7 @@ function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 	return Radar
 
 end
-list.Set( "ACFCvars", "ace_radar", {"id"} )
+list.Set( "ACECvars", "ace_radar", {"id"} )
 duplicator.RegisterEntityClass("ace_radar", MakeACE_MissileRadar, "Pos", "Angle", "Id" )
 
 function ENT:CreateRadar(ACFName, ConeDegs)

@@ -46,7 +46,7 @@ function ENT:isLegal()
 
 	ACE_GetPhysicalParent(self)
 
-	self.IsLegal = self.acfphysparent:IsSolid()
+	self.IsLegal = self.acephysparent:IsSolid()
 
 	return self.IsLegal
 

@@ -4,11 +4,6 @@ AddCSLuaFile( "shared.lua" )
 
 include("shared.lua")
 
-CreateConVar("sbox_max_ace_explosive", 20)
-
-
-
-
 function ENT:Initialize()
 
 	self.BulletData = self.BulletData or {}
@@ -64,11 +59,11 @@ function MakeACE_Explosive(Owner, Pos, Angle, Data1, Data2, Data3, Data4, Data5,
 	Bomb:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, Data11, Data12, Data13 , Data14 , Data15)
 
 	Owner:AddCount( "_ace_explosive", Bomb )
-	Owner:AddCleanup( "acfmenu", Bomb )
+	Owner:AddCleanup( "acemenu", Bomb )
 
 	return Bomb
 end
-list.Set( "ACFCvars", "ace_explosive", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "mdl", "data11", "data12", "data13", "data14", "data15"} )
+list.Set( "ACECvars", "ace_explosive", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "mdl", "data11", "data12", "data13", "data14", "data15"} )
 duplicator.RegisterEntityClass("ace_explosive", MakeACE_Explosive, "Pos", "Angle", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10", "Model" , "RoundData11" , "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
 
 function ENT:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Mdl, bdata,Data11 ,Data12, Data13 ,Data14, Data15)
@@ -91,7 +86,7 @@ function ENT:CreateBomb(Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, 
 	self.RoundData14		= ( Data14 or 0 )
 	self.RoundData15		= ( Data15 or 0 )
 
-	local PlayerData = bdata or ACFM_CompactBulletData(self)
+	local PlayerData = bdata or ACEM_CompactBulletData(self)
 
 	--local guntable = ACE.Weapons.Guns
 	--local gun = guntable[self.RoundId] or {}
@@ -127,7 +122,7 @@ function ENT:SetBulletData(bdata)
 
 	if not (bdata.IsShortForm or bdata.Data5) then error("ace_explosive requires short-form bullet-data but was given expanded bullet-data.") end
 
-	bdata = ACFM_CompactBulletData(bdata)
+	bdata = ACEM_CompactBulletData(bdata)
 
 	self:CreateBomb(
 		bdata.Data1 or bdata.Id,
@@ -152,7 +147,7 @@ function ENT:SetBulletData(bdata)
 end
 
 function ENT:ConfigBulletDataShortForm(bdata)
-	bdata = ACFM_ExpandBulletData(bdata)
+	bdata = ACEM_ExpandBulletData(bdata)
 
 	self.BulletData = bdata
 	self.BulletData.Entity = self
@@ -195,7 +190,6 @@ function ENT:Detonate(overrideBData)
 	--debugoverlay.Line(pos, bdata.Pos, 10, Color(255, 0, 0))
 	--debugoverlay.Cross(pos, 5, 5, Color(255,255,0))
 	--debugoverlay.Cross(bdata.Pos, 5, 5, Color(255,255,255))
-
 end
 
 function ENT:EnableClientInfo(bool)
@@ -209,6 +203,6 @@ end
 
 function ENT:RefreshClientInfo()
 
-	ACFM_MakeCrateForBullet(self, self.BulletData)
+	ACEM_MakeCrateForBullet(self, self.BulletData)
 
 end

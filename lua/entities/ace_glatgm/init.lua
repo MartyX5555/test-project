@@ -46,7 +46,7 @@ function ENT:Initialize()
 	if self.Sub then
 		self.velocity = 2500
 		self.secondsOffset = 0.25
-		self.SpiralAm = (10-self.BulletData.Caliber) * 0.25 -- amount of artifical spiraling for <100 shells, caliber in acf is in cm
+		self.SpiralAm = (10-self.BulletData.Caliber) * 0.25 -- amount of artifical spiraling for <100 shells, caliber in ace is in cm
 	end
 
 	-- how far off the forward offset is for the targeting position

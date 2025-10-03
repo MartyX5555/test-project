@@ -7,7 +7,7 @@ local function RemoveEntity( Entity )
 end
 
 
--- helper function to process children of an acf-destroyed prop
+-- helper function to process children of an ace-destroyed prop
 -- AP will HE-kill children props like a detonation; looks better than a directional spray of unrelated debris from the AP kill
 local function ACE_KillChildProps( Entity, BlastPos, Energy )
 
@@ -95,7 +95,7 @@ local function CreateFakeDebris(Debris)
 end
 
 local function GetPropMaterialData( Entity )
-	local Mat = ACE_VerifyMaterial(Entity.ACE.Material) 
+	local Mat = ACE_VerifyMaterial(Entity.ACE.Material)
 	local MatData = ACE_GetMaterialData( Mat )
 	return MatData
 end

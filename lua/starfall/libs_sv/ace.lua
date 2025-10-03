@@ -1,9 +1,9 @@
---- Library for interfacing with ACF entities
--- @name acf
+--- Library for interfacing with ACE entities
+-- @name ace
 -- @class library
 -- @libtbl ace_library
--- @src https://github.com/RedDeadlyCreeper/ArmoredCombatExtended/tree/master/lua/starfall/lib_sv/acf.lua
-SF.RegisterLibrary("acf")
+-- @src https://github.com/RedDeadlyCreeper/ArmoredCombatExtended/tree/master/lua/starfall/lib_sv/ace.lua
+SF.RegisterLibrary("ace")
 
 local min, clamp, abs, round, floor = math.min, math.Clamp, math.abs, math.Round, math.floor
 local rad, cos = math.rad, math.cos
@@ -12,11 +12,11 @@ local checkluatype = SF.CheckLuaType
 local checkpermission = SF.Permissions.check
 local registerprivilege = SF.Permissions.registerPrivilege
 
-registerprivilege("acf.createMobility", "Create acf engine", "Allows the user to create ACF engines and gearboxes", { usergroups = { default = 3 } })
-registerprivilege("acf.createFuelTank", "Create acf fuel tank", "Allows the user to create ACF fuel tanks", { usergroups = { default = 3 } })
-registerprivilege("acf.createGun", "Create acf gun", "Allows the user to create ACF guns", { usergroups = { default = 3 } })
-registerprivilege("acf.createAmmo", "Create acf ammo", "Allows the user to create ACF ammoboxes", { usergroups = { default = 3 } } )
-registerprivilege("entities.acf", "ACF", "Allows the user to control ACF components", { entities = {} })
+registerprivilege("ace.createMobility", "Create ace engine", "Allows the user to create ACE engines and gearboxes", { usergroups = { default = 3 } })
+registerprivilege("ace.createFuelTank", "Create ace fuel tank", "Allows the user to create ACE fuel tanks", { usergroups = { default = 3 } })
+registerprivilege("ace.createGun", "Create ace gun", "Allows the user to create ACE guns", { usergroups = { default = 3 } })
+registerprivilege("ace.createAmmo", "Create ace ammo", "Allows the user to create ACE ammoboxes", { usergroups = { default = 3 } } )
+registerprivilege("entities.ace", "ACE", "Allows the user to control ACE components", { entities = {} })
 
 local function isEngine(ent)
 	return ent:GetClass() == "ace_engine"
@@ -99,7 +99,7 @@ return function(instance)
 
 
 local checktype = instance.CheckType
-local ace_library = instance.Libraries.acf
+local ace_library = instance.Libraries.ace
 local ents_methods = instance.Types.Entity.Methods
 local vec_meta, vwrap, vunwrap = instance.Types.Vector, instance.Types.Vector.Wrap, instance.Types.Vector.Unwrap
 local sanitize = instance.Sanitize
@@ -133,7 +133,7 @@ end)
 
 -- Utility functions
 do
-	--- Returns current ACF drag divisor
+	--- Returns current ACE drag divisor
 	-- @server
 	-- @return number The current drag divisor
 	function ace_library.dragDivisor()
@@ -147,14 +147,14 @@ do
 		return GetConVar("ace_restrictinfo"):GetInt() ~= 0
 	end
 
-	--- Returns latest version of ACF
+	--- Returns latest version of ACE
 	-- @server
 	-- @return number Version number
 	function ace_library.getVersion()
 		return ACE.CurrentVersion
 	end
 
-	--- Returns server version of acf
+	--- Returns server version of ace
 	-- @server
 	-- @return number Version number
 	function ace_library.getCurrentVersion()
@@ -168,7 +168,7 @@ do
 		return ACE.HEATAirGapFactor
 	end
 
-	--- Returns ACF wind direction
+	--- Returns ACE wind direction
 	-- @server
 	-- @return vector Wind direction
 	function ace_library.getWindVector()
@@ -178,14 +178,14 @@ do
 	--- Returns true if this entity contains sensitive info and is not accessable to us
 	-- @server
 	-- @return boolean Is the info restricted?
-	function ents_methods:acfIsInfoRestricted()
+	function ents_methods:aceIsInfoRestricted()
 		return restrictInfo(getent(self))
 	end
 
-	--- Returns the short name of an ACF entity
+	--- Returns the short name of an ACE entity
 	-- @server
 	-- @return string The short name
-	function ents_methods:acfNameShort()
+	function ents_methods:aceNameShort()
 		local this = getent(self)
 
 		if isEngine(this) then return this.Id or "" end
@@ -197,10 +197,10 @@ do
 		return ""
 	end
 
-	--- Returns the maximum capacity of an acf ammo crate or fuel tank
+	--- Returns the maximum capacity of an ace ammo crate or fuel tank
 	-- @server
 	-- @return number The capacity
-	function ents_methods:acfCapacity()
+	function ents_methods:aceCapacity()
 		local this = getent(self)
 
 		if not (isAmmo(this) or isFuel(this)) then return 0 end
@@ -209,10 +209,10 @@ do
 		return this.Capacity or 1
 	end
 
-	--- Returns true if the acf engine, fuel tank, or ammo crate is active
+	--- Returns true if the ace engine, fuel tank, or ammo crate is active
 	-- @server
 	-- @return boolean Is the entity active?
-	function ents_methods:acfGetActive()
+	function ents_methods:aceGetActive()
 		local this = getent(self)
 
 		if not (isEngine(this) or isAmmo(this) or isFuel(this)) then return false end
@@ -226,13 +226,13 @@ do
 		return false
 	end
 
-	--- Turns an ACF engine, ammo crate, or fuel tank on or off
+	--- Turns an ACE engine, ammo crate, or fuel tank on or off
 	-- @server
 	-- @param boolean state The state to set the entity to
-	function ents_methods:acfSetActive(on)
+	function ents_methods:aceSetActive(on)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 
 		if not (isEngine(this) or isAmmo(this) or isFuel(this)) then return end
 
@@ -243,13 +243,13 @@ do
 	-- @server
 	-- @param Vector hitpos The hit position
 	-- @return boolean Is the hit position on a clipped part of the prop?
-	function ents_methods:acfHitClip(hitpos)
+	function ents_methods:aceHitClip(hitpos)
 		checktype(hitpos, vec_meta)
 
 		local this = getent(self)
 		hitpos = vunwrap(hitpos)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if ACE_CheckClips(nil, nil, this, hitpos) then
 			return true
 		else
@@ -257,10 +257,10 @@ do
 		end
 	end
 
-	--- Returns the ACF links associated with the entity
+	--- Returns the ACE links associated with the entity
 	-- @server
 	-- @return table The links
-	function ents_methods:acfLinks()
+	function ents_methods:aceLinks()
 		local this = getent(self)
 
 		local enttype = this:GetClass()
@@ -269,31 +269,31 @@ do
 		return sanitize(getLinks(this, enttype))
 	end
 
-	--- Returns the full name of an ACF entity
+	--- Returns the full name of an ACE entity
 	-- @server
 	-- @return string The full name
-	function ents_methods:acfName()
+	function ents_methods:aceName()
 		local this = getent(self)
 
 		if isAmmo(this) then return this.RoundId .. " " .. this.RoundType end
 		if isFuel(this) then return this.FuelType .. " " .. this.SizeId end
 
-		local acftype = ""
+		local acetype = ""
 
-		if isEngine(this) then acftype = "Mobility" end
-		if isGearbox(this) then acftype = "Mobility" end
-		if isGun(this) then acftype = "Guns" end
+		if isEngine(this) then acetype = "Mobility" end
+		if isGearbox(this) then acetype = "Mobility" end
+		if isGun(this) then acetype = "Guns" end
 
-		if acftype == "" then return "" end
+		if acetype == "" then return "" end
 		local List = ACE.Weapons
 
-		return List[acftype][this.Id].name or ""
+		return List[acetype][this.Id].name or ""
 	end
 
-	--- Returns the type of ACF entity
+	--- Returns the type of ACE entity
 	-- @server
 	-- @return string The type
-	function ents_methods:acfType()
+	function ents_methods:aceType()
 		local this = getent(self)
 
 		if isEngine(this) or isGearbox(this) then
@@ -310,18 +310,18 @@ do
 		return ""
 	end
 
-	--- Perform ACF links
+	--- Perform ACE links
 	-- @server
 	-- @param Entity target The entity to link to
 	-- @param boolean notify Whether to notify the player of the link's creation
 	-- @return boolean Whether the link was successful
 	-- @return string Status message regarding the link's creation
-	function ents_methods:acfLinkTo(target, notify)
+	function ents_methods:aceLinkTo(target, notify)
 		local this = getent(self)
 		local tar = getent(target)
 
-		checkpermission(instance, this, "entities.acf")
-		checkpermission(instance, tar, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
+		checkpermission(instance, tar, "entities.ace")
 		if not (isGun(this) or isEngine(this) or isGearbox(this)) then
 			SF.Throw("Target must be a gun, engine, or gearbox", 2)
 		end
@@ -334,18 +334,18 @@ do
 		return success, msg
 	end
 
-	--- Perform ACF unlinks
+	--- Perform ACE unlinks
 	-- @server
 	-- @param Entity target The entity to unlink from
 	-- @param boolean notify Whether to notify the player of the link's removal
 	-- @return boolean Whether the unlink was successful
 	-- @return string Status message regarding the link's removal
-	function ents_methods:acfUnlinkFrom(target, notify)
+	function ents_methods:aceUnlinkFrom(target, notify)
 		local this = getent(self)
 		local tar = getent(target)
 
-		checkpermission(instance, this, "entities.acf")
-		checkpermission(instance, tar, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
+		checkpermission(instance, tar, "entities.ace")
 		if not (isGun(this) or isEngine(this) or isGearbox(this)) then
 			SF.Throw("Target must be a gun, engine, or gearbox", 2)
 		end
@@ -358,10 +358,10 @@ do
 		return success, msg
 	end
 
-	--- Returns the heat of an ACF entity
+	--- Returns the heat of an ACE entity
 	-- @server
 	-- @return number The heat value of the entity
-	function ents_methods:acfHeat()
+	function ents_methods:aceHeat()
 		checktype(self, ents_metatable)
 		local this = getent(self)
 
@@ -379,10 +379,10 @@ do
 		return Heat
 	end
 
-	--- Returns all crewseats linked to an acf entity
+	--- Returns all crewseats linked to an ace entity
 	-- @server
 	-- @return table crewseats entities
-	function ents_methods:acfGetCrew()
+	function ents_methods:aceGetCrew()
 		checktype(self, ents_metatable)
 		local this = getent(self)
 
@@ -419,7 +419,7 @@ do
 	--- Returns the current health of an entity
 	-- @server
 	-- @return number The current health
-	function ents_methods:acfPropHealth()
+	function ents_methods:acePropHealth()
 		local this = getent(self)
 
 		if not validPhysics(this) then return 0 end
@@ -432,7 +432,7 @@ do
 	--- Returns the current armor of an entity
 	-- @server
 	-- @return number The current armor
-	function ents_methods:acfPropArmor()
+	function ents_methods:acePropArmor()
 		local this = getent(self)
 
 		if not validPhysics(this) then return 0 end
@@ -445,7 +445,7 @@ do
 	--- Returns the max health of an entity
 	-- @server
 	-- @return number The max health
-	function ents_methods:acfPropHealthMax()
+	function ents_methods:acePropHealthMax()
 		local this = getent(self)
 
 		if not validPhysics(this) then return 0 end
@@ -458,7 +458,7 @@ do
 	--- Returns the max armor of an entity
 	-- @server
 	-- @return number The max armor
-	function ents_methods:acfPropArmorMax()
+	function ents_methods:acePropArmorMax()
 		local this = getent(self)
 
 		if not validPhysics(this) then return 0 end
@@ -471,7 +471,7 @@ do
 	--- Returns the ductility of an entity
 	-- @server
 	-- @return number The ductility
-	function ents_methods:acfPropDuctility()
+	function ents_methods:acePropDuctility()
 		local this = getent(self)
 
 		if not validPhysics(this) then return 0 end
@@ -484,7 +484,7 @@ do
 	--- Returns the armor data of an entity
 	-- @server
 	-- @return table A table with keys: Curve, Effectiveness, HEATEffectiveness, Material
-	function ents_methods:acfPropArmorData()
+	function ents_methods:acePropArmorData()
 		local this = getent(self)
 		local empty = {}
 
@@ -547,17 +547,17 @@ do
 		return tbl
 	end
 
-	--- Returns true if the entity is an ACF gun
+	--- Returns true if the entity is an ACE gun
 	-- @server
-	-- @return boolean True if the entity is an ACF gun
-	function ents_methods:acfIsGun()
+	-- @return boolean True if the entity is an ACE gun
+	function ents_methods:aceIsGun()
 		return isGun(getent(self))
 	end
 
-	--- Returns true if the ACF gun is ready to fire
+	--- Returns true if the ACE gun is ready to fire
 	-- @server
-	-- @return boolean True if the ACF gun is ready to fire
-	function ents_methods:acfReady()
+	-- @return boolean True if the ACE gun is ready to fire
+	function ents_methods:aceReady()
 		local this = getent(self)
 
 		if not isGun(this) then return false end
@@ -566,10 +566,10 @@ do
 		return this.Ready
 	end
 
-	--- Returns the magazine size for an ACF gun
+	--- Returns the magazine size for an ACE gun
 	-- @server
 	-- @return number The magazine size
-	function ents_methods:acfMagSize()
+	function ents_methods:aceMagSize()
 		local this = getent(self)
 
 		if not isGun(this) then return 0 end
@@ -578,10 +578,10 @@ do
 		return this.MagSize
 	end
 
-	--- Returns the spread for an ACF gun or flechette ammo
+	--- Returns the spread for an ACE gun or flechette ammo
 	-- @server
 	-- @return number The spread, in degrees
-	function ents_methods:acfSpread()
+	function ents_methods:aceSpread()
 		local this = getent(self)
 
 		if not isGun(this) or isAmmo(this) then return 0 end
@@ -595,10 +595,10 @@ do
 		return Spread
 	end
 
-	--- Returns true if an ACF gun is reloading
+	--- Returns true if an ACE gun is reloading
 	-- @server
-	-- @return boolean True if the ACF gun is reloading
-	function ents_methods:acfIsReloading()
+	-- @return boolean True if the ACE gun is reloading
+	function ents_methods:aceIsReloading()
 		local this = getent(self)
 
 		if not isGun(this) then return false end
@@ -607,10 +607,10 @@ do
 		return this.Reloading or false
 	end
 
-	--- Returns the rate of fire of an acf gun
+	--- Returns the rate of fire of an ace gun
 	-- @server
 	-- @return number The rate of fire
-	function ents_methods:acfFireRate()
+	function ents_methods:aceFireRate()
 		local this = getent(self)
 
 		if not isGun(this) then return 0 end
@@ -619,10 +619,10 @@ do
 		return math.Round(this.RateOfFire, 3)
 	end
 
-	--- Returns the number of rounds left in a magazine for an ACF gun
+	--- Returns the number of rounds left in a magazine for an ACE gun
 	-- @server
 	-- @return number The number of rounds left in the magazine
-	function ents_methods:acfMagRounds()
+	function ents_methods:aceMagRounds()
 		local this = getent(self)
 
 		if not isGun(this) then return 0 end
@@ -634,49 +634,49 @@ do
 		return 0
 	end
 
-	--- Sets the firing state of an ACF weapon
+	--- Sets the firing state of an ACE weapon
 	-- @server
 	-- @param number state 1 to fire, 0 to stop firing
-	function ents_methods:acfFire(fire)
+	function ents_methods:aceFire(fire)
 		checkluatype(fire, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGun(this) then return end
 
 		this:TriggerInput("Fire", fire)
 	end
 
-	--- Sets the ROF limit of an ACF weapon
+	--- Sets the ROF limit of an ACE weapon
 	-- @server
 	-- @param number rate The rate of fire limit
-	function ents_methods:acfSetROFLimit(rate)
+	function ents_methods:aceSetROFLimit(rate)
 		checkluatype(rate, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGun(this) then return end
 
 		this:TriggerInput("ROFLimit", rate)
 	end
 
-	--- Causes an ACF weapon to unload
+	--- Causes an ACE weapon to unload
 	-- @server
-	function ents_methods:acfUnload()
+	function ents_methods:aceUnload()
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGun(this) then return end
 
 		this:UnloadAmmo()
 	end
 
-	--- Causes an ACF weapon to reload
+	--- Causes an ACE weapon to reload
 	-- @server
-	function ents_methods:acfReload()
+	function ents_methods:aceReload()
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGun(this) then return end
 		local isEmpty = this.BulletData.Type == "Empty"
 
@@ -686,10 +686,10 @@ do
 		end
 	end
 
-	--- Returns the number of rounds in active ammo crates linked to an ACF weapon
+	--- Returns the number of rounds in active ammo crates linked to an ACE weapon
 	-- @server
 	-- @return number The number of rounds in active ammo crates
-	function ents_methods:acfAmmoCount()
+	function ents_methods:aceAmmoCount()
 		local this = getent(self)
 
 		if not isGun(this) then return 0 end
@@ -705,10 +705,10 @@ do
 		return Ammo
 	end
 
-	--- Returns the number of rounds in all ammo crates linked to an ACF weapon
+	--- Returns the number of rounds in all ammo crates linked to an ACE weapon
 	-- @server
 	-- @return number The number of rounds in all ammo crates
-	function ents_methods:acfTotalAmmoCount()
+	function ents_methods:aceTotalAmmoCount()
 		local this = getent(self)
 
 		if not isGun(this) then return 0 end
@@ -724,10 +724,10 @@ do
 		return Ammo
 	end
 
-	--- Returns time to next shot of an ACF weapon
+	--- Returns time to next shot of an ACE weapon
 	-- @server
 	-- @return number The time to next shot
-	function ents_methods:acfReloadTime()
+	function ents_methods:aceReloadTime()
 		local this = getent(self)
 
 		if restrictInfo(this) or not isGun(this) or not this.ReloadTime then return 0 end
@@ -735,10 +735,10 @@ do
 		return this.ReloadTime
 	end
 
-	--- Returns number between 0 and 1 which represents reloading progress of an ACF weapon. Useful for progress bars
+	--- Returns number between 0 and 1 which represents reloading progress of an ACE weapon. Useful for progress bars
 	-- @server
 	-- @return number The reloading progress
-	function ents_methods:acfReloadProgress()
+	function ents_methods:aceReloadProgress()
 		local this = getent(self)
 
 		if restrictInfo(this) or not isGun(this) then return 1 end
@@ -757,10 +757,10 @@ do
 		return clamp(1 - (this.NextFire - CurTime()) / reloadTime, 0, 1)
 	end
 
-	--- Returns time it takes for an ACF weapon to reload magazine
+	--- Returns time it takes for an ACE weapon to reload magazine
 	-- @server
 	-- @return number The time it takes to reload the magazine
-	function ents_methods:acfMagReloadTime()
+	function ents_methods:aceMagReloadTime()
 		local this = getent(self)
 
 		if restrictInfo(this) or not isGun(this) or not this.MagReload then return 0 end
@@ -768,10 +768,10 @@ do
 		return this.MagReload
 	end
 
-	--- Returns the state of an ACF weapon
+	--- Returns the state of an ACE weapon
 	-- @server
 	-- @return string The state of the weapon
-	function ents_methods:acfState()
+	function ents_methods:aceState()
 		local this = getent(self)
 
 		if not isGun(this) then return "" end
@@ -796,17 +796,17 @@ end
 
 -- Ammo functions
 do
-	--- Returns true if the entity is an ACF ammo crate
+	--- Returns true if the entity is an ACE ammo crate
 	-- @server
-	-- @return boolean True if the entity is an ACF ammo crate
-	function ents_methods:acfIsAmmo ()
+	-- @return boolean True if the entity is an ACE ammo crate
+	function ents_methods:aceIsAmmo ()
 		return isAmmo(getent(self))
 	end
 
-	--- Returns the rounds left in an acf ammo crate
+	--- Returns the rounds left in an ace ammo crate
 	-- @server
 	-- @return number The rounds left in the crate
-	function ents_methods:acfRounds()
+	function ents_methods:aceRounds()
 		local this = getent(self)
 
 		if not isAmmo(this) then return 0 end
@@ -815,10 +815,10 @@ do
 		return this.Ammo
 	end
 
-	--- Returns the type of weapon the ammo in an ACF ammo crate loads into
+	--- Returns the type of weapon the ammo in an ACE ammo crate loads into
 	-- @server
 	-- @return string The type of weapon the ammo in the crate loads into
-	function ents_methods:acfRoundType()
+	function ents_methods:aceRoundType()
 		local this = getent(self)
 		if not isAmmo(this) then return "" end
 		if restrictInfo(this) then return "" end
@@ -831,7 +831,7 @@ do
 	--- Returns the type of ammo in a crate or gun
 	-- @server
 	-- @return string The type of ammo
-	function ents_methods:acfAmmoType()
+	function ents_methods:aceAmmoType()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return "" end
 		if restrictInfo(this) then return "" end
@@ -842,7 +842,7 @@ do
 	--- Returns the caliber of an ammo or gun
 	-- @server
 	-- @return number The caliber
-	function ents_methods:acfCaliber()
+	function ents_methods:aceCaliber()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -853,7 +853,7 @@ do
 	--- Returns the muzzle velocity of the ammo in a crate or gun
 	-- @server
 	-- @return number The muzzle velocity
-	function ents_methods:acfMuzzleVel()
+	function ents_methods:aceMuzzleVel()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -864,7 +864,7 @@ do
 	--- Returns the mass of the projectile in a crate or gun
 	-- @server
 	-- @return number The mass of the projectile
-	function ents_methods:acfProjectileMass()
+	function ents_methods:aceProjectileMass()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -875,7 +875,7 @@ do
 	--- Returns the number of projectiles in a flechette round
 	-- @server
 	-- @return number The number of projectiles
-	function ents_methods:acfFLSpikes()
+	function ents_methods:aceFLSpikes()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -887,7 +887,7 @@ do
 	--- Returns the mass of a single spike in a FL round in a crate or gun
 	-- @server
 	-- @return number The mass of a single spike
-	function ents_methods:acfFLSpikeMass()
+	function ents_methods:aceFLSpikeMass()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -899,7 +899,7 @@ do
 	--- Returns the radius of the spikes in a flechette round in mm
 	-- @server
 	-- @return number The radius of the spikes in mm
-	function ents_methods:acfFLSpikeRadius()
+	function ents_methods:aceFLSpikeRadius()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -911,7 +911,7 @@ do
 	--- Returns the penetration of an AP, APHE, or HEAT round
 	-- @server
 	-- @return number The penetration of the round
-	function ents_methods:acfPenetration()
+	function ents_methods:acePenetration()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -941,7 +941,7 @@ do
 	--- Returns the blast radius of an HE, APHE, or HEAT round
 	-- @server
 	-- @return number The blast radius of the round
-	function ents_methods:acfBlastRadius()
+	function ents_methods:aceBlastRadius()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -960,7 +960,7 @@ do
 	--- Returns the drag coef of the ammo in a crate or gun
 	-- @server
 	-- @return number The drag coef of the ammo
-	function ents_methods:acfDragCoef()
+	function ents_methods:aceDragCoef()
 		local this = getent(self)
 		if not (isAmmo(this) or isGun(this)) then return 0 end
 		if restrictInfo(this) then return 0 end
@@ -1042,7 +1042,7 @@ do
 	--- Returns any wheels linked to this engine/gearbox or child gearboxes
 	-- @server
 	-- @return table The linked wheels
-	function ents_methods:acfGetLinkedWheels()
+	function ents_methods:aceGetLinkedWheels()
 		local this = getent(self)
 
 		if not (isEngine(this) or isGearbox(this)) then
@@ -1057,24 +1057,24 @@ do
 		return sanitize(wheels)
 	end
 
-	--- Returns true if the entity is an ACF engine
+	--- Returns true if the entity is an ACE engine
 	-- @server
-	-- @return boolean Whether the entity is an ACF engine
-	function ents_methods:acfIsEngine()
+	-- @return boolean Whether the entity is an ACE engine
+	function ents_methods:aceIsEngine()
 		return isEngine(getent(self))
 	end
 
-	--- Returns true if an ACF engine is electric
+	--- Returns true if an ACE engine is electric
 	-- @server
 	-- @return boolean Whether the engine is electric
-	function ents_methods:acfIsElectric()
+	function ents_methods:aceIsElectric()
 		return getent(self).iselec == true
 	end
 
-	--- Returns the torque in N/m of an ACF engine
+	--- Returns the torque in N/m of an ACE engine
 	-- @server
 	-- @return number The torque in N/m
-	function ents_methods:acfMaxTorque()
+	function ents_methods:aceMaxTorque()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1082,10 +1082,10 @@ do
 		return this.PeakTorque
 	end
 
-	--- Returns the torque in N/m of an ACF engine with fuel
+	--- Returns the torque in N/m of an ACE engine with fuel
 	-- @server
 	-- @return number The torque in N/m
-	function ents_methods:acfMaxTorqueWithFuel()
+	function ents_methods:aceMaxTorqueWithFuel()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1093,10 +1093,10 @@ do
 		return this.PeakTorque * ACE.TorqueBoost
 	end
 
-	--- Returns the power in kW of an ACF engine
+	--- Returns the power in kW of an ACE engine
 	-- @server
 	-- @return number The power in kW
-	function ents_methods:acfMaxPower()
+	function ents_methods:aceMaxPower()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1104,10 +1104,10 @@ do
 		return this.peakkw
 	end
 
-	--- Returns the power in kW of an ACF engine with fuel
+	--- Returns the power in kW of an ACE engine with fuel
 	-- @server
 	-- @return number The power in kW
-	function ents_methods:acfMaxPowerWithFuel()
+	function ents_methods:aceMaxPowerWithFuel()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1115,10 +1115,10 @@ do
 		return this.peakkw * ACE.TorqueBoost
 	end
 
-	--- Returns the idle rpm of an ACF engine
+	--- Returns the idle rpm of an ACE engine
 	-- @server
 	-- @return number The idle rpm
-	function ents_methods:acfIdleRPM()
+	function ents_methods:aceIdleRPM()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1126,11 +1126,11 @@ do
 		return this.IdleRPM
 	end
 
-	--- Returns the powerband min and max of an ACF Engine
+	--- Returns the powerband min and max of an ACE Engine
 	-- @server
 	-- @return number The powerband min
 	-- @return number The powerband max
-	function ents_methods:acfPowerband()
+	function ents_methods:acePowerband()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0, 0 end
@@ -1138,10 +1138,10 @@ do
 		return this.PeakMinRPM, this.PeakMaxRPM
 	end
 
-	--- Returns the powerband min of an ACF engine
+	--- Returns the powerband min of an ACE engine
 	-- @server
 	-- @return number The powerband min
-	function ents_methods:acfPowerbandMin()
+	function ents_methods:acePowerbandMin()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1149,10 +1149,10 @@ do
 		return this.PeakMinRPM
 	end
 
-	--- Returns the powerband max of an ACF engine
+	--- Returns the powerband max of an ACE engine
 	-- @server
 	-- @return number The powerband max
-	function ents_methods:acfPowerbandMax()
+	function ents_methods:acePowerbandMax()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1160,10 +1160,10 @@ do
 		return this.PeakMaxRPM
 	end
 
-	--- Returns the redline max of an ACF engine
+	--- Returns the redline max of an ACE engine
 	-- @server
 	-- @return number The redline
-	function ents_methods:acfRedline()
+	function ents_methods:aceRedline()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1171,10 +1171,10 @@ do
 		return this.LimitRPM
 	end
 
-	--- Returns the current rpm of an ACF engine
+	--- Returns the current rpm of an ACE engine
 	-- @server
 	-- @return number The current rpm
-	function ents_methods:acfRPM()
+	function ents_methods:aceRPM()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1183,10 +1183,10 @@ do
 		return round(this.FlyRPM)
 	end
 
-	--- Returns the current torque of an ACF engine
+	--- Returns the current torque of an ACE engine
 	-- @server
 	-- @return number The current torque
-	function ents_methods:acfTorque()
+	function ents_methods:aceTorque()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1195,10 +1195,10 @@ do
 		return round(this.Torque)
 	end
 
-	--- Returns the inertia of an ACF engine's flywheel
+	--- Returns the inertia of an ACE engine's flywheel
 	-- @server
 	-- @return number The inertia of the flywheel
-	function ents_methods:acfFlyInertia()
+	function ents_methods:aceFlyInertia()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1207,10 +1207,10 @@ do
 		return this.Inertia
 	end
 
-	--- Returns the mass of an ACF engine's flywheel
+	--- Returns the mass of an ACE engine's flywheel
 	-- @server
 	-- @return number The mass of the flywheel
-	function ents_methods:acfFlyMass()
+	function ents_methods:aceFlyMass()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1220,10 +1220,10 @@ do
 	end
 
 
-	--- Returns the current power of an ACF engine in kW
+	--- Returns the current power of an ACE engine in kW
 	-- @server
 	-- @return number The current power in kW
-	function ents_methods:acfPower()
+	function ents_methods:acePower()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1232,10 +1232,10 @@ do
 		return round(this.Torque * this.FlyRPM / 9548.8)
 	end
 
-	--- Returns true if the RPM of an ACF engine is inside the powerband
+	--- Returns true if the RPM of an ACE engine is inside the powerband
 	-- @server
 	-- @return boolean True if the RPM is inside the powerband
-	function ents_methods:acfInPowerband()
+	function ents_methods:aceInPowerband()
 		local this = getent(self)
 
 		if not isEngine(this) then return false end
@@ -1247,7 +1247,7 @@ do
 	--- Returns the throttle value
 	-- @server
 	-- @return number The throttle value
-	function ents_methods:acfGetThrottle()
+	function ents_methods:aceGetThrottle()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1256,25 +1256,25 @@ do
 		return this.Throttle * 100
 	end
 
-	--- Sets the throttle value for an ACF engine
+	--- Sets the throttle value for an ACE engine
 	-- @server
 	-- @param number throttle The throttle value
-	function ents_methods:acfSetThrottle(throttle)
+	function ents_methods:aceSetThrottle(throttle)
 		checkluatype(throttle, TYPE_NUMBER)
 
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 
 		if not isEngine(this) then return end
 
 		this:TriggerInput("Throttle", throttle)
 	end
 
-	--- Gets the fuel remaining for an ACF engine
+	--- Gets the fuel remaining for an ACE engine
 	-- @server
 	-- @return number The fuel remaining, in litres or kilowatt-hours
-	function ents_methods:acfFuelRemaining()
+	function ents_methods:aceFuelRemaining()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1283,17 +1283,17 @@ do
 		return this.TotalFuel
 	end
 
-	--- Returns true if the entity is an ACF gearbox
+	--- Returns true if the entity is an ACE gearbox
 	-- @server
-	-- @return boolean True if the entity is an ACF gearbox
-	function ents_methods:acfIsGearbox ()
+	-- @return boolean True if the entity is an ACE gearbox
+	function ents_methods:aceIsGearbox ()
 		return isGearbox(getent(self))
 	end
 
-	--- Returns the current gear for an ACF gearbox
+	--- Returns the current gear for an ACE gearbox
 	-- @server
 	-- @return number The current gear
-	function ents_methods:acfGear()
+	function ents_methods:aceGear()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1302,10 +1302,10 @@ do
 		return this.Gear
 	end
 
-	--- Returns the number of gears for an ACF gearbox
+	--- Returns the number of gears for an ACE gearbox
 	-- @server
 	-- @return number The number of gears
-	function ents_methods:acfNumGears()
+	function ents_methods:aceNumGears()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1314,10 +1314,10 @@ do
 		return this.Gears
 	end
 
-	--- Returns the final drive ratio for an ACF gearbox
+	--- Returns the final drive ratio for an ACE gearbox
 	-- @server
 	-- @return number The final drive ratio
-	function ents_methods:acfFinalRatio()
+	function ents_methods:aceFinalRatio()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1326,10 +1326,10 @@ do
 		return tonumber(this.GearTable["Final"])
 	end
 
-	--- Returns the total ratio (current gear * final) for an ACF gearbox
+	--- Returns the total ratio (current gear * final) for an ACE gearbox
 	-- @server
 	-- @return number The total ratio
-	function ents_methods:acfTotalRatio()
+	function ents_methods:aceTotalRatio()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1338,10 +1338,10 @@ do
 		return this.GearRatio
 	end
 
-	--- Returns the max torque for an ACF gearbox
+	--- Returns the max torque for an ACE gearbox
 	-- @server
 	-- @return number The max torque
-	function ents_methods:acfTorqueRating()
+	function ents_methods:aceTorqueRating()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1349,10 +1349,10 @@ do
 		return this.MaxTorque
 	end
 
-	--- Returns whether an ACF gearbox is dual clutch
+	--- Returns whether an ACE gearbox is dual clutch
 	-- @server
 	-- @return boolean True if the gearbox is dual clutch
-	function ents_methods:acfIsDual()
+	function ents_methods:aceIsDual()
 		local this = getent(self)
 
 		if not isGearbox(this) then return false end
@@ -1361,10 +1361,10 @@ do
 		return this.Dual
 	end
 
-	--- Returns the time in ms an ACF gearbox takes to change gears
+	--- Returns the time in ms an ACE gearbox takes to change gears
 	-- @server
 	-- @return number The time in ms
-	function ents_methods:acfShiftTime()
+	function ents_methods:aceShiftTime()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1372,10 +1372,10 @@ do
 		return this.SwitchTime * 1000
 	end
 
-	--- Returns true if an ACF gearbox is in gear
+	--- Returns true if an ACE gearbox is in gear
 	-- @server
 	-- @return boolean True if the gearbox is in gear
-	function ents_methods:acfInGear()
+	function ents_methods:aceInGear()
 		local this = getent(self)
 
 		if not isGearbox(this) then return false end
@@ -1384,10 +1384,10 @@ do
 		return this.InGear
 	end
 
-	--- Returns the ratio for a specified gear of an ACF gearbox
+	--- Returns the ratio for a specified gear of an ACE gearbox
 	-- @server
 	-- @param number gear The gear to get the ratio for
-	function ents_methods:acfGearRatio(gear)
+	function ents_methods:aceGearRatio(gear)
 		checkluatype(gear, TYPE_NUMBER)
 		local this = getent(self)
 
@@ -1399,10 +1399,10 @@ do
 		return tonumber(this.GearTable[g]) or 0
 	end
 
-	--- Returns the current torque output for an ACF gearbox
+	--- Returns the current torque output for an ACE gearbox
 	-- @server
 	-- @return number The current torque output
-	function ents_methods:acfTorqueOut()
+	function ents_methods:aceTorqueOut()
 		local this = getent(self)
 
 		if not isGearbox(this) then return 0 end
@@ -1413,11 +1413,11 @@ do
 	--- Sets the gear ratio of a CVT, set to 0 to use built-in algorithm
 	-- @server
 	-- @param number ratio The ratio to set
-	function ents_methods:acfCVTRatio(ratio)
+	function ents_methods:aceCVTRatio(ratio)
 		checkluatype(ratio, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.CVT then return end
@@ -1425,66 +1425,66 @@ do
 		this.CVTRatio = math.Clamp(ratio, 0, 1)
 	end
 
-	--- Sets the current gear for an ACF gearbox
+	--- Sets the current gear for an ACE gearbox
 	-- @server
 	-- @param number gear The gear to switch to
-	function ents_methods:acfShift(gear)
+	function ents_methods:aceShift(gear)
 		checkluatype(gear, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 
 		this:TriggerInput("Gear", gear)
 	end
 
-	--- Cause an ACF gearbox to shift up
+	--- Cause an ACE gearbox to shift up
 	-- @server
-	function ents_methods:acfShiftUp()
+	function ents_methods:aceShiftUp()
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 
 		this:TriggerInput("Gear Up", 1)
 	end
 
-	--- Cause an ACF gearbox to shift down
+	--- Cause an ACE gearbox to shift down
 	-- @server
-	function ents_methods:acfShiftDown()
+	function ents_methods:aceShiftDown()
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 
 		this:TriggerInput("Gear Down", 1)
 	end
 
-	--- Sets the brakes for an ACF gearbox
+	--- Sets the brakes for an ACE gearbox
 	-- @server
 	-- @param number brake The brake value to apply
-	function ents_methods:acfBrake(brake)
+	function ents_methods:aceBrake(brake)
 		checkluatype(brake, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 
 		this:TriggerInput("Brake", brake)
 	end
 
-	--- Sets the left brakes for an ACF gearbox
+	--- Sets the left brakes for an ACE gearbox
 	-- @server
 	-- @param number brake The brake value to apply
-	function ents_methods:acfBrakeLeft(brake)
+	function ents_methods:aceBrakeLeft(brake)
 		checkluatype(brake, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.Dual then return end
@@ -1492,14 +1492,14 @@ do
 		this:TriggerInput("Left Brake", brake)
 	end
 
-	--- Sets the right brakes for an ACF gearbox
+	--- Sets the right brakes for an ACE gearbox
 	-- @server
 	-- @param number brake The brake value to apply
-	function ents_methods:acfBrakeRight(brake)
+	function ents_methods:aceBrakeRight(brake)
 		checkluatype(brake, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.Dual then return end
@@ -1507,28 +1507,28 @@ do
 		this:TriggerInput("Right Brake", brake)
 	end
 
-	--- Sets the clutch for an ACF gearbox
+	--- Sets the clutch for an ACE gearbox
 	-- @server
 	-- @param number clutch The clutch value to apply
-	function ents_methods:acfClutch(clutch)
+	function ents_methods:aceClutch(clutch)
 		checkluatype(clutch, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 
 		this:TriggerInput("Clutch", clutch)
 	end
 
-	--- Sets the left clutch for an ACF gearbox
+	--- Sets the left clutch for an ACE gearbox
 	-- @server
 	-- @param number clutch The clutch value to apply
-	function ents_methods:acfClutchLeft(clutch)
+	function ents_methods:aceClutchLeft(clutch)
 		checkluatype(clutch, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.Dual then return end
@@ -1536,14 +1536,14 @@ do
 		this:TriggerInput("Left Clutch", clutch)
 	end
 
-	--- Sets the right clutch for an ACF gearbox
+	--- Sets the right clutch for an ACE gearbox
 	-- @server
 	-- @param number clutch The clutch value to apply
-	function ents_methods:acfClutchRight(clutch)
+	function ents_methods:aceClutchRight(clutch)
 		checkluatype(clutch, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.Dual then return end
@@ -1551,14 +1551,14 @@ do
 		this:TriggerInput("Right Clutch", clutch)
 	end
 
-	--- Sets the steer ratio for an ACF gearbox
+	--- Sets the steer ratio for an ACE gearbox
 	-- @server
 	-- @param number ratio The steer ratio to apply
-	function ents_methods:acfSteerRate(rate)
+	function ents_methods:aceSteerRate(rate)
 		checkluatype(rate, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.DoubleDiff then return end
@@ -1566,14 +1566,14 @@ do
 		this:TriggerInput("Steer Rate", rate)
 	end
 
-	--- Applies gear hold for an automatic ACF gearbox
+	--- Applies gear hold for an automatic ACE gearbox
 	-- @server
 	-- @param number hold True to hold the current gear
-	function ents_methods:acfHoldGear(hold)
+	function ents_methods:aceHoldGear(hold)
 		checkluatype(hold, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.Auto then return end
@@ -1581,14 +1581,14 @@ do
 		this:TriggerInput("Hold Gear", hold)
 	end
 
-	--- Sets the shift point scaling for an automatic ACF gearbox
+	--- Sets the shift point scaling for an automatic ACE gearbox
 	-- @server
 	-- @param number scale The shift point scaling value
-	function ents_methods:acfShiftPointScale(scale)
+	function ents_methods:aceShiftPointScale(scale)
 		checkluatype(scale, TYPE_NUMBER)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isGearbox(this) then return end
 		if restrictInfo(this) then return end
 		if not this.Auto then return end
@@ -1599,17 +1599,17 @@ end
 
 -- Fuel functions
 do
-	--- Returns true if the entity is an ACF fuel tank
+	--- Returns true if the entity is an ACE fuel tank
 	-- @server
-	-- @return boolean True if the entity is an ACF fuel tank
-	function ents_methods:acfIsFuel()
+	-- @return boolean True if the entity is an ACE fuel tank
+	function ents_methods:aceIsFuel()
 		return isFuel(getent(self))
 	end
 
 	--- Returns true if the current engine requires fuel to run
 	-- @server
 	-- @return boolean True if the current engine requires fuel to run
-	function ents_methods:acfFuelRequired()
+	function ents_methods:aceFuelRequired()
 		local this = getent(self)
 
 		if not isEngine(this) then return false end
@@ -1618,23 +1618,23 @@ do
 		return (this.RequiresFuel and true) or false
 	end
 
-	--- Sets the ACF fuel tank refuel duty status, which supplies fuel to other fuel tanks
+	--- Sets the ACE fuel tank refuel duty status, which supplies fuel to other fuel tanks
 	-- @server
 	-- @param[opt] boolean True to enable refuel duty, false to disable
-	function ents_methods:acfRefuelDuty(on)
+	function ents_methods:aceRefuelDuty(on)
 		checkluatype(on, TYPE_BOOL)
 		local this = getent(self)
 
-		checkpermission(instance, this, "entities.acf")
+		checkpermission(instance, this, "entities.ace")
 		if not isFuel(this) then return end
 
 		this:TriggerInput("Refuel Duty", on and true or false)
 	end
 
-	--- Returns the remaining liters or kilowatt hours of fuel in an ACF fuel tank or engine
+	--- Returns the remaining liters or kilowatt hours of fuel in an ACE fuel tank or engine
 	-- @server
 	-- @return number The remaining fuel
-	function ents_methods:acfFuel()
+	function ents_methods:aceFuel()
 		local this = getent(self)
 
 		if restrictInfo(this) then return 0 end
@@ -1657,10 +1657,10 @@ do
 		return 0
 	end
 
-	--- Returns the amount of fuel in an ACF fuel tank or linked to engine as a percentage of capacity
+	--- Returns the amount of fuel in an ACE fuel tank or linked to engine as a percentage of capacity
 	-- @server
 	-- @return number The fuel percentage
-	function ents_methods:acfFuelLevel()
+	function ents_methods:aceFuelLevel()
 		local this = getent(self)
 
 		if restrictInfo(this) then return 0 end
@@ -1690,7 +1690,7 @@ do
 	--- Returns the current fuel consumption in liters or kilowatts per minute of an engine
 	-- @server
 	-- @return number The fuel consumption
-	function ents_methods:acfFuelUse()
+	function ents_methods:aceFuelUse()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1721,7 +1721,7 @@ do
 	--- Returns the peak fuel consumption in liters per minute or kilowatts of an engine at powerband max, for the current fuel type the engine is using
 	-- @server
 	-- @return number The peak fuel consumption
-	function ents_methods:acfPeakFuelUse()
+	function ents_methods:acePeakFuelUse()
 		local this = getent(self)
 
 		if not isEngine(this) then return 0 end
@@ -1754,10 +1754,10 @@ end
 
 -- Radar functions
 do
-	--- Returns a table containing the outputs you'd get from an ACF tracking radar, missile radar, or IRST
+	--- Returns a table containing the outputs you'd get from an ACE tracking radar, missile radar, or IRST
 	-- @server
 	-- @return table The radar data - check radar wire outputs for key names
-	function ents_methods:acfRadarData()
+	function ents_methods:aceRadarData()
 		local this = getent(self)
 		if not isRadar(this) then
 			SF.Throw("Entity is not a radar", 2)

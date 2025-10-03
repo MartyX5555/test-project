@@ -541,7 +541,7 @@ function ENT:AddMissile()
 
 	missile.ContrapId = ACE_Check( self ) and self.ACE.ContraptionId or 1
 
-	local BulletData = ACFM_CompactBulletData(Crate)
+	local BulletData = ACEM_CompactBulletData(Crate)
 	BulletData.IsShortForm  = true
 	BulletData.Owner		= ply
 	missile:SetBulletData(BulletData)
@@ -628,7 +628,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	Rack:Spawn()
 
 	Owner:AddCount("_ace_rack", Rack)
-	Owner:AddCleanup( "acfmenu", Rack )
+	Owner:AddCleanup( "acemenu", Rack )
 
 	if not ACE_CheckRack( Id ) then
 		Id = "1xRK"
@@ -700,7 +700,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 end
 
-list.Set( "ACFCvars", "ace_rack" , {"id"} )
+list.Set( "ACECvars", "ace_rack" , {"id"} )
 duplicator.RegisterEntityClass("ace_rack", MakeACE_Rack, "Pos", "Angle", "Id")
 
 function ENT:GetInaccuracy()

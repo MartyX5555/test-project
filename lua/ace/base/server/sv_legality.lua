@@ -30,7 +30,7 @@ end
 --[[
 	checks if an ent meets the given requirements for legality
 	MinInertia needs to be mass normalized (normalized=inertia/mass)
-	ballistics doesn't check visclips on anything except prop_physics, so no need to check on acf ents
+	ballistics doesn't check visclips on anything except prop_physics, so no need to check on ace ents
 ]]--
 
 do

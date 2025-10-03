@@ -150,19 +150,19 @@ do
 		Engine:UpdateOverlayText()
 
 		Owner:AddCount("_ace_misc", Engine)
-		Owner:AddCleanup( "acfmenu", Engine )
+		Owner:AddCleanup( "acemenu", Engine )
 
 		ACE_Activate( Engine, 0 )
 
 		return Engine
 	end
-	list.Set( "ACFCvars", "ace_engine", {"id"} )
+	list.Set( "ACECvars", "ace_engine", {"id"} )
 	duplicator.RegisterEntityClass("ace_engine", MakeACE_Engine, "Pos", "Angle", "Id")
 
 end
 
 function ENT:Update( ArgsTable )
-	-- That table is the player data, as sorted in the ACFCvars above, with player who shot,
+	-- That table is the player data, as sorted in the ACECvars above, with player who shot,
 	-- and pos and angle of the tool trace inserted at the start
 
 	if self.Active then
@@ -725,7 +725,7 @@ do
 		["models/engines/transaxial_l.mdl"] = true,
 		["models/engines/transaxial_m.mdl"] = true,
 		["models/engines/transaxial_s.mdl"] = true,
-		["models/engines/transaxial_t.mdl"] = true --mhm acf extras invading...
+		["models/engines/transaxial_t.mdl"] = true --mhm ace extras invading...
 	}
 	]]
 

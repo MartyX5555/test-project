@@ -58,7 +58,7 @@ function ACE_CreateBullet( BulletData )
 end
 
 --[[------------------------------------------------------------------------------------------------
-	global update function where acf updates ALL bullets at once.
+	global update function where ace updates ALL bullets at once.
 	this runs once per tick, handling bullet physics for all bullets in table.
 ]]--------------------------------------------------------------------------------------------------
 function ACE_ManageBullets()
@@ -76,7 +76,7 @@ hook.Remove( "Tick", "ACE_ManageBullets" )
 hook.Add("Tick", "ACE_ManageBullets", ACE_ManageBullets)
 
 --[[------------------------------------------------------------------------------------------------
-	removes the bullet from acf
+	removes the bullet from ace
 ]]--------------------------------------------------------------------------------------------------
 function ACE_RemoveBullet( Index )
 
@@ -88,7 +88,7 @@ end
 
 --[[------------------------------------------------------------------------------------------------
 	checks the visclips of an entity, to determine if round should pass through or not.
-	ignores anything that's not a prop (acf components, seats) or with nil volume (makesphere props)
+	ignores anything that's not a prop (ace components, seats) or with nil volume (makesphere props)
 ]]--------------------------------------------------------------------------------------------------
 
 local ValidClipEnts = {

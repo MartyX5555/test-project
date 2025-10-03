@@ -1,4 +1,4 @@
---visual concept: Here's where should be every acf function
+--visual concept: Here's where should be every ace function
 local ACE = ACE or {}
 
 -- Helper function if a entity has a parent.
@@ -12,8 +12,8 @@ function ACE_GetPhysicalParent( obj )
 	if not IsValid(obj) then return nil end
 
 	--check for fresh cached parent
-	if obj.acfphysparent and ACE.CurTime < obj.acfphysstale then
-		return obj.acfphysparent
+	if obj.acephysparent and ACE.CurTime < obj.acephysstale then
+		return obj.acephysparent
 	end
 
 	local Parent = obj
@@ -23,8 +23,8 @@ function ACE_GetPhysicalParent( obj )
 	end
 
 	--update cached parent
-	obj.acfphysparent = Parent
-	obj.acfphysstale = ACE.CurTime + 10 --when cached parent is considered stale and needs updating
+	obj.acephysparent = Parent
+	obj.acephysstale = ACE.CurTime + 10 --when cached parent is considered stale and needs updating
 
 	return Parent
 end

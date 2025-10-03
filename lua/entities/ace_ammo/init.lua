@@ -353,20 +353,20 @@ do
 			Ammo:UpdateMass()
 
 			Owner:AddCount( "_ace_ammo", Ammo )
-			Owner:AddCleanup( "acfmenu", Ammo )
+			Owner:AddCleanup( "acemenu", Ammo )
 
 			return Ammo
 		end
 	end
 end
 
-list.Set( "ACFCvars", "ace_ammo", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
+list.Set( "ACECvars", "ace_ammo", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
 duplicator.RegisterEntityClass("ace_ammo", MakeACE_Ammo, "Pos", "Angle", "Id", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10" , "RoundData11", "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
 
 
 function ENT:Update( ArgsTable )
 
-	-- That table is the player data, as sorted in the ACFCvars above, with player who shot,
+	-- That table is the player data, as sorted in the ACECvars above, with player who shot,
 	-- and pos and angle of the tool trace inserted at the start
 
 	local msg = "Ammo crate updated successfully!"

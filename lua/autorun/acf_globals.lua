@@ -1,5 +1,3 @@
-
-ACF = ACF or {}
 ACE = ACE or {}
 ACEM = ACEM or {} -- temporal as its expected to be merged with the ACE table.
 ---------------------------------- Version ----------------------------------
@@ -7,10 +5,6 @@ ACEM = ACEM or {} -- temporal as its expected to be merged with the ACE table.
 ACE.Version           = 1000		-- ACE current version
 ACE.CurrentVersion    = 0			-- just defining a variable, do not change
 ACE.Year              = 2024		-- Current Year
-
----------------------------------- Legacy Version ----------------------------------
-
-ACF.Version           = ACE.Version	-- Since some addons still use this variable
 
 ---------------------------------- Global DataTables ----------------------------------
 
@@ -24,14 +18,6 @@ ACE.GSounds           = {}
 ACE.MuzzleFlashes 	  = {}
 ACE.Missiles = {} -- Current flying missiles
 ACE.Guidance = {} -- Guidances
-
----------------------------------- Legacy Global DataTables ----------------------------------
-
-ACF.Weapons           = {}
-ACF.Classes           = {}
-ACF.RoundTypes        = {}
-ACF.IdRounds          = {}	--Lookup tables so i can get rounds classes from clientside with just an integer
-ACF.AmmoBlacklist     = {}
 
 ---------------------------------- Useless/Ignore ----------------------------------
 ACEM.FlareBurnMultiplier        = 0.5
@@ -101,7 +87,7 @@ ACE.BulletIndexLimit      = 5000						-- The maximum number of bullets in flight
 ACE.SkyboxGraceZone       = 100							-- grace zone for the high angle fire
 ACE.SkyboxMinCaliber      = 5
 
-ACE.TraceFilter = {		-- entities that cause issue with acf and should be not be processed at all
+ACE.TraceFilter = {		-- entities that cause issue with ace and should be not be processed at all
 
 	prop_vehicle_crane       = true,
 	prop_dynamic             = true,

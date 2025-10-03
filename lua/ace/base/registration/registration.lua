@@ -2,7 +2,7 @@
 -- Register all the entities that were registered with the functions provided below.
 -- Once you edit this file. Force an addon reload from globals to repopulate.
 
-local ACF = ACF or {}
+local ACE = ACE or {}
 local Weapons = ACE.Weapons
 local Classes = ACE.Classes
 local MuzzlesFlashes = ACE.MuzzleFlashes

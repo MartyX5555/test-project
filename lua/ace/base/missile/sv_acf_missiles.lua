@@ -16,7 +16,7 @@ local ACE = ACE or {}
 	Differences with the default bullet function:
 		1.- It doesnt count traceback, since the missile has no velocity and the bullet will not be hitting the initial launcher.
 ]]--
-function ACFM_BulletLaunch(BulletData)
+function ACEM_BulletLaunch(BulletData)
 
 	-- Increment the index
 	ACE.CurBulletIndex = ACE.CurBulletIndex + 1
@@ -43,12 +43,11 @@ function ACFM_BulletLaunch(BulletData)
 	BulletData.Index		= ACE.CurBulletIndex
 	ACE.Bullet[ACE.CurBulletIndex] = table.Copy(BulletData)	--Place the bullet at the current index pos
 	ACE_BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
-
 end
 
 
 
-function ACFM_ExpandBulletData(bullet)
+function ACEM_ExpandBulletData(bullet)
 
 	local toconvert		= {}
 	toconvert["Id"]		= bullet["Id"]			or "12.7mmMG"
@@ -90,7 +89,7 @@ end
 
 
 
-function ACFM_MakeCrateForBullet(self, bullet)
+function ACEM_MakeCrateForBullet(self, bullet)
 
 	if type(bullet) ~= "table" and bullet.BulletData then
 		self:SetNWString( "Sound", bullet.Sound or (bullet.Primary and bullet.Primary.Sound))
@@ -127,7 +126,7 @@ ACE.FillerDensity =
 
 
 
-function ACFM_CompactBulletData(crate)
+function ACEM_CompactBulletData(crate)
 
 	local compact = {}
 
@@ -177,7 +176,7 @@ function ACE_DoReplicatedPropHit(Missile, Bullet)
 	--Internally used in case of HEAT hitting world, penetrating or not
 	if Retry == "Penetrated" then
 
-		ACFM_ResetVelocity(Bullet)
+		ACEM_ResetVelocity(Bullet)
 
 		if Bullet.OnPenetrated then Bullet.OnPenetrated(Index, Bullet, FlightRes) end
 
@@ -242,7 +241,7 @@ do
 
 	-- Resets the velocity of the bullet based on its current state on the serverside only.
 	-- This will de-sync the clientside effect!
-	function ACFM_ResetVelocity(bdata)
+	function ACEM_ResetVelocity(bdata)
 		local resetFunc = ResetVelocity[bdata.Type] or ResetVelocity["AP"]
 		return resetFunc(bdata)
 	end

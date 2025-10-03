@@ -98,12 +98,12 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 	Radar:UpdateOverlayText()
 
 	Owner:AddCount( "_ace_radar", Radar )
-	Owner:AddCleanup( "acfmenu", Radar )
+	Owner:AddCleanup( "acemenu", Radar )
 
 	return Radar
 
 end
-list.Set( "ACFCvars", "ace_trackingradar", {"id"} )
+list.Set( "ACECvars", "ace_trackingradar", {"id"} )
 duplicator.RegisterEntityClass("ace_trackingradar", MakeACE_TrackingRadar, "Pos", "Angle", "Id" )
 
 function ENT:SetModelEasy(mdl)

@@ -187,7 +187,7 @@ do
 		Gearbox.OutR = Gearbox:WorldToLocal(Gearbox:GetAttachment(Gearbox:LookupAttachment( "driveshaftR" )).Pos)
 
 		Owner:AddCount("_ace_misc", Gearbox)
-		Owner:AddCleanup( "acfmenu", Gearbox )
+		Owner:AddCleanup( "acemenu", Gearbox )
 
 		Gearbox:ChangeGear(1)
 
@@ -204,13 +204,13 @@ do
 
 		return Gearbox
 	end
-	list.Set( "ACFCvars", "ace_gearbox", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
+	list.Set( "ACECvars", "ace_gearbox", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
 	duplicator.RegisterEntityClass("ace_gearbox", MakeACE_Gearbox, "Pos", "Angle", "Id", "Gear1", "Gear2", "Gear3", "Gear4", "Gear5", "Gear6", "Gear7", "Gear8", "Gear9", "Gear0" )
 
 end
 
 function ENT:Update( ArgsTable )
-	-- That table is the player data, as sorted in the ACFCvars above, with player who shot,
+	-- That table is the player data, as sorted in the ACECvars above, with player who shot,
 	-- and pos and angle of the tool trace inserted at the start
 
 	local Id = ArgsTable[4] -- Argtable[4] is the engine ID
@@ -717,7 +717,7 @@ do
 		["models/engines/transaxial_l.mdl"] = true,
 		["models/engines/transaxial_m.mdl"] = true,
 		["models/engines/transaxial_s.mdl"] = true,
-		["models/engines/transaxial_t.mdl"] = true --mhm acf extras invading...
+		["models/engines/transaxial_t.mdl"] = true --mhm ace extras invading...
 	}
 	]]
 

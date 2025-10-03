@@ -85,14 +85,14 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 		IRST:UpdateOverlayText()
 
 		Owner:AddCount( "_ace_radar", IRST )
-		Owner:AddCleanup( "acfmenu", IRST )
+		Owner:AddCleanup( "acemenu", IRST )
 
 		return IRST
 	end
 
 	return false
 end
-list.Set( "ACFCvars", "ace_irst", {"id"} )
+list.Set( "ACECvars", "ace_irst", {"id"} )
 duplicator.RegisterEntityClass("ace_irst", MakeACE_IRST, "Pos", "Angle", "Id" )
 
 function ENT:SetNWNetwork()

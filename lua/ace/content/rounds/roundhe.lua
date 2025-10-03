@@ -148,7 +148,6 @@ function Round.endeffect( _, Bullet )
 		Flash:SetNormal( Bullet.SimFlight:GetNormalized() )
 		Flash:SetRadius( math.max( Radius, 1 ) )
 	util.Effect( "ace_explosion", Flash )
-
 end
 
 function Round.pierceeffect( _, Bullet )
