@@ -6,7 +6,7 @@ function ENT:Initialize()
 
 	self.LightUpdate = CurTime() + 0.05
 	ACE_EmitSound( FlareSound, self, 80, 100, 1 )
-	ParticleEffectAttach("ACFM_Flare",4, self,1)
+	ParticleEffectAttach("ACEM_Flare",4, self,1)
 
 end
 

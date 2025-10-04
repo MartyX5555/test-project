@@ -61,9 +61,7 @@ function SWEP:PrimaryAttack()
 			ent:SetOwner( Gun )
 			increaseDrag(ent, 10)
 
-			if CPPI then
-				ent:CPPISetOwner(owner)
-			end
+			ACE.SetEntityOwner(ent, owner)
 
 			local phys = ent:GetPhysicsObject()
 			phys:SetVelocity( owner:GetAimVector() * 13000 )

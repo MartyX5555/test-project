@@ -5,13 +5,23 @@ include("shared.lua")
 
 ----------------------------------- The Mine Entity -----------------------------------
 do
+	local ACE = ACE or {}
+	if not ACE.Mines then
+		ACE.Mines = {}
+	end
 
 	function ENT:Initialize()
-
 		self.Ready = false
 		self.HasGround = false
 		self.PhysgunDisabled = true
+	end
 
+	function ENT:InitializeOnCollector()
+		ACE.Mines[self] = true
+	end
+
+	function ENT:OnRemoveCollectorData()
+		ACE.Mines[self] = nil
 	end
 
 	local function ArmingMode( Mine )
@@ -161,8 +171,8 @@ end
 ----------------------------------- Mine Global Spawn function -----------------------------------
 do
 	local function CheckMineLimit( Owner )
-		local limit = #ACE.MineOwners[Owner] < GetConVar("acf_mines_max"):GetInt()
-		print(#ACE.MineOwners[Owner], GetConVar("acf_mines_max"):GetInt(), limit)
+		local limit = #ACE.MineOwners[Owner] < GetConVar("ace_mines_max"):GetInt()
+		print(#ACE.MineOwners[Owner], GetConVar("ace_mines_max"):GetInt(), limit)
 		return limit
 	end
 
@@ -212,7 +222,7 @@ do
 
 			Mine.CustomMineDetonation = MineData.customdetonation
 
-			Mine:CPPISetOwner(Entity(0))
+			ACE.SetEntityOwner(Mine, Entity(0))
 			Mine.DamageOwner = Owner -- Done to avoid owners from manipulating the entity, but allowing the damage to be credited by him.
 
 			Mine:SetPos( Pos )

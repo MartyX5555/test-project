@@ -25,7 +25,7 @@ TOOL.ClientConVar[ "data15" ] = 0
 
 TOOL.SelectedEntities = {}
 
-cleanup.Register( "acfmenu" )
+cleanup.Register( "acemenu" )
 
 if CLIENT then
 	language.Add( "Tool.acemenu.listname", ACFTranslation.ACFMenuTool[1] )
@@ -35,14 +35,14 @@ if CLIENT then
 	language.Add( "Tool.acemenu.1", ACFTranslation.ACFMenuTool[5] )
 
 	language.Add( "Undone_ACF Entity", ACFTranslation.ACFMenuTool[6] )
-	language.Add( "Undone_acf_engine",ACFTranslation.ACFMenuTool[7] )
-	language.Add( "Undone_acf_gearbox", ACFTranslation.ACFMenuTool[8] )
-	language.Add( "Undone_acf_ammo", ACFTranslation.ACFMenuTool[9] )
-	language.Add( "Undone_acf_gun", ACFTranslation.ACFMenuTool[10] )
-	language.Add( "SBoxLimit_acf_gun", ACFTranslation.ACFMenuTool[11] )
-	language.Add( "SBoxLimit_acf_rack", ACFTranslation.ACFMenuTool[12] )
-	language.Add( "SBoxLimit_acf_ammo", ACFTranslation.ACFMenuTool[13] )
-	language.Add( "SBoxLimit_acf_sensor", ACFTranslation.ACFMenuTool[14] )
+	language.Add( "Undone_ace_engine",ACFTranslation.ACFMenuTool[7] )
+	language.Add( "Undone_ace_gearbox", ACFTranslation.ACFMenuTool[8] )
+	language.Add( "Undone_ace_ammo", ACFTranslation.ACFMenuTool[9] )
+	language.Add( "Undone_ace_gun", ACFTranslation.ACFMenuTool[10] )
+	language.Add( "SBoxLimit_ace_gun", ACFTranslation.ACFMenuTool[11] )
+	language.Add( "SBoxLimit_ace_rack", ACFTranslation.ACFMenuTool[12] )
+	language.Add( "SBoxLimit_ace_ammo", ACFTranslation.ACFMenuTool[13] )
+	language.Add( "SBoxLimit_ace_sensor", ACFTranslation.ACFMenuTool[14] )
 
 	-- These still need translations, hardcoding as english for now
 	language.Add("tool.acemenu.left", "Create/Update entity")
@@ -68,7 +68,7 @@ if CLIENT then
 	--------------------------------------]]
 	function TOOL.BuildCPanel( CPanel )
 
-		local pnldef_ACFmenu = vgui.RegisterFile( "acf/base/vgui/cl_acemenu_gui.lua" )
+		local pnldef_ACFmenu = vgui.RegisterFile( "ace/base/vgui/cl_acemenu_gui.lua" )
 
 		-- create
 		local DPanel = vgui.CreateFromTable( pnldef_ACFmenu )
@@ -92,9 +92,9 @@ function TOOL:LeftClick( trace )
 
 	if not TypeId then
 		if Type == "Ammo" then
-			entClass = "acf_ammo"
+			entClass = "ace_ammo"
 		elseif Type == "FuelTanks" then
-			entClass = "acf_fueltanks"
+			entClass = "ace_fueltanks"
 		end
 	else
 		entClass = TypeId["ent"]
@@ -111,7 +111,7 @@ function TOOL:LeftClick( trace )
 		debugoverlay.Cross(trace.HitPos, 5, 5, Color(255,0,0), true)
 		debugoverlay.Cross(ArgTable[1], 5, 5, Color(255,0,0), true)
 
-		local ArgList = list.Get("ACFCvars")
+		local ArgList = list.Get("ACECvars")
 
 		-- Reading the list packaged with the ent to see what client CVar it needs
 		for Number, Key in pairs( ArgList[entClass] ) do
@@ -169,7 +169,7 @@ function TOOL:DeselectAll()
 end
 
 local function linkEnts(e1, e2, unlink)
-	if e1.IsMaster and e2:GetClass() ~= "acf_engine" and (e1:GetClass() ~= "acf_gearbox" or e2:GetClass() ~= "acf_gearbox") then
+	if e1.IsMaster and e2:GetClass() ~= "ace_engine" and (e1:GetClass() ~= "ace_gearbox" or e2:GetClass() ~= "ace_gearbox") then
 		if unlink then
 			return e1:Unlink(e2)
 		else

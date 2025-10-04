@@ -1,0 +1,187 @@
+
+local function checkIfDataIsMissile(data)
+
+	local guns = ACE.Weapons.Guns
+	local class = guns[data.Id]
+
+	if not (class and class.gunclass) then
+		if oldDisplayData then
+			oldDisplayData(data)
+		end
+		return
+	end
+
+	local classes = ACE.Classes.GunClass
+	class = classes[class.gunclass]
+
+	return class.type and class.type == "missile"
+
+end
+
+
+
+
+function ACEM_ModifyRoundDisplayFuncs()
+
+	local roundTypes = ACE.RoundTypes
+
+	if not ACEM_RoundDisplayFuncs then
+
+		ACEM_RoundDisplayFuncs = {}
+
+		for k, v in pairs(roundTypes) do
+			ACEM_RoundDisplayFuncs[k] = v.getDisplayData
+		end
+
+	end
+
+
+	for k, v in pairs(roundTypes) do
+
+		local oldDisplayData = ACEM_RoundDisplayFuncs[k]
+
+		if oldDisplayData then
+			v.getDisplayData = function(data)
+
+				if not checkIfDataIsMissile(data) then
+					return oldDisplayData(data)
+				end
+
+				-- NOTE: if these replacements cause side-effects somehow, move to a masking-metatable approach
+
+				local MuzzleVel = data.MuzzleVel
+				local slugMV = data.SlugMV
+				local slugMV2 = data.SlugMV2
+
+				data.MuzzleVel = 0
+				data.SlugMV = (slugMV or 0) * (ACE_GetGunValue(data.Id, "penmul") or 1.2)
+				data.SlugMV2 = (slugMV2 or 0) * (ACE_GetGunValue(data.Id, "penmul") or 1.2)
+
+				local ret = oldDisplayData(data)
+
+				data.SlugMV = slugMV
+				data.SlugMV2 = slugMV2
+				data.MuzzleVel = MuzzleVel
+
+				return ret
+			end
+		end
+	end
+
+end
+
+
+
+
+local function configConcat(tbl, sep)
+
+	local toConcat = {}
+
+	for k, v in pairs(tbl) do
+		toConcat[#toConcat + 1] = tostring(k) .. " = " .. tostring(v)
+	end
+
+	return table.concat(toConcat, sep)
+
+end
+
+
+
+
+function ACEM_ModifyCrateTextFuncs()
+
+	local roundTypes = ACE.RoundTypes
+
+	if not ACEM_CrateTextFuncs then
+
+		ACEM_CrateTextFuncs = {}
+
+		for k, v in pairs(roundTypes) do
+			ACEM_CrateTextFuncs[k] = v.cratetxt
+		end
+
+	end
+
+
+	for k, v in pairs(roundTypes) do
+
+		local oldCratetxt = ACEM_CrateTextFuncs[k]
+
+		if oldCratetxt then
+			v.cratetxt = function(data, crate)
+
+				local origCrateTxt = oldCratetxt(data)
+
+				if not checkIfDataIsMissile(data) then
+					return origCrateTxt
+				end
+
+				local str = { origCrateTxt }
+
+				local Type = IsValid(crate) and crate.RoundId or data.RoundId
+
+				local guidance  = IsValid(crate) and crate.RoundData7 or data.Data7
+				local fuse	= IsValid(crate) and crate.RoundData8 or data.Data8
+
+				if guidance then
+					guidance = ACEM_CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
+					if guidance and guidance.Name ~= "Dumb" then
+						str[#str + 1] = "\n\n"
+						str[#str + 1] = guidance.Name
+						str[#str + 1] = " guidance\n("
+						str[#str + 1] = configConcat(guidance:GetDisplayConfig(Type), ", ")
+						str[#str + 1] = ")"
+					end
+				end
+
+				if fuse then
+					fuse = ACEM_CreateConfigurable(fuse, ACE.Fuse, bdata, "fuses")
+					if fuse then
+						str[#str + 1] = "\n\n"
+						str[#str + 1] = fuse.Name
+						str[#str + 1] = " fuse\n("
+						str[#str + 1] = configConcat(fuse:GetDisplayConfig(), ", ")
+						str[#str + 1] = ")"
+					end
+				end
+
+				return table.concat(str)
+			end
+
+			ACE.RoundTypes[k].cratetxt = v.cratetxt
+		end
+	end
+
+end
+
+
+
+
+function ACEM_ModifyRoundBaseGunpowder()
+
+	local oldGunpowder = ACEM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE_RoundBaseGunpowder
+
+
+	ACE_RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
+
+		PlayerData, Data, ServerData, GUIData = oldGunpowder(PlayerData, Data, ServerData, GUIData)
+
+		Data.Id = PlayerData.Id
+
+		return PlayerData, Data, ServerData, GUIData
+
+	end
+
+
+	ACEM_ModifiedRoundBaseGunpowder = true
+
+end
+
+
+
+timer.Simple(1, ACEM_ModifyRoundBaseGunpowder)
+timer.Simple(1, ACEM_ModifyRoundDisplayFuncs)
+timer.Simple(1, ACEM_ModifyCrateTextFuncs)
+
+
+

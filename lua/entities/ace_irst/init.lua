@@ -47,7 +47,7 @@ end
 
 function MakeACE_IRST(Owner, Pos, Angle, Id)
 
-	if not Owner:CheckLimit("_acf_missileradar") then return false end
+	if not Owner:CheckLimit("_ace_radar") then return false end
 
 	Id = Id or "Small-IRST"
 
@@ -62,7 +62,7 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 
 		IRST.Model				= radar.model
 		IRST.Weight				= radar.weight
-		IRST.ACFName			= radar.name
+		IRST.ACEName			= radar.name
 		IRST.ICone				= radar.viewcone	--Note: intentional. --Recorded initial cone
 		IRST.Cone				= IRST.ICone
 
@@ -78,25 +78,25 @@ function MakeACE_IRST(Owner, Pos, Angle, Id)
 
 		IRST:Spawn()
 
-		IRST:CPPISetOwner(Owner)
+		ACE.SetEntityOwner(IRST, Owner)
 
 		IRST:SetNWNetwork()
 		IRST:SetModelEasy(radar.model)
 		IRST:UpdateOverlayText()
 
-		Owner:AddCount( "_acf_missileradar", IRST )
-		Owner:AddCleanup( "acfmenu", IRST )
+		Owner:AddCount( "_ace_radar", IRST )
+		Owner:AddCleanup( "acemenu", IRST )
 
 		return IRST
 	end
 
 	return false
 end
-list.Set( "ACFCvars", "ace_irst", {"id"} )
+list.Set( "ACECvars", "ace_irst", {"id"} )
 duplicator.RegisterEntityClass("ace_irst", MakeACE_IRST, "Pos", "Angle", "Id" )
 
 function ENT:SetNWNetwork()
-	self:SetNWString( "WireName", self.ACFName )
+	self:SetNWString( "WireName", self.ACEName )
 end
 
 function ENT:SetModelEasy(mdl)
@@ -169,7 +169,7 @@ end
 
 function ENT:GetWhitelistedEntsInCone()
 
-	local ScanArray = ACE.contraptionEnts
+	local ScanArray = ACE.GlobalEntities
 	if not next(ScanArray) then return {} end
 
 	local WhitelistEnts    = {}
@@ -182,10 +182,11 @@ function ENT:GetWhitelistedEntsInCone()
 	local difpos           = vector_origin
 	local dist             = 0
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if not IsValid(scanEnt) then continue end
+		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
 
 		--Why IRST should track itself?
 		if self == scanEnt then continue end
@@ -299,7 +300,7 @@ function ENT:AcquireLock()
 			local angerr = Angle(finalerror, finalerror, finalerror) * randanginac
 
 			--For Owner table
-			local Owner = scanEnt:CPPIGetOwner()
+			local Owner = ACE.GetEntityOwner(scanEnt)
 			local NickName = IsValid(Owner) and Owner:GetName() or ""
 
 

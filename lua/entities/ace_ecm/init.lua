@@ -17,6 +17,11 @@ function ENT:SpawnFunction( _, trace )
 	return ent
 end
 
+local ACE = ACE or {}
+if not ACE.ECMPods then
+	ACE.ECMPods = {} --ECM usage
+end
+
 function ENT:Initialize()
 
 	self.ThinkDelay = 1 --1 second delay, hopefully enough to prevent ECM flashing
@@ -45,6 +50,14 @@ function ENT:Initialize()
 	self.CurrentlyJamming = 0
 end
 
+function ENT:InitializeOnCollector()
+	ACE.ECMPods[Ent] = true
+end
+
+function ENT:OnRemoveCollectorData()
+	ACE.ECMPods[Ent] = nil
+end
+
 --ATGMs tracked
 function ENT:isLegal()
 
@@ -53,7 +66,7 @@ function ENT:isLegal()
 
 	ACE_GetPhysicalParent(self)
 
-	self.IsLegal = self.acfphysparent:IsSolid()
+	self.IsLegal = self.acephysparent:IsSolid()
 
 	return self.IsLegal
 
@@ -147,12 +160,6 @@ function ENT:Think()
 		WireLib.TriggerOutput( self, "Energy", self.JamEnergy )
 	end
 end
-
-function ENT:OnRemove()
-
-end
-
-
 
 
 
