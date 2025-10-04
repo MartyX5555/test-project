@@ -34,7 +34,7 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 			else
 
 				-- remove this ent from children table and move it to the explosive table
-				if ACE.ExplosiveEnts[class] and not ent.Exploding then
+				if ent.IsExplosive and not ent.Exploding then
 
 					table.insert( boom , ent )
 					children[ent] = nil

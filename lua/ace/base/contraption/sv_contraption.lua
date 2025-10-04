@@ -9,37 +9,31 @@ end
 
 --list of classname ents which should be added to the contraption ents.
 local AllowedEnts = {
-	ace_rack                  = true,
-	prop_vehicle_prisoner_pod = true,
-	ace_crewseat_gunner       = true,
-	ace_crewseat_loader       = true,
-	ace_crewseat_driver       = true,
-	ace_rwr_dir               = true,
-	ace_rwr_sphere            = true,
-	ace_radar          = true,
-	ace_opticalcomputer       = true,
-	gmod_wire_expression2     = true,
-	gmod_wire_gate            = true,
-	prop_physics              = true,
-	ace_ecm                   = true,
-	ace_trackingradar         = true,
-	ace_irst                  = true,
-	ace_gun                   = true,
-	ace_ammo                  = true,
-	ace_engine                = true,
-	ace_fueltank              = true,
-	ace_gearbox               = true,
-	primitive_shape           = true,
-	primitive_airfoil         = true,
-	primitive_rail_slider     = true,
-	primitive_slider          = true,
-	primitive_ladder          = true
-}
-
---used mostly by contraption. Put here any entity which contains IsExplosive boolean
-ACE.ExplosiveEnts = {
-	ace_ammo     = true,
-	ace_fueltank = true
+	ace_rack                     = true,
+	prop_vehicle_prisoner_pod    = true,
+	ace_crewseat_gunner          = true,
+	ace_crewseat_loader          = true,
+	ace_crewseat_driver          = true,
+	ace_rwr_dir                  = true,
+	ace_rwr_sphere               = true,
+	ace_radar                    = true,
+	ace_opticalcomputer          = true,
+	gmod_wire_expression2        = true,
+	gmod_wire_gate               = true,
+	prop_physics                 = true,
+	ace_ecm                      = true,
+	ace_trackingradar            = true,
+	ace_irst                     = true,
+	ace_gun                      = true,
+	ace_ammo                     = true,
+	ace_engine                   = true,
+	ace_fueltank                 = true,
+	ace_gearbox                  = true,
+	primitive_shape              = true,
+	primitive_airfoil            = true,
+	primitive_rail_slider        = true,
+	primitive_slider             = true,
+	primitive_ladder             = true
 }
 
 -- whitelist for things that can be turned into debris
@@ -52,13 +46,13 @@ ACE.AllowedDebris = {
 	prop_vehicle_prisoner_pod = true
 }
 
--- insert any new entity to the Contraption List
+-- insert any new entity to the Collector List
 function ACE.AddEntityToCollector(Ent, ForceInsert)
 	if not IsValid(Ent) then return end
 	local class = Ent:GetClass()
 	if not ForceInsert and not AllowedEnts[class] then return end
 
-	if ACE.ExplosiveEnts[class] then
+	if Ent.IsExplosive then
 		ACE.Explosives[Ent] = true
 	end
 
