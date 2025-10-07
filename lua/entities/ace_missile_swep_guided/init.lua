@@ -89,7 +89,7 @@ function ENT:Detonate()
 	local HEWeight = 4
 	local Radius = HEWeight ^ 0.33 * 8 * 39.37
 
-	self.FakeCrate = ents.Create("acf_fakecrate2")
+	self.FakeCrate = ents.Create("ace_fakecrate2")
 	self.FakeCrate:RegisterTo(self.Bulletdata)
 	self.Bulletdata["Crate"] = self.FakeCrate:EntIndex()
 	self:DeleteOnRemove(self.FakeCrate)
@@ -272,7 +272,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density	= (PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type	= "Prop"
 
-	self.ACE.Material	= not isstring(self.ACE.Material) and ACE.BackCompMat[self.ACE.Material] or self.ACE.Material or "RHA"
+	self.ACE.Material	= ACE_VerifyMaterial(self.ACE.Material)
 
 end
 

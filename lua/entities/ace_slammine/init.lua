@@ -47,7 +47,7 @@ function ENT:Boom()
 	util.Effect( "ace_explosion", Flash )
 
 
-	self.FakeCrate = ents.Create("acf_fakecrate2")
+	self.FakeCrate = ents.Create("ace_fakecrate2")
 	self.FakeCrate:RegisterTo(self.Bulletdata)
 	self.Bulletdata["Crate"] = self.FakeCrate:EntIndex()
 	self:DeleteOnRemove(self.FakeCrate)

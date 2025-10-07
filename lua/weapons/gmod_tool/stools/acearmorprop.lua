@@ -17,7 +17,7 @@ CreateClientConVar( "acearmorprop_area", 0, false, true ) -- we don't want this 
 -- Calculates mass, armor, and health given prop area and desired ductility and thickness.
 local function CalcArmor( Area, Ductility, Thickness, Mat )
 
-	Mat = Mat or "RHA"
+	Mat = ACE_VerifyMaterial(Mat)
 
 	local MatData    = ACE_GetMaterialData( Mat )
 	local MassMod    = MatData.massMod
@@ -48,22 +48,17 @@ if CLIENT then
 	surface.CreateFont( "Torchfont", { size = 40, weight = 1000, font = "arial" } )
 
 	--Required in order to update material data inserted in client convars
-	local function ACE_MaterialCheck( Material )
-
-		--Refreshing the data, so we can replace non valid data with the callback.
-		if isnumber(tonumber(Material)) then
-
-			local Mat_ID = math.Clamp(Material + 1, 1,7)
-			Material = ACE.BackCompMat[Mat_ID]
-
+	local function PreMaterilCheck( Material )
+		local NewMaterial = ACE_VerifyMaterial(Material)
+		if NewMaterial ~= Material then
 			--Updates the convar with the proper material
-			RunConsoleCommand( "acearmorprop_material", Material )
+			RunConsoleCommand( "acearmorprop_material", NewMaterial )
 		end
 	end
 
 	--Looks like client convars are not initialized very quickly, so we will wait a bit until they become valid.
 	timer.Simple(0.1, function()
-		ACE_MaterialCheck( GetConVar("acearmorprop_material"):GetString() )
+		PreMaterilCheck( GetConVar("acearmorprop_material"):GetString() )
 	end )
 
 	--Replicated from PANEL:CPanelText(Name, Desc, Font). No idea why this doesnt work with this function out of this file
@@ -95,7 +90,7 @@ if CLIENT then
 		if not MaterialTypes then return end
 
 		local Material = GetConVar("acearmorprop_material"):GetString()
-		local MaterialData  = MaterialTypes[Material] or MaterialTypes["RHA"]
+		local MaterialData  = MaterialTypes[Material]
 
 		ArmorPanelText( "ComboBox", panel, "Material" )
 
@@ -153,6 +148,7 @@ if CLIENT then
 	end
 
 	-- clamp thickness if the change in ductility puts mass out of range
+	cvars.RemoveChangeCallback("acearmorprop_ductility", "ace_ductility")
 	cvars.AddChangeCallback( "acearmorprop_ductility", function( _, _, value )
 
 		local area = GetConVar( "acearmorprop_area" ):GetFloat()
@@ -162,7 +158,7 @@ if CLIENT then
 
 		local ductility = math.Clamp( ( tonumber( value ) or 0 ) / 100, -0.8, 0.8 )
 		local thickness = math.Clamp( GetConVar( "acearmorprop_thickness" ):GetFloat(), 0.1, 5000 )
-		local material  = GetConVar( "acearmorprop_material" ):GetString() or "RHA"
+		local material  = GetConVar( "acearmorprop_material" ):GetString()
 
 		local mass		= CalcArmor( area, ductility, thickness , material )
 
@@ -177,9 +173,10 @@ if CLIENT then
 		thickness = mass * 1000 / ( area + area * ductility ) / 0.78
 		RunConsoleCommand( "acearmorprop_thickness", thickness )
 
-	end )
+	end, "ace_ductility" )
 
 	-- clamp ductility if the change in thickness puts mass out of range
+	cvars.RemoveChangeCallback("acearmorprop_thickness", "ace_thickness")
 	cvars.AddChangeCallback( "acearmorprop_thickness", function( _, _, value )
 
 		local area = GetConVar( "acearmorprop_area" ):GetFloat()
@@ -189,7 +186,7 @@ if CLIENT then
 
 		local thickness = math.Clamp( tonumber( value ) or 0, 0.1, 5000 )
 		local ductility = math.Clamp( GetConVar( "acearmorprop_ductility" ):GetFloat() / 100, -0.8, 0.8 )
-		local material  = GetConVar( "acearmorprop_material" ):GetString() or "RHA"
+		local material  = GetConVar( "acearmorprop_material" ):GetString()
 
 		local mass		= CalcArmor( area, ductility, thickness , material )
 
@@ -204,32 +201,32 @@ if CLIENT then
 		ductility = -( 39 * area * thickness - mass * 50000 ) / ( 39 * area * thickness )
 		RunConsoleCommand( "acearmorprop_ductility", math.Clamp( ductility * 100, -80, 80 ) )
 
-	end )
+	end, "ace_thickness" )
 
 	-- Refresh Armor material info on menu
+	cvars.RemoveChangeCallback("acearmorprop_material", "ace_material")
 	cvars.AddChangeCallback( "acearmorprop_material", function( _, _, value )
 
-			if ToolPanel.panel then
+		local Mat = ACE_VerifyMaterial(value)
+		if Mat ~= value then RunConsoleCommand( "acearmorprop_material", Mat) end
 
-				local MatData = ACE_GetMaterialData( value )
+		if not ToolPanel.panel then return end
 
-				--Use RHA if the choosen material is invalid or doesnt exist
-				if not MatData then RunConsoleCommand( "acearmorprop_material", "RHA" ) return end
+		local MatData = ACE_GetMaterialData( Mat )
 
-				--Too redundant, ik, but looks like the unique way to have it working even when right clicking a prop
-				ToolPanel.ComboMat:SetText(MatData.sname)
+		--Too redundant, ik, but looks like the unique way to have it working even when right clicking a prop
+		ToolPanel.ComboMat:SetText(MatData.sname)
 
-				ArmorPanelText( "ComboTitle", ToolPanel.panel, MatData.name , "DermaDefaultBold" )
-				ArmorPanelText( "ComboDesc" , ToolPanel.panel, MatData.desc .. "\n" )
+		ArmorPanelText( "ComboTitle", ToolPanel.panel, MatData.name , "DermaDefaultBold" )
+		ArmorPanelText( "ComboDesc" , ToolPanel.panel, MatData.desc .. "\n" )
 
-				ArmorPanelText( "ComboCurve", ToolPanel.panel, "Curve : " .. MatData.curve )
-				ArmorPanelText( "ComboMass" , ToolPanel.panel, "Mass scale: " .. MatData.massMod .. "x RHA")
-				ArmorPanelText( "ComboKE"	, ToolPanel.panel, "KE protection : " .. MatData.effectiveness .. "x RHA" )
-				ArmorPanelText( "ComboCHE"  , ToolPanel.panel, "CHEMICAL protection : " .. (MatData.HEATeffectiveness or MatData.effectiveness) .. "x RHA" )
-				ArmorPanelText( "ComboYear" , ToolPanel.panel, "Year : " .. (MatData.year or "unknown") )
+		ArmorPanelText( "ComboCurve", ToolPanel.panel, "Curve : " .. MatData.curve )
+		ArmorPanelText( "ComboMass" , ToolPanel.panel, "Mass scale: " .. MatData.massMod .. "x RHA")
+		ArmorPanelText( "ComboKE"	, ToolPanel.panel, "KE protection : " .. MatData.effectiveness .. "x RHA" )
+		ArmorPanelText( "ComboCHE"  , ToolPanel.panel, "CHEMICAL protection : " .. (MatData.HEATeffectiveness or MatData.effectiveness) .. "x RHA" )
+		ArmorPanelText( "ComboYear" , ToolPanel.panel, "Year : " .. (MatData.year or "unknown") )
 
-			end
-	end )
+	end, "ace_material" )
 end
 
 -- Apply settings to prop and store dupe info
@@ -246,18 +243,18 @@ local function ApplySettings( _, ent, data )
 	if data.Ductility then
 		ent.ACE = ent.ACE or {}
 		ent.ACE.Ductility = data.Ductility / 100
-		duplicator.StoreEntityModifier( ent, "acfsettings", { Ductility = data.Ductility } )
+		duplicator.StoreEntityModifier( ent, "ace_armordata", { Ductility = data.Ductility } )
 	end
 
 	if data.Material then
 		ent.ACE = ent.ACE or {}
 		ent.ACE.Material = data.Material
-		duplicator.StoreEntityModifier( ent, "acfsettings", { Material = data.Material } )
+		duplicator.StoreEntityModifier( ent, "ace_armordata", { Material = data.Material } )
 	end
 
 end
 
-duplicator.RegisterEntityModifier( "acfsettings", ApplySettings )
+duplicator.RegisterEntityModifier( "ace_armordata", ApplySettings )
 duplicator.RegisterEntityModifier( "mass", ApplySettings )
 
 -- Apply settings to prop
@@ -273,7 +270,7 @@ function TOOL:LeftClick( trace )
 
 	local ductility = math.Clamp( self:GetClientNumber( "ductility" ), -80, 80 )
 	local thickness = math.Clamp( self:GetClientNumber( "thickness" ), 0.1, 50000 )
-	local material  = self:GetClientInfo( "material" ) or "RHA"
+	local material  = self:GetClientInfo( "material" )
 
 	local mass		= CalcArmor( ent.ACE.Area, ductility / 100, thickness , material)
 
@@ -299,7 +296,7 @@ function TOOL:RightClick( trace )
 
 	ply:ConCommand( "acearmorprop_ductility " .. (ent.ACE.Ductility or 0) * 100 )
 	ply:ConCommand( "acearmorprop_thickness " .. ent.ACE.MaxArmour )
-	ply:ConCommand( "acearmorprop_material " .. (ent.ACE.Material or "RHA") )
+	ply:ConCommand( "acearmorprop_material " .. ACE_VerifyMaterial(ent.ACE.Material) )
 
 	-- this invalidates the entity and forces a refresh of networked armor values
 	self.AimEntity = nil
@@ -316,12 +313,14 @@ function TOOL:Reload( trace )
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
 
-	local data		= ACE_CalcMassRatio(ent, true)
+	local data = ACE_CalcMassRatio(ent)
+	local con = ACE.GetContraption(ent)
+	if not con then return end
 
-	local total		= ent.acftotal
-	local phystotal	= ent.acfphystotal
-	local parenttotal	= ent.acftotal - ent.acfphystotal
-	local physratio	= 100 * ent.acfphystotal / ent.acftotal
+	local total = con.totalmass
+	local phystotal	= con.acephystotal
+	local parenttotal = con.aceparenttotal
+	local physratio	= con.massratio * 100
 
 	local power		= data.Power
 	local fuel		= data.Fuel
@@ -411,10 +410,8 @@ function TOOL:Think()
 
 	if ACE_Check( ent ) then
 
-		local Mat = ent.ACE.Material or "RHA"
+		local Mat = ACE_VerifyMaterial(ent.ACE.Material)
 		local MatData =  ACE_GetMaterialData( Mat )
-
-		if not MatData then return end
 
 		ply:ConCommand( "acearmorprop_area " .. ent.ACE.Area )
 		self.Weapon:SetNWFloat( "WeightMass", ent:GetPhysicsObject():GetMass() )
@@ -422,7 +419,7 @@ function TOOL:Think()
 		self.Weapon:SetNWFloat( "Armour", ent.ACE.Armour )
 		self.Weapon:SetNWFloat( "MaxHP", ent.ACE.MaxHealth )
 		self.Weapon:SetNWFloat( "MaxArmour", ent.ACE.MaxArmour )
-		self.Weapon:SetNWString( "Material", MatData.sname or "RHA")
+		self.Weapon:SetNWString( "Material", MatData.sname)
 
 	else
 
@@ -454,7 +451,7 @@ function TOOL:DrawHUD()
 	local area		= GetConVar( "acearmorprop_area" ):GetFloat()
 	local ductility	= GetConVar( "acearmorprop_ductility" ):GetFloat()
 	local thickness	= GetConVar( "acearmorprop_thickness" ):GetFloat()
-	local mat		= GetConVar( "acearmorprop_material" ):GetString() or "RHA"
+	local mat		= GetConVar( "acearmorprop_material" ):GetString()
 
 	local MatData	= ACE_GetMaterialData( mat )
 

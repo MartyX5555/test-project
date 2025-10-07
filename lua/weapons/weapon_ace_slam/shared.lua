@@ -191,7 +191,7 @@ function SWEP:PrimaryAttack()
 				--ent:SetAngles(hitNormal:Angle() + Angle(90, 0, 0))
 				ent:Spawn()
 				ent.Bulletdata = self.BulletData
-				owner:AddCleanup( "aceexplosives", ent )
+				owner:AddCleanup( "ACE Mines", ent )
 
 				ACE.SetEntityOwner(ent, Entity(0))
 

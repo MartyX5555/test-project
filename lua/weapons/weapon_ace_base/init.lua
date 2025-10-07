@@ -8,7 +8,7 @@ SWEP.AutoSwitchTo = false
 
 function SWEP:UpdateFakeCrate()
 	if not IsValid(self.FakeCrate) then
-		self.FakeCrate = ents.Create("acf_fakecrate2")
+		self.FakeCrate = ents.Create("ace_fakecrate2")
 	end
 
 	self.FakeCrate:RegisterTo(self)
@@ -16,7 +16,7 @@ function SWEP:UpdateFakeCrate()
 end
 
 function SWEP:ACEFireBullet(Position, Direction)
-	if not GetConVar("acf_gunfire"):GetBool() then return end
+	if not GetConVar("ace_gunfire"):GetBool() then return end
 
 	self.BulletData.Pos = Position
 	self.BulletData.Flight = Direction * self.BulletData.MuzzleVel * 39.37

@@ -25,7 +25,7 @@ end
 
 function ACFIRSTGUICreate( Table )
 
-	if not (ACF and next(ACE.Classes) and next(ACE.Classes.Radar) and Table) then
+	if not (ACE and next(ACE.Classes) and next(ACE.Classes.Radar) and Table) then
 		acemenupanel:CPanelText("Error1", "There was an error trying to gather the information for this sensor", "DermaDefaultBold")
 		acemenupanel:CPanelText("Error3", "If the problem persists, report it to the server owner as soon as possible!")
 		return

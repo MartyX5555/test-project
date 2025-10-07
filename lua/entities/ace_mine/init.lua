@@ -171,8 +171,8 @@ end
 ----------------------------------- Mine Global Spawn function -----------------------------------
 do
 	local function CheckMineLimit( Owner )
-		local limit = #ACE.MineOwners[Owner] < GetConVar("acf_mines_max"):GetInt()
-		print(#ACE.MineOwners[Owner], GetConVar("acf_mines_max"):GetInt(), limit)
+		local limit = #ACE.MineOwners[Owner] < GetConVar("ace_mines_max"):GetInt()
+		print(#ACE.MineOwners[Owner], GetConVar("ace_mines_max"):GetInt(), limit)
 		return limit
 	end
 
