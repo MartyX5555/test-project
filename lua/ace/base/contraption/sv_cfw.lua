@@ -4,14 +4,29 @@ local ACE = ACE or {}
 -------------------------- CFW Massratio Calculation --------------------------
 do
 
-	local HasConstraints = constraint.HasConstraints
+	local function HasValidConstraints(ent)
 
-	local function IsPhysical( ent )
-		return HasConstraints( ent ) or not IsValid(ent:GetParent())
+		local bool = false
+
+		if constraint.HasConstraints(ent) then -- Actually not the same, since nocollide could be here.
+			local contable = constraint.GetTable(ent)
+			for _, con in ipairs( contable ) do
+
+				-- skip shit that is attached by a nocollide
+				if con.Type == "NoCollide" then continue end
+				bool = true
+			end
+		end
+
+		return bool
 	end
 
-	-- Contraption creation also calls the entityadded hook twice
-	hook.Add("cfw.contraption.created", "ACE.PropGroups", function(con)
+
+	local function IsPhysical( ent )
+		return HasValidConstraints( ent ) or not IsValid(ent:GetParent())
+	end
+
+	local function CreateData(con)
 		con.aceparenttotal = 0 -- Parent ent count
 		con.acephystotal = 0 -- Constraint ent count. It could contain parent-constrained props
 
@@ -20,9 +35,13 @@ do
 		con.massratio = 0
 		con.totalmass = 0 -- i know, i know
 		hook.Run("ACE.CFW.ContraptionCreated", con)
-	end)
+	end
 
-	hook.Add("cfw.contraption.entityAdded", "ACE.PropGroups", function(con, ent)
+	-- Contraption creation also calls the entityadded hook twice
+	hook.Add("cfw.contraption.created", "ACE.PropGroups", CreateData)
+	hook.Add("cfw.family.created", "PropGroups", CreateData)
+
+	local function AddData(con, ent)
 		local physObj = ent:GetPhysicsObject()
 		if IsValid(physObj) then
 
@@ -42,9 +61,12 @@ do
 		end
 
 		hook.Run("ACE.CFW.EntityAdded", con, ent)
-	end)
+	end
 
-	hook.Add("cfw.contraption.entityRemoved", "ACE.PropGroups", function(con, ent)
+	hook.Add("cfw.contraption.entityAdded", "ACE.PropGroups", AddData)
+	hook.Add("cfw.family.added", "PropGroups", AddData)
+
+	local function RemoveData(con, ent)
 		local physObj = ent:GetPhysicsObject()
 		if IsValid(physObj) then
 			local mass = physObj:GetMass()
@@ -62,7 +84,10 @@ do
 		end
 
 		hook.Run("ACE.CFW.EntityRemoved", con, ent)
-	end)
+	end
+
+	hook.Add("cfw.contraption.entityRemoved", "ACE.PropGroups", RemoveData)
+	hook.Add("cfw.family.subbed", "ACE.PropGroups", RemoveData)
 
 	local PHYSOBJ = FindMetaTable("PhysObj")
 	if not PHYSOBJ.LegacySetMass then

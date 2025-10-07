@@ -44,9 +44,7 @@ function ACE_CreateBullet( BulletData )
 		end
 	end
 
-	if BulletData.Filter then
-		table.Add( BulletData.Filter, { BulletData.Gun } )
-	else
+	if not BulletData.Filter then
 		BulletData.Filter = { BulletData.Gun }
 	end
 

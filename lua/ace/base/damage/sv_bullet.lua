@@ -164,6 +164,7 @@ function ACE_KEShove(Target, Pos, Vec, KE )
 
 	--Gets the baseplate of target
 	local parent = ACE_GetPhysicalParent(Target)
+	if not ACE_CanCheck(parent) then return end
 	local phys	= parent:GetPhysicsObject()
 	if not IsValid(phys) then return end
 
@@ -182,6 +183,7 @@ function ACE_KEShove(Target, Pos, Vec, KE )
 	if con then
 		massratio = ACE.GetContraptionMassRatio( con )
 	end
+
 	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
 
 end

@@ -36,16 +36,6 @@ local AllowedEnts = {
 	primitive_ladder             = true
 }
 
--- whitelist for things that can be turned into debris
-ACE.AllowedDebris = {
-	ace_gun                   = true,
-	ace_rack                  = true,
-	ace_gearbox               = true,
-	ace_engine                = true,
-	prop_physics              = true,
-	prop_vehicle_prisoner_pod = true
-}
-
 -- insert any new entity to the Collector List
 function ACE.AddEntityToCollector(Ent, ForceInsert)
 	if not IsValid(Ent) then return end

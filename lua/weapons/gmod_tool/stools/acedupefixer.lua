@@ -103,7 +103,7 @@ if CLIENT then
 						isfolder = true
 						current_filepath = directory .. "/" .. folderName
 						current_filename = string.Explode(".", folderName)[1]
-						print("folder chosen!")
+						--print("folder chosen!")
 
 						-- Manually calling the function here.
 						local root = self:GetRoot()

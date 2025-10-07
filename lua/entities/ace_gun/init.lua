@@ -801,13 +801,21 @@ do
 
 
 	local FusedRounds = {
-		HE	= true,
-		HEFS	= true,
-		HESH	= true,
-		HEAT	= true,
-		HEATFS  = true,
-		SM	= true
+		HE        = true,
+		HEFS      = true,
+		HESH      = true,
+		HEAT      = true,
+		HEATFS    = true,
+		SM        = true
 	}
+
+	local function tabletosequential( tbl )
+		local newtbl = {}
+		for k, _ in pairs( tbl ) do
+			table.insert( newtbl, k )
+		end
+		return newtbl
+	end
 
 	function ENT:FireShell()
 
@@ -833,45 +841,54 @@ do
 
 				self.HeatFire = true  --Used by Heat
 
-				local MuzzlePos		= self:LocalToWorld(self.Muzzle)
-				local MuzzleVec		= self:GetForward()
+				local GPos              = self:GetPos()
+				local MuzzlePos         = self:LocalToWorld(self.Muzzle)
+				local MuzzleVec         = self:GetForward()
 
-				local coneAng		= math.tan(math.rad(self:GetInaccuracy()))
-				local randUnitSquare	= (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-				local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
-				local ShootVec		= (MuzzleVec + spread):GetNormalized()
+				local coneAng           = math.tan(math.rad(self:GetInaccuracy()))
+				local randUnitSquare    = (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
+				local spread            = randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
+				local ShootVec          = (MuzzleVec + spread):GetNormalized()
 
 				self:MuzzleEffect( MuzzlePos, MuzzleVec )
 
-				local GPos = self:GetPos()
-				local TestVel = self:WorldToLocal(ACE_GetPhysicalParent(self):GetVelocity() + GPos)
-
 				--Traceback component
+				local TestVel = self:WorldToLocal(ACE_GetPhysicalParent(self):GetVelocity() + GPos)
 				TestVel = self:LocalToWorld(Vector(math.max(TestVel.x,-0.1),TestVel.y,TestVel.z)) - GPos
 
 				self.BulletData.Pos = MuzzlePos + TestVel * self.DeltaTime * 5 --Less clipping on fast vehicles, especially moving perpindicular since traceback doesnt compensate for that. A multiplier of 3 is semi-reliable. A multiplier of 5 guarentees it doesnt happen.
 				self.BulletData.Flight = ShootVec * self.BulletData.MuzzleVel * 39.37 + TestVel
 				self.BulletData.Owner = self.User
+
+				-- We want bullets to hit improper builds of the own plataform but not if the gun has the clear path to shoot.
+				local BulletFilter = { self }
+				local WeaponContraption = ACE.GetContraption(self)
+				if WeaponContraption then
+					local Tracelength = ShootVec * self.Caliber * 100 debugoverlay.Line( MuzzlePos, MuzzlePos + Tracelength, 5, Color(0,255,0) )
+					local PathTrace = util.QuickTrace( MuzzlePos, Tracelength, self )
+					if not PathTrace.Hit then
+						BulletFilter = tabletosequential( WeaponContraption.ents )
+					end
+				end
+				self.BulletData.Filter = BulletFilter
 				self.BulletData.Gun = self
 
-				local Cal = self.Caliber
-
 				--using fusetime via wire will override the ammo fusetime!
-				if Cal < 14 and FusedRounds[self.BulletData.Type] and FusedRounds[self.BulletData.Type] and self.OverrideFuse then
+				if self.Caliber < 14 and FusedRounds[self.BulletData.Type] and FusedRounds[self.BulletData.Type] and self.OverrideFuse then
 					self.BulletData.FuseLength = self.FuseTime
 				end
 
 				self.CreateShell = ACE.RoundTypes[self.BulletData.Type].create
 				self:CreateShell( self.BulletData )
 
-				local Dir = -self:GetForward()
+				-- Recoil
 				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 4000 * 39.37) * (GetConVar("ace_recoilpush"):GetFloat() or 1) -- 3500
-
-				ACE_KEShove(self, self:GetPos() , Dir , KE )
+				ACE_KEShove(self, GPos , -MuzzleVec , KE )
 
 				self.Ready = false
 				self.CurrentShot = math.min(self.CurrentShot + 1, self.MagSize)
 
+				-- Reload
 				if (self.CurrentShot >= self.MagSize) and (self.MagSize > 1) then
 					self:LoadAmmo(self.MagReload, false)
 					self:EmitSound("weapons/357/357_reload4.wav",68,100)

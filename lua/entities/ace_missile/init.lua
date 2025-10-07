@@ -271,11 +271,11 @@ function ENT:CalcFlight()
 			local conLauncher = self.Launcher:GetContraption() or {}
 
 			local DirToHit = (HitPos - Pos):GetNormalized()
-			local AngleDiff = math.deg(math.acos( Dir:Dot(DirToHit) )) print("Angle Diff:", AngleDiff)
+			local AngleDiff = math.deg(math.acos( Dir:Dot(DirToHit) )) --print("Angle Diff:", AngleDiff)
 
 			if conTarget == conLauncher and AngleDiff > 10 then -- Not required to do anything else.
 
-				print("Fraction: ",trace.Fraction)
+				--"Fraction: ",trace.Fraction)
 				local mi, ma = HitTarget:GetCollisionBounds()
 				debugoverlay.BoxAngles(HitTarget:GetPos(), mi, ma, HitTarget:GetAngles(), 5, Color(0,255,0,100))
 

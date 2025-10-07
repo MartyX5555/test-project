@@ -91,10 +91,10 @@ function ACE_Activate( Entity , Recalc )
 	end
 end
 
-function ACE_Check( Entity )
-
+-- Check if an entity can actually be checked, without applying the changes. Done for performance reasons.
+function ACE_CanCheck(Entity)
 	if not IsValid(Entity) then return false end
-	if Entity.ACE_KilledBase then return false end -- ensures dead props are no longer usable
+	if Entity.ACE_Killed then return false end -- ensures dead props are no longer usable
 
 	local physobj = Entity:GetPhysicsObject()
 	if not ( physobj:IsValid() and (physobj:GetMass() or 0) > 0 and not Entity:IsWorld() and not Entity:IsWeapon() ) then return false end
@@ -102,6 +102,13 @@ function ACE_Check( Entity )
 	local Class = Entity:GetClass()
 	if ( Class == "gmod_ghost" or Class == "ace_debris" or Class == "prop_ragdoll" or string.find( Class , "func_" )  ) then return false end
 
+	return true
+end
+
+function ACE_Check( Entity )
+	if not ACE_CanCheck(Entity) then return false end
+
+	local physobj = Entity:GetPhysicsObject()
 	if not Entity.ACE or (Entity.ACE and isnumber(Entity.ACE.Material)) then
 		ACE_Activate( Entity )
 	elseif Entity.ACE.Mass ~= physobj:GetMass() then
@@ -349,8 +356,8 @@ function ACE_GetAllChildren( ent, ResultTable, IgnoreBase )
 
 	local ChildTable = ent:GetChildren()
 	for _, v in pairs( ChildTable ) do
-		ResultTable[ v ] = v
 		ACE_GetAllChildren( v, ResultTable )
+		ResultTable[ v ] = v
 	end
 
 	return ResultTable
