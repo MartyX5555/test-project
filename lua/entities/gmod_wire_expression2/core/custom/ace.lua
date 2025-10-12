@@ -563,7 +563,7 @@ do
 		if not isEngine(this) then return self:throw("Entity is not a valid ACE engine", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		return this.Throttle
+		return this.Throttle * 100
 	end
 
 	-- Sets the throttle of an ACE engine
