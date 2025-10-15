@@ -409,8 +409,6 @@ do
 
 end
 
-
-
 function ACE_CalculateHERadius( HEWeight )
 	local Radius = HEWeight ^ 0.33 * 8 * 39.37
 	return Radius
