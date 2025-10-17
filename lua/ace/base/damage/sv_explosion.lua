@@ -23,7 +23,6 @@ local function FindPropsInExplosionRadius( Hitpos, Radius )
 	local Table = {}
 	for _, ent in pairs( ents.FindInSphere( Hitpos, Radius ) ) do
 		--skip any undesired ent
-		if ent.ACE_KilledBase then continue end
 		if ACE.HEFilter[ent:GetClass()] then continue end
 		if not ent:IsSolid() then continue end
 
