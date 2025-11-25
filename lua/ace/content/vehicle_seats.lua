@@ -2,7 +2,7 @@
 local Category = "Armoured Combat Framework" -- If ACF3 or ACE, the vehicles should be in the same category
 
 -- There is ACF or ACF3 installed
-if ACF then
+if not ACF then
 
 	local function HandleACFPodAnimation( _, player )
 		return player:LookupSequence("drive_pd")
