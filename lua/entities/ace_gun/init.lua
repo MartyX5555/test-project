@@ -817,6 +817,7 @@ do
 		return newtbl
 	end
 
+	local MaxvisclipPerBullet = 50
 	function ENT:FireShell()
 
 		local CanDo = hook.Run("ACE_FireShell", self, self.BulletData )
@@ -866,6 +867,20 @@ do
 				if WeaponContraption then
 					local Tracelength = ShootVec * self.Caliber * 100 debugoverlay.Line( MuzzlePos, MuzzlePos + Tracelength, 5, Color(0,255,0) )
 					local PathTrace = util.QuickTrace( MuzzlePos, Tracelength, self )
+					local Retry = true
+					local visCount = 0
+
+					-- we need also check for visclips in the way
+					while Retry and visCount < MaxvisclipPerBullet do
+						Retry = false
+						if ACE_CheckClips( PathTrace.Entity, PathTrace.HitPos ) then
+							table.insert( BulletFilter, PathTrace.Entity )
+							PathTrace = util.QuickTrace( MuzzlePos, Tracelength, BulletFilter )
+							Retry = true
+							visCount = visCount + 1
+						end
+					end
+
 					if not PathTrace.Hit then
 						BulletFilter = tabletosequential( WeaponContraption.ents )
 					end
