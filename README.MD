@@ -13,10 +13,6 @@ ACE requires you have the following addons before using:
 * **[Wiremod](https://steamcommunity.com/workshop/filedetails/?id=160250458)** 
 * **[Advanced Duplicator 2](https://steamcommunity.com/sharedfiles/filedetails/?id=773402917&searchtext=advanced+duplicator)** (almost essential for using ACE. You are granted with essentially necessary for beginners dupes/tools that are only visible with this tool as well as an ability to save your contraptions )
 
-## Workshop Edition
-
-For a more straightforward installation process, consider grabbing the ACE Workshop edition. It's user-friendly and it includes automatic updates. [Get it here](https://steamcommunity.com/sharedfiles/filedetails/?id=2512558788).
-
 ## Manual Installation
 
 You can clone this repository using **[Github Desktop](https://desktop.github.com/)**, **[GitKraken](https://www.gitkraken.com/)**  or downloading the Zip which is provided from green button "Code"
