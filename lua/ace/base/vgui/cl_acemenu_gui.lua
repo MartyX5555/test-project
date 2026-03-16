@@ -583,8 +583,10 @@ function ACFCLGUICreate()
 	local DupeSection = vgui.Create( "DForm" )
 	DupeSection:SetName("Dupe Loader")
 
-	DupeSection:Help( "If for some reason, your ace dupe folder was damaged or deleted, you can restore them here." )
-	DupeSection:Button("Restore ace dupe folders", "acf_dupes_remount" )
+	DupeSection:CheckBox("Deploy dupes", "ace_dupes_deploy")
+	DupeSection:ControlHelp( "If enabled, allow dupes to be created on the advdupe2 folder. If you dont want them, disable this and delete the dupes on the advdupe2 folder, ACE will ignore them and wont remount them again. If you want to remount them, just delete this convar and restart your session or use the ace_dupes_remount command." )
+	DupeSection:Help( "If you deleted one of the dupes, you can restore them here." )
+	DupeSection:Button("Restore ace dupe folders", "ace_dupes_remount" )
 
 	acemenupanel.CustomDisplay:AddItem( DupeSection )
 
