@@ -135,7 +135,7 @@ do
 	function ACE.GetContraption( ent )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return end
 		if not IsEntity(ent) or not IsValid(ent) then return end
-		return ent:GetContraption()
+		return ent:CFW_GetContraption()
 	end
 
 	function ACE.GetContraptionaceTotalMass( con )
