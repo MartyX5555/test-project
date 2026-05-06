@@ -267,8 +267,8 @@ function ENT:CalcFlight()
 			local IsPart = false
 			local HitPos = trace.HitPos
 			local HitTarget  = trace.Entity
-			local conTarget	= HitTarget:GetContraption() or {}
-			local conLauncher = self.Launcher:GetContraption() or {}
+			local conTarget	= ACE.GetContraption(HitTarget) or {}
+			local conLauncher = ACE.GetContraption(self.Launcher) or {}
 
 			local DirToHit = (HitPos - Pos):GetNormalized()
 			local AngleDiff = math.deg(math.acos( Dir:Dot(DirToHit) )) --print("Angle Diff:", AngleDiff)
