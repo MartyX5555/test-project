@@ -6,6 +6,10 @@ local function CanDeploy()
 	return true
 end
 
+-- dev note: If theres a reason to move the container, ensure to let the addon know here.
+local folderPath = "materials/ace/vehicles/"
+local dupeformat = ".vmt"
+
 	-- Explanation:
 	-- If the dupespawned file doesnt exist, that means all the dupes must be loaded.
 	-- If the dupespawned file exists, we only update the dupes that exists on the advdupe2 folder, and ignore those that the user could remove. Completely abort the process if the user has removed all the dupes, since that means they dont want them at all.
@@ -19,11 +23,11 @@ function ACE_Dupes_Refresh()
 		return false, "Advanced Duplicator 2 is not installed. Dupes won't be loaded."
 	end
 
-	if not file.Exists("ace/content/vehicles", "lcl") then
+	if not file.Exists(folderPath, "GAME") then
 		return false, "Unable to load the dupes. Please verify the addon installation. If this persists, report this to the developers."
 	end
 
-	local files = file.Find("ace/content/vehicles/acedupe_*.lua", "lcl")
+	local files = file.Find(folderPath .. "acedupe_*" .. dupeformat, "GAME")
 	if not next(files) then
 		return false, "No dupes were found inside of the vehicles folder. Please verify the addon installation. If this persists, report this to the developers."
 	end
@@ -31,10 +35,10 @@ function ACE_Dupes_Refresh()
 	local Status = 0 -- 0 = No changes, 1 = Deployed, 2 = Updated
 	for _, txtfile in ipairs(files) do
 
-		local file_content        = file.Read("ace/content/vehicles/" .. txtfile, "lcl") or ""
+		local file_content        = file.Read(folderPath .. txtfile, "GAME") or ""
 		local file_naming         = string.Explode("_", txtfile)
 		local file_name_concat    = table.concat( file_naming, " ", 3) -- Parses the file name
-		local file_name           = string.Replace( file_name_concat, ".lua", "" )
+		local file_name           = string.Replace( file_name_concat, dupeformat, "" )
 
 		local file_directory   = "advdupe2/ace " .. file_naming[2]
 		local final_path = file_directory .. "/" .. file_name .. ".txt"

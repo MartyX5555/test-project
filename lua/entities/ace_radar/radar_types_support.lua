@@ -2,6 +2,18 @@
 ACEM.RadarBehaviour = ACEM.RadarBehaviour or {}
 ACEM.DefaultRadarSound = ACEM.DefaultRadarSound or "buttons/button16.wav"
 
+function ACEM_ConeContainsPos(conePos, coneDir, degs, pos)
+
+	local minDot = math.cos( math.rad(degs) )
+
+	local testDir = pos - conePos
+	testDir:Normalize()
+
+	local dot = coneDir:Dot(testDir)
+
+	return dot >= minDot
+end
+
 function ACEM_GetMissilesInCone(pos, dir, degs)
 
 	local ret = {}
