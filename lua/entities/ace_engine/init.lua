@@ -642,7 +642,7 @@ function ENT:CalcRPM()
 		if HealthRatio > 0.025 then
 			local PhysObj = self:GetPhysicsObject()
 			local Mass = PhysObj:GetMass()
-			HitRes = ACE_Damage(self, {
+			ACE_Damage(self, {
 				Kinetic = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100,
 				Momentum = 0,
 				Penetration = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100

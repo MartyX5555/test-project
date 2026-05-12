@@ -9,6 +9,7 @@ local ACE = ACE or {}
 
 ACE.radarEntities = ACE.radarEntities or {} --for tracking radar usage
 ACE.radarIDs = ACE.radarIDs or {} --ID radar purpose
+ACE.ECMPods = ACE.ECMPods or {} --for jamming radars
 
 function ENT:Initialize()
 

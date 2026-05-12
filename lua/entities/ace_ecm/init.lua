@@ -18,9 +18,7 @@ function ENT:SpawnFunction( _, trace )
 end
 
 local ACE = ACE or {}
-if not ACE.ECMPods then
-	ACE.ECMPods = {} --ECM usage
-end
+ACE.ECMPods = ACE.ECMPods or {} --ECM usage
 
 function ENT:Initialize()
 
@@ -51,11 +49,11 @@ function ENT:Initialize()
 end
 
 function ENT:InitializeOnCollector()
-	ACE.ECMPods[Ent] = true
+	ACE.ECMPods[self] = true
 end
 
 function ENT:OnRemoveCollectorData()
-	ACE.ECMPods[Ent] = nil
+	ACE.ECMPods[self] = nil
 end
 
 --ATGMs tracked

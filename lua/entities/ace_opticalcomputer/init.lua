@@ -18,9 +18,8 @@ function ENT:SpawnFunction( _, trace )
 end
 
 local ACE = ACE or {}
-if not ACE.Opticals then
-	ACE.Opticals = {}
-end
+ACE.Opticals = ACE.Opticals or {}
+
 
 function ENT:Initialize()
 
@@ -42,7 +41,7 @@ end
 
 function ENT:Think()
 	self:GetPhysicsObject():SetMass(65)
-	self:NextThink(curTime() + 0.5)
+	self:NextThink(CurTime() + 0.5)
 	return true
 end
 
