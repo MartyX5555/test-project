@@ -5,6 +5,8 @@ AddCSLuaFile( "cl_init.lua" )
 
 include("shared.lua")
 
+CreateConVar("sbox_max_ace_engine", 12)				-- Engine limit
+
 local EngineTable = ACE.Weapons.Engines
 local FuelLinkDistBase = 512
 
@@ -76,7 +78,7 @@ do
 
 	function MakeACE_Engine(Owner, Pos, Angle, Id)
 
-		if not Owner:CheckLimit("_ace_misc") then return false end
+		if not Owner:CheckLimit("_ace_engine") then return false end
 
 		local Engine = ents.Create( "ace_engine" )
 		if not IsValid( Engine ) then return false end
@@ -149,7 +151,7 @@ do
 		Engine:SetNWString( "WireName", Lookup.name )
 		Engine:UpdateOverlayText()
 
-		Owner:AddCount("_ace_misc", Engine)
+		Owner:AddCount("_ace_engine", Engine)
 		Owner:AddCleanup( "acemenu", Engine )
 
 		ACE_Activate( Engine, 0 )

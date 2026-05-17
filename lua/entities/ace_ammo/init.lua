@@ -6,6 +6,8 @@ include("shared.lua")
 
 DEFINE_BASECLASS("ace_scalability") -- Required to get the local BaseClass. A workaround uses this below
 
+CreateConVar("sbox_max_ace_ammo", 50)					-- ammo limit
+
 local ACE = ACE or {}
 if not ACE.AmmoCrates then
 	ACE.AmmoCrates = {}

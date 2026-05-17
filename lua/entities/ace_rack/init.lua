@@ -7,6 +7,8 @@ include("shared.lua")
 
 DEFINE_BASECLASS( "base_wire_entity" )
 
+CreateConVar("sbox_max_ace_rack", 12) -- Racks limit
+
 local GunClasses	= ACE.Classes.GunClass
 local RackClasses	= ACE.Classes.Rack
 

@@ -3,6 +3,11 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
+CreateConVar("sbox_max_ace_gun", 24)					-- Gun limit
+CreateConVar("sbox_max_ace_rapidgun", 4)				-- Guns like RACs, MGs, and ACs
+CreateConVar("sbox_max_ace_largegun", 2)				-- Guns with a caliber above 100mm
+CreateConVar("sbox_max_ace_smokelauncher", 20)			-- smoke launcher limit
+
 local GunClasses = ACE.Classes.GunClass
 
 local GunTable = ACE.Weapons.Guns
