@@ -323,11 +323,17 @@ function ENT:DoFlight(ToPos, ToDir)
 	local setPos = ToPos or self.CurPos
 	local setDir = ToDir or self.CurDir
 
-	self:SetPos(setPos)
-	self:SetAngles(setDir:Angle())
+	local phys = self:GetPhysicsObject()
+	if IsValid(phys) then
+		phys:SetPos(setPos)
+		phys:SetAngles(setDir:Angle())
+		phys:Wake()
+	else
+		self:SetPos(setPos)
+		self:SetAngles(setDir:Angle())
+	end
 
 	self.BulletData.Pos = setPos
-
 end
 
 --===========================================================================================

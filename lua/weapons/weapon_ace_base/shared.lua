@@ -90,6 +90,8 @@ function SWEP:SetupDataTables()
 			owner:SetCanZoom(not zoom) --Block HL2 suit zoom
 
 			timer.Simple(0, function() --If player is in a vehicle you need to delay by 1 tick because ???
+				if not IsValid(owner) then return end
+				if not IsValid(self) then return end
 				owner:SetFOV(zoom and self.ZoomFOV or 0, 0.25)
 			end)
 

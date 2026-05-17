@@ -267,7 +267,7 @@ function ModifyACFMenu(panel)
 
 	end
 
-	local rootNodes = HomeNode.ChildNodes:GetChildren()  --lets find all our folder inside of Main menu
+	local rootNodes = acemenupanel.HomeNode.ChildNodes:GetChildren()  --lets find all our folder inside of Main menu
 
 	local gunsNode
 

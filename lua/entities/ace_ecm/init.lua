@@ -25,7 +25,6 @@ function ENT:Initialize()
 	self.ThinkDelay = 1 --1 second delay, hopefully enough to prevent ECM flashing
 
 	self.Active = false
-	curTime = 0
 
 	self:SetModel( "models/missiles/ecm.mdl" )
 	self:PhysicsInit(SOLID_VPHYSICS)
@@ -62,9 +61,8 @@ function ENT:isLegal()
 	if self:GetPhysicsObject():GetMass() < 1000 then return false end
 	if not self:IsSolid() then return false end
 
-	ACE_GetPhysicalParent(self)
-
-	self.IsLegal = self.acephysparent:IsSolid()
+	local Base = ACE_GetPhysicalParent(self)
+	self.IsLegal = Base:IsSolid()
 
 	return self.IsLegal
 

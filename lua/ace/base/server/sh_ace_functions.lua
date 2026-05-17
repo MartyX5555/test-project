@@ -211,15 +211,12 @@ do
 	end
 end
 
---Checks if theres new versions for ACE
-function ACE_UpdateChecking( )
-	http.Fetch("https://raw.githubusercontent.com/RedDeadlyCreeper/ArmoredCombatExtended/master/lua/autorun/acf_globals.lua",function(contents)
-		if true then return end
+local function OnhttpSucess(contents)
 		--maybe not the best way to get git but well......
 		str = tostring("String:" .. contents)
 		i,k = string.find(str,"ACE.Version =")
 
-		local rev = tonumber(string.sub(str,k + 2,k + 4)) or 0
+		local rev = tonumber((string.match(str, "ACE%.Version%s*=%s*(%d+)")) or 0)
 
 		if rev and ACE.Version == rev  and rev ~= 0 then
 
@@ -239,12 +236,17 @@ function ACE_UpdateChecking( )
 
 		end
 		ACE.CurrentVersion = rev
+end
 
-	end, function()
+local function OnhttpFail()
 		print("[ACE | ERROR]- Unable to find the latest version! No internet available.")
 
 		ACE.CurrentVersion = 0
-	end)
+end
+
+--Checks if theres new versions for ACE
+function ACE_UpdateChecking( )
+	http.Fetch("https://raw.githubusercontent.com/MartyX5555/test-project/refs/heads/main/lua/autorun/ace_loader.lua",OnhttpSucess, OnhttpFail)
 end
 
 

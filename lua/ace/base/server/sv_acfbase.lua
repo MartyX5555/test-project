@@ -17,7 +17,6 @@ function ACE_GetPhysicalParent( obj )
 	end
 
 	local Parent = obj
-
 	while ACE.HasParent(Parent) do
 		Parent = Parent:GetParent()
 	end

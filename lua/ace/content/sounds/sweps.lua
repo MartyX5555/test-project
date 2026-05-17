@@ -32,7 +32,7 @@ else
 
 		local swep = net.ReadEntity()
 		local propmass = net.ReadFloat()
-		if IsValid(swep) then
+		if IsValid(swep) and swep.Primary then
 			if game.SinglePlayer() then
 				swep.ACEPropmass = propmass
 				swep:DoSPClientEffects()

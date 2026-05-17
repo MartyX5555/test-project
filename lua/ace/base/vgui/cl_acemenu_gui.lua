@@ -38,7 +38,7 @@ end
 
 PANEL = PANEL or {}
 
-function PANEL:Init( )
+function PANEL:Init()
 
 	acemenupanel = self.Panel
 
@@ -48,21 +48,16 @@ function PANEL:Init( )
 	-- --Weapon Select
 	local TreePanel = vgui.Create( "DTree", self )
 
---[[=========================
-	Table distribution
-]]--=========================
-
-	self.GunClasses		= {}
-	self.MisClasses		= {}
-	self.ModClasses		= {}
-
-	local FinalContainer = {}
+	-- --Table Distribution
+	local GunClasses		= {}
+	local MisClasses		= {}
+	local ModClasses		= {}
 
 	for ID,Table in pairs(Classes) do
 
-		self.GunClasses[ID] = {}
-		self.MisClasses[ID] = {}
-		self.ModClasses[ID] = {}
+		GunClasses[ID] = {}
+		MisClasses[ID] = {}
+		ModClasses[ID] = {}
 
 		for ClassID,Class in pairs(Table) do
 
@@ -71,24 +66,25 @@ function PANEL:Init( )
 			--Table content for Guns folder
 			if Class.type == "Gun" then
 
-				table.insert(self.GunClasses[ID], Class)
+				table.insert(GunClasses[ID], Class)
 			--Table content for Missiles folder
 			elseif Class.type == "missile" then
 
-				table.insert(self.MisClasses[ID], Class)
+				table.insert(MisClasses[ID], Class)
 			else
 
-				table.insert(self.ModClasses[ID], Class)
+				table.insert(ModClasses[ID], Class)
 			end
 
 		end
 
-		table.sort(self.GunClasses[ID], function(a,b) return a.id < b.id end )
-		table.sort(self.MisClasses[ID], function(a,b) return a.id < b.id end )
-		table.sort(self.ModClasses[ID], function(a,b) return a.id < b.id end )
+		table.sort(GunClasses[ID], function(a,b) return a.id < b.id end )
+		table.sort(MisClasses[ID], function(a,b) return a.id < b.id end )
+		table.sort(ModClasses[ID], function(a,b) return a.id < b.id end )
 
 	end
 
+	local FinalContainer = {}
 	for ID,Table in pairs(ACEEnts) do
 
 		FinalContainer[ID] = {}
@@ -108,9 +104,9 @@ function PANEL:Init( )
 
 	------------------- ACE information folder -------------------
 
-
-	HomeNode = TreePanel:AddNode( "ACE Main Menu" , MainMenuIcon ) --Main Menu folder
+	local HomeNode = TreePanel:AddNode( "ACE Main Menu" , MainMenuIcon ) --Main Menu folder
 	HomeNode:SetExpanded(true)
+
 	HomeNode.mytable = {}
 	HomeNode.mytable.guicreate = (function( _, Table ) ACFHomeGUICreate( Table ) end or nil)
 	HomeNode.mytable.guiupdate = (function( _, Table ) ACFHomeGUIUpdate( Table ) end or nil)
@@ -119,11 +115,13 @@ function PANEL:Init( )
 		acemenupanel:UpdateDisplay(self.mytable)
 	end
 
+	acemenupanel.HomeNode = HomeNode
+
 	------------------- Guns folder -------------------
 
 	local Guns = HomeNode:AddNode( "Guns" , "icon16/attach.png" ) --Guns folder
 
-	for _,Class in pairs(self.GunClasses["GunClass"]) do
+	for _,Class in pairs(GunClasses["GunClass"]) do
 
 		local SubNode = Guns:AddNode( Class.name or "No Name" , ItemIcon )
 
@@ -145,7 +143,7 @@ function PANEL:Init( )
 
 	local Missiles = HomeNode:AddNode( "Missiles" , "icon16/wand.png" ) --Missiles folder
 
-	for _,Class in pairs(self.MisClasses["GunClass"]) do
+	for _,Class in pairs(MisClasses["GunClass"]) do
 
 		local SubNode = Missiles:AddNode( Class.name or "No Name" , ItemIcon )
 
@@ -329,24 +327,8 @@ function PANEL:Init( )
 
 	end
 
-	--[[
-	do
-		-- Support button
-		
-		local Contact =  TreePanel:AddNode( "Contact Us" , "icon16/feed.png" ) --Options folder
-		Contact.mytable = {}
-
-		Contact.mytable.guicreate = (function( _, Table ) ContactGUICreate( Table ) end or nil)
-
-		function Contact:DoClick()
-			acemenupanel:UpdateDisplay(self.mytable)
-		end
-		
-	end]]
-
 	self.WeaponSelect = TreePanel
 
-	http.Fetch("http://raw.github.com/RedDeadlyCreeper/ArmoredCombatExtended/master/changelog.txt", ACFChangelogHTTPCallBack, function() end)
 end
 
 function PANEL:UpdateDisplay( Table )
@@ -401,42 +383,27 @@ end
 	ACE information folder content
 ]]--=========================
 function ACFHomeGUICreate()
-
 	if not acemenupanel.CustomDisplay then return end
 
-	local versionstring
+	local currentpanel = acemenupanel.CustomDisplay
 
-	if ACE.CurrentVersion and ACE.CurrentVersion > 0 then
-	if ACE.Version >= ACE.CurrentVersion then
-		versionstring = "Up To Date"
-		color = Color(0,225,0,255)
-	else
-		versionstring = "Out Of Date"
-		color = Color(225,0,0,255)
+	local versiontext = "Retrieving versions.... Please wait.\n\n"
+	local labelversion = vgui.Create( "DLabel" )
+	labelversion:SetText(versiontext)
+	labelversion:SetTextColor( Color( 0, 0, 0) )
+	labelversion:SizeToContents()
 
-	end
-	else
-	versionstring = "No internet Connection available!"
-	color = Color(225,0,0,255)
-	end
+	currentpanel:AddItem( labelversion )
+	acemenupanel["CData"]["VersionInit"] = labelversion
 
-	versiontext = "GitHub Version: " .. ACE.CurrentVersion .. "\nCurrent Version: " .. ACE.Version
+	local labelversionstatus = vgui.Create( "DLabel" )
+	labelversionstatus:SetFont("Trebuchet18")
+	labelversionstatus:SetText("\n\n")
+	labelversionstatus:SetTextColor( Color( 0, 0, 0) )
+	labelversionstatus:SizeToContents()
 
-	acemenupanel["CData"]["VersionInit"] = vgui.Create( "DLabel" )
-	acemenupanel["CData"]["VersionInit"]:SetText(versiontext)
-	acemenupanel["CData"]["VersionInit"]:SetTextColor( Color( 0, 0, 0) )
-	acemenupanel["CData"]["VersionInit"]:SizeToContents()
-	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["VersionInit"] )
-
-
-	acemenupanel["CData"]["VersionText"] = vgui.Create( "DLabel" )
-
-	acemenupanel["CData"]["VersionText"]:SetFont("Trebuchet18")
-	acemenupanel["CData"]["VersionText"]:SetText("ACE Is " .. versionstring .. "!\n\n")
-	acemenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
-	acemenupanel["CData"]["VersionText"]:SizeToContents()
-
-	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["VersionText"] )
+	currentpanel:AddItem( labelversionstatus )
+	acemenupanel["CData"]["VersionText"] = labelversionstatus
 	-- end version
 
 	acemenupanel:CPanelText("Header", "Changelog")  --changelog screen
@@ -445,43 +412,22 @@ function ACFHomeGUICreate()
 	Changelog table maker
 ]]--=========================
 
-	if acemenupanel.Changelog then
-	acemenupanel["CData"]["Changelist"] = vgui.Create( "DTree" )
+	local changelist = vgui.Create("DTree")
+	changelist:SetSize( currentpanel:GetWide(), 60 )
 
-	for i = 0, table.maxn(acemenupanel.Changelog) - 100 do
+	currentpanel:AddItem( changelist )
+	acemenupanel["CData"]["Changelist"] = changelist
 
-		local k = table.maxn(acemenupanel.Changelog) - i
+	currentpanel:PerformLayout()
 
-		local Node = acemenupanel["CData"]["Changelist"]:AddNode( "Rev " .. k )
-			Node.mytable = {}
-			Node.mytable["rev"] = k
-				function Node:DoClick()
-
-				acemenupanel:UpdateAttribs( Node.mytable )
-
-			end
-		Node.Icon:SetImage( "icon16/newspaper.png" )
-
-	end
-
-	acemenupanel.CData.Changelist:SetSize( acemenupanel.CustomDisplay:GetWide(), 60 )
-
-	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["Changelist"] )
-
-	acemenupanel.CustomDisplay:PerformLayout()
-
-	acemenupanel:UpdateAttribs( {rev = table.maxn(acemenupanel.Changelog)} )
-	end
-
+	http.Fetch("http://raw.github.com/RedDeadlyCreeper/ArmoredCombatExtended/master/changelog.txt", UpdateACFHomeGUI, function() end)
 end
 
 --[[=========================
-	ACE information folder content updater
+	Changelog.txt
 ]]--=========================
-function ACFHomeGUIUpdate( Table )
 
-	acemenupanel:CPanelText("Changelog", acemenupanel.Changelog[Table["rev"]])
-	acemenupanel.CustomDisplay:PerformLayout()
+function UpdateACFHomeGUI(contents)
 
 	local color
 	local versionstring
@@ -507,34 +453,44 @@ function ACFHomeGUIUpdate( Table )
 		txt = versionstring
 	end
 
+
+	local versiontext = "GitHub Version: " .. ACE.CurrentVersion .. "\nCurrent Version: " .. ACE.Version
+	acemenupanel["CData"]["VersionInit"]:SetText(versiontext)
+
 	acemenupanel["CData"]["VersionText"]:SetText(txt)
 	acemenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
 	acemenupanel["CData"]["VersionText"]:SetColor(color)
 	acemenupanel["CData"]["VersionText"]:SizeToContents()
 
-end
+	if true then return end
 
---[[=========================
-	Changelog.txt
-]]--=========================
-
-function ACFChangelogHTTPCallBack(contents)
+	acemenupanel.Changelog = {}
 	local Temp = string.Explode( "*", contents )
 
-	acemenupanel.Changelog = {}  --changelog table
 	for _,String in pairs(Temp) do
 		acemenupanel.Changelog[tonumber(string.sub(String,2,4))] = string.Trim(string.sub(String, 5))
 	end
 
-	table.SortByKey(acemenupanel.Changelog,true)
+	table.SortByKey(acemenupanel.Changelog, true)
 
-	local Table = {}
-	Table.guicreate = (function( _, Table ) ACFHomeGUICreate( Table ) end or nil)
-	Table.guiupdate = (function( _, Table ) ACFHomeGUIUpdate( Table ) end or nil)
-	acemenupanel:UpdateDisplay( Table )
+	for i = 0, table.maxn(acemenupanel.Changelog) - 100 do
+
+		local k = table.maxn(acemenupanel.Changelog) - i
+
+		local Node = changelist:AddNode( "Rev " .. k )
+		Node.mytable = {}
+		Node.mytable["rev"] = k
+		function Node:DoClick()
+			acemenupanel:UpdateAttribs( Node.mytable )
+		end
+		Node.Icon:SetImage( "icon16/newspaper.png" )
+
+	end
+	acemenupanel:CPanelText("Changelog", acemenupanel.Changelog[Table["rev"]])
+	acemenupanel.CustomDisplay:PerformLayout()
+
 
 end
-
 
 --[[=========================
 	Clientside folder content
@@ -704,52 +660,6 @@ function ACFSVGUICreate()	--Serverside folder content
 
 end
 
---[[=========================
-	Contact folder content -- Disabled since this is another version.
-]]--=========================
---[[
-function ContactGUICreate()
-
-	acemenupanel["CData"]["Contact"] = vgui.Create( "DLabel" )
-	acemenupanel["CData"]["Contact"]:SetPos( 0, 0 )
-	acemenupanel["CData"]["Contact"]:SetColor( Color(10,10,10) )
-	acemenupanel["CData"]["Contact"]:SetText("Contact Us")
-	acemenupanel["CData"]["Contact"]:SetFont("Trebuchet24")
-	acemenupanel["CData"]["Contact"]:SizeToContents()
-	acemenupanel.CustomDisplay:AddItem( acemenupanel["CData"]["Contact"] )
-
-	acemenupanel:CPanelText("desc1","If you want to contribute to ACE by providing us feedback, report bugs or tell us suggestions about new stuff to be added, our discord is a good place.")
-	acemenupanel:CPanelText("desc2","Don't forget to check out our wiki, contains valuable information about how to use this addon. It's on WIP, but expect more content in future.")
-
-	local Discord = vgui.Create("DButton")
-	Discord:SetText( "Join our Discord!" )
-	Discord:SetPos(0,0)
-	Discord:SetSize(250,30)
-	Discord.DoClick = function()
-	gui.OpenURL("https://discord.gg/Y8aEYU6")
-	end
-	acemenupanel.CustomDisplay:AddItem( Discord )
-
-	local Wiki = vgui.Create("DButton")
-	Wiki:SetText( "Open Wiki" )
-	Wiki:SetPos(0,0)
-	Wiki:SetSize(250,30)
-	Wiki.DoClick = function()
-	gui.OpenURL("https://github.com/RedDeadlyCreeper/ArmoredCombatExtended/wiki")
-	end
-	acemenupanel.CustomDisplay:AddItem( Wiki )
-
-	local Guide = vgui.Create("DButton")
-	Guide:SetText( "ACE guidelines" )
-	Guide:SetPos(0,0)
-	Guide:SetSize(250,30)
-	Guide.DoClick = function()
-	gui.OpenURL("https://docs.google.com/document/d/1yaHq4Lfjad4KKa0Jg9s-5lCpPVjV7FE4HXoGaKpi4Fs/edit")
-	end
-	acemenupanel.CustomDisplay:AddItem( Guide )
-
-end
-]]
 --===========================================================================================
 -----Ammo & Gun selection content
 --===========================================================================================

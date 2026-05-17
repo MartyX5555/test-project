@@ -51,7 +51,7 @@ function ACE_Dupes_Refresh()
 			file.Write(final_path, file_content)
 
 			if Status < 1 then
-				Status = "Deployed"
+				Status = 1
 			end
 
 		-- If the file already exists, we check if the content is different, if it is, we update it, if not, we do nothing.
@@ -60,7 +60,7 @@ function ACE_Dupes_Refresh()
 			if util.SHA256(cfile_content) ~= util.SHA256(file_content) then
 				file.Write(final_path, file_content)
 				if Status < 2 then
-					Status = "Updated"
+					Status = 2
 				end
 			end
 		end
