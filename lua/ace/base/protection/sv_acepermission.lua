@@ -20,14 +20,9 @@ local mapSZDir = "ace/safezones/"
 local mapDPMDir = "ace/permissions/"
 file.CreateDir(mapDPMDir)
 
-
-
 local function msgtoconsole()
 	--print(msg)
 end
-
-
-
 
 local function resolveAABBs(mins, maxs)
 
@@ -87,15 +82,12 @@ local function validateSZs(safetable)
 	return true
 end
 
-local function getMapFilename()
-
-	local mapname = string.gsub(game.GetMap(), "[ ^ %a%d-_]", "_")
-	return mapSZDir .. mapname .. ".txt"
-
+local function getMapZSFilename()
+	return mapSZDir .. game.GetMap() .. ".txt"
 end
 
 local function getMapSZs()
-	local mapname = getMapFilename()
+	local mapname = getMapZSFilename()
 	local mapSZFile = file.Read(mapname, "DATA") or ""
 
 	local safezones = util.JSONToTable(mapSZFile)
@@ -109,22 +101,28 @@ local function getMapSZs()
 	return true
 end
 
+local function getMapDPMFilename()
+	return mapDPMDir .. game.GetMap() .. ".txt"
+end
+
 local function SaveMapDPM(mode)
-	local mapname = string.gsub(game.GetMap(), "[ ^ %a%d-_]", "_")
-	file.Write(mapDPMDir .. mapname .. ".txt", mode)
+	local success = file.Write(getMapDPMFilename(), mode)
+	if success then
+		print("[ACE | INFO]- Saved the default damage permission mode for " .. game.GetMap() .. " as: " .. mode)
+	end
 end
 
 local function LoadMapDPM()
-	local mapname = string.gsub(game.GetMap(), "[ ^ %a%d-_]", "_")
-	return file.Read(mapDPMDir .. mapname .. ".txt", "DATA")
+	return file.Read(getMapDPMFilename(), "DATA")
 end
---[[
+
 hook.Add( "Initialize", "ACE_LoadSafesForMap", function()
-	if not getMapSZs() then
-		print("!!!!!!!!!!!!!!!!!!\n[ACE | WARNING]- Safezone file " .. getMapFilename() .. " is missing, invalid or corrupt!  Safezones will not be restored this time.\n!!!!!!!!!!!!!!!!!!")
+	local mapfile = getMapDPMFilename()
+	if not file.Read(mapfile, "DATA") then
+		SaveMapDPM("none")
 	end
 end )
-]]
+
 hook.Add("ACE_PlayerChangedZone", "ACE_TellPlyAboutSafezoneBattle", function(ply, zone)
 	if not this.NotifySafezones[table.KeyFromValue(this.Modes, this.DamagePermission)] then return end
 
@@ -251,7 +249,7 @@ concommand.Add( "ACE_SaveSafeZones", function(ply)
 
 		local szjson = util.TableToJSON(this.Safezones)
 
-		local mapname = getMapFilename()
+		local mapname = getMapZSFilename()
 		file.CreateDir(mapSZDir)
 		file.Write(mapname, szjson)
 
@@ -667,5 +665,3 @@ timer.Simple(0,function()
 		mode = "default"
 	end
 end)
-
-
