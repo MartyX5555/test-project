@@ -159,7 +159,7 @@ do
 		if not isACE(this) then return self:throw("Entity is not a valid ACE component", "") end
 		if restrictInfo(self.player, this) then return "" end
 
-		if isAmmo(this) then return this.RoundId or "" end
+		if isAmmo(this) then return this.RoundData.RoundGunClass or "" end
 		if isFuel(this) then return this.FuelType .. " " .. this.SizeID end
 
 		return this.Id or ""
@@ -212,7 +212,7 @@ do
 	e2function string entity:aceName()
 		if not isACE(this) then return self:throw("Entity is not a valid ACE component", "") end
 
-		if isAmmo(this) then return this.RoundId .. " " .. this.RoundType end
+		if isAmmo(this) then return this.RoundData.RoundGunClass .. " " .. this.RoundData.RoundType end
 		if isFuel(this) then return this.FuelType .. " " .. this.SizeId end
 
 		local acetype = ""
@@ -251,7 +251,7 @@ do
 			return ACE.Classes["Radar"][this.Class]["name"] or ""
 		end
 
-		if isAmmo(this) then return this.RoundType or "" end
+		if isAmmo(this) then return this.RoundData.RoundType or "" end
 		if isFuel(this) then return this.FuelType or "" end
 
 		return ""
@@ -1081,7 +1081,7 @@ do
 		if not isAmmo(this) then return self:throw("Entity is not a valid ACE ammo crate", "") end
 		if restrictInfo(self.player, this) then return "" end
 
-		return this.RoundType
+		return this.RoundData.RoundType
 	end
 
 	-- Returns the type of ammo in a crate or gun

@@ -22,27 +22,27 @@ function Round.convert( _, PlayerData )
 	local ServerData	= {}
 	local GUIData	= {}
 
-	PlayerData.PropLength	=  PlayerData.PropLength	or 0
-	PlayerData.ProjLength	=  PlayerData.ProjLength	or 0
-	PlayerData.Tracer	=  PlayerData.Tracer		or 0
-	PlayerData.TwoPiece	=  PlayerData.TwoPiece	or 0
+	PlayerData.PropLength    = PlayerData.PropLength	or 0
+	PlayerData.ProjLength    = PlayerData.ProjLength	or 0
+	PlayerData.Tracer        = PlayerData.Tracer		or 0
+	PlayerData.TwoPiece      = PlayerData.TwoPiece	or 0
 
 	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
-	Data.ProjMass	= Data.FrArea * (Data.ProjLength * 7.9 / 1000) --Volume of the projectile as a cylinder * density of steel
-	Data.ShovePower	= 0.2
-	Data.PenArea		= Data.FrArea ^ ACE.PenAreaMod
-	Data.DragCoef	= ((Data.FrArea / 10000) / Data.ProjMass)
-	Data.LimitVel	= 800									--Most efficient penetration speed in m/s
-	Data.KETransfert	= 0.2								--Kinetic energy transfert to the target for movement purposes
-	Data.Ricochet	= 54										--Base ricochet angle
-	Data.MuzzleVel	= ACE_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
+	Data.ProjMass    = Data.FrArea * (Data.ProjLength * 7.9 / 1000) --Volume of the projectile as a cylinder * density of steel
+	Data.ShovePower  = 0.2
+	Data.PenArea     = Data.FrArea ^ ACE.PenAreaMod
+	Data.DragCoef    = ((Data.FrArea / 10000) / Data.ProjMass)
+	Data.LimitVel    = 800									--Most efficient penetration speed in m/s
+	Data.KETransfert = 0.2								--Kinetic energy transfert to the target for movement purposes
+	Data.Ricochet    = 54										--Base ricochet angle
+	Data.MuzzleVel   = ACE_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
 
 	Data.BoomPower	= Data.PropMass
 
 	if SERVER then --Only the crates need this part
-		ServerData.Id	= PlayerData.Id
-		ServerData.Type = PlayerData.Type
+		ServerData.Id   = PlayerData.RoundGunClass
+		ServerData.Type = PlayerData.RoundType
 		return table.Merge(Data,ServerData)
 	end
 
@@ -65,7 +65,7 @@ end
 
 function Round.network( Crate, BulletData )
 
-	Crate:SetNWString( "AmmoType", "APBC" )
+	Crate:SetNWString( "AmmoType", Round.Type )
 	Crate:SetNWString( "AmmoID", BulletData.Id )
 	Crate:SetNWFloat( "Caliber", BulletData.Caliber )
 	Crate:SetNWFloat( "ProjMass", BulletData.ProjMass )
@@ -199,8 +199,8 @@ end
 function Round.guiupdate( Panel, _ )
 
 	local PlayerData = {}
-		PlayerData.Id = acemenupanel.AmmoData.Data.id		--AmmoSelect GUI
-		PlayerData.Type = "APBC"										--Hardcoded, match as Round.Type instead
+		PlayerData.RoundGunClass = acemenupanel.AmmoData.Data.id		--AmmoSelect GUI
+		PlayerData.RoundType = Round.Type										--Hardcoded, match as Round.Type instead
 		PlayerData.PropLength = acemenupanel.AmmoData.PropLength	--PropLength slider
 		PlayerData.ProjLength = acemenupanel.AmmoData.ProjLength	--ProjLength slider
 		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
@@ -208,13 +208,12 @@ function Round.guiupdate( Panel, _ )
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
-	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
-	RunConsoleCommand( "acemenu_data3", Data.PropLength )	--For Gun ammo, Data3 should always be Propellant
-	RunConsoleCommand( "acemenu_data4", Data.ProjLength )	--And Data4 total round mass
-	RunConsoleCommand( "acemenu_data10", Data.Tracer )
-	RunConsoleCommand( "acemenu_data11", Data.TwoPiece )
-
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundGunClass", acemenupanel.AmmoData.Data.id)
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundType", Round.Type)
+	ACE.MenuSendTableValue("Data", "RoundData", "PropLength", Data.PropLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "ProjLength", Data.ProjLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "Tracer", Data.Tracer)
+	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)

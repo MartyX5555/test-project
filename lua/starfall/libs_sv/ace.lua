@@ -191,7 +191,7 @@ do
 		if isEngine(this) then return this.Id or "" end
 		if isGearbox(this) then return this.Id or "" end
 		if isGun(this) then return this.Id or "" end
-		if isAmmo(this) then return this.RoundId or "" end
+		if isAmmo(this) then return this.RoundData.RoundGunClass or "" end
 		if isFuel(this) then return this.FuelType .. " " .. this.SizeId end
 
 		return ""
@@ -275,7 +275,7 @@ do
 	function ents_methods:aceName()
 		local this = getent(self)
 
-		if isAmmo(this) then return this.RoundId .. " " .. this.RoundType end
+		if isAmmo(this) then return this.RoundData.RoundGunClass .. " " .. this.RoundData.RoundType end
 		if isFuel(this) then return this.FuelType .. " " .. this.SizeId end
 
 		local acetype = ""
@@ -304,7 +304,7 @@ do
 			return ACE.Classes["GunClass"][this.Class].name or ""
 		end
 
-		if isAmmo(this) then return this.RoundType or "" end
+		if isAmmo(this) then return this.RoundData.RoundType or "" end
 		if isFuel(this) then return this.FuelType or "" end
 
 		return ""
@@ -822,10 +822,10 @@ do
 		local this = getent(self)
 		if not isAmmo(this) then return "" end
 		if restrictInfo(this) then return "" end
-		--return this.RoundId or ""
+		--return this.RoundGunClass or ""
 		-- E2 uses this one now
 
-		return this.RoundType or ""
+		return this.RoundData.RoundType or ""
 	end
 
 	--- Returns the type of ammo in a crate or gun

@@ -388,3 +388,49 @@ ACE.RegisterGearbox( "9Gear-ST-L", {
 		[ -1 ] = 0.5
 	}
 } )
+--[[ Made for testing the new networking system only. Don't take it too serious. I don't even know if this has any practical use.
+ACE.RegisterGearbox( "30Gear-ST-L", {
+	name = "30-Speed, Straight, Large",
+	desc = "An Absurd 30 gear Gearbox. Absolutely a madness. Made to test the new menu network system.",
+	model = "models/engines/t5large.mdl",
+	category = "9-Speed",
+	weight = math.floor(Gear9LW * StWB),
+	switch = 0.3,
+	maxtq = math.floor(Gear9LT * StTB),
+	gears = 30,
+	geartable = {
+		[ 0 ] = 0,
+		[ 1 ] = 0.1,
+		[ 2 ] = 0.2,
+		[ 3 ] = 0.3,
+		[ 4 ] = 0.4,
+		[ 5 ] = 0.5,
+		[ 6 ] = 0.6,
+		[ 7 ] = 0.7,
+		[ 8 ] = 0.8,
+		[ 9 ] = 0.9,
+		[ 10 ] = 1.0,
+		[ 11 ] = 1.1,
+		[ 12 ] = 1.2,
+		[ 13 ] = 1.3,
+		[ 14 ] = 1.4,
+		[ 15 ] = 1.5,
+		[ 16 ] = 1.6,
+		[ 17 ] = 1.7,
+		[ 18 ] = 1.8,
+		[ 19 ] = 1.9,
+		[ 20 ] = 2.0,
+		[ 21 ] = 2.1,
+		[ 22 ] = 2.2,
+		[ 23 ] = 2.3,
+		[ 24 ] = 2.4,
+		[ 25 ] = 2.5,
+		[ 26 ] = 2.6,
+		[ 27 ] = 2.7,
+		[ 28 ] = 2.8,
+		[ 29 ] = 2.9,
+		[ 30 ] = 3.0,
+		[ -1 ] = 0.5
+	}
+} )
+]]

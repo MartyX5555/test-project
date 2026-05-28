@@ -21,13 +21,13 @@ end
 
 function ACFGearboxGUICreate( Table )
 
+	--automatic related stuff. This is the shift point, value used to shift gears.
 	if not acemenupanel.Serialize then
 		acemenupanel.Serialize = function( tbl, factor )
-			local str = ""
 			for i = 1,7 do
-				str = str .. math.Round(tbl[i] * factor,1) .. ","
+				local value = math.Round(tbl[i] * factor) print(value)
+				ACE.MenuSendTableValue("Data", "ShiftPoints", i, value)
 			end
-			RunConsoleCommand( "acemenu_data9", str )
 		end
 	end
 
@@ -74,22 +74,22 @@ function ACFGearboxGUICreate( Table )
 	end
 
 	if Table.cvt then
-		ACE_GearsSlider(2, acemenupanel.GearboxData[Table.id].GearTable[2], Table.id)
-		ACE_GearsSlider(3, acemenupanel.GearboxData[Table.id].GearTable[-3], Table.id, "Min Target RPM",true)
-		ACE_GearsSlider(4, acemenupanel.GearboxData[Table.id].GearTable[-2], Table.id, "Max Target RPM",true)
-		ACE_GearsSlider(10, acemenupanel.GearboxData[Table.id].GearTable[-1], Table.id, "Final Drive")
-		RunConsoleCommand( "acemenu_data1", 0.01 )
+		ACE_GearsSlider(2, true, acemenupanel.GearboxData[Table.id].GearTable[2], Table.id)
+		ACE_GearsSlider("MinRPMTarget", nil, acemenupanel.GearboxData[Table.id].GearTable[-3], Table.id, "Min Target RPM",true)
+		ACE_GearsSlider("MaxRPMTarget", nil, acemenupanel.GearboxData[Table.id].GearTable[-2], Table.id, "Max Target RPM",true)
+		ACE_GearsSlider("FinalDrive", nil, acemenupanel.GearboxData[Table.id].GearTable[-1], Table.id, "Final Drive")
+		ACE.MenuSendTableValue("Data", "GearTable", 1, 0.01)
 	else
 		for ID,Value in pairs(acemenupanel.GearboxData[Table.id].GearTable) do
 			if ID > 0 and not (Table.auto and ID == 8) then
-				ACE_GearsSlider(ID, Value, Table.id)
+				ACE_GearsSlider(ID, true, Value, Table.id)
 				if Table.auto then
 					ACE_ShiftPoint(ID, acemenupanel.GearboxData[Table.id].ShiftTable[ID], Table.id, "Gear " .. ID .. " upshift speed: ")
 				end
 			elseif Table.auto and (ID == -2 or ID == 8) then
-				ACE_GearsSlider(8, Value, Table.id, "Reverse")
+				ACE_GearsSlider(Table.gears + 1, true,Value, Table.id, "Reverse")
 			elseif ID == -1 then
-				ACE_GearsSlider(10, Value, Table.id, "Final Drive")
+				ACE_GearsSlider("FinalDrive", nil, Value, Table.id, "Final Drive")
 			end
 		end
 	end
@@ -99,10 +99,10 @@ function ACFGearboxGUICreate( Table )
 	InvertButton:SetText( "Invert Final drive" )
 	InvertButton:SetIcon( "icon16/arrow_refresh.png" )
 	InvertButton.DoClick = function()
-		if acemenupanel.CData[10] then ---10 gear is the final drive
+		if acemenupanel.CData["FinalDrive"] then ---10 gear is the final drive
 
-			local oldValue = acemenupanel.CData[10]:GetValue()
-			acemenupanel.CData[10]:SetValue( oldValue * -1 )
+			local oldValue = acemenupanel.CData["FinalDrive"]:GetValue()
+			acemenupanel.CData["FinalDrive"]:SetValue( oldValue * -1 )
 		end
 	end
 	acemenupanel.CustomDisplay:AddItem(InvertButton)
@@ -129,7 +129,7 @@ function ACFGearboxGUICreate( Table )
 
 				acemenupanel.CData.ShiftGenPanel.Calc.DoClick = function()
 					local _, factor = acemenupanel.CData.UnitsInput:GetSelected()
-					local mul = math.pi * acemenupanel.CData.ShiftGenPanel.RPM:GetValue() * acemenupanel.CData.ShiftGenPanel.Ratio:GetValue() * acemenupanel.CData[10]:GetValue() * acemenupanel.CData.ShiftGenPanel.Wheel:GetValue() / (60 * factor)
+					local mul = math.pi * acemenupanel.CData.ShiftGenPanel.RPM:GetValue() * acemenupanel.CData.ShiftGenPanel.Ratio:GetValue() * acemenupanel.CData["FinalDrive"]:GetValue() * acemenupanel.CData.ShiftGenPanel.Wheel:GetValue() / (60 * factor)
 					for i = 1,acemenupanel.CData.ShiftGenPanel.Gears do
 						acemenupanel.CData[10 + i].Input:SetValue( math.Round( math.abs( mul * acemenupanel.CData[i]:GetValue() ), 2 ) )
 						acemenupanel.GearboxData[acemenupanel.CData.UnitsInput.ID].ShiftTable[i] = tonumber(acemenupanel.CData[10 + i].Input:GetValue())
@@ -205,29 +205,41 @@ function ACFGearboxGUICreate( Table )
 	maxtorque = Table.maxtq
 end
 
-function ACE_GearsSlider(Gear, Value, ID, Desc, CVT)
+function ACE_GearsSlider(NetworkID, IsGear, Value, ID, Desc, CVT)
+	if NetworkID and not acemenupanel.CData[GNetworkIDear] then
 
-	if Gear and not acemenupanel.CData[Gear] then
+		local GearSlider = vgui.Create( "DNumSlider", acemenupanel.CustomDisplay )
+		GearSlider:SetText( Desc or "Gear " .. NetworkID )
+		GearSlider.Label:SizeToContents()
+		GearSlider:SetDark( true )
+		GearSlider:SetMin( CVT and 1 or -2 )
+		GearSlider:SetMax( CVT and 20000 or 2 )
+		GearSlider:SetDecimals( (not CVT) and 2 or 0 )
+		GearSlider.Gear = NetworkID
+		GearSlider.ID = ID
+		GearSlider:SetValue(Value)
 
-		acemenupanel.CData[Gear] = vgui.Create( "DNumSlider", acemenupanel.CustomDisplay )
-			acemenupanel.CData[Gear]:SetText( Desc or "Gear " .. Gear )
-			acemenupanel.CData[Gear].Label:SizeToContents()
-			acemenupanel.CData[Gear]:SetDark( true )
-			acemenupanel.CData[Gear]:SetMin( CVT and 1 or -2 )
-			acemenupanel.CData[Gear]:SetMax( CVT and 20000 or 2 )
-			acemenupanel.CData[Gear]:SetDecimals( (not CVT) and 2 or 0 )
-			acemenupanel.CData[Gear].Gear = Gear
-			acemenupanel.CData[Gear].ID = ID
-			acemenupanel.CData[Gear]:SetValue(Value)
-			RunConsoleCommand( "acemenu_data" .. Gear, Value )
-			acemenupanel.CData[Gear].OnValueChanged = function( slider, val )
-				acemenupanel.GearboxData[slider.ID].GearTable[slider.Gear] = val
-				RunConsoleCommand( "acemenu_data" .. Gear, val )
+		if IsGear then
+			ACE.MenuSendTableValue("Data", "GearTable", NetworkID, Value)
+		else
+			ACE.MenuSendValue( "Data", NetworkID, Value )
+		end
+
+		GearSlider.OnValueChanged = function( slider, val )
+			acemenupanel.GearboxData[slider.ID].GearTable[slider.Gear] = val
+
+			if IsGear then
+				ACE.MenuSendTableValue("Data", "GearTable", NetworkID, val)
+			else
+				ACE.MenuSendValue( "Data", NetworkID, val )
 			end
-		acemenupanel.CustomDisplay:AddItem( acemenupanel.CData[Gear] )
+		end
+		acemenupanel.CustomDisplay:AddItem( GearSlider )
+		acemenupanel.CData[NetworkID] = GearSlider
 	end
 
 end
+
 
 function ACE_ShiftPoint(Gear, Value, ID, Desc)
 	local Index = Gear + 10
@@ -252,7 +264,9 @@ function ACE_ShiftPoint(Gear, Value, ID, Desc)
 				local _, factor = acemenupanel.CData.UnitsInput:GetSelected()
 				acemenupanel.Serialize( acemenupanel.GearboxData[acemenupanel.CData.UnitsInput.ID].ShiftTable, factor )  --dot intentional
 			end
-			RunConsoleCommand( "acemenu_data9", "10,20,30,40,50,60,70" )
+			for i = 1, 7 do
+				ACE.MenuSendTableValue("Data", "ShiftPoints", i, i * 10)
+			end
 
 		acemenupanel.CData[Index].Label = acemenupanel.CData[Index]:Add( "DLabel" )
 			acemenupanel.CData[Index].Label:Dock( RIGHT )

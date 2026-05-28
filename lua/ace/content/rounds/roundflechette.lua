@@ -76,14 +76,13 @@ function Round.convert( _, PlayerData )
 	PlayerData.ProjLength	=  PlayerData.ProjLength	or 0
 	PlayerData.Tracer	=  PlayerData.Tracer		or 0
 	PlayerData.TwoPiece	=  PlayerData.TwoPiece	or 0
-	PlayerData["Data5"]		= PlayerData["Data5"]	or 0	-- flechette count
-	PlayerData["Data6"]		= PlayerData["Data6"]	or 0	-- flechette spread
+	PlayerData["Flechettes"]		= PlayerData["Flechettes"]	or 0	-- flechette count
+	PlayerData["FlechetteSpread"]		= PlayerData["FlechetteSpread"]	or 0	-- flechette spread
 
 
 	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
-	local GunClass = ACE.Weapons["Guns"][Data["Id"] or PlayerData["Id"]]["gunclass"]
-
+	local GunClass = ACE.Weapons["Guns"][Data["RoundGunClass"] or PlayerData["RoundGunClass"]]["gunclass"]
 
 	if GunClass == "SA" then
 		Data["MaxFlechettes"] = math.Clamp(math.floor(Data["Caliber"] * 7-4),1,128)
@@ -97,11 +96,11 @@ function Round.convert( _, PlayerData )
 
 
 	Data["MinFlechettes"]	= 2
-	Data["Flechettes"]	= math.Clamp(math.floor(PlayerData["Data5"]),Data["MinFlechettes"], Data["MaxFlechettes"])  --number of flechettes
+	Data["Flechettes"]	= math.Clamp(math.floor(PlayerData["Flechettes"]),Data["MinFlechettes"], Data["MaxFlechettes"])  --number of flechettes
 
 	Data["MinSpread"]	= 0.25
 	Data["MaxSpread"]	= 30
-	Data["FlechetteSpread"] = math.Clamp(tonumber(PlayerData["Data6"]), Data["MinSpread"], Data["MaxSpread"])
+	Data["FlechetteSpread"] = math.Clamp(tonumber(PlayerData["FlechetteSpread"]), Data["MinSpread"], Data["MaxSpread"])
 
 	local PenAdj				= 0.8							-- higher means lower pen, but more structure (hp) damage (old: 2.35, 2.85)
 	local RadiusAdj			= 1.0							-- lower means less structure (hp) damage, but higher pen (old: 1.0, 0.8)
@@ -126,8 +125,8 @@ function Round.convert( _, PlayerData )
 	Data["BoomPower"]		= Data["PropMass"]
 
 	if SERVER then --Only the crates need this part
-		ServerData["Id"] = PlayerData["Id"]
-		ServerData["Type"] = PlayerData["Type"]
+		ServerData.Id   = PlayerData.RoundGunClass
+		ServerData.Type = PlayerData.RoundType
 		return table.Merge(Data,ServerData)
 	end
 
@@ -299,26 +298,25 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData["Id"]			= acemenupanel.AmmoData["Data"]["id"]		--AmmoSelect GUI
-		PlayerData["Type"]		= "FL"									--Hardcoded, match as Round.Type instead
-		PlayerData["PropLength"]	= acemenupanel.AmmoData["PropLength"]  --PropLength slider
-		PlayerData["ProjLength"]	= acemenupanel.AmmoData["ProjLength"]  --ProjLength slider
-		PlayerData["Data5"]		= acemenupanel.AmmoData["Flechettes"]	--Flechette count slider
-		PlayerData["Data6"]		= acemenupanel.AmmoData["FlechetteSpread"]	--flechette spread slider
-
-		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
+		PlayerData.RoundGunClass    = acemenupanel.AmmoData.Data.id					-- AmmoSelect GUI
+		PlayerData.RoundType        = Round.Type								--Hardcoded, match as Round.Type instead
+		PlayerData.PropLength       = acemenupanel.AmmoData.PropLength  --PropLength slider
+		PlayerData.ProjLength       = acemenupanel.AmmoData.ProjLength  --ProjLength slider
+		PlayerData.Flechettes       = acemenupanel.AmmoData.Flechettes	--Flechette count slider
+		PlayerData.FlechetteSpread  = acemenupanel.AmmoData.FlechetteSpread	--flechette spread slider
+		PlayerData.Tracer           = acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece         = acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData["Data"]["id"] )
-	RunConsoleCommand( "acemenu_data2", PlayerData["Type"] )
-	RunConsoleCommand( "acemenu_data3", Data.PropLength )	--For Gun ammo, Data3 should always be Propellant
-	RunConsoleCommand( "acemenu_data4", Data.ProjLength )	--And Data4 total round mass
-	RunConsoleCommand( "acemenu_data5", Data.Flechettes )
-	RunConsoleCommand( "acemenu_data6", Data.FlechetteSpread )
-	RunConsoleCommand( "acemenu_data10", Data.Tracer )
-	RunConsoleCommand( "acemenu_data11", Data.TwoPiece )
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundGunClass", acemenupanel.AmmoData.Data.id)
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundType", Round.Type)
+	ACE.MenuSendTableValue("Data", "RoundData", "PropLength", Data.PropLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "ProjLength", Data.ProjLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "Flechettes", Data.Flechettes)
+	ACE.MenuSendTableValue("Data", "RoundData", "FlechetteSpread", Data.FlechetteSpread)
+	ACE.MenuSendTableValue("Data", "RoundData", "Tracer", Data.Tracer)
+	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	acemenupanel:AmmoSlider("PropLength",Data.PropLength,Data.MinPropLength,Data["MaxTotalLength"],3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data["MaxTotalLength"],3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)

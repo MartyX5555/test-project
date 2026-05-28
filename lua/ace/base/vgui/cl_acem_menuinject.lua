@@ -17,13 +17,13 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 			acemenupanel.CustomDisplay:AddItem(spacer)
 		end
 
-		local default = "Dumb"	-- Dumb is the only acceptable default
+		local Current_Guidance = "Dumb"	-- Dumb is the only acceptable default
 		if not acemenupanel.CData.GuidanceSelect then
-			acemenupanel.CData.GuidanceSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )	--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
-			acemenupanel.CData.GuidanceSelect:SetSize(100, 30)
+			local GuidanceSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )	--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
+			GuidanceSelect:SetSize(100, 30)
 
-			acemenupanel.CData.GuidanceSelect.OnSelect = function( _ , _ , data )
-				RunConsoleCommand( "acemenu_data7", data )
+			function GuidanceSelect:OnSelect( _ , _ , data )
+				ACE.MenuSendTableValue("Data", "RoundData", "Guidance", data)
 
 				local gun = {}
 
@@ -37,41 +37,40 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 				if guidance and guidance.desc then
 					acemenupanel:CPanelText("GuidanceDesc", guidance.desc .. "\n")
 
-					local configPanel = ACFMissiles_CreateMenuConfiguration(guidance, acemenupanel.CData.GuidanceSelect, "acemenu_data7", acemenupanel.CData.GuidanceSelect.ConfigPanel, gun)
-					acemenupanel.CData.GuidanceSelect.ConfigPanel = configPanel
+					local configPanel = ACFMissiles_CreateMenuConfiguration(guidance, self, "Guidance", self.ConfigPanel, gun)
+					self.ConfigPanel = configPanel
 				else
 					acemenupanel:CPanelText("GuidanceDesc", "Missiles and bombs can be given a guidance package to steer them during flight.\n")
 				end
 			end
 
-			acemenupanel.CustomDisplay:AddItem( acemenupanel.CData.GuidanceSelect )
+			acemenupanel.CustomDisplay:AddItem( GuidanceSelect )
 
 			acemenupanel:CPanelText("GuidanceDesc", "Missiles and bombs can be given a guidance package to steer them during flight.\n")
 
 			local configPanel = vgui.Create("DScrollPanel")
-			acemenupanel.CData.GuidanceSelect.ConfigPanel = configPanel
+			GuidanceSelect.ConfigPanel = configPanel
+			acemenupanel.CData.GuidanceSelect = GuidanceSelect
 			acemenupanel.CustomDisplay:AddItem( configPanel )
 
 		else
-			--acemenupanel.CData.GuidanceSelect:SetSize(100, 30)
-			default = acemenupanel.CData.GuidanceSelect:GetValue()
+			Current_Guidance = acemenupanel.CData.GuidanceSelect:GetValue()
 			acemenupanel.CData.GuidanceSelect:SetVisible(true)
 		end
 
 		acemenupanel.CData.GuidanceSelect:Clear()
 		for _, Value in pairs( gundata.guidance or {} ) do
-			acemenupanel.CData.GuidanceSelect:AddChoice( Value, Value, Value == default )
+			acemenupanel.CData.GuidanceSelect:AddChoice( Value, Value, Value == Current_Guidance )
 		end
-
 
 		-- Create fuse selection combobox + description label
 
-		default = "Contact"  -- Contact is the only acceptable default
+		local Current_Fuse = "Contact"  -- Contact is the only acceptable default
 		if not acemenupanel.CData.FuseSelect then
-			acemenupanel.CData.FuseSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )	--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
-			acemenupanel.CData.FuseSelect:SetSize(100, 30)
+			local FuseSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )	--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
+			FuseSelect:SetSize(100, 30)
 
-			acemenupanel.CData.FuseSelect.OnSelect = function( _ , _ , data )
+			function FuseSelect:OnSelect( _ , _ , data )
 
 				local gun = {}
 
@@ -86,32 +85,33 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 				if fuse and fuse.desc then
 					acemenupanel:CPanelText("FuseDesc", fuse.desc .. "\n")
 
-					local configPanel = ACFMissiles_CreateMenuConfiguration(fuse, acemenupanel.CData.FuseSelect, "acemenu_data8", acemenupanel.CData.FuseSelect.ConfigPanel, gun)
-					acemenupanel.CData.FuseSelect.ConfigPanel = configPanel
+					local configPanel = ACFMissiles_CreateMenuConfiguration(fuse, self, "Fuse", self.ConfigPanel, gun)
+					self.ConfigPanel = configPanel
 				else
 					acemenupanel:CPanelText("FuseDesc", "Missiles and bombs can be given a fuse to control when they detonate.\n")
 				end
 
-				ACFMissiles_SetCommand(acemenupanel.CData.FuseSelect, acemenupanel.CData.FuseSelect.ControlGroup, "acemenu_data8")
+				ACFMissiles_SetCommand(FuseSelect, FuseSelect.ControlGroup, "Fuse")
 			end
 
-			acemenupanel.CustomDisplay:AddItem( acemenupanel.CData.FuseSelect )
+			acemenupanel.CustomDisplay:AddItem( FuseSelect )
 
 			acemenupanel:CPanelText("FuseDesc", "Missiles and bombs can be given a fuse to control when they detonate.\n")
 
 			local configPanel = vgui.Create("DScrollPanel")
 			configPanel:SetTall(0)
-			acemenupanel.CData.FuseSelect.ConfigPanel = configPanel
+			FuseSelect.ConfigPanel = configPanel
+			acemenupanel.CData.FuseSelect = FuseSelect
 			acemenupanel.CustomDisplay:AddItem( configPanel )
 		else
 			--acemenupanel.CData.FuseSelect:SetSize(100, 30)
-			default = acemenupanel.CData.FuseSelect:GetValue()
+			Current_Fuse = acemenupanel.CData.FuseSelect:GetValue()
 			acemenupanel.CData.FuseSelect:SetVisible(true)
 		end
 
 		acemenupanel.CData.FuseSelect:Clear()
 		for _, Value in pairs( gundata.fuses or {} ) do
-			acemenupanel.CData.FuseSelect:AddChoice( Value, Value, Value == default ) -- Contact is the only acceptable default
+			acemenupanel.CData.FuseSelect:AddChoice( Value, Value, Value == Current_Fuse ) -- Contact is the only acceptable default
 		end
 
 	else
@@ -166,6 +166,7 @@ end
 
 function CreateRackSelectGUI(node)
 
+	local Current_Rack = node.mytable.rack
 	if not acemenupanel.CData.MissileSpacer then
 		local spacer = vgui.Create("DPanel")
 		spacer:SetSize(24, 24)
@@ -180,16 +181,16 @@ function CreateRackSelectGUI(node)
 		acemenupanel:CPanelText("RackChooseMsg", "Choose the desired rack below")
 
 		--Every display and slider is placed in the Round table so it gets trashed when selecting a new round type
-		acemenupanel.CData.RackSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )
-		acemenupanel.CData.RackSelect:SetSize(100, 30)
+		local RackSelect = vgui.Create( "DComboBox", acemenupanel.CustomDisplay )
+		RackSelect:SetSize(100, 30)
 
-		acemenupanel.CData.RackSelect.OnSelect = function( _ , _ , data )
-			RunConsoleCommand( "acemenu_data9", data )
+		function RackSelect:OnSelect( _ , _ , data )
+			ACE.MenuSendValue( "Global", "Type", "Racks") -- Simple hack to tell the ace menu to look for racks and not guns this time.
+			ACE.MenuSendValue( "Global", "Id", data)
 
 			local rack = ACE.Weapons.Racks[data]
 
 			if rack then
-
 				if not acemenupanel.CData.RackModel then
 					acemenupanel.CData.RackModel = vgui.Create( "DModelPanel", acemenupanel.CustomDisplay )
 					acemenupanel.CData.RackModel:SetModel( rack.model or "models/props_c17/FurnitureToilet001a.mdl" )
@@ -211,26 +212,24 @@ function CreateRackSelectGUI(node)
 				acemenupanel:CPanelText("Rack_Year", "Year : " .. rack.year .. "\n")
 			end
 		end
+		--ACE.MenuSendValue( "Global", "Id", Table.id)
 
-		acemenupanel.CustomDisplay:AddItem( acemenupanel.CData.RackSelect )
+		acemenupanel.CustomDisplay:AddItem( RackSelect )
 
 		local configPanel = vgui.Create("DScrollPanel")
-		acemenupanel.CData.RackSelect.ConfigPanel = configPanel
+		RackSelect.ConfigPanel = configPanel
+		acemenupanel.CData.RackSelect = RackSelect
 		acemenupanel.CustomDisplay:AddItem( configPanel )
 
 	else
-		default = acemenupanel.CData.RackSelect:GetValue()
+		Current_Rack = acemenupanel.CData.RackSelect:GetValue()
 		acemenupanel.CData.RackSelect:SetVisible(true)
 	end
 
 	acemenupanel.CData.RackSelect:Clear()
-
-	local default = node.mytable.rack
 	for _, Value in pairs( ACE_GetCompatibleRacks(node.mytable.id) ) do
-		acemenupanel.CData.RackSelect:AddChoice( Value, Value, Value == default )
+		acemenupanel.CData.RackSelect:AddChoice( Value, Value, Value == Current_Rack )
 	end
-
-
 end
 
 

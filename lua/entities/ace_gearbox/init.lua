@@ -56,21 +56,76 @@ do
 
 	end
 
-	function MakeACE_Gearbox(Owner, Pos, Angle, Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10)
+	--[[
+		Data1-9 are Gears including the reverse one for non automatic gears.
+		Data10 is ALWAYS Final Drive
+		If auto, Data8 is always reverse, for some odd reason.
+		Besides that, Data9 is shifting points for automatic gears.
+		Remaining data is retrieved from the Gearbox table.
 
+		New order in Data:
+		Data.GearTable = it will contain all the num of gears
+		Data.FinalDrive = final drive
+		Data.ShiftPoints = ShiftPoints (if it has it.)
+
+		Data.MinRPMTarget = CVT uses this prev: Data3
+		Data.MaxRPMTarget = CVT uses this  prev: Data4
+	]]
+	local Max = math.max
+	local ToNumber = tonumber
+	local function VerifyGearboxId(Id)
+		if not ACE_CheckGearbox( Id ) then
+			return "1Gear-T-S" --deal with it
+		end
+		return Id
+	end
+	local function VerifyGearboxData(GearboxData, Data)
+		if istable(Data.GearTable) and #Data.GearTable > 0 then
+			Data.FinalDrive = ToNumber(Data.FinalDrive) or 0.5
+			if GearboxData.cvt then
+				Data.MinRPMTarget = Max(ToNumber(Data.MinRPMTarget) or 1,1)
+				Data.MaxRPMTarget = Max(ToNumber(Data.MaxRPMTarget) or 0, Data.MinRPMTarget + 1)
+			elseif GearboxData.auto then
+				Data.ShiftPoints = {}
+				Data.GearTable[GearboxData.gears + 1] = ToNumber(Data.GearTable[GearboxData.gears + 1]) or -0.1
+				for i = 1, 7 do
+					Data.ShiftPoints[i] =  Max(ToNumber(Data.ShiftPoints[i]) or 10, 0)
+				end
+			end
+			-- Validate GearTable
+			for i = 1, GearboxData.gears do
+				Data.GearTable[i] = ToNumber(Data.GearTable[i]) or 0.1 * i
+			end
+			return
+		end
+		Data.GearTable = {}
+		Data.FinalDrive = ToNumber(Data["Gear0"]) or 0.5
+		if GearboxData.cvt then
+			Data.MinRPMTarget = Max(ToNumber(Data["Gear3"]) or 1,1)
+			Data.MaxRPMTarget = Max(ToNumber(Data["Gear4"]) or 0,Data.MinRPMTarget + 1)
+		elseif GearboxData.auto then
+			Data.ShiftPoints = {}
+			Data.GearTable[GearboxData.gears + 1] = ToNumber(Data["Gear8"]) or -0.1
+			for part in string.gmatch(Data["Gear9"], "[^,]+") do
+				Data.ShiftPoints[#Data.ShiftPoints + 1] = Max(ToNumber(part) or 10, 0)
+			end
+		end
+		-- Validate GearTable
+		for i = 1, GearboxData.gears do
+			Data.GearTable[i] = ToNumber(Data["Gear" .. i]) or i * 0.1
+		end
+	end
+
+	function MakeACE_Gearbox(Owner, Pos, Angle, Id, Data)
 		if not Owner:CheckLimit("_ace_gearbox") then return false end
 
 		local Gearbox	= ents.Create("ace_gearbox")
-
 		if not IsValid( Gearbox ) then return false end
 
-		if not ACE_CheckGearbox( Id ) then
-			Id = "1Gear-T-S" --deal with it
-			Data1	= 0.1 --gear1
-			Data10  = 0.5 --gear2
-		end
-
+		Id = VerifyGearboxId(Id)
 		local GearboxData = GearboxTable[Id]
+
+		VerifyGearboxData(GearboxData, Data)
 
 		Gearbox:SetAngles(Angle)
 		Gearbox:SetPos(Pos)
@@ -90,43 +145,20 @@ do
 		Gearbox.Parentable    = GearboxData.parentable	or false
 
 		if Gearbox.CVT then
-			Gearbox.TargetMinRPM = Data3
-			Gearbox.TargetMaxRPM = math.max(Data4,Data3 + 100)
+			Gearbox.MinRPMTarget = Data.MinRPMTarget
+			Gearbox.MaxRPMTarget = Data.MaxRPMTarget
 			Gearbox.CVTRatio = nil
 		end
 
-		Gearbox.GearTable = table.Copy(GearboxData.geartable)
-			Gearbox.GearTable.Final = Data10
-			Gearbox.GearTable[1] = Data1
-			Gearbox.GearTable[2] = Data2
-			Gearbox.GearTable[3] = Data3
-			Gearbox.GearTable[4] = Data4
-			Gearbox.GearTable[5] = Data5
-			Gearbox.GearTable[6] = Data6
-			Gearbox.GearTable[7] = Data7
-			Gearbox.GearTable[8] = Data8
-			Gearbox.GearTable[9] = Data9
-			Gearbox.GearTable[0] = GearboxData.geartable[0]
-
-			Gearbox.Gear0 = Data10
-			Gearbox.Gear1 = Data1
-			Gearbox.Gear2 = Data2
-			Gearbox.Gear3 = Data3
-			Gearbox.Gear4 = Data4
-			Gearbox.Gear5 = Data5
-			Gearbox.Gear6 = Data6
-			Gearbox.Gear7 = Data7
-			Gearbox.Gear8 = Data8
-			Gearbox.Gear9 = Data9
-
-		Gearbox.GearRatio = (Gearbox.GearTable[0] or 0) * Gearbox.GearTable.Final
+		Gearbox.GearTable = Data.GearTable or {}
+		Gearbox.GearTable[0] = GearboxData.geartable[0]
+		Gearbox.FinalDrive = Data.FinalDrive
+		Gearbox.GearRatio = (Gearbox.GearTable[0] or 0) * Gearbox.FinalDrive
 
 		if Gearbox.Auto then
-			Gearbox.ShiftPoints = {}
-			for part in string.gmatch(Data9, "[^,]+") do Gearbox.ShiftPoints[#Gearbox.ShiftPoints + 1] = tonumber(part) end
+			Gearbox.ShiftPoints = Data.ShiftPoints or {}
 			Gearbox.ShiftPoints[0] = -1
 			Gearbox.Reverse = Gearbox.Gears + 1
-			Gearbox.GearTable[Gearbox.Reverse] = Data8
 			Gearbox.Drive = 1
 			Gearbox.ShiftScale = 1
 		end
@@ -167,8 +199,8 @@ do
 		Wire_TriggerOutput(Gearbox, "Entity", Gearbox)
 
 		if Gearbox.CVT then
-			Wire_TriggerOutput(Gearbox, "Min Target RPM", Gearbox.TargetMinRPM)
-			Wire_TriggerOutput(Gearbox, "Max Target RPM", Gearbox.TargetMaxRPM)
+			Wire_TriggerOutput(Gearbox, "Min Target RPM", Gearbox.MinRPMTarget)
+			Wire_TriggerOutput(Gearbox, "Max Target RPM", Gearbox.MaxRPMTarget)
 		end
 
 		Gearbox.LClutch = Gearbox.MaxTorque
@@ -206,34 +238,31 @@ do
 
 		return Gearbox
 	end
-	list.Set( "ACECvars", "ace_gearbox", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
-	duplicator.RegisterEntityClass("ace_gearbox", MakeACE_Gearbox, "Pos", "Angle", "Id", "Gear1", "Gear2", "Gear3", "Gear4", "Gear5", "Gear6", "Gear7", "Gear8", "Gear9", "Gear0" )
+	duplicator.RegisterEntityClass("ace_gearbox", MakeACE_Gearbox, "Pos", "Angle", "Id", "Data" )
 
 end
 
-function ENT:Update( ArgsTable )
+function ENT:Update( _, Id, Data )
 	-- That table is the player data, as sorted in the ACECvars above, with player who shot,
 	-- and pos and angle of the tool trace inserted at the start
 
-	local Id = ArgsTable[4] -- Argtable[4] is the engine ID
 	local GearboxData = GearboxTable[Id]
-
 	if GearboxData.model ~= self.Model then
 		return false, "The new gearbox must have the same model!"
 	end
 
 	if self.Id ~= Id then
 
-		self.Id		= Id
-		self.Mass	= GearboxData.weight		or 1
-		self.SwitchTime = GearboxData.switch
-		self.MaxTorque  = GearboxData.maxtq		or 0
-		self.Gears	= GearboxData.gears		or 2
-		self.Dual	= GearboxData.doubleclutch	or false
-		self.CVT		= GearboxData.cvt			or false
-		self.DoubleDiff = GearboxData.doublediff	or false
-		self.Auto	= GearboxData.auto			or false
-		self.Parentable = GearboxData.parentable	or false
+		self.Id           = Id
+		self.Mass         = GearboxData.weight		or 1
+		self.SwitchTime   = GearboxData.switch
+		self.MaxTorque    = GearboxData.maxtq		or 0
+		self.Gears        = GearboxData.gears		or 2
+		self.Dual         = GearboxData.doubleclutch	or false
+		self.CVT          = GearboxData.cvt			or false
+		self.DoubleDiff   = GearboxData.doublediff	or false
+		self.Auto         = GearboxData.auto			or false
+		self.Parentable   = GearboxData.parentable	or false
 
 		local Inputs = {"Gear","Gear Up","Gear Down"}
 		if self.CVT then
@@ -275,51 +304,28 @@ function ENT:Update( ArgsTable )
 	end
 
 	if self.CVT then
-		self.TargetMinRPM = ArgsTable[7]
-		self.TargetMaxRPM = math.max(ArgsTable[8],ArgsTable[7] + 100)
+		self.MinRPMTarget = Data.MinRPMTarget or 0
+		self.MaxRPMTarget = math.max(Data.MaxRPMTarget or 0,Data.MinRPMTarget + 100)
 		self.CVTRatio = nil
-		Wire_TriggerOutput(self, "Min Target RPM", self.TargetMinRPM)
-		Wire_TriggerOutput(self, "Max Target RPM", self.TargetMaxRPM)
+		Wire_TriggerOutput(self, "Min Target RPM", self.MinRPMTarget)
+		Wire_TriggerOutput(self, "Max Target RPM", self.MaxRPMTarget)
 	end
 
-	self.GearTable.Final = ArgsTable[14]
-	self.GearTable[1] = ArgsTable[5]
-	self.GearTable[2] = ArgsTable[6]
-	self.GearTable[3] = ArgsTable[7]
-	self.GearTable[4] = ArgsTable[8]
-	self.GearTable[5] = ArgsTable[9]
-	self.GearTable[6] = ArgsTable[10]
-	self.GearTable[7] = ArgsTable[11]
-	self.GearTable[8] = ArgsTable[12]
-	self.GearTable[9] = ArgsTable[13]
+	self.GearTable = Data.GearTable or {}
 	self.GearTable[0] = GearboxData.geartable[0]
-
-	self.Gear0 = ArgsTable[14]
-	self.Gear1 = ArgsTable[5]
-	self.Gear2 = ArgsTable[6]
-	self.Gear3 = ArgsTable[7]
-	self.Gear4 = ArgsTable[8]
-	self.Gear5 = ArgsTable[9]
-	self.Gear6 = ArgsTable[10]
-	self.Gear7 = ArgsTable[11]
-	self.Gear8 = ArgsTable[12]
-	self.Gear9 = ArgsTable[13]
-
-	self.GearRatio = (self.GearTable[0] or 0) * self.GearTable.Final
+	self.FinalDrive = Data.FinalDrive or 0.5
+	self.GearRatio = (self.GearTable[0] or 0) * self.FinalDrive
 
 	if self.Auto then
-		self.ShiftPoints = {}
-		for part in string.gmatch(ArgsTable[13], "[^,]+") do self.ShiftPoints[#self.ShiftPoints + 1] = tonumber(part) end
+		self.ShiftPoints = Data.ShiftPoints or {}
 		self.ShiftPoints[0] = -1
 		self.Reverse = self.Gears + 1
-		self.GearTable[self.Reverse] = ArgsTable[12]
 		self.Drive = 1
 		self.ShiftScale = 1
 	end
 
-	--self:ChangeGear(1) -- fails on updating because func exits on detecting same gear
 	self.Gear = 1
-	self.GearRatio = (self.GearTable[self.Gear] or 0) * self.GearTable.Final
+	self.GearRatio = (self.GearTable[self.Gear] or 0) * self.FinalDrive
 	self.ChangeFinished = CurTime() + self.SwitchTime
 	self.InGear = false
 
@@ -345,9 +351,12 @@ function ENT:UpdateOverlayText()
 
 	if self.CVT then
 		text = text .. "Reverse Gear: " .. math.Round( self.GearTable[ 2 ], 2 ) -- maybe a better name than "gear 2"...?
-		text = text .. "\nTarget: " .. math.Round( self.TargetMinRPM ) .. " - " .. math.Round( self.TargetMaxRPM ) .. " RPM\n"
+		text = text .. "\nTarget: " .. math.Round( self.MinRPMTarget ) .. " - " .. math.Round( self.MaxRPMTarget ) .. " RPM\n"
 	elseif self.Auto then
+		print("AUTOMATIC SHIFT CONFIGURATION")
 		for i = 1, self.Gears do
+			print(self.GearTable[ i ])
+			print(self.ShiftPoints[i])
 			text = text .. "Gear " .. i .. ": " .. math.Round( self.GearTable[ i ], 2 ) .. ", Upshift @ " .. math.Round( self.ShiftPoints[i] / 10.936, 1 ) .. " kph / " .. math.Round( self.ShiftPoints[i] / 17.6 ,1 ) .. " mph\n"
 		end
 	else
@@ -359,7 +368,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "\nReverse Gear: " .. math.Round( self.GearTable[ self.Reverse ], 2 ) .. "\n"
 	end
 
-	text = text .. "\nFinal Drive Ratio: " .. math.Round( self.Gear0, 2 ) .. "\n\n"
+	text = text .. "\nFinal Drive Ratio: " .. math.Round( self.FinalDrive, 2 ) .. "\n\n"
 	text = text .. "Torque Rating: " .. self.MaxTorque .. " Nm / " .. math.Round( self.MaxTorque * 0.73 ) .. " ft-lb"
 
 	if not self.Legal then
@@ -497,7 +506,6 @@ function ENT:CheckEnts()
 end
 
 function ENT:Calc( InputRPM, InputInertia )
-
 	if not self.Legal then return 0 end
 
 	if self.LastActive == CurTime() then
@@ -517,9 +525,9 @@ function ENT:Calc( InputRPM, InputInertia )
 		if self.CVTRatio and self.CVTRatio > 0 then
 			self.GearTable[1] = math.Clamp(self.CVTRatio,0.01,1)
 		else
-			self.GearTable[1] = math.Clamp((InputRPM - self.TargetMinRPM) / ((self.TargetMaxRPM - self.TargetMinRPM) or 1),0.05,1)
+			self.GearTable[1] = math.Clamp((InputRPM - self.MinRPMTarget) / ((self.MaxRPMTarget - self.MinRPMTarget) or 1),0.05,1)
 		end
-		self.GearRatio = (self.GearTable[1] or 0) * self.GearTable.Final
+		self.GearRatio = (self.GearTable[1] or 0) * self.FinalDrive
 		Wire_TriggerOutput(self, "Ratio", self.GearRatio)
 	end
 
@@ -679,7 +687,7 @@ function ENT:ChangeGear(value)
 	if self.Gear == new then return end
 
 	self.Gear = new
-	self.GearRatio = (self.GearTable[self.Gear] or 0) * self.GearTable.Final
+	self.GearRatio = (self.GearTable[self.Gear] or 0) * self.FinalDrive
 	self.ChangeFinished = CurTime() + self.SwitchTime
 	self.InGear = false
 
@@ -698,7 +706,7 @@ function ENT:ChangeDrive(value)
 	self.Drive = new
 	if self.Drive == 2 then
 		self.Gear = self.Reverse
-		self.GearRatio = (self.GearTable[self.Gear] or 0) * self.GearTable.Final
+		self.GearRatio = (self.GearTable[self.Gear] or 0) * self.FinalDrive
 		self.ChangeFinished = CurTime() + self.SwitchTime
 		self.InGear = false
 

@@ -13,7 +13,7 @@ function Round.convert()
 
 	local BulletData = {}
 		BulletData.Id = "7.62mmMG"
-		BulletData.Type = "Refill"
+		BulletData.Type = Round.Type
 
 		BulletData.Caliber = 1
 		BulletData.ProjMass = 1 --Volume of the projectile as a cylinder * streamline factor (Data5) * density of steel
@@ -36,7 +36,7 @@ end
 
 function Round.network( Crate, BulletData )
 
-	Crate:SetNWString( "AmmoType", "Refill" )
+	Crate:SetNWString( "AmmoType", Round.Type  )
 	Crate:SetNWString( "AmmoID", BulletData.Id )
 	Crate:SetNWFloat( "Caliber", BulletData.Caliber )
 	Crate:SetNWFloat( "ProjMass", BulletData.ProjMass )
@@ -49,9 +49,7 @@ function Round.network( Crate, BulletData )
 end
 
 function Round.cratetxt()
-
 	return ""
-
 end
 
 function Round.guicreate( Panel, Table )
@@ -64,11 +62,9 @@ end
 
 function Round.guiupdate()
 
-	RunConsoleCommand( "acemenu_data1", acemenupanel.CData.AmmoId )
-	RunConsoleCommand( "acemenu_data2", "Refill")
-
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundGunClass", acemenupanel.CData.AmmoId)
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundType", Round.Type)
 	acemenupanel.CustomDisplay:PerformLayout()
-
 end
 
 list.Set( "SPECSRoundTypes", "Refill", Round )

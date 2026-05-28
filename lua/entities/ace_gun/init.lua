@@ -130,6 +130,7 @@ do
 		HMG = true
 	}
 
+	--TODO: Add scalable factor: Scale via Data
 	function MakeACE_Gun(Owner, Pos, Angle, Id)
 
 		local Gun = ents.Create("ace_gun")
@@ -272,8 +273,7 @@ do
 	end
 end
 
-list.Set( "ACECvars", "ace_gun", {"id"} )
-duplicator.RegisterEntityClass("ace_gun", MakeACE_Gun, "Pos", "Angle", "Id")
+duplicator.RegisterEntityClass("ace_gun", MakeACE_Gun, "Pos", "Angle", "Id", "Data")
 
 function ENT:UpdateOverlayText()
 
@@ -416,7 +416,8 @@ function ENT:Link( Target )
 		end
 
 		-- Don't link if it's a refill crate
-		if Target.RoundType == "Refill" then
+		local RoundType = Target.RoundData and Target.RoundData.RoundType
+		if RoundType == "Refill" then
 			return false, "Refill crates cannot be linked!"
 		end
 
@@ -426,7 +427,7 @@ function ENT:Link( Target )
 		end
 
 		-- Don't link if it's a blacklisted round type for this gun
-		local Blacklist = ACE.AmmoBlacklist[ Target.RoundType ] or {}
+		local Blacklist = ACE.AmmoBlacklist[ RoundType ] or {}
 
 		if table.HasValue( Blacklist, self.Class ) then
 			return false, "That round type cannot be used with this gun!"
@@ -608,27 +609,6 @@ function ENT:TrimDistantCrewSeats()
 		end
 	end
 end
-
---[[
-	function ENT:TrimInvalidLoaders()
-
-		local Crewmates = table.Copy(self.CrewLink)
-
-		if self.LoaderCount > 0 and not self.HasGunner then
-			for k, Crew in pairs(Crewmates) do
-
-				PrintTable(Crewmates)
-
-				if IsValid(Crew) then
-					print("Removing loader...")
-					if Crew:GetClass() == "ace_crewseat_loader" then
-						self:Unlink( Crew )
-					end
-				end
-			end
-		end
-	end
-]]
 
 function ENT:Think()
 

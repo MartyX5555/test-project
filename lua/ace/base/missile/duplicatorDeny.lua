@@ -22,5 +22,4 @@ function duplicator.Deny( class )
 	if AdvDupe then
 		AdvDupe.AdminSettings.ChangeDisallowedClass( class, true, true )
 	end
-
 end

@@ -18,12 +18,17 @@ do
 
 	function ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
-		local BulletMax = ACE.Weapons["Guns"][PlayerData["Id"]]["round"]
-		local Type = PlayerData.Type or ""
+		--print("======================================")
+		--print("AMMODATA DURING ROUNDBASE GUNPOWDER")
+		--print("======================================")	
+		--PrintTable(PlayerData)
+
+		local BulletMax = ACE.Weapons["Guns"][PlayerData["RoundGunClass"]]["round"]
+		local Type = PlayerData.RoundType or ""
 
 		GUIData.MaxTotalLength    = BulletMax.maxlength * (Data.LengthAdj or 1)
 
-		Data.Caliber              = ACE.Weapons["Guns"][PlayerData["Id"]]["caliber"]
+		Data.Caliber              = ACE.Weapons["Guns"][PlayerData["RoundGunClass"]]["caliber"]
 		Data.FrArea               = PI * (Data.Caliber / 2) ^ 2
 
 		Data.Tracer               = PlayerData.Tracer > 0 and math.min(Data.Caliber / 5, 3) or 0 --Tracer space calcs
@@ -252,7 +257,7 @@ do
 				acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
 				ACE_AmmoCapacityDisplay( Data )
-				acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.Type].desc)
+				acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.RoundType].desc)
 				ACE_AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
 			end
 

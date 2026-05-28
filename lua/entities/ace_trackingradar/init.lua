@@ -104,8 +104,8 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 	return Radar
 
 end
-list.Set( "ACECvars", "ace_trackingradar", {"id"} )
-duplicator.RegisterEntityClass("ace_trackingradar", MakeACE_TrackingRadar, "Pos", "Angle", "Id" )
+
+duplicator.RegisterEntityClass("ace_trackingradar", MakeACE_TrackingRadar, "Pos", "Angle", "Id", "Data" )
 
 function ENT:SetModelEasy(mdl)
 

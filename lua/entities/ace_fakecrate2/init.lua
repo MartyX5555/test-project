@@ -5,11 +5,7 @@ include("shared.lua")
 
 
 function ENT:Initialize()
-
 	self.SpecialDamage = true
-
-	--print("hi from fakecrate")
-
 end
 
 

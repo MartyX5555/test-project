@@ -158,12 +158,11 @@ do
 
 		return Engine
 	end
-	list.Set( "ACECvars", "ace_engine", {"id"} )
-	duplicator.RegisterEntityClass("ace_engine", MakeACE_Engine, "Pos", "Angle", "Id")
+	duplicator.RegisterEntityClass("ace_engine", MakeACE_Engine, "Pos", "Angle", "Id", "Data")
 
 end
 
-function ENT:Update( ArgsTable )
+function ENT:Update( _, Id, _ )
 	-- That table is the player data, as sorted in the ACECvars above, with player who shot,
 	-- and pos and angle of the tool trace inserted at the start
 
@@ -171,7 +170,6 @@ function ENT:Update( ArgsTable )
 		return false, "Turn off the engine before updating it!"
 	end
 
-	local Id = ArgsTable[4] -- Argtable[4] is the engine ID
 	local Lookup = EngineTable[Id]
 
 	if Lookup.model ~= self.Model then

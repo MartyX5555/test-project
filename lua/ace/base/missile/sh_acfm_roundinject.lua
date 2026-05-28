@@ -118,10 +118,10 @@ function ACEM_ModifyCrateTextFuncs()
 
 				local str = { origCrateTxt }
 
-				local Type = IsValid(crate) and crate.RoundId or data.RoundId
+				local Type = IsValid(crate) and crate.RoundData.RoundGunClass
 
-				local guidance  = IsValid(crate) and crate.RoundData7 or data.Data7
-				local fuse	= IsValid(crate) and crate.RoundData8 or data.Data8
+				local guidance  = IsValid(crate) and crate.RoundData.Guidance
+				local fuse	= IsValid(crate) and crate.RoundData.Fuse
 
 				if guidance then
 					guidance = ACEM_CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
@@ -166,7 +166,7 @@ function ACEM_ModifyRoundBaseGunpowder()
 
 		PlayerData, Data, ServerData, GUIData = oldGunpowder(PlayerData, Data, ServerData, GUIData)
 
-		Data.Id = PlayerData.Id
+		Data.RoundGunClass = PlayerData.RoundGunClass
 
 		return PlayerData, Data, ServerData, GUIData
 
@@ -176,8 +176,6 @@ function ACEM_ModifyRoundBaseGunpowder()
 	ACEM_ModifiedRoundBaseGunpowder = true
 
 end
-
-
 
 timer.Simple(1, ACEM_ModifyRoundBaseGunpowder)
 timer.Simple(1, ACEM_ModifyRoundDisplayFuncs)

@@ -3,74 +3,99 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-DEFINE_BASECLASS("ace_explosive")
-
 local GunTable	= ACE.Weapons.Guns
 local GuidanceTable = ACE.Guidance
 local FuseTable	= ACE.Fuse
 
 function ENT:Initialize()
-
-	self.PhysObj = self:GetPhysicsObject()
-
-	if not IsValid(self.PhysObj) then self:Remove() return end --Prevent duping missiles (to stop errors)
-
-	self.BaseClass.Initialize(self)
-
-	if not IsValid(ACE.GetEntityOwner(self)) then
-		ACE.SetEntityOwner(self, player.GetAll()[1])
-	end
+	self.Inputs = WireLib.CreateInputs( self, { "Detonate" } )
+	self.ThinkDelay = 0.1
+	self.BulletData = {}
 
 	self.DetonateOffset = nil
-
-	self.PhysObj:EnableGravity( false )
-	self.PhysObj:EnableMotion( false )
-
 	self.SpecialDamage = true	-- If true needs a special ACE_OnDamage function
 	self.SpecialHealth = true	-- If true needs a special ACE_Activate function
+	self.DoNotDuplicate  = true
 
+	self.Launcher = NULL
+	self.ForceTdelay = 0
 	self.CanTrack	= false		-- Used when the missile has waited the required time to guide
 	self.Timer	= false
 
 	self.CutoutTime = CurTime() + 10000
 
 	self:SetNWFloat("LightSize", 0)
-
 end
 
+function ENT:InitializePhysics(model)
+	if model then
+		self:SetModel(model)
+	end
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
+	self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
-
+	local phys = self:GetPhysicsObject()
+	if IsValid(phys) then
+		phys:Wake()
+		phys:EnableMotion(true)
+		phys:SetMass( 10 )
+		phys:EnableGravity( false )
+		phys:EnableMotion( false )
+		self.PhysObj = phys
+	end
+	return phys
+end
 --===========================================================================================
 ----- BulletData functions
 --===========================================================================================
-function ENT:SetBulletData(bdata) -- Called before to Initialize()
+function ENT:SetCrateData(Crate)
+	if not IsValid(Crate) then return end
 
-	self.BaseClass.SetBulletData(self, bdata)
-
-	local gun = GunTable[bdata.Id]
-
-	self:SetModelEasy( gun and (gun.round.model or gun.model) or "models/missiles/aim9.mdl" )
-
-	self:ParseBulletData(bdata)
-
+	local BulletData = table.Copy(Crate.BulletData)
+	local gun = GunTable[BulletData.Id]
 	local roundWeight = ACE_GetGunValue(bdata, "weight") or 10
 
-	self.PhysObj = self:GetPhysicsObject()
+	BulletData.Entity = self
+	BulletData.Crate = self:EntIndex()
+	BulletData.Owner = BulletData.Owner or ACE.GetEntityOwner(self)
+	self:NetworkBulletData(BulletData)
 
-	self.PhysObj:SetMass( roundWeight )
-
+	self.RoundData = table.Copy(Crate.RoundData) -- raw data.
+	self.BulletData = BulletData -- converted data
 	self.RoundWeight = roundWeight
-
 	self:ConfigureFlight()
-
 	self.TrackDelay = gun.guidelay or 0
 
+	self:PrepareMissileSensors()
+	local phys = self:InitializePhysics(gun.model)
+	if IsValid(phys) then
+		phys:SetMass( roundWeight )
+	end
+	self:SetColor(Crate:GetColor())
+
+end
+--===========================================================================================
+----- Guidance and Fuse functions
+--===========================================================================================
+function ENT:SetGuidance(guidance)
+	self.Guidance = guidance
+	guidance:Configure(self)
+	return guidance
 end
 
-function ENT:ParseBulletData(bdata)
+function ENT:SetFuse(fuse)
+	self.Fuse = fuse
+	fuse:Configure(self, self.Guidance or self:SetGuidance(GuidanceTable.Dumb()))
+	return fuse
+end
 
-	local guidance  = bdata.Data7
-	local fuse	= bdata.Data8
+function ENT:PrepareMissileSensors()
+
+	local RoundData = self.RoundData
+	local guidance  = RoundData.Guidance
+	local fuse	= RoundData.Fuse
 
 	if guidance then
 		guidance = ACEM_CreateConfigurable(guidance, GuidanceTable, bdata, "guidance")
@@ -81,14 +106,33 @@ function ENT:ParseBulletData(bdata)
 		fuse = ACEM_CreateConfigurable(fuse, FuseTable, bdata, "fuses")
 		if fuse then self:SetFuse(fuse) end
 	end
+end
+
+function ENT:NetworkBulletData(BulletData)
+
+	--if type(bullet) ~= "table" and bullet.BulletData then
+	--	self:SetNWString( "Sound", bullet.Sound or (bullet.Primary and bullet.Primary.Sound))
+	--	self:SetOwner(bullet:GetOwner())
+	--	bullet = bullet.BulletData
+	--end
+
+	self:SetNWInt( "Caliber", BulletData.Caliber or 10)
+	self:SetNWInt( "ProjMass", BulletData.ProjMass or 10)
+	self:SetNWInt( "FillerMass", BulletData.FillerMass or 0)
+	self:SetNWInt( "DragCoef", BulletData.DragCoef or 1)
+	self:SetNWString( "AmmoType", BulletData.Type or "AP")
+	self:SetNWInt( "Tracer" , BulletData.Tracer or 0)
+	local col = BulletData.Colour or self:GetColor()
+	self:SetNWVector( "Color" , Vector(col.r, col.g, col.b))
+	self:SetNWVector( "TracerColour" , Vector(col.r, col.g, col.b))
 
 end
+
 
 --===========================================================================================
 ----- Physics functions
 --===========================================================================================
 function ENT:CalcFlight()
-
 	if self.MissileDetonated then return end
 
 	local Pos	= self.CurPos
@@ -304,12 +348,12 @@ function ENT:CalcFlight()
 
 	end
 
-	self.TrueVel = (EndPos - Pos) / DeltaTime
-	self.LastVel	= Vel
-	self.LastPos	= Pos
-	self.CurPos	= EndPos
-	self.CurDir	= Dir
-	self.FlightTime = Flight
+	self.TrueVel       = (EndPos - Pos) / DeltaTime
+	self.LastVel       = Vel
+	self.LastPos       = Pos
+	self.CurPos        = EndPos
+	self.CurDir        = Dir
+	self.FlightTime    = Flight
 
 	--Missile trajectory debugging
 	--.Line(Pos, EndPos, 10, Color(0, 255, 0))
@@ -332,15 +376,18 @@ function ENT:DoFlight(ToPos, ToDir)
 		self:SetPos(setPos)
 		self:SetAngles(setDir:Angle())
 	end
+end
 
-	self.BulletData.Pos = setPos
+function ENT:TriggerInput( inp, value )
+	if inp == "Detonate" and value ~= 0 then
+		self:Detonate()
+	end
 end
 
 --===========================================================================================
 ----- Launch function
 --===========================================================================================
 function ENT:Launch()
-
 	if not IsValid(self.PhysObj) then self.PhysObj = self:GetPhysicsObject() end
 
 	if not self.Guidance then
@@ -456,57 +503,36 @@ function ENT:ConfigureFlight()
 
 	self:MotorStart( GunData, Round, BulletData )
 
-	self.FlightTime	= 0
-	self.Gravity		= GetConVar("sv_gravity"):GetFloat()
-	self.DragCoef	= Round.dragcoef
-	self.DragCoefFlight = Round.dragcoefflight or Round.dragcoef
-	self.MinimumSpeed	= Round.minspeed
+	self.FlightTime        = 0
+	self.Gravity           = GetConVar("sv_gravity"):GetFloat()
+	self.DragCoef          = Round.dragcoef
+	self.DragCoefFlight    = Round.dragcoefflight or Round.dragcoef
+	self.MinimumSpeed      = Round.minspeed
 
-	self.FinMultiplier  = Round.finmul
-	self.Agility		= GunData.agility or 1
-	self.guidanceInac	= GunData.guidanceInac or 0
-	self.CurPos		= BulletData.Pos
-	self.CurDir		= BulletData.Flight:GetNormalized()
-	self.LastPos		= self.CurPos
-	self.HitNorm		= vector_origin
-	self.FirstThink	= true
-	self.MinArmingDelay = math.max(Round.armdelay or GunData.armdelay, GunData.armdelay)
+	self.FinMultiplier     = Round.finmul
+	self.Agility           = GunData.agility or 1
+	self.guidanceInac      = GunData.guidanceInac or 0
+	self.CurPos            = self:GetPos()
+	self.CurDir            = self:GetForward():GetNormalized()
+	self.LastPos           = self.CurPos
+	self.HitNorm           = vector_origin
+	self.FirstThink        = true
+	self.MinArmingDelay    = math.max(Round.armdelay or GunData.armdelay, GunData.armdelay)
 
-	local Mass		= GunData.weight
-	local Length		= GunData.length
-	local Width		= GunData.caliber
+	local Mass             = GunData.weight
+	local Length           = GunData.length
+	local Width            = GunData.caliber
 
-	self.RotMultipler	= GunData.rotmult or 1
-	self.MaxTorque	= GunData.maxrottq or 1000000
-	self.Inertia		= 0.08333 * Mass * (3.1416 * (Width / 2) ^ 2 + Length)
-	self.TorqueMul	= Length * 3
-	self.RotAxis		= vector_origin
+	self.RotMultipler      = GunData.rotmult or 1
+	self.MaxTorque         = GunData.maxrottq or 1000000
+	self.Inertia           = 0.08333 * Mass * (3.1416 * (Width / 2) ^ 2 + Length)
+	self.TorqueMul         = Length * 3
+	self.RotAxis           = vector_origin
 
 	self.GhostPeriod = CurTime() + (GunData.ghosttime or 1)
 
 	self:UpdateBodygroups()
 	self:UpdateSkin()
-
-end
-
---===========================================================================================
------ Guidance and Fuse functions
---===========================================================================================
-function ENT:SetGuidance(guidance)
-
-	self.Guidance = guidance
-	guidance:Configure(self)
-
-	return guidance
-
-end
-
-function ENT:SetFuse(fuse)
-
-	self.Fuse = fuse
-	fuse:Configure(self, self.Guidance or self:SetGuidance(GuidanceTable.Dumb()))
-
-	return fuse
 
 end
 
@@ -583,7 +609,25 @@ function ENT:ForceDetonate()
 	ACE.Missiles[self] = nil
 
 	self.DetonateOffset = self.LastVel and self.LastVel:GetNormalized() * -1
-	self.BaseClass.Detonate(self, self.BulletData)
+	if self.Detonated then return end
+	self.Detonated = true
+
+	local bdata = self.BulletData
+	local phys  = self:GetPhysicsObject()
+	local pos	= self:GetPos()
+
+	local phyvel =  phys and phys:GetVelocity() or Vector(0, 0, 1000)
+	bdata.Flight =  bdata.Flight or phyvel
+
+	if self.Fuse.PerformDetonation then
+		self.Fuse:PerformDetonation( self, bdata, phys, pos )
+	else
+		ACE.Fuse.Contact():PerformDetonation( self, bdata, phys, pos )
+	end
+
+	timer.Simple(1, function() if IsValid(self) then if IsValid(self.FakeCrate) then self.FakeCrate:Remove() end self:Remove() end end)
+
+	debugoverlay.Text(pos, "Missile Pos", 10 )
 
 end
 

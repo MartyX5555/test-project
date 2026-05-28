@@ -28,20 +28,20 @@ function Round.convert( _, PlayerData )
 	PlayerData.ProjLength	=  PlayerData.ProjLength	or 0
 	PlayerData.Tracer	=  PlayerData.Tracer		or 0
 	PlayerData.TwoPiece	=  PlayerData.TwoPiece	or 0
-	PlayerData.Data5	= PlayerData.Data5 and math.max(PlayerData.Data5, 0) or 0
-	PlayerData.Data6	= PlayerData.Data6		or 0
+	PlayerData.FillerVol	= PlayerData.FillerVol and math.max(PlayerData.FillerVol, 0) or 0
+	PlayerData.FuseDelay	= PlayerData.FuseDelay		or 0
 
 	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 	--Shell sturdiness calcs
-	Data.ProjMass		= math.max(GUIData.ProjVolume-PlayerData.Data5,0) * 7.9 / 1000 + math.min(PlayerData.Data5,GUIData.ProjVolume) * ACE.HEDensity / 1000--Volume of the projectile as a cylinder - Volume of the filler * density of steel + Volume of the filler * density of TNT
+	Data.ProjMass		= math.max(GUIData.ProjVolume-PlayerData.FillerVol,0) * 7.9 / 1000 + math.min(PlayerData.FillerVol,GUIData.ProjVolume) * ACE.HEDensity / 1000--Volume of the projectile as a cylinder - Volume of the filler * density of steel + Volume of the filler * density of TNT
 	Data.MuzzleVel		= ACE_MuzzleVelocity( Data.PropMass, Data.ProjMass, Data.Caliber )
 	local Energy			= ACE_Kinetic( Data.MuzzleVel * 39.37 , Data.ProjMass, Data.LimitVel )
 
 	local MaxVol			= ACE_RoundShellCapacity( Energy.Momentum, Data.FrArea, Data.Caliber, Data.ProjLength )
 	GUIData.MinFillerVol	= 0
 	GUIData.MaxFillerVol	= math.min(GUIData.ProjVolume,MaxVol * 0.9)
-	GUIData.FillerVol	= math.min(PlayerData.Data5,GUIData.MaxFillerVol)
+	GUIData.FillerVol	= math.min(PlayerData.FillerVol,GUIData.MaxFillerVol)
 	Data.FillerMass		= GUIData.FillerVol * ACE.HEDensity / 1000
 
 	Data.ProjMass		= math.max(GUIData.ProjVolume-GUIData.FillerVol,0) * 7.9 / 1000 + Data.FillerMass
@@ -58,11 +58,11 @@ function Round.convert( _, PlayerData )
 	Data.BoomPower		= Data.PropMass + Data.FillerMass
 
 	Data.HasPenned		= false
-	Data.DetDelay		= math.Clamp(PlayerData.Data6, 0, 5)
+	Data.FuseDelay		= math.Clamp(PlayerData.FuseDelay, 0, 5)
 
 	if SERVER then --Only the crates need this part
-		ServerData.Id	= PlayerData.Id
-		ServerData.Type	= PlayerData.Type
+		ServerData.Id	= PlayerData.RoundGunClass
+		ServerData.Type = PlayerData.RoundType
 		return table.Merge(Data,ServerData)
 	end
 
@@ -88,12 +88,12 @@ end
 
 function Round.network( Crate, BulletData )
 
-	Crate:SetNWString( "AmmoType", "APHE" )
+	Crate:SetNWString( "AmmoType", Round.Type )
 	Crate:SetNWString( "AmmoID", BulletData.Id )
 	Crate:SetNWFloat( "Caliber", BulletData.Caliber )
 	Crate:SetNWFloat( "ProjMass", BulletData.ProjMass )
 	Crate:SetNWFloat( "FillerMass", BulletData.FillerMass )
-	Crate:SetNWFloat( "FuseDelay", BulletData.DetDelay )
+	Crate:SetNWFloat( "FuseDelay", BulletData.FuseDelay )
 	Crate:SetNWFloat( "PropMass", BulletData.PropMass )
 	Crate:SetNWFloat( "DragCoef", BulletData.DragCoef )
 	Crate:SetNWFloat( "MuzzleVel", BulletData.MuzzleVel )
@@ -114,7 +114,7 @@ function Round.cratetxt( BulletData )
 		"Max Penetration: ", math.floor(DData.MaxPen), " mm\n",
 		"Blast Radius: ", math.Round(DData.BlastRadius, 1), " m\n",
 		"Blast Energy: ", math.floor(BulletData.FillerMass * ACE.HEPower), " KJ\n",
-		"Fuse Delay: ", math.floor(BulletData.DetDelay * 1000), " ms"
+		"Fuse Delay: ", math.floor(BulletData.FuseDelay * 1000), " ms"
 	}
 
 	return table.concat(str)
@@ -134,7 +134,7 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 			if Bullet.HasPenned == false then
 
 				Bullet.HasPenned	= true
-				Bullet.FuseLength	= Bullet.DetDelay or 0
+				Bullet.FuseLength	= Bullet.FuseDelay or 0
 				Bullet.InitTime	= SysTime()
 				Bullet.FlightTime	= 0
 			end
@@ -237,30 +237,29 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id		= acemenupanel.AmmoData.Data.id			--AmmoSelect GUI
-		PlayerData.Type		= "APHE"									--Hardcoded, match as Round.Type instead
-		PlayerData.PropLength	= acemenupanel.AmmoData.PropLength		--PropLength slider
-		PlayerData.ProjLength	= acemenupanel.AmmoData.ProjLength		--ProjLength slider
-		PlayerData.Data5		= acemenupanel.AmmoData.FillerVol
-		PlayerData.Data6		= acemenupanel.AmmoData.DetDelay
-		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
+		PlayerData.RoundGunClass    = acemenupanel.AmmoData.Data.id			--AmmoSelect GUI
+		PlayerData.RoundType        = Round.Type									--Hardcoded, match as Round.Type instead
+		PlayerData.PropLength       = acemenupanel.AmmoData.PropLength		--PropLength slider
+		PlayerData.ProjLength       = acemenupanel.AmmoData.ProjLength		--ProjLength slider
+		PlayerData.FillerVol        = acemenupanel.AmmoData.FillerVol
+		PlayerData.FuseDelay        = acemenupanel.AmmoData.FuseDelay
+		PlayerData.Tracer           = acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece         = acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
-
-	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
-	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
-	RunConsoleCommand( "acemenu_data3", Data.PropLength )	--For Gun ammo, Data3 should always be Propellant
-	RunConsoleCommand( "acemenu_data4", Data.ProjLength )	--And Data4 total round mass
-	RunConsoleCommand( "acemenu_data5", Data.FillerVol )
-	RunConsoleCommand( "acemenu_data6", Data.DetDelay )
-	RunConsoleCommand( "acemenu_data10", Data.Tracer )
-	RunConsoleCommand( "acemenu_data11", Data.TwoPiece )
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundGunClass", acemenupanel.AmmoData.Data.id)
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundType", Round.Type)
+	ACE.MenuSendTableValue("Data", "RoundData", "PropLength", Data.PropLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "ProjLength", Data.ProjLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "FillerVol", Data.FillerVol)
+	ACE.MenuSendTableValue("Data", "RoundData", "FuseDelay", Data.FuseDelay)
+	ACE.MenuSendTableValue("Data", "RoundData", "Tracer", Data.Tracer)
+	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "HE Filler Volume", "HE Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
-	acemenupanel:AmmoSlider("DetDelay",Data.DetDelay,0,1,3, "Detonation Fuse Delay", "Delay : " .. (math.Round(Data.DetDelay * 1000,3)) .. " ms") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("FuseDelay",Data.FuseDelay,0,5,3, "Fuse Delay", "Delay : " .. (math.Round(Data.FuseDelay * 1000,3)) .. " ms") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 
 	acemenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m")	--Proj muzzle velocity (Name, Desc)
 	acemenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\n Average Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \n Average Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)

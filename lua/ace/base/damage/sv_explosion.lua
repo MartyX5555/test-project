@@ -250,7 +250,7 @@ do
 
 	--converts what would be multiple simultaneous cache detonations into one large explosion
 	function ACE_ScaledExplosion( ent )
-		if ent.RoundType and ent.RoundType == "Refill" then return end
+		if ent.RoundData.RoundType and ent.RoundData.RoundType == "Refill" then return end
 
 		local HEWeight
 		local ExplodePos = {}

@@ -3,26 +3,6 @@ TOOL.Category		= "Construction"
 TOOL.Name			= "#Tool.acemenu.listname"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
-
-TOOL.ClientConVar[ "type" ] = "gun"
-TOOL.ClientConVar[ "id" ] = "7.62mmMG" --Used by guns and crates (as example)
-
-TOOL.ClientConVar[ "data1" ] = "7.62mmMG"
-TOOL.ClientConVar[ "data2" ] = "AP"
-TOOL.ClientConVar[ "data3" ] = 0
-TOOL.ClientConVar[ "data4" ] = 0
-TOOL.ClientConVar[ "data5" ] = 0
-TOOL.ClientConVar[ "data6" ] = 0
-TOOL.ClientConVar[ "data7" ] = 0
-TOOL.ClientConVar[ "data8" ] = 0
-TOOL.ClientConVar[ "data9" ] = 0
-TOOL.ClientConVar[ "data10" ] = 0
-TOOL.ClientConVar[ "data11" ] = 0
-TOOL.ClientConVar[ "data12" ] = 0
-TOOL.ClientConVar[ "data13" ] = 0
-TOOL.ClientConVar[ "data14" ] = 0
-TOOL.ClientConVar[ "data15" ] = 0
-
 TOOL.SelectedEntities = {}
 
 cleanup.Register( "acemenu" )
@@ -79,15 +59,15 @@ end
 
 -- Spawn/update functions
 function TOOL:LeftClick( trace )
-
 	if CLIENT then return true end
 	if not IsValid( trace.Entity ) and not trace.Entity:IsWorld() then return false end
 
 	local ply	= self:GetOwner()
-	local Type	= self:GetClientInfo( "type" )
-	local Id	= self:GetClientInfo( "id" )
-	local entClass
+	local Type	= ACE.GetPlayerValue(ply, "Global", "Type")
+	local Id	= ACE.GetPlayerValue(ply, "Global", "Id")
+	if not (Type or Id) then return false end
 
+	local entClass
 	local TypeId = ACE.Weapons[Type][Id]
 
 	if not TypeId then
@@ -97,38 +77,29 @@ function TOOL:LeftClick( trace )
 			entClass = "ace_fueltanks"
 		end
 	else
-		entClass = TypeId["ent"]
+		entClass = TypeId.ent
 	end
 
 	local DupeClass = duplicator.FindEntityClass( entClass )
 
 	if DupeClass then
 
-		local ArgTable = {}
-		ArgTable[2] = trace.HitNormal:Angle():Up():Angle()
-		ArgTable[1] = trace.HitPos + trace.HitNormal * 50
-
-		debugoverlay.Cross(trace.HitPos, 5, 5, Color(255,0,0), true)
-		debugoverlay.Cross(ArgTable[1], 5, 5, Color(255,0,0), true)
-
-		local ArgList = list.Get("ACECvars")
-
-		-- Reading the list packaged with the ent to see what client CVar it needs
-		for Number, Key in pairs( ArgList[entClass] ) do
-			ArgTable[ Number + 2 ] = self:GetClientInfo( Key )
-		end
+		local Pos = trace.HitPos
+		local Ang = trace.HitNormal:Angle()
+		Ang.pitch = Ang.pitch + 90
+		local Data = table.Copy(ACE.GetPlayerData(ply).Data)
 
 		if trace.Entity:GetClass() == entClass and trace.Entity.CanUpdate then
-			table.insert( ArgTable, 1, ply )
-			local success, msg = trace.Entity:Update( ArgTable )
+			local success, msg = trace.Entity:Update( ply, Id, Data )
 			ACE_SendNotify( ply, success, msg )
 		else
 			-- Using the Duplicator entity register to find the right factory function
-			local Ent = DupeClass.Func( ply, unpack( ArgTable ) ) --aka function like MakeACE_Ammo
+			local Ent = DupeClass.Func( ply, Pos, Ang, Id, Data ) --aka function like MakeACE_Ammo
 			if not IsValid(Ent) then ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
 
+			local TruePos = Ent:LocalToWorld(Vector(0,0,-Ent:OBBMins().z + 1))
+			Ent:SetPos(TruePos)
 			Ent:Activate()
-			Ent:DropToFloor()
 			Ent:GetPhysicsObject():EnableMotion( false )
 
 			undo.Create( entClass )
@@ -139,7 +110,7 @@ function TOOL:LeftClick( trace )
 
 		return true
 	else
-		print(ACFTranslation.ACFMenuTool[16])
+		ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
 	end
 
 end

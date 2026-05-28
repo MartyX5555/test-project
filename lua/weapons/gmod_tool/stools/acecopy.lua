@@ -91,7 +91,7 @@ function TOOL:RightClick( trace )
 		ArgsTable[11] = ent.GearTable[7];
 		ArgsTable[12] = ent.GearTable[8];
 		ArgsTable[13] = ent.GearTable[9];
-		ArgsTable[14] = ent.GearTable.Final;
+		ArgsTable[14] = ent.FinalDrive;
 
 		self.GearboxCopyData = ArgsTable;
 

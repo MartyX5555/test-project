@@ -204,31 +204,12 @@ end
 
 do
 
-	-- Checks if the provided string vector matches the desired format.
-	-- Define a pattern to match the format
-	local pattern = "^%d+%.?%d*:%d+%.?%d*:%d+%.?%d*$"
-	local function IsValidStringScale( Id )
-		if not isstring( Id ) then return false end
-		if not string.match(Id, pattern) then return false end
-		return true
-	end
+	-----------------------------  SCALABLE HELPER FUNCTIONS  -----------------------------
 
-	-- Converts an already verified string vector into a valid vector scale.
-	local function ParseToVector( ScaleId )
-		if not isstring(ScaleId) then return end
-
-		local Result = string.Explode( ":", ScaleId )
-
-		local X = tonumber(Result[1])
-		local Y = tonumber(Result[2])
-		local Z = tonumber(Result[3])
-
-		return Vector(X, Y, Z)
-	end
-
+	local DefaultScale = Vector(10,10,10)
 	-- Clamps the already converted scale so its within the size limits, defined on globals.
 	local function ClampScale( Scale )
-		if not isvector( Scale ) then return end
+		if not isvector( Scale ) then return DefaultScale end
 
 		local MinSize = ACE.CrateMinimumSize
 		local MaxSize = ACE.CrateMaximumSize
@@ -236,17 +217,6 @@ do
 		Scale.x = math.Clamp( math.Round(Scale.x, 1), MinSize, MaxSize)
 		Scale.y = math.Clamp( math.Round(Scale.y, 1), MinSize, MaxSize)
 		Scale.z = math.Clamp( math.Round(Scale.z, 1), MinSize, MaxSize)
-
-		return Scale
-	end
-
-	-- Tries to convert a scale id, having a string format, to a vector scale. If its already a vector, skip the process.
-	local function ConvertStringScale( ScaleId )
-		if isvector( ScaleId ) then return ScaleId end
-		if not IsValidStringScale( ScaleId ) then return end
-
-		local Scale = ParseToVector( ScaleId )
-		Scale = ClampScale( Scale )
 
 		return Scale
 	end
@@ -263,8 +233,76 @@ do
 		return Scale
 	end
 
-	function MakeACE_Ammo(Owner, Pos, Angle, Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13, Data14, Data15)
+	local function GetCrateDimensions(Id, Ammo, Data)
+		if Id == "Scalable" then return ClampScale(Data.Dimensions) end -- New
+		if isvector( Id ) then return ClampScale(Id) end -- Old
+		if LegacyAmmoTable[Id] then return CreateLegacyScale(Id, Ammo) end -- QoL legacy to scalable converter
+		return DefaultScale -- should not happen
+	end
 
+	-----------------------------  ROUNDDATA HELPER FUNCTIONS  -----------------------------
+
+	--List of munitions no longer stay on ACE
+	local AmmoComp = {
+		["APDSS"]		= "APDS",
+		["APFSDSS"]		= "APFSDS"
+	}
+	--List of ids which no longer stay on ACE. Useful to replace them with the closest counterparts
+	local BackComp = {
+		["20mmHRAC"]        = "20mmRAC",
+		["30mmHRAC"]        = "30mmRAC",
+		["105mmSB"]         = "100mmSBC",
+		["120mmSB"]         = "120mmSBC",
+		["140mmSB"]         = "140mmSBC",
+		["170mmSB"]         = "170mmSBC",
+		["70mmFFARDAGR"]    = "70mmFFAR",
+		["9M113 ASM"]       = "9M133 ASM",
+		["9M311"]           = "9M311 SAM",
+		["SIMBAD-RC SAM"]   = "Mistral SAM"
+	}
+
+	local function VerifyRoundData(Data)
+		if istable(Data.RoundData) then
+			local RoundData = Data.RoundData
+			if not ACE_CheckGun( RoundData.RoundGunClass ) then
+				RoundData.RoundGunClass = BackComp[RoundData.RoundGunClass] or "100mmC"
+			end
+			if not ACE_CheckRound( RoundData.RoundType ) then
+				RoundData.RoundType = AmmoComp[ RoundData.RoundType ] or "AP"
+				RoundData.RoundPropellant = tonumber(RoundData.RoundPropellant) or 0
+				RoundData.RoundProjectile = tonumber(RoundData.RoundProjectile) or 0
+				RoundData.Tracer = tonumber(RoundData.Tracer) or 0
+				RoundData.TwoPiece = tonumber(RoundData.TwoPiece) or 0
+			end
+		else
+			if not ACE_CheckGun(Data.RoundId) then
+				Data.RoundId = BackComp[Data.RoundId] or "100mmC"
+			end
+			if not ACE_CheckRound(Data.RoundType) then
+				Data.RoundType = AmmoComp[ Data.RoundType ] or "AP"
+			end
+			if ACE.LegacyRoundData[Data.RoundType] then
+				Data.RoundData = {}
+				local RoundType = Data.RoundType
+				for old, new in pairs(ACE.LegacyRoundData[RoundType]) do
+					if not Data[old] then continue end
+					Data.RoundData[new] = Data[old]
+				end
+				Data.RoundData.Tracer = tonumber(Data.RoundData.Tracer) or 0
+				Data.RoundData.TwoPiece = tonumber(Data.RoundData.TwoPiece) or 0
+
+				local GunData = GunTable[Data.RoundId]
+				local gunClass = GunClasses[GunData.gunclass]
+				if gunClass.type == "missile" then
+					Data.RoundData.Guidance = tostring(Data.RoundData7) or "Dumb"
+					Data.RoundData.Fuse = tostring(Data.RoundData8) or "Contact:AD=0"
+				end
+			end
+		end
+	end
+
+	-- Id is "Scalable" if its using scalability. Now, Data.Dimensions has the scale as vector
+	function MakeACE_Ammo(Owner, Pos, Angle, Id, Data)
 		if not Owner:CheckLimit("_ace_ammo") then return false end
 
 		local Ammo = ents.Create("ace_ammo")
@@ -279,73 +317,58 @@ do
 			Ammo:SetPos(Pos)
 			Ammo:Spawn()
 
-			-- If the crate is not valid in the system, but it could be in the LegacyAmmoTable o be scalable.
-			if not ACE_CheckAmmo( Id ) then
+			-- If the crate is actually scalable or it was some old crate no longer existent, registered in the legacy table.
+			if Id == "Scalable" or isvector(Id) or LegacyAmmoTable[Id] then
 
-				local Scale
+				local ModelData = ACE.ModelData["Box"]
 
-				if isstring(Id) and LegacyAmmoTable[Id] then
-					Scale = CreateLegacyScale(Id, Ammo)
-				else
-					Scale = ConvertStringScale(Id)
-				end
+				Model = ModelData.Model
+				Dimensions = GetCrateDimensions(Id, Ammo, Data)
+				Weight = (Dimensions.x * Dimensions.y * Dimensions.z) / 200
 
-				if isvector(Scale) then
+				local DefaultSize    = ModelData.DefaultSize
+				local Mesh           = ModelData.CustomMesh
+				local PhysMaterial   = ModelData.physMaterial
+				local EntityScale    = Vector(Dimensions.x / DefaultSize, Dimensions.y / DefaultSize, Dimensions.z / DefaultSize)
 
-					local ModelData = ACE.ModelData["Box"]
+				Ammo.ScaleData = {
+					Mesh = Mesh,
+					Scale = EntityScale,
+					Size = DefaultSize,
+					Material = PhysMaterial,
+				}
 
-					Id = Scale
-					Model = ModelData.Model
-					Weight = (Scale.x * Scale.y * Scale.z) / 200
-					Dimensions = Scale
+				Ammo:SetMaterial("models/props_canal/metalwall005b")
+				Ammo:SetModel( Model ) --Sending the model to client
+				Ammo:PhysicsInit( SOLID_VPHYSICS )
+				Ammo:SetMoveType( MOVETYPE_VPHYSICS )
+				Ammo:SetSolid( SOLID_VPHYSICS )
 
-					local DefaultSize    = ModelData.DefaultSize
-					local Mesh           = ModelData.CustomMesh
-					local PhysMaterial   = ModelData.physMaterial
-					local EntityScale    = Vector(Scale.x / DefaultSize, Scale.y / DefaultSize, Scale.z / DefaultSize)
-
-					Ammo.ScaleData = {
-						Mesh = Mesh,
-						Scale = EntityScale,
-						Size = DefaultSize,
-						Material = PhysMaterial,
-					}
-
-					Ammo:SetMaterial("models/props_canal/metalwall005b")
-					Ammo:SetModel( Model ) --Sending the model to client
-					Ammo:PhysicsInit( SOLID_VPHYSICS )
-					Ammo:SetMoveType( MOVETYPE_VPHYSICS )
-					Ammo:SetSolid( SOLID_VPHYSICS )
-
-					Ammo.IsScalable = true
-					Ammo:ACE_SetScale( Ammo.ScaleData )
-
-				else
+				Id = "Scalable"
+				Ammo.IsScalable = true
+				Ammo:ACE_SetScale( Ammo.ScaleData )
+			else
+				if not ACE_CheckAmmo( Id ) then
 					Id = "Shell100mm"
 				end
-			end
-
-			-- If the crate is legacy, but still valid in the system
-			if ACE_CheckAmmo( Id ) then
-
 				local AmmoData = AmmoTable[Id]
 
 				Model = AmmoData.model
-				Weight = AmmoData.weight
 				Dimensions = Vector( AmmoData.Length, AmmoData.Width, AmmoData.Height )
+				Weight = AmmoData.weight
 
 				Ammo:SetModel( Model )
 				Ammo:PhysicsInit( SOLID_VPHYSICS )
 				Ammo:SetMoveType( MOVETYPE_VPHYSICS )
 				Ammo:SetSolid( SOLID_VPHYSICS )
-
 			end
 
 			Ammo.Id = Id
 			Ammo.Model = Model
 			Ammo.Dimensions = Dimensions
 
-			Ammo:CreateAmmo(Id, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13, Data14, Data15)
+			VerifyRoundData(Data)
+			Ammo:CreateAmmo(Id, Data.RoundData)
 
 			Ammo.Ammo        = Ammo.Capacity
 			Ammo.EmptyMass   = Weight or 1
@@ -361,23 +384,22 @@ do
 		end
 	end
 end
+duplicator.RegisterEntityClass("ace_ammo", MakeACE_Ammo, "Pos", "Angle", "Id", "Data" )
 
-list.Set( "ACECvars", "ace_ammo", {"id", "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10", "data11", "data12", "data13", "data14", "data15"} )
-duplicator.RegisterEntityClass("ace_ammo", MakeACE_Ammo, "Pos", "Angle", "Id", "RoundId", "RoundType", "RoundPropellant", "RoundProjectile", "RoundData5", "RoundData6", "RoundData7", "RoundData8", "RoundData9", "RoundData10" , "RoundData11", "RoundData12", "RoundData13", "RoundData14", "RoundData15" )
-
-
-function ENT:Update( ArgsTable )
+function ENT:Update( _, Id, Data )
 
 	-- That table is the player data, as sorted in the ACECvars above, with player who shot,
 	-- and pos and angle of the tool trace inserted at the start
 
 	local msg = "Ammo crate updated successfully!"
+	local RoundData = Data.RoundData
+	local CurRoundData = self.RoundData
 
-	if ArgsTable[6] == "Refill" then -- Argtable[6] is the round type. If it's refill it shouldn't be loaded into guns, so we refuse to change to it
+	if RoundData.RoundType == "Refill" then -- Argtable[6] is the round type. If it's refill it shouldn't be loaded into guns, so we refuse to change to it
 		return false, "Refill ammo type is only avaliable for new crates!"
 	end
 
-	if ArgsTable[5] ~= self.RoundId then -- Argtable[5] is the weapon ID the new ammo loads into
+	if RoundData.RoundGunClass ~= CurRoundData.RoundGunClass then -- Argtable[5] is the weapon ID the new ammo loads into
 		for _, Gun in pairs( self.Master ) do
 			if IsValid( Gun ) then
 				Gun:Unlink( self )
@@ -385,7 +407,7 @@ function ENT:Update( ArgsTable )
 		end
 		msg = "New ammo type loaded, crate unlinked."
 	else -- ammotype wasn't changed, but let's check if new roundtype is blacklisted
-		local Blacklist = ACE.AmmoBlacklist[ ArgsTable[6] ] or {}
+		local Blacklist = ACE.AmmoBlacklist[ RoundData.RoundType ] or {}
 
 		for _, Gun in pairs( self.Master ) do
 			if IsValid( Gun ) and table.HasValue( Blacklist, Gun.Class ) then
@@ -397,7 +419,7 @@ function ENT:Update( ArgsTable )
 
 	local AmmoPercent = self.Ammo / math.max(self.Capacity,1)
 
-	self:CreateAmmo(ArgsTable[4], ArgsTable[5], ArgsTable[6], ArgsTable[7], ArgsTable[8], ArgsTable[9], ArgsTable[10], ArgsTable[11], ArgsTable[12], ArgsTable[13], ArgsTable[14], ArgsTable[15], ArgsTable[16], ArgsTable[17], ArgsTable[18], ArgsTable[19])
+	self:CreateAmmo(Id, RoundData)
 
 	self.Ammo = math.floor(self.Capacity * AmmoPercent)
 
@@ -461,75 +483,13 @@ end
 
 do
 
-	--List of ids which no longer stay on ACE. Useful to replace them with the closest counterparts
-	local BackComp = {
-		["20mmHRAC"]        = "20mmRAC",
-		["30mmHRAC"]        = "30mmRAC",
-		["105mmSB"]         = "100mmSBC",
-		["120mmSB"]         = "120mmSBC",
-		["140mmSB"]         = "140mmSBC",
-		["170mmSB"]         = "170mmSBC",
-		["70mmFFARDAGR"]    = "70mmFFAR",
-		["9M113 ASM"]       = "9M133 ASM",
-		["9M311"]           = "9M311 SAM",
-		["SIMBAD-RC SAM"]   = "Mistral SAM"
-	}
+	function ENT:CreateAmmo(_, RoundData)
 
-	--List of munitions no longer stay on ACE
-	local AmmoComp = {
-		["APDSS"]		= "APDS",
-		["APFSDSS"]		= "APFSDS"
-	}
-
-	function ENT:CreateAmmo(_, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10 , Data11 , Data12 , Data13 , Data14 , Data15)
-
-		if not ACE_CheckGun( Data1 ) then
-			Data1 = BackComp[Data1] or "100mmC"
-		end
-		if not ACE_CheckRound( Data2 ) then
-			Data2 = AmmoComp[ Data2 ] or "AP"
-		end
-
-		--For some reason, removing this will also break several things with missile code. bad
-		self.RoundId            = Data1
-		self.RoundType          = Data2							-- Type of round, IE AP, HE, HEAT ...
-		self.RoundPropellant    = Data3					or 0	-- length of propellant
-		self.RoundProjectile    = Data4					or 0	-- length of the projectile
-		self.RoundData5         = Data5					or 0
-		self.RoundData6         = Data6					or 0
-		self.RoundData7         = Data7					or 0
-		self.RoundData8         = Data8					or 0
-		self.RoundData9         = Data9					or 0
-		self.RoundData10        = tonumber(Data10)		or 0 -- Tracer. For some reason, both Data10 and Data are sent as strings. Needs to review this.
-		self.RoundData11        = tonumber(Data11)		or 0 -- Two Piece check
-		self.RoundData12        = Data12				or 0
-		self.RoundData13        = Data13				or 0
-		self.RoundData14        = Data14				or 0
-		self.RoundData15        = Data15				or 0
-
-
-		local PlayerData        = {}	--what a mess
-		PlayerData.Id           = self.RoundId
-		PlayerData.Type         = self.RoundType
-		PlayerData.PropLength   = self.RoundPropellant
-		PlayerData.ProjLength   = self.RoundProjectile
-		PlayerData.Data5        = self.RoundData5
-		PlayerData.Data6        = self.RoundData6
-		PlayerData.Data7        = self.RoundData7
-		PlayerData.Data8        = self.RoundData8
-		PlayerData.Data9        = self.RoundData9
-		PlayerData.Tracer       = self.RoundData10
-		PlayerData.TwoPiece     = self.RoundData11
-		PlayerData.Data12       = self.RoundData12
-		PlayerData.Data13       = self.RoundData13
-		PlayerData.Data14       = self.RoundData14
-		PlayerData.Data15       = self.RoundData15
-
-		self.ConvertData    = ACE.RoundTypes[self.RoundType].convert
-		self.BulletData     = self:ConvertData( PlayerData )
+		self.RoundData 		= RoundData or {}
+		self.ConvertData    = ACE.RoundTypes[RoundData.RoundType].convert
+		self.BulletData     = self:ConvertData( RoundData )
 
 		self:BuildAmmoCapacity()
-
 	end
 
 	local Floor = math.floor

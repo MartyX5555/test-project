@@ -153,31 +153,32 @@ end
 
 do
 
-	-- Checks if the provided string vector matches the desired format.
-	-- Define a pattern to match the format
-	local pattern = "^%d+%.?%d*:%d+%.?%d*:%d+%.?%d*$"
-	local function IsValidStringScale( Id )
-		if not isstring( Id ) then return false end
-		if not string.match(Id, pattern) then return false end
-		return true
-	end
+	--[[
+		Id, Its the "gunclass" of fueltanks, So there will be 2 gunclasses: Basic_FuelTank or Scalable
+		Data1: Its the "Tank4x4x4" thing or a vector, if it was a scalable tank
+		Data2: Its fuel type. Petrol, Diesel or Electric
+		Data3: Its the scalable shape. Box, Prism, etc.
 
-	-- Converts an already verified string vector into a valid vector scale.
-	local function ParseToVector( ScaleId )
-		if not isstring(ScaleId) then return end
+		New Structure comes as following. a fueltank will contain only ONE set of values of here:
+		All of these values are already defined in the fueltank.
+		For Scalable ents:
+			Data.Dimensions: For the actual Scale of the fueltank.
+			Data.Shape: The Shape.
+		For non Scalable ents:
+			Data.SizeId:  The "Tank4x4x4" thing.
 
-		local Result = string.Explode( ":", ScaleId )
+		And OFC:
+			Data.FuelType: Fuel type used here.
 
-		local X = tonumber(Result[1])
-		local Y = tonumber(Result[2])
-		local Z = tonumber(Result[3])
+		What about Id? Well, it seems to be mostly unused, but i will leave it as is. Just in case.
+	]]
 
-		return Vector(X, Y, Z)
-	end
+	-----------------------------  SCALABLE HELPER FUNCTIONS  -----------------------------
 
+	local DefaultScale = Vector(10,10,10)
 	-- Clamps the already converted scale so its within the size limits, defined on globals.
 	local function ClampScale( Scale )
-		if not isvector( Scale ) then return end
+		if not isvector( Scale ) then return DefaultScale end
 
 		local MinSize = ACE.CrateMinimumSize
 		local MaxSize = ACE.CrateMaximumSize
@@ -189,19 +190,23 @@ do
 		return Scale
 	end
 
-	-- Tries to convert a scale id, having a string format, to a vector scale. If its already a vector, skip the process.
-	local function ConvertStringScale( ScaleId )
-		if isvector( ScaleId ) then return ScaleId end
-		if not IsValidStringScale( ScaleId ) then return end
-
-		local Scale = ParseToVector( ScaleId )
-		Scale = ClampScale( Scale )
-
-		return Scale
+	local function GetCrateDimensions(Data)
+		if Data.Dimensions then return ClampScale(Data.Dimensions) end -- New
+		if isvector( Data.SizeId ) then return ClampScale(Data.SizeId) end -- Old
+		return DefaultScale -- should not happen
 	end
 
-	function MakeACE_FuelTank(Owner, Pos, Angle, Id, Data1, Data2, Data3)
+	local function VerifyFuelData(Data)
+		if isvector(Data.Dimensions) or isvector(Data.SizeId) then -- New and old Scalable Tanks
+			Data.Dimensions = GetCrateDimensions(Data)
+			Data.Shape = ACE.ModelData[Data.Shape] and Data.Shape or "Box"
+		else
+			Data.SizeId = ACE_CheckFuelTank( Data.SizeId ) and Data.SizeId or "Tank_4x4x2"
+		end
+		Data.FuelType = ACE.FuelDensity[Data.FuelType] and Data.FuelType or "Petrol"
+	end
 
+	function MakeACE_FuelTank(Owner, Pos, Angle, Id, Data)
 		if IsValid(Owner) and not Owner:CheckLimit("_ace_fueltank") then return false end
 
 		local Tank = ents.Create("ace_fueltank")
@@ -215,69 +220,51 @@ do
 			Tank:SetPos(Pos)
 			Tank:Spawn()
 
-			-- If the crate is not valid in the system, but it could be scalable.
-			if not ACE_CheckFuelTank( Data1 ) then
+			VerifyFuelData(Data)
+			if Data.Dimensions then
 
-				-- Reminder: When the legacy fueltanks get deleted. Do the same as ammo crates.
-				local Scale = ConvertStringScale(Data1)
+				local ModelData = ACE.ModelData[Data.Shape]
+				Model = ModelData.Model
+				Dimensions = Data.Dimensions
 
-				if isvector(Scale) then
+				local DefaultSize    = ModelData.DefaultSize
+				local Mesh           = ModelData.CustomMesh
+				local PhysMaterial   = ModelData.physMaterial
+				local EntityScale    = Vector(Dimensions.x / DefaultSize, Dimensions.y / DefaultSize, Dimensions.z / DefaultSize)
 
-					local ModelData = ACE.ModelData[Data3]
+				Tank.ScaleData = {
+					Mesh = Mesh,
+					Scale = EntityScale,
+					Size = DefaultSize,
+					Material = PhysMaterial,
+				}
 
-					Data1 = Scale
-					Model = ModelData.Model
-					Weight = (Scale.x * Scale.y * Scale.z) / 200
-					Dimensions = Scale
+				Tank:SetMaterial("phoenix_storms/gear")
+				Tank:SetModel( Model ) --Sending the model to client
+				Tank:PhysicsInit( SOLID_VPHYSICS )
+				Tank:SetMoveType( MOVETYPE_VPHYSICS )
+				Tank:SetSolid( SOLID_VPHYSICS )
 
-					local DefaultSize    = ModelData.DefaultSize
-					local Mesh           = ModelData.CustomMesh
-					local PhysMaterial   = ModelData.physMaterial
-					local EntityScale    = Vector(Scale.x / DefaultSize, Scale.y / DefaultSize, Scale.z / DefaultSize)
-
-					Tank.ScaleData = {
-						Mesh = Mesh,
-						Scale = EntityScale,
-						Size = DefaultSize,
-						Material = PhysMaterial,
-					}
-
-					Tank:SetMaterial("phoenix_storms/gear")
-					Tank:SetModel( Model ) --Sending the model to client
-					Tank:PhysicsInit( SOLID_VPHYSICS )
-					Tank:SetMoveType( MOVETYPE_VPHYSICS )
-					Tank:SetSolid( SOLID_VPHYSICS )
-
-					Tank.IsScalable = true
-					Tank:ACE_SetScale( Tank.ScaleData )
-
-				else
-					Data1 = "Tank_4x4x2"
-				end
-			end
-
-			if ACE_CheckFuelTank( Data1 ) then
-
-				local TankData = TankTable[Data1]
-
+				Tank.IsScalable = true
+				Tank:ACE_SetScale( Tank.ScaleData )
+			else
+				local TankData = TankTable[Data.SizeId]
 				Model = TankData.model
-				Weight = TankData.weight
 
 				Tank:SetModel( Model )
 				Tank:PhysicsInit( SOLID_VPHYSICS )
 				Tank:SetMoveType( MOVETYPE_VPHYSICS )
 				Tank:SetSolid( SOLID_VPHYSICS )
-
 			end
 
 			Tank.Id           = Id
-			Tank.SizeId       = Data1
-			Tank.Shape 		  = Data3
+			Tank.SizeId       = Data.SizeId
+			Tank.Shape 		  = Data.Shape
 			Tank.Model        = Model
-			Tank.Dimensions   = Dimensions
+			Tank.Dimensions   = Data.Dimensions
 
 			Tank.LastMass = 1
-			Tank:UpdateFuelTank(Id, Data1, Data2)
+			Tank:UpdateFuelTank(Data.Id, Data)
 
 			Owner:AddCount( "_ace_fueltank", Tank )
 			Owner:AddCleanup( "acemenu", Tank )
@@ -290,14 +277,12 @@ do
 		return Tank
 	end
 end
-
-list.Set( "ACECvars", "ace_fueltank", {"id", "data1", "data2", "data3"} )
-duplicator.RegisterEntityClass("ace_fueltank", MakeACE_FuelTank, "Pos", "Angle", "Id", "SizeId", "FuelType", "Shape" )
+duplicator.RegisterEntityClass("ace_fueltank", MakeACE_FuelTank, "Pos", "Angle", "Id", "Data" )
 
 
 local Wall = 0.03937 --wall thickness in inches (1mm)
 
-function ENT:UpdateFuelTank(_, _, Data2)
+function ENT:UpdateFuelTank(_, Data)
 
 	local electric = "ups"
 	local gas = "ups"
@@ -332,8 +317,8 @@ function ENT:UpdateFuelTank(_, _, Data2)
 
 		local dims = x .. "x" .. y .. "x" .. z
 
-		electric = (Data2 == "Electric") and dims .. " Li-Ion Battery"
-		gas	= Data2 .. " " .. dims .. " Fuel Tank"
+		electric = (Data.FuelType == "Electric") and dims .. " Li-Ion Battery"
+		gas	= Data.FuelType .. " " .. dims .. " Fuel Tank"
 
 	else
 		local PhysObj    = self:GetPhysicsObject()
@@ -344,11 +329,11 @@ function ENT:UpdateFuelTank(_, _, Data2)
 		self.Capacity      = self.Volume * ACE.CuIToLiter * ACE.TankVolumeMul * 0.4774 --internal volume available for fuel in liters, with magic realism number
 		self.EmptyMass     = (Area * Wall) * 16.387 * (7.9 / 1000)  -- total wall volume * cu in to cc * density of steel (kg/cc)
 
-		electric = (Data2 == "Electric") and TankData.name .. " Li-Ion Battery"
-		gas	= Data2 .. " " .. TankData.name .. ( not TankData.notitle and " Fuel Tank" or "")
+		electric = (Data.FuelType == "Electric") and TankData.name .. " Li-Ion Battery"
+		gas	= Data.FuelType .. " " .. TankData.name .. ( not TankData.notitle and " Fuel Tank" or "")
 	end
 
-	self.FuelType      = Data2
+	self.FuelType      = Data.FuelType
 	self.IsExplosive   = self.FuelType ~= "Electric" and false or true
 	self.NoLinks       = TankData and (TankData.nolinks == true) or false
 
@@ -434,11 +419,11 @@ function ENT:UpdateFuelMass()
 
 end
 
-function ENT:Update( ArgsTable )
+function ENT:Update( _, Id, Data )
 
 	local Feedback = ""
 
-	if ( ArgsTable[6] ~= self.FuelType ) then
+	if ( Data.FuelType ~= self.FuelType ) then
 		for _, Engine in pairs( self.Master ) do
 			if Engine:IsValid() then
 				Engine:Unlink( self )
@@ -447,7 +432,7 @@ function ENT:Update( ArgsTable )
 		Feedback = " New fuel type loaded, fuel tank unlinked."
 	end
 
-	self:UpdateFuelTank(ArgsTable[4], ArgsTable[5], ArgsTable[6]) --Id, SizeId, FuelType
+	self:UpdateFuelTank(Id, Data) --Id, Data
 
 	return true, "Fuel tank successfully updated." .. Feedback
 end

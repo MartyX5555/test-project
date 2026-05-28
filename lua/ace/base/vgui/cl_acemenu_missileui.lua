@@ -32,10 +32,11 @@ end
 function ACFMissiles_SetCommand(combo, controlGroup, conCmd)
 
 	if not controlGroup then
-		local name = combo:GetValue()
-		RunConsoleCommand( conCmd, tostring(name) )
+		local name = tostring(combo:GetValue())
+		print("cvars:", conCmd, name)
+		ACE.MenuSendTableValue("Data", "RoundData", conCmd, name)
 	else
-		local name = combo:GetValue()
+		local name = tostring(combo:GetValue())
 		local kvString = ""
 
 		if #controlGroup > 0 then
@@ -46,8 +47,7 @@ function ACFMissiles_SetCommand(combo, controlGroup, conCmd)
 				i = i + 1
 			until i > #controlGroup
 		end
-
-		RunConsoleCommand( conCmd, tostring(name) .. tostring(kvString) )
+		ACE.MenuSendTableValue("Data", "RoundData", conCmd,  name .. tostring(kvString))
 	end
 
 end

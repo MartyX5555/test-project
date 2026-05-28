@@ -29,37 +29,30 @@ function Round.convert( _, PlayerData )
 	PlayerData.ProjLength	=  PlayerData.ProjLength	or 0
 	PlayerData.Tracer	=  PlayerData.Tracer		or 0
 	PlayerData.TwoPiece	=  PlayerData.TwoPiece	or 0
-	if not PlayerData.SCalMult then PlayerData.SCalMult = 0.5 end
-	if not PlayerData["Data5"] then PlayerData["Data5"] = 0.5 end --caliber in mm count
-
+	PlayerData.SCalMult = PlayerData.SCalMult or 0.5
 	PlayerData, Data, ServerData, GUIData = ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
-
---	local GunClass = ACE.Weapons["Guns"][(Data["Id"] or PlayerData["Id"])]["gunclass"]
-
---	if GunClass == "C" then
 
 	Data.MinCalMult = 0.25
 	Data.MaxCalMult = 1
 	Data.PenModifier = 1.7
-	Data.Ricochet = 50  --do u think im evil?, consider using FS instead  - Marty
---	end
+	Data.Ricochet = 50
 
-	Data.SCalMult = PlayerData["Data5"]
-	Data.SubFrArea = Data.FrArea * math.min(PlayerData.Data5, Data.MaxCalMult) ^ 2
+	Data.SCalMult = PlayerData.SCalMult
+	Data.SubFrArea = Data.FrArea * math.min(PlayerData.SCalMult, Data.MaxCalMult) ^ 2
 	Data.ProjMass = Data.SubFrArea * (Data.ProjLength * 7.9 / 1000) * 1.5 + (Data.FrArea - Data.SubFrArea) * (Data.ProjLength * 7.9 / 10000) --(Tungsten Core Mass + Sabot Exterior Mass) * Mass modifier used for bad aerodynamics
 	Data.ShovePower = 0.2
 	Data.PenArea = (Data.PenModifier * Data.SubFrArea) ^ ACE.PenAreaMod
 
 	Data.DragCoef = ((Data.FrArea / 10000) / Data.ProjMass) * 0.8
-	Data.CaliberMod = Data.Caliber * math.min(PlayerData.Data5, Data.MaxCalMult)
+	Data.CaliberMod = Data.Caliber * math.min(PlayerData.SCalMult, Data.MaxCalMult)
 	Data.LimitVel = 900 --Most efficient penetration speed in m/s
 	Data.KETransfert = 0.2 --Kinetic energy transfert to the target for movement purposes
 	Data.MuzzleVel = ACE_MuzzleVelocity(Data.PropMass * 0.5, Data.ProjMass * 1.98, Data.Caliber)
 	Data.BoomPower = Data.PropMass
 
 	if SERVER then --Only the crates need this part
-		ServerData.Id = PlayerData.Id
-		ServerData.Type = PlayerData.Type
+		ServerData.Id = PlayerData.RoundGunClass
+		ServerData.Type = PlayerData.RoundType
 		return table.Merge(Data,ServerData)
 	end
 
@@ -83,7 +76,7 @@ end
 
 function Round.network( Crate, BulletData )
 
-	Crate:SetNWString( "AmmoType", "HVAP" )
+	Crate:SetNWString( "AmmoType", Round.Type )
 	Crate:SetNWString( "AmmoID", BulletData.Id )
 	Crate:SetNWFloat( "Caliber", BulletData.Caliber )
 	Crate:SetNWFloat( "ProjMass", BulletData.ProjMass )
@@ -237,27 +230,27 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id = acemenupanel.AmmoData.Data.id			--AmmoSelect GUI
-		PlayerData.Type = "HVAP"										--Hardcoded, match as Round.Type instead
-		PlayerData.PropLength = acemenupanel.AmmoData.PropLength	--PropLength slider
-		PlayerData.ProjLength = acemenupanel.AmmoData.ProjLength	--ProjLength slider
-		PlayerData.Data5 = acemenupanel.AmmoData.SCalMult
-		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
+		PlayerData.RoundGunClass    = acemenupanel.AmmoData.Data.id					-- AmmoSelect GUI
+		PlayerData.RoundType        = Round.Type											--Hardcoded, match as Round.Type instead
+		PlayerData.PropLength       = acemenupanel.AmmoData.PropLength	--PropLength slider
+		PlayerData.ProjLength       = acemenupanel.AmmoData.ProjLength	--ProjLength slider
+		PlayerData.SCalMult         = acemenupanel.AmmoData.SCalMult
+		PlayerData.Tracer           = acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece         = acemenupanel.AmmoData.TwoPiece
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
-	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
-	RunConsoleCommand( "acemenu_data3", Data.PropLength )		--For Gun ammo, Data3 should always be Propellant
-	RunConsoleCommand( "acemenu_data4", Data.ProjLength )		--And Data4 total round mass
-	RunConsoleCommand( "acemenu_data5", Data.SCalMult )
-	RunConsoleCommand( "acemenu_data10", Data.Tracer )
-	RunConsoleCommand( "acemenu_data11", Data.TwoPiece )
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundGunClass", acemenupanel.AmmoData.Data.id)
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundType", Round.Type)
+	ACE.MenuSendTableValue("Data", "RoundData", "PropLength", Data.PropLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "ProjLength", Data.ProjLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "SCalMult", Data.SCalMult)
+	ACE.MenuSendTableValue("Data", "RoundData", "Tracer", Data.Tracer)
+	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	acemenupanel:AmmoSlider("PropLength",Data.PropLength,Data.MinPropLength,Data.MaxTotalLength,3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 
-	acemenupanel:AmmoSlider("SCalMult",Data.SCalMult,Data.MinCalMult,Data.MaxCalMult,2, "Subcaliber Size Multiplier", "Caliber : " .. math.floor(Data.Caliber * math.min(PlayerData.Data5,Data.MaxCalMult) * 10) .. " mm") --Subcaliber round slider (Name, Min, Max, Decimals, Title, Desc)
+	acemenupanel:AmmoSlider("SCalMult",Data.SCalMult,Data.MinCalMult,Data.MaxCalMult,2, "Subcaliber Size Multiplier", "Caliber : " .. math.floor(Data.Caliber * math.min(PlayerData.SCalMult,Data.MaxCalMult) * 10) .. " mm") --Subcaliber round slider (Name, Min, Max, Decimals, Title, Desc)
 
 	ACE_UpperCommonDataDisplay( Data, PlayerData )
 	ACE_CommonDataDisplay( Data )

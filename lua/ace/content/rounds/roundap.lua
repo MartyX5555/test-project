@@ -20,7 +20,7 @@ end
 
 -- Function to convert the player's slider data into the complete round data
 function Round.convert( _, PlayerData )
-
+--
 	local Data         = {}
 	local ServerData   = {}
 	local GUIData      = {}
@@ -43,8 +43,8 @@ function Round.convert( _, PlayerData )
 	Data.BoomPower   = Data.PropMass
 
 	if SERVER then --Only the crates need this part
-		ServerData.Id   = PlayerData.Id
-		ServerData.Type = PlayerData.Type
+		ServerData.Id   = PlayerData.RoundGunClass
+		ServerData.Type = PlayerData.RoundType
 		return table.Merge(Data,ServerData)
 	end
 
@@ -201,21 +201,21 @@ end
 function Round.guiupdate( Panel )
 
 	local PlayerData = {}
-		PlayerData.Id		= acemenupanel.AmmoData.Data.id					-- AmmoSelect GUI
-		PlayerData.Type		= Round.Type										-- Hardcoded, match as Round.Type instead
-		PlayerData.PropLength	= acemenupanel.AmmoData.PropLength				-- PropLength slider
-		PlayerData.ProjLength	= acemenupanel.AmmoData.ProjLength				-- ProjLength slider
-		PlayerData.Tracer	= acemenupanel.AmmoData.Tracer
-		PlayerData.TwoPiece	= acemenupanel.AmmoData.TwoPiece
+		PlayerData.RoundGunClass    = acemenupanel.AmmoData.Data.id					-- AmmoSelect GUI
+		PlayerData.RoundType        = Round.Type										-- Hardcoded, match as Round.Type instead
+		PlayerData.PropLength       = acemenupanel.AmmoData.PropLength				-- PropLength slider
+		PlayerData.ProjLength       = acemenupanel.AmmoData.ProjLength				-- ProjLength slider
+		PlayerData.Tracer           = acemenupanel.AmmoData.Tracer
+		PlayerData.TwoPiece         = acemenupanel.AmmoData.TwoPiece
 
 	local Data = Round.convert( Panel, PlayerData )
 
-	RunConsoleCommand( "acemenu_data1", acemenupanel.AmmoData.Data.id )
-	RunConsoleCommand( "acemenu_data2", PlayerData.Type )
-	RunConsoleCommand( "acemenu_data3", Data.PropLength )						--For Gun ammo, Data3 should always be Propellant
-	RunConsoleCommand( "acemenu_data4", Data.ProjLength )						--And Data4 total round mass
-	RunConsoleCommand( "acemenu_data10", Data.Tracer )
-	RunConsoleCommand( "acemenu_data11", Data.TwoPiece )
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundGunClass", acemenupanel.AmmoData.Data.id)
+	ACE.MenuSendTableValue("Data", "RoundData", "RoundType", Round.Type)
+	ACE.MenuSendTableValue("Data", "RoundData", "PropLength", Data.PropLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "ProjLength", Data.ProjLength)
+	ACE.MenuSendTableValue("Data", "RoundData", "Tracer", Data.Tracer)
+	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
@@ -226,6 +226,5 @@ function Round.guiupdate( Panel )
 end
 
 list.Set( "APRoundTypes", Round.Type , Round )
-
 ACE.RoundTypes[Round.Type] = Round     --Set the round properties
 ACE.IdRounds[Round.netid] = Round.Type --Index must equal the ID entry in the table above, Data must equal the index of the table above

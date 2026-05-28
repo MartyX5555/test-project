@@ -18,6 +18,9 @@ end
 
 function ENT:GetMunitionAngPos(missile, _, attachname)
 
+	print("============= MUNITION POS =============")
+	PrintTable(missile.BulletData)
+
 	local GunData = Weapons[missile.BulletData.Id]
 	local RackData	= Racks[self.Id]
 

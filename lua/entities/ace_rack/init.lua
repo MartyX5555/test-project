@@ -54,7 +54,6 @@ function ENT:GetFireDelay(nextMsl)
 	self:SetNWFloat( "Interval", interval)
 
 	return interval
-
 end
 
 --Inputs
@@ -136,7 +135,6 @@ function ENT:CanLinkCrate(crate)
 		return false, "Refill crates cannot be linked!"
 	end
 
-
 	-- Don't link if it's a blacklisted round type for this rack
 	local class = ACE_GetGunValue(bdata, "gunclass")
 	local Blacklist = ACE.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
@@ -145,17 +143,14 @@ function ENT:CanLinkCrate(crate)
 		return false, "That round type cannot be used with this rack!"
 	end
 
-
 	-- Dont't link if it's too far from this rack
 	if RetDist( self, crate ) >= AmmoLinkDistBase then
 		return false, "That crate is too far to be connected with this rack!"
 	end
 
-
 	-- Don't link if it's not a missile.
 	local ret, msg = ACE_CanLinkRack(self.Id, bdata.Id, bdata, self)
 	if not ret then return ret, msg end
-
 
 	-- Don't link if it's already linked
 	for _, v in pairs( self.AmmoLink ) do
@@ -193,9 +188,6 @@ function ENT:Link( Target )
 	self:SetOverlayText(txt)
 
 	return true, "Link successful!"
-
-
-
 end
 
 function ENT:Unlink( Target )
@@ -252,12 +244,9 @@ function ENT:TriggerInput( iname , value )
 end
 
 function ENT:Reload()
-
-
 	if self.Ready or not IsValid(self:PeekMissile()) then
 		self:LoadAmmo(true)
 	end
-
 end
 
 function RetDist( enta, entb )
@@ -309,23 +298,23 @@ end
 
 function ENT:UpdateRefillBonus()
 
-	local totalBonus			= 0
-	local selfPos			= self:GetPos()
+	local totalBonus		= 0
+	local RackPos			= self:GetPos()
 
-	local Efficiency			= 0.11 * ACE.AmmoMod		-- Copied from ace_ammo, beware of changes!
+	local Efficiency		= 0.11 * ACE.AmmoMod		-- Copied from ace_ammo, beware of changes!
 	local minFullEfficiency	= 50000 * Efficiency	-- The minimum crate volume to provide full efficiency bonus all by itself.
 	local maxDist			= ACE.RefillDistance
 
 	for crate, _ in pairs(ACE.AmmoCrates) do
-
-		if crate.RoundType ~= "Refill" then
+		if not crate.RoundData then
 			continue
-
+		elseif crate.RoundData.RoundType ~= "Refill" then
+			continue
 		elseif crate.Ammo > 0 and crate.Load then
-			local dist = selfPos:Distance(crate:GetPos())
+			local dist = RackPos:DistToSqr(crate:GetPos())
 
-			if dist < maxDist then
-
+			if dist < maxDist ^ 2 then
+				dist = math.sqrt(dist)
 				dist = math.max(0, dist * 2 - maxDist)
 
 				local bonus = ( (crate.Volume or 0.1) / minFullEfficiency ) * ( maxDist - dist ) / maxDist
@@ -334,15 +323,10 @@ function ENT:UpdateRefillBonus()
 
 			end
 		end
-
 	end
 
-
 	self.ReloadMultiplierBonus = math.min(totalBonus, 1)
-	--self:SetNWFloat(  "ReloadBonus", self.ReloadMultiplierBonus)
-
 	return self.ReloadMultiplierBonus
-
 end
 
 
@@ -511,19 +495,14 @@ function ENT:SetLoadedWeight()
 	for _, missile in pairs(self.Missiles) do
 
 		local phys = missile:GetPhysicsObject()
-		if (IsValid(phys)) then
+		if IsValid(phys) then
 			phys:SetMass( missile.RoundWeight ) --phys:SetMass( 5 )  -- Will result in slightly heavier rack but is probably a good idea to have some mass for any damage calcs.
 		end
 	end
 
 end
 
-
-
-
 function ENT:AddMissile()
-
-	self:EmitSound( "acf_extra/tankfx/resupply_single.wav", 75, 100 )
 
 	self:TrimNullMissiles()
 
@@ -533,27 +512,15 @@ function ENT:AddMissile()
 	local Crate = self:FindNextCrate(true)
 	if not IsValid(Crate) then return false end
 
-	local ply = ACE.GetEntityOwner(self)
-
 	local missile = ents.Create("ace_missile")
-	ACE.SetEntityOwner(missile, ply)
-	missile.DoNotDuplicate  = true
-	missile.Launcher		= self
+	if not IsValid(missile) then return end
+	missile:Spawn()
+
+	missile.Launcher = self
 	missile.ForceTdelay	= self.ForceTdelay
+	ACE.SetEntityOwner(missile, ACE.GetEntityOwner(self))
 
-	missile.ContrapId = ACE_Check( self ) and self.ACE.ContraptionId or 1
-
-	local BulletData = ACEM_CompactBulletData(Crate)
-	BulletData.IsShortForm  = true
-	BulletData.Owner		= ply
-	missile:SetBulletData(BulletData)
-
-	--For pod based launchers
-	local rackmodel = ACE_GetRackValue(self.Id, "rackmdl") or ACE_GetGunValue(BulletData.Id, "rackmdl")
-	if rackmodel then
-		missile:SetModelEasy( rackmodel )
-		missile.RackModelApplied = true
-	end
+	missile:SetCrateData(Crate)
 
 	local NextIdx = #self.Missiles
 	local _, _, pos = self:GetMuzzle( NextIdx , missile )
@@ -561,14 +528,18 @@ function ENT:AddMissile()
 	missile:SetPos(pos)
 	missile:SetAngles(self:GetAngles())
 
-	missile:SetParent(self)
-	missile:SetParentPhysNum(0)
-
+	--For pod based launchers
+	local rackmodel = ACE_GetRackValue(self.Id, "rackmdl") or ACE_GetGunValue(Crate.BulletData.Id, "rackmdl")
+	if rackmodel then
+		missile:InitializePhysics(rackmodel)
+		missile.RackModelApplied = true
+	end
 	if self.HideMissile then missile:SetNoDraw(true) end
 	if self.ProtectMissile then missile:SetNotSolid(true) end
 
+	missile:SetParent(self)
+	missile:SetParentPhysNum(0)
 	missile:SetNWEntity( "Launcher", missile.Launcher )
-	missile:Spawn()
 
 	self.Missiles[NextIdx + 1] = missile
 
@@ -576,12 +547,10 @@ function ENT:AddMissile()
 
 	self:SetLoadedWeight()
 
+	self:EmitSound( "acf_extra/tankfx/resupply_single.wav", 75, 100 )
+
 	return missile
-
 end
-
-
-
 
 function ENT:LoadAmmo()
 
@@ -641,13 +610,13 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	ACE.SetEntityOwner(Rack, Owner)
 	Rack.Id	= Id
 
-	Rack.MinCaliber	= gundef.mincaliber
-	Rack.MaxCaliber	= gundef.maxcaliber
-	Rack.Caliber		= gundef.caliber
-	Rack.Model		= gundef.model
-	Rack.Mass		= gundef.weight
-	Rack.name		= gundef.name
-	Rack.Class		= gundef.gunclass
+	Rack.MinCaliber    = gundef.mincaliber
+	Rack.MaxCaliber    = gundef.maxcaliber
+	Rack.Caliber       = gundef.caliber
+	Rack.Model         = gundef.model
+	Rack.Mass          = gundef.weight
+	Rack.name          = gundef.name
+	Rack.Class         = gundef.gunclass
 
 	-- Custom BS for karbine. Per Rack ROF.
 	Rack.PGRoFmod = 1
@@ -693,16 +662,8 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	hook.Call("ACE_RackCreate", nil, Rack)
 
-	undo.Create( "ace_rack" )
-		undo.AddEntity( Rack )
-		undo.SetPlayer( Owner )
-	undo.Finish()
-
 	return Rack
-
 end
-
-list.Set( "ACECvars", "ace_rack" , {"id"} )
 duplicator.RegisterEntityClass("ace_rack", MakeACE_Rack, "Pos", "Angle", "Id")
 
 function ENT:GetInaccuracy()
@@ -728,14 +689,14 @@ function ENT:FireMissile()
 
 			ReloadTime = self:GetFireDelay(missile)
 
-			local attach, inverted, pos = self:GetMuzzle(curShot - 1, missile)
+			local attach, _, pos = self:GetMuzzle(curShot - 1, missile) -- _ IS inverted
 
 			local MuzzleVec		= self:GetAngles():Forward()
 
-			local coneAng		= math.tan(math.rad(self:GetInaccuracy()))
-			local randUnitSquare	= (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-			local spread			= randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
-			local ShootVec		= (MuzzleVec + spread):GetNormalized()
+			local coneAng          = math.tan(math.rad(self:GetInaccuracy()))
+			local randUnitSquare   = (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
+			local spread           = randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
+			local ShootVec         = (MuzzleVec + spread):GetNormalized()
 
 			local filter = {}
 			for _, v in pairs(self.Missiles) do
@@ -750,33 +711,24 @@ function ENT:FireMissile()
 			missile:SetNoDraw(false)
 			missile:SetNotSolid(false)
 
-			local bdata = missile.BulletData
-
-			bdata.Pos = pos
-			bdata.Flight = (self:GetAngles():Forward() + spread):GetNormalized() * (bdata.MuzzleVel or missile.MinimumSpeed or 1) * (inverted and -1 or 1)
+			local BulletData = missile.BulletData
 
 			if missile.RackModelApplied then
-				local model = ACE_GetGunValue(bdata.Id, "model")
-				missile:SetModelEasy( model )
+				local model = ACE_GetGunValue(BulletData.Id, "model")
+				missile:InitializePhysics(model)
 				missile.RackModelApplied = nil
 			end
 
-			local phys = missile:GetPhysicsObject()
-			if (IsValid(phys)) then
-				phys:SetMass( missile.RoundWeight )
-			end
-
 			if self.Sound and self.Sound ~= "" then
-				missile.BulletData.Sound = self.Sound
-				missile.BulletData.Pitch = self.SoundPitch
+				BulletData.Sound = self.Sound
+				BulletData.Pitch = self.SoundPitch
 			end
 
 			missile:DoFlight(pos, ShootVec)
 			missile:Launch()
 
 			self:SetLoadedWeight()
-
-			self:MuzzleEffect( attach, missile.BulletData )
+			self:MuzzleEffect( attach, BulletData )
 
 			Ammo = table.Count(self.Missiles)
 			self:SetNWInt("Ammo",	Ammo)
@@ -794,7 +746,6 @@ function ENT:FireMissile()
 	else
 		self:EmitSound("weapons/shotgun/shotgun_empty.wav",68,100)
 	end
-
 end
 
 function ENT:MuzzleEffect()
