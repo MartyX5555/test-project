@@ -442,7 +442,7 @@ function ENT:UpdateOverlayText()
 
 		text = " - " .. roundType .. " - "
 
-		if self.SupplyingTo and not next(self.SupplyingTo) then
+		if istable(self.SupplyingTo) and #self.SupplyingTo > 0 then
 			text = text .. "\nSupplying " .. #self.SupplyingTo .. " Ammo Crates"
 		end
 

@@ -250,7 +250,7 @@ do
 
 	--converts what would be multiple simultaneous cache detonations into one large explosion
 	function ACE_ScaledExplosion( ent )
-		if ent.RoundData.RoundType and ent.RoundData.RoundType == "Refill" then return end
+		if ent.RoundData and ent.RoundData.RoundType and ent.RoundData.RoundType == "Refill" then return end
 
 		local HEWeight
 		local ExplodePos = {}
@@ -339,7 +339,7 @@ do
 							FoundHEWeight = ( math.min( Fuel, Capacity ) / ACE.FuelDensity[Type] ) * FuelExplosionScale
 						else
 
-							if Found.RoundType == "Refill" then Found:Remove() continue end
+							if Found.RoundData and Found.RoundData.RoundType == "Refill" then Found:Remove() continue end
 
 							local HE       = Found.BulletData.FillerMass	or 0
 							local Propel   = Found.BulletData.PropMass	or 0

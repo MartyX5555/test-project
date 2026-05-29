@@ -353,10 +353,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "Reverse Gear: " .. math.Round( self.GearTable[ 2 ], 2 ) -- maybe a better name than "gear 2"...?
 		text = text .. "\nTarget: " .. math.Round( self.MinRPMTarget ) .. " - " .. math.Round( self.MaxRPMTarget ) .. " RPM\n"
 	elseif self.Auto then
-		print("AUTOMATIC SHIFT CONFIGURATION")
 		for i = 1, self.Gears do
-			print(self.GearTable[ i ])
-			print(self.ShiftPoints[i])
 			text = text .. "Gear " .. i .. ": " .. math.Round( self.GearTable[ i ], 2 ) .. ", Upshift @ " .. math.Round( self.ShiftPoints[i] / 10.936, 1 ) .. " kph / " .. math.Round( self.ShiftPoints[i] / 17.6 ,1 ) .. " mph\n"
 		end
 	else
