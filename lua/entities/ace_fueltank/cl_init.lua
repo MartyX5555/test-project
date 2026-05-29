@@ -264,7 +264,7 @@ do
 
 				end
 			end
-			PrintTable(acemenupanel.FuelTankData)
+
 			FuelTankComboList:SetText(acemenupanel.FuelTankData.IdLegacy)
 
 			CrateOldPanel:AddItem( FuelTankComboList )

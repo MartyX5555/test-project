@@ -25,7 +25,7 @@ function ACFGearboxGUICreate( Table )
 	if not acemenupanel.Serialize then
 		acemenupanel.Serialize = function( tbl, factor )
 			for i = 1,7 do
-				local value = math.Round(tbl[i] * factor) print(value)
+				local value = math.Round(tbl[i] * factor)
 				ACE.MenuSendTableValue("Data", "ShiftPoints", i, value)
 			end
 		end

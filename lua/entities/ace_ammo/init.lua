@@ -338,7 +338,7 @@ do
 					Material = PhysMaterial,
 				}
 
-				Ammo:SetMaterial("models/props_canal/metalwall005b")
+				Ammo:SetMaterial("phoenix_storms/metal_plate")
 				Ammo:SetModel( Model ) --Sending the model to client
 				Ammo:PhysicsInit( SOLID_VPHYSICS )
 				Ammo:SetMoveType( MOVETYPE_VPHYSICS )

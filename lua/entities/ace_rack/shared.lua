@@ -2,7 +2,7 @@
 
 DEFINE_BASECLASS("base_wire_entity")
 
-ENT.PrintName         = "ACE Missile Rack"
+ENT.PrintName = "ACE Missile Rack"
 
 local Weapons = ACE.Weapons.Guns
 local Racks = ACE.Weapons.Racks
@@ -17,9 +17,6 @@ local function VerifyMountData(mountpoint)
 end
 
 function ENT:GetMunitionAngPos(missile, _, attachname)
-
-	print("============= MUNITION POS =============")
-	PrintTable(missile.BulletData)
 
 	local GunData = Weapons[missile.BulletData.Id]
 	local RackData	= Racks[self.Id]

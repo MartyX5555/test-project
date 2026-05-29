@@ -312,14 +312,7 @@ function ModifyACFMenu(panel)
 
 end
 
-function FindACFMenuPanel()
-	if acemenupanel then
-		ModifyACFMenu(acemenupanel)
-		timer.Remove("FindACFMenuPanel")
-	end
-end
-
-
-
-
-timer.Create("FindACFMenuPanel", 0.1, 0, FindACFMenuPanel)
+hook.Add("ACE_PostMenuLoad", "ACE_MissileModifications", function()
+	if not acemenupanel then ErrorNoHalt("ACE Menu didnt initialize properly. This should not happen!!!") return end
+	ModifyACFMenu(acemenupanel)
+end)

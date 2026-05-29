@@ -328,7 +328,6 @@ function PANEL:Init()
 	end
 
 	self.WeaponSelect = TreePanel
-
 end
 
 function PANEL:UpdateDisplay( Table )

@@ -1,4 +1,3 @@
-
 TOOL.Category		= "Construction"
 TOOL.Name			= "#Tool.acemenu.listname"
 TOOL.Command		= nil
@@ -53,6 +52,7 @@ if CLIENT then
 		-- create
 		local DPanel = vgui.CreateFromTable( pnldef_ACFmenu )
 		CPanel:AddPanel( DPanel )
+		hook.Run("ACE_PostMenuLoad")
 
 	end
 end

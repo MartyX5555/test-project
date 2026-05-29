@@ -1,137 +1,175 @@
-
-
 TOOL.Category		= "Construction"
-TOOL.Name			= "#Tool.acecopy.listname";
-TOOL.Author		= "looter";
-TOOL.Command		= nil;
-TOOL.ConfigName		= "";
+TOOL.Name			= "#Tool.acecopy.listname"
+TOOL.Author		= "Marty & Looter"
+TOOL.Command		= nil
+TOOL.ConfigName		= ""
 
-TOOL.GearboxCopyData = {};
-TOOL.AmmoCopyData = {};
+TOOL.EntityClass = nil
+TOOL.EntityData = {}
+
+-- The Copy tool. Works as a duplicator for creating ents, it can update existent ents too.
+
+TOOL.GetEntityData = {
+	ace_gun = function(Ent)
+		local Data = {}
+		Data.Id = Ent.Id
+		Data.EntityColor = Ent:GetColor()
+		Data.EntityMaterial = Ent:GetMaterial()
+		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		return Data
+	end,
+	ace_rack = function(Ent)
+		local Data = {}
+		Data.Id = Ent.Id
+		Data.EntityColor = Ent:GetColor()
+		Data.EntityMaterial = Ent:GetMaterial()
+		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		return Data
+	end,
+	ace_ammo = function(Ent)
+		local Data = {}
+		Data.Id = Ent.Id
+		Data.RoundData = Ent.RoundData
+		Data.Dimensions = Ent.Dimensions
+		Data.EntityColor = Ent:GetColor()
+		Data.EntityMaterial = Ent:GetMaterial()
+		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		return Data
+	end,
+	ace_engine = function(Ent)
+		local Data = {}
+		Data.Id = Ent.Id
+		Data.EntityColor = Ent:GetColor()
+		Data.EntityMaterial = Ent:GetMaterial()
+		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		return Data
+	end,
+	ace_gearbox =  function(Ent)
+		local Data = {}
+		Data.Id = Ent.Id
+		Data.GearTable = Ent.GearTable
+		Data.FinalDrive = Ent.FinalDrive
+		Data.MinRPMTarget = Ent.MinRPMTarget
+		Data.MaxRPMTarget = Ent.MaxRPMTarget
+		Data.ShiftPoints = Ent.ShiftPoints
+		Data.EntityColor = Ent:GetColor()
+		Data.EntityMaterial = Ent:GetMaterial()
+		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		return Data
+	end,
+	ace_fueltank = function(Ent)
+		local Data = {}
+		Data.Id = Ent.Id
+		Data.SizeId = Ent.SizeId
+		Data.FuelType = Ent.FuelType
+		Data.Dimensions = Ent.Dimensions
+		Data.Shape = Ent.Shape
+		Data.EntityColor = Ent:GetColor()
+		Data.EntityMaterial = Ent:GetMaterial()
+		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		return Data
+	end,
+}
+
 
 if CLIENT then
 
-	language.Add( "Tool.acecopy.listname", ACFTranslation.CopyToolText[1] );
-	language.Add( "Tool.acecopy.name", ACFTranslation.CopyToolText[2] );
-	language.Add( "Tool.acecopy.desc", ACFTranslation.CopyToolText[3] );
-	language.Add( "Tool.acecopy.0", ACFTranslation.CopyToolText[4] );
+	language.Add( "Tool.acecopy.listname", ACFTranslation.CopyToolText[1] )
+	language.Add( "Tool.acecopy.name", ACFTranslation.CopyToolText[2] )
+	language.Add( "Tool.acecopy.desc", "Copy, update and create ACE compatible entities." )
+	language.Add( "Tool.acecopy.left", "Create/Update an ACE Entity" )
+	language.Add( "Tool.acecopy.right", "Copy an ACE entity" )
+	language.Add( "Tool.acecopy.reload", "Resets current Data" )
 
-	function TOOL.BuildCPanel()
-
+	TOOL.Information = {
+		{ name = "left", icon = "gui/lmb.png"},
+		{ name = "right", icon = "gui/rmb.png" },
+		{ name = "reload", icon = "gui/r.png" },
+	}
+	--Main menu building
+	function TOOL.BuildCPanel( panel )
+		panel:Help("#Tool.acecopy.desc")
 	end
-
 end
 
--- Update
+-- Updates or creates new entities based on the copied data.
 function TOOL:LeftClick( trace )
+	if CLIENT then return true end
 
-	if CLIENT then return end
+	local ent = trace.Entity
+	local ply = self:GetOwner()
+	local Class = ent:GetClass()
+	-- We update the entity only, when the factory update function allows it.
+	if IsValid(ent) and Class == self.EntityClass then
+		local EntityData = self.EntityData
+		local success, msg = ent:Update( ply, EntityData.Id, EntityData )
+		if success then
+			ent:SetColor(EntityData.EntityColor)
+			ent:SetMaterial(EntityData.EntityMaterial)
+			ent:SetNWString("WireName", EntityData.EntityWireName)
 
-	local ent = trace.Entity;
+			duplicator.StoreEntityModifier( ent, "colour", { Color = EntityData.EntityColor, RenderMode = 0, RenderFX = 0 } )
+			duplicator.StoreEntityModifier( ent, "material", { MaterialOverride = EntityData.EntityMaterial} )
+			duplicator.StoreEntityModifier( ent, "WireName", { name = EntityData.EntityWireName } )
+		end
+		ACE_SendNotify( ply, success, msg )
+	elseif self.GetEntityData[self.EntityClass] then
+		local NewEntClass = self.EntityClass
+		local DupeClass = duplicator.FindEntityClass( NewEntClass )
+		if DupeClass then
 
-	if not IsValid( ent ) then
-		return false;
+			local Pos = trace.HitPos
+			local Ang = trace.HitNormal:Angle()
+			Ang.pitch = Ang.pitch + 90
+			local EntityData = self.EntityData
+
+			-- Using the Duplicator entity register to find the right factory function
+			local NewEnt = DupeClass.Func( ply, Pos, Ang, EntityData.Id, EntityData ) --aka function like MakeACE_Ammo
+			if not IsValid(NewEnt) then ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
+
+			local TruePos = NewEnt:LocalToWorld(Vector(0,0,-NewEnt:OBBMins().z + 1))
+			NewEnt:SetPos(TruePos)
+			NewEnt:Activate()
+			NewEnt:GetPhysicsObject():EnableMotion( false )
+			NewEnt:SetColor(EntityData.EntityColor)
+			NewEnt:SetMaterial(EntityData.EntityMaterial)
+			NewEnt:SetNWString("WireName", EntityData.EntityWireName)
+
+			duplicator.StoreEntityModifier( NewEnt, "colour", { Color = EntityData.EntityColor, RenderMode = 0, RenderFX = 0 } )
+			duplicator.StoreEntityModifier( NewEnt, "material", { MaterialOverride = EntityData.EntityMaterial} )
+			duplicator.StoreEntityModifier( NewEnt, "WireName", { name = EntityData.EntityWireName } )
+
+			undo.Create( NewEntClass )
+				undo.AddEntity( NewEnt )
+				undo.SetPlayer( ply )
+			undo.Finish()
+		else
+			ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
+			return false
+		end
 	end
-
-	local pl = self:GetOwner();
-
-
-	ACE_KEShove(ent, trace.HitPos, -trace.HitNormal, 50000 )
-
-	if ent:GetClass() == "ace_gearbox" and #self.GearboxCopyData > 1 and ent.CanUpdate then
-
-		local success, msg = ent:Update( self.GearboxCopyData );
-
-		ACE_SendNotify( pl, success, msg );
-
-	end
-
-	if ent:GetClass() == "ace_ammo" and #self.AmmoCopyData > 1 and ent.CanUpdate then
-
-		local success, msg = ent:Update( self.AmmoCopyData );
-
-		ACE_SendNotify( pl, success, msg );
-
-	end
-
-	return true;
-
+	return true
 end
 
--- Copy
+-- Copies the data
 function TOOL:RightClick( trace )
+	if CLIENT then return true end
 
-	if CLIENT then return end
-
-	local ent = trace.Entity;
-
-	if not IsValid( ent ) then
-		return false;
+	local ent = trace.Entity
+	local ply = self:GetOwner()
+	local Class = ent:GetClass()
+	local GetEntityData = self.GetEntityData[ent:GetClass()]
+	if isfunction(GetEntityData) then
+		self.EntityData = GetEntityData(ent)
+		self.EntityClass = Class
+		ACE_SendNotify( ply, true, "ACE Entity '" .. self.EntityData.EntityWireName .. "' (" .. Class .. ") copied succesfully" )
 	end
-
-	local pl = self:GetOwner();
-
-	if ent:GetClass() == "ace_gearbox" then
-
-		local ArgsTable = {};
-
-		-- zero out the un-needed tool trace information
-		ArgsTable[1] = pl;
-		ArgsTable[2] = 0;
-		ArgsTable[3] = 0;
-		ArgsTable[4] = ent.Id;
-
-		-- build gear data
-		ArgsTable[5] = ent.GearTable[1];
-		ArgsTable[6] = ent.GearTable[2];
-		ArgsTable[7] = ent.GearTable[3];
-		ArgsTable[8] = ent.GearTable[4];
-		ArgsTable[9] = ent.GearTable[5];
-		ArgsTable[10] = ent.GearTable[6];
-		ArgsTable[11] = ent.GearTable[7];
-		ArgsTable[12] = ent.GearTable[8];
-		ArgsTable[13] = ent.GearTable[9];
-		ArgsTable[14] = ent.FinalDrive;
-
-		self.GearboxCopyData = ArgsTable;
-
-		ACE_SendNotify( pl, true, ACFTranslation.CopyToolText[5] );
-
-	end
-
-	if ent:GetClass() == "ace_ammo" then
-
-		local ArgsTable = {};
-
-		-- zero out the un-needed tool trace information
-		ArgsTable[1] = pl;
-		ArgsTable[2] = 0;
-		ArgsTable[3] = 0;
-		ArgsTable[4] = 0; -- ArgsTable[4] isnt actually used anywhere within ace_ammo ENT:Update() and ENT:CreateAmmo(), just passed around?
-
-		-- build gear data
-		ArgsTable[5] = ent.RoundId;
-		ArgsTable[6] = ent.RoundType;
-		ArgsTable[7] = ent.RoundPropellant;
-		ArgsTable[8] = ent.RoundProjectile;
-		ArgsTable[9] = ent.RoundData5;
-		ArgsTable[10] = ent.RoundData6;
-		ArgsTable[11] = ent.RoundData7;
-		ArgsTable[12] = ent.RoundData8;
-		ArgsTable[13] = ent.RoundData9;
-		ArgsTable[14] = ent.RoundData10;
-		ArgsTable[15] = ent.RoundData11;
-		ArgsTable[16] = ent.RoundData12;
-		ArgsTable[17] = ent.RoundData13;
-		ArgsTable[18] = ent.RoundData14;
-		ArgsTable[19] = ent.RoundData15;
-
-		self.AmmoCopyData = ArgsTable;
-
-		ACE_SendNotify( pl, true, ACFTranslation.CopyToolText[6] );
-
-	end
-
-	return true;
-
+	return true
 end
+
+function TOOL:Reload()
+	if CLIENT then return true end
+	self.EntityData = {}
+	self.EntityClass = nil
+end
+
