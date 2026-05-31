@@ -71,12 +71,12 @@ function this:PerformDetonation( missile, bdata, phys, pos )
 
 	bdata.HandlesOwnIteration = nil
 
-	ACEM_BulletLaunch(bdata)
+	ACEM.BulletLaunch(bdata)
 
 	missile:SetSolid(SOLID_NONE)
 	phys:EnableMotion(false)
 
-ACE.DoReplicatedPropHit(missile, bdata)
+	ACE.DoReplicatedPropHit(missile, bdata)
 	missile:SetNoDraw(true)
 end
 

@@ -70,7 +70,7 @@ function ACE.RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 		Bullet.Ricochets    = Bullet.Ricochets + 1
 		Bullet.Pos          = HitPos + HitNormal * 0.75
 		Bullet.FlightTime   = 0
-		Bullet.Flight       = (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
+		Bullet.Flight       = (ACE.RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
 
 		local TargetBase = ACE.GetPhysicalParent(Target)
 		local BaseObj = TargetBase:GetPhysicsObject()
@@ -82,7 +82,7 @@ function ACE.RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 
 	end
 
-ACE.KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("ace_recoilpush"):GetFloat() or 1))
+	ACE.KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("ace_recoilpush"):GetFloat() or 1))
 
 	return HitRes
 end
@@ -131,7 +131,7 @@ function ACE.PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 		if Ricochet > 0 and Bullet.GroundRicos < 2 then
 			Bullet.GroundRicos  = Bullet.GroundRicos + 1
 			Bullet.Pos		= HitPos + HitNormal * 1
-			Bullet.Flight	= (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.05):GetNormalized() * Speed * Ricochet
+			Bullet.Flight	= (ACE.RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.05):GetNormalized() * Speed * Ricochet
 			HitRes.Ricochet	= true
 		end
 
@@ -184,6 +184,6 @@ function ACE.KEShove(Target, Pos, Vec, KE )
 		massratio = ACE.GetContraptionMassRatio( con )
 	end
 
-ACE.ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
+	ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
 
 end

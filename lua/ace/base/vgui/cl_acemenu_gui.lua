@@ -1085,5 +1085,5 @@ end
 
 --quick fix
 function PANEL:CPanelText(Name, Desc, Font, Panel)
-ACE.CPanelText(Name, Desc, Font, Panel)
+	ACE.CPanelText(Name, Desc, Font, Panel)
 end

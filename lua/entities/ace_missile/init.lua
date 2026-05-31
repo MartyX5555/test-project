@@ -98,12 +98,12 @@ function ENT:PrepareMissileSensors()
 	local fuse	= RoundData.Fuse
 
 	if guidance then
-		guidance = ACEM_CreateConfigurable(guidance, GuidanceTable, bdata, "guidance")
+		guidance = ACEM.CreateConfigurable(guidance, GuidanceTable, bdata, "guidance")
 		if guidance then self:SetGuidance(guidance) end
 	end
 
 	if fuse then
-		fuse = ACEM_CreateConfigurable(fuse, FuseTable, bdata, "fuses")
+		fuse = ACEM.CreateConfigurable(fuse, FuseTable, bdata, "fuses")
 		if fuse then self:SetFuse(fuse) end
 	end
 end

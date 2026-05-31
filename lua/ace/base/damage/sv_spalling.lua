@@ -22,7 +22,7 @@ ACE.CritEnts = {
 
 
 --Handles normal spalling
-function ACE.Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
+function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
 
 	--Don't use it if it's not allowed to
 	if not ACE.Spalling then return end
@@ -247,7 +247,7 @@ end
 
 
 --Handles HESH spalling
-function ACE.Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
+function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
 
 	local spallPos, Armour, PEnts, fNormal = PropShockwave( HitPos, HitVec, Filter, Caliber )
 
@@ -345,7 +345,7 @@ function ACE.SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 			local Debris = ACE.APKill( SpallRes.Entity , HitVec:GetNormalized() , SpallEnergy.Kinetic )
 			if IsValid(Debris) then
 				table.insert( ACE.Spall[Index].filter , Debris )
-			ACE.SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+				ACE.SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 			end
 		end
 
@@ -362,7 +362,7 @@ function ACE.SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 			SpallEnergy.Momentum = SpallEnergy.Momentum * (1-HitRes.Loss)
 
 			-- Retry
-		ACE.SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+			ACE.SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 
 			debugoverlay.Line( SpallRes.StartPos + Vector(2,0,0), SpallRes.HitPos + Vector(2,0,0), 10 , Color(255,255,0), true )
 

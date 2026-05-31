@@ -12,9 +12,7 @@ Round.netid = 5 --Unique ammotype ID for network transmission
 Round.Type  = "APHE"
 
 function Round.create( _, BulletData )
-
-ACE.CreateBullet( BulletData )
-
+	ACE.CreateBullet( BulletData )
 end
 
 -- Function to convert the player's slider data into the complete round data
@@ -141,7 +139,7 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 
 			table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
 
-		ACE.Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
+		ACE.CreateSpall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 			Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1-HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 
 			return "Penetrated"
@@ -264,8 +262,8 @@ function Round.guiupdate( Panel )
 	acemenupanel:CPanelText("BlastDisplay", "Blast Radius : " .. (math.floor(Data.BlastRadius * 100) / 100) .. " m")	--Proj muzzle velocity (Name, Desc)
 	acemenupanel:CPanelText("FragDisplay", "Fragments : " .. Data.Fragments .. "\n Average Fragment Weight : " .. (math.floor(Data.FragMass * 10000) / 10) .. " g \n Average Fragment Velocity : " .. math.floor(Data.FragVel) .. " m/s") --Proj muzzle penetration (Name, Desc)
 
-ACE.UpperCommonDataDisplay( Data, PlayerData )
-ACE.CommonDataDisplay( Data )
+	ACE.UpperCommonDataDisplay( Data, PlayerData )
+	ACE.CommonDataDisplay( Data )
 
 end
 

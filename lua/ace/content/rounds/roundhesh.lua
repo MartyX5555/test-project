@@ -12,9 +12,7 @@ Round.netid = 12 --Unique ammotype ID for network transmission
 Round.Type  = "HESH"
 
 function Round.create( _, BulletData )
-
-ACE.CreateBullet( BulletData )
-
+	ACE.CreateBullet( BulletData )
 end
 
 -- Function to convert the player's slider data into the complete round data
@@ -127,7 +125,7 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 	ACE.RoundImpact(Bullet, Speed / 4 + Bullet.FillerMass * 250, Energy, Target, HitPos, HitNormal / 10, Bone)
 
 		table.insert( Bullet.Filter , Target )
-	ACE.Spall_HESH( HitPos, Bullet.Flight, Bullet.Filter, Bullet.FillerMass * ACE.HEPower, Bullet.Caliber * 5, Target.ACE.Armour, Bullet.Owner, Target.ACE.Material) --Do some spalling
+	ACE.CreateSpallHESH( HitPos, Bullet.Flight, Bullet.Filter, Bullet.FillerMass * ACE.HEPower, Bullet.Caliber * 5, Target.ACE.Armour, Bullet.Owner, Target.ACE.Material) --Do some spalling
 
 	else
 		table.insert( Bullet.Filter , Target )
@@ -242,13 +240,13 @@ function Round.guiupdate( Panel )
 	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	---------------------------Ammo Capacity-------------------------------------
-ACE.AmmoCapacityDisplay( Data )
+	ACE.AmmoCapacityDisplay( Data )
 	-------------------------------------------------------------------------------
 	acemenupanel:AmmoSlider("PropLength",Data.PropLength,Data.MinPropLength,Data.MaxTotalLength,3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" )	--Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "HE Filler Volume", "HE Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 
-ACE.Checkboxes( Data )
+	ACE.Checkboxes( Data )
 
 	acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.RoundType].desc) --Description (Name, Desc)
 	acemenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)

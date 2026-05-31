@@ -57,7 +57,7 @@ local function KillChildProps( Entity, BlastPos, Energy )
 				-- ignore some of the debris props to save lag
 				if count > 10 and rand > ACE.DebrisChance then continue end
 
-			ACE.HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
+				KillChildProps( child, BlastPos or child:GetPos(), power )
 			end
 		end
 
@@ -69,7 +69,7 @@ local function KillChildProps( Entity, BlastPos, Energy )
 				if not IsValid(child) or child.Exploding then continue end
 
 				child.Exploding = true
-			ACE.ScaledExplosion( child ) -- explode any crates that are getting removed
+				ACE.ScaledExplosion( child ) -- explode any crates that are getting removed
 
 			end
 		end
@@ -82,7 +82,7 @@ function ACE.HEKill( Entity , HitVector , Energy , BlastPos )
 	-- Completely Delete the Entity and blow out all the props attached to it via parent.
 	-- if it hasn't been processed yet, check for children
 	if not Entity.ACE_Killed then
-	KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy )
+		KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy )
 	end
 
 	local Debris
@@ -132,7 +132,7 @@ end
 function ACE.APKill( Entity , HitVector , Power )
 
 	-- Completely Delete the Entity and blow out all the props attached to it via parent.
-KillChildProps( Entity, Entity:GetPos(), Power )
+	KillChildProps( Entity, Entity:GetPos(), Power )
 
 	local Debris
 	-- Create a debris only if the dead entity is greater than the specified scale.

@@ -839,7 +839,7 @@ do
 				self:MuzzleEffect( MuzzlePos, MuzzleVec )
 
 				--Traceback component
-				local TestVel = self:WorldToLocal(ACE_GetPhysicalParent(self):GetVelocity() + GPos)
+				local TestVel = self:WorldToLocal(ACE.GetPhysicalParent(self):GetVelocity() + GPos)
 				TestVel = self:LocalToWorld(Vector(math.max(TestVel.x,-0.1),TestVel.y,TestVel.z)) - GPos
 
 				self.BulletData.Pos = MuzzlePos + TestVel * self.DeltaTime * 5 --Less clipping on fast vehicles, especially moving perpindicular since traceback doesnt compensate for that. A multiplier of 3 is semi-reliable. A multiplier of 5 guarentees it doesnt happen.

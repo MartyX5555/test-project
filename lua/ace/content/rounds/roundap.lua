@@ -13,9 +13,7 @@ Round.netid   = 1										-- Unique ID for this ammo
 Round.Type  = "AP"
 
 function Round.create( _, BulletData )
-
-ACE.CreateBullet( BulletData )
-
+	ACE.CreateBullet( BulletData )
 end
 
 -- Function to convert the player's slider data into the complete round data
@@ -104,7 +102,7 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 
 			table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
 
-		ACE.Spall(HitPos, Bullet.Flight, Bullet.Filter, Energy.Kinetic * HitRes.Loss, Bullet.Caliber, Target.ACE.Armour, Bullet.Owner, Target.ACE.Material) --Do some spalling
+		ACE.CreateSpall(HitPos, Bullet.Flight, Bullet.Filter, Energy.Kinetic * HitRes.Loss, Bullet.Caliber, Target.ACE.Armour, Bullet.Owner, Target.ACE.Material) --Do some spalling
 			Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1 - HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 
 			return "Penetrated"
@@ -140,7 +138,7 @@ end
 
 function Round.endflight( Index )
 
-ACE.RemoveBullet( Index )
+	ACE.RemoveBullet( Index )
 
 end
 
@@ -187,12 +185,12 @@ function Round.guicreate( Panel, Table )
 
 	acemenupanel:AmmoSelect( ACE.AmmoBlacklist.AP )
 
-ACE.UpperCommonDataDisplay()
+	ACE.UpperCommonDataDisplay()
 
 	acemenupanel:AmmoSlider("PropLength",0,0,1000,3, "Propellant Length", "")	--Propellant Length Slider (Name, Value, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")	--Projectile Length Slider (Name, Value, Min, Max, Decimals, Title, Desc)
 
-ACE.CommonDataDisplay()
+	ACE.CommonDataDisplay()
 
 	Round.guiupdate( Panel, Table )
 
@@ -220,8 +218,8 @@ function Round.guiupdate( Panel )
 	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 
-ACE.UpperCommonDataDisplay( Data, PlayerData )
-ACE.CommonDataDisplay( Data )
+	ACE.UpperCommonDataDisplay( Data, PlayerData )
+	ACE.CommonDataDisplay( Data )
 
 end
 

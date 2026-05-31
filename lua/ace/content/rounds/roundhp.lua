@@ -153,8 +153,8 @@ function Round.guiupdate( Panel )
 	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("CavVol",Data.CavVol,Data.MinCavVol,Data.MaxCavVol,2, "Hollow Point Cavity Volume", "Expanded caliber : " .. (math.floor(Data.ExpCaliber * 10)) .. " mm") --Hollow Point Cavity Slider (Name, Min, Max, Decimals, Title, Desc)
 
-ACE.UpperCommonDataDisplay( Data, PlayerData )
-ACE.CommonDataDisplay( Data )
+	ACE.UpperCommonDataDisplay( Data, PlayerData )
+	ACE.CommonDataDisplay( Data )
 end
 
 list.Set( "APRoundTypes", "HP", Round )

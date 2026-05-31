@@ -2,7 +2,7 @@
 ACEM.RadarBehaviour = ACEM.RadarBehaviour or {}
 ACEM.DefaultRadarSound = ACEM.DefaultRadarSound or "buttons/button16.wav"
 
-function ACEM_ConeContainsPos(conePos, coneDir, degs, pos)
+function ACEM.ConeContainsPos(conePos, coneDir, degs, pos)
 
 	local minDot = math.cos( math.rad(degs) )
 
@@ -14,7 +14,7 @@ function ACEM_ConeContainsPos(conePos, coneDir, degs, pos)
 	return dot >= minDot
 end
 
-function ACEM_GetMissilesInCone(pos, dir, degs)
+function ACEM.GetMissilesInCone(pos, dir, degs)
 
 	local ret = {}
 
@@ -22,7 +22,7 @@ function ACEM_GetMissilesInCone(pos, dir, degs)
 
 		if not IsValid(missile) then continue end
 
-		if ACEM_ConeContainsPos(pos, dir, degs, missile:GetPos()) then
+		if ACEM.ConeContainsPos(pos, dir, degs, missile:GetPos()) then
 			ret[#ret + 1] = missile
 		end
 
@@ -32,7 +32,7 @@ function ACEM_GetMissilesInCone(pos, dir, degs)
 
 end
 
-function ACEM_GetMissilesInSphere(pos, radius)
+function ACEM.GetMissilesInSphere(pos, radius)
 
 	local ret = {}
 
@@ -55,7 +55,7 @@ end
 ACEM.RadarBehaviour["DIR-AM"] =
 {
 	GetDetectedEnts = function(self)
-		return ACEM_GetMissilesInCone(self:GetPos(), self:GetForward(), self.ConeDegs)
+		return ACEM.GetMissilesInCone(self:GetPos(), self:GetForward(), self.ConeDegs)
 	end
 }
 
@@ -63,6 +63,6 @@ ACEM.RadarBehaviour["DIR-AM"] =
 ACEM.RadarBehaviour["OMNI-AM"] =
 {
 	GetDetectedEnts = function(self)
-		return ACEM_GetMissilesInSphere(self:GetPos(), self.Range)
+		return ACEM.GetMissilesInSphere(self:GetPos(), self.Range)
 	end
 }

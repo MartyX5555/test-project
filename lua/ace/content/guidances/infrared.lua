@@ -21,9 +21,9 @@ end
 
 function Guidance:Configure(missile)
 
-	self.ViewCone		= (ACE_GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone) * 1.2
+	self.ViewCone		= (ACE.GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone) * 1.2
 	self.ViewConeCos		= (math.cos(math.rad(self.ViewCone))) * 1.2
-	self.SeekCone		= (ACE_GetGunValue(missile.BulletData, "seekcone") or Guidance.SeekCone) * 1.2
+	self.SeekCone		= (ACE.GetGunValue(missile.BulletData, "seekcone") or Guidance.SeekCone) * 1.2
 	self.SeekSensitivity	= ACE.GetGunValue(missile.BulletData, "seeksensitivity") or Guidance.SeekSensitivity
 
 end

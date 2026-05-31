@@ -16,7 +16,7 @@ local ACE = ACE or {}
 	Differences with the default bullet function:
 		1.- It doesnt count traceback, since the missile has no velocity and the bullet will not be hitting the initial launcher.
 ]]--
-function ACEM_BulletLaunch(BulletData)
+function ACEM.BulletLaunch(BulletData)
 
 	-- Increment the index
 	ACE.CurBulletIndex = ACE.CurBulletIndex + 1
@@ -115,15 +115,15 @@ do
 
 			if Bullet.OnPenetrated then Bullet.OnPenetrated(Index, Bullet, FlightRes) end
 
-		ACE.BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
-		ACE.CalcBulletFlight( Index, Bullet, true )
+			ACE.BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+			ACE.CalcBulletFlight( Index, Bullet, true )
 		else
 
 			if Bullet.OnEndFlight then Bullet.OnEndFlight(Index, Bullet, FlightRes) end
 
-		ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-		ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-		ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+			ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+			ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+			ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 		end
 
 	end

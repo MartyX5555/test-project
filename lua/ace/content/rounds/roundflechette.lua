@@ -323,8 +323,8 @@ function Round.guiupdate( Panel )
 	acemenupanel:AmmoSlider("Flechettes",Data.Flechettes,Data.MinFlechettes,Data.MaxFlechettes,0, "Flechettes", "Flechette Radius: " .. math.Round(Data["FlechetteRadius"] * 10,2) .. " mm")
 	acemenupanel:AmmoSlider("FlechetteSpread",Data.FlechetteSpread,Data.MinSpread,Data.MaxSpread,1, "Flechette Spread", "")
 
-ACE.UpperCommonDataDisplay( Data, PlayerData )
-ACE.CommonDataDisplay( Data )
+	ACE.UpperCommonDataDisplay( Data, PlayerData )
+	ACE.CommonDataDisplay( Data )
 end
 
 list.Set( "SPECSRoundTypes", "FL", Round )

@@ -94,7 +94,7 @@ do
 		local D0 = DragCoef * V0 ^ 2 / ACE.DragDiv -- initial drag
 		local K1 = (D0 / (V0 ^ (3 / 2))) ^ -1 -- estimated drag coefficient
 		local Vel = math.max(math.sqrt(V0) - ((Range * 39.37) / (2 * K1)), 0) ^ 2
-		local Pen = (ACE_Kinetic(Vel, ProjMass, LimitVel).Penetration / PenArea) * ACE.KEtoRHA
+		local Pen = (ACE.Kinetic(Vel, ProjMass, LimitVel).Penetration / PenArea) * ACE.KEtoRHA
 
 		return Vel * 0.0254, Pen
 	end
@@ -235,8 +235,8 @@ do
 	end
 
 	function ACE.AmmoStats(RoundLength, MaxTotalLength, MuzzleVel, MaxPen)
-	acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
-	acemenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLength .. "/" .. MaxTotalLength .. " cms (" .. math.Round(RoundLength / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
+		acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
+		acemenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLength .. "/" .. MaxTotalLength .. " cms (" .. math.Round(RoundLength / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
 
 	end
 
@@ -251,14 +251,14 @@ do
 
 				acemenupanel:CPanelText("BonusDisplay", "\n")
 				acemenupanel:CPanelText("Desc", "")
-			ACE.AmmoStats( 0, 0, 0, 0 )
+				ACE.AmmoStats( 0, 0, 0, 0 )
 
 			else
 				acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
-			ACE.AmmoCapacityDisplay( Data )
+				ACE.AmmoCapacityDisplay( Data )
 				acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.RoundType].desc)
-			ACE.AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
+				ACE.AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
 			end
 
 		end
@@ -285,7 +285,7 @@ do
 				local None, Mean, Max = ACE.RicoProbability(Data.Ricochet, Data.MuzzleVel * ACE.VelScale)
 				acemenupanel:CPanelText("RicoDisplay", "0% chance of ricochet at: " .. None .. "°\n50% chance of ricochet at: " .. Mean .. "°\n100% chance of ricochet at: " .. Max .. "°")
 
-			ACE.AmmoRangeStats( Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel )
+				ACE.AmmoRangeStats( Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel )
 			end
 		end
 

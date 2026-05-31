@@ -52,8 +52,8 @@ function ACE.CreateBullet( BulletData )
 
 	BulletData.Index		= ACE.CurBulletIndex
 	ACE.Bullet[ACE.CurBulletIndex] = table.Copy(BulletData)	--Place the bullet at the current index pos
-ACE.BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
-ACE.CalcBulletFlight( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex] )
+	ACE.BulletClient( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex], "Init" , 0 )
+	ACE.CalcBulletFlight( ACE.CurBulletIndex, ACE.Bullet[ACE.CurBulletIndex] )
 
 end
 
@@ -67,7 +67,7 @@ function ACE.ManageBullets()
 
 		for Index,Bullet in pairs(ACE.Bullet) do
 			if not Bullet.HandlesOwnIteration then
-			ACE.CalcBulletFlight( Index, Bullet )		--This is the bullet entry in the table, the Index var omnipresent refers to this
+				ACE.CalcBulletFlight( Index, Bullet )		--This is the bullet entry in the table, the Index var omnipresent refers to this
 			end
 		end
 	end
@@ -159,7 +159,7 @@ do
 		Bullet.LastThink = ACE.SysTime
 		Bullet.FlightTime = Bullet.FlightTime + Bullet.DeltaTime
 
-	ACE.DoBulletsFlight( Index, Bullet )
+		ACE.DoBulletsFlight( Index, Bullet )
 
 		-- perf concern: use direct function call stored on bullet over hook system.
 		if Bullet.PostCalcFlight then
@@ -289,18 +289,18 @@ do
 					--Removes the bullet if it could impact more than the specified
 					if Bullet.ImpactCount and Bullet.ImpactCount > MaxImpacts then
 
-					ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-					ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-					ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+						ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+						ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+						ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 					else
 
-					ACE.BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
-					ACE.DoBulletsFlight( Index, Bullet )
+						ACE.BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+						ACE.DoBulletsFlight( Index, Bullet )
 					end
 				else
 
-				ACE.BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
-				ACE.CalcBulletFlight( Index, Bullet, true )		--The world ain't going to move, so we say True for the backtrace override
+					ACE.BulletClient( Index, Bullet, "Update" , 2 , FlightRes.HitPos  )
+					ACE.CalcBulletFlight( Index, Bullet, true )		--The world ain't going to move, so we say True for the backtrace override
 				end
 			end,
 
@@ -321,13 +321,13 @@ do
 				--Removes the bullet if it could impact more than the specified
 				if Bullet.ImpactCount and Bullet.ImpactCount > MaxImpacts then
 
-				ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-				ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-				ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+					ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+					ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+					ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 				else
 
-				ACE.BulletClient( Index, Bullet, "Update" , 3 , FlightRes.HitPos  )
-				ACE.CalcBulletFlight( Index, Bullet, true )
+					ACE.BulletClient( Index, Bullet, "Update" , 3 , FlightRes.HitPos  )
+					ACE.CalcBulletFlight( Index, Bullet, true )
 				end
 			end,
 
@@ -339,9 +339,9 @@ do
 					Bullet.OnEndFlight(Index, Bullet, FlightRes)
 				end
 
-			ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
-			ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-			ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
+				ACE.BulletClient( Index, Bullet, "Update" , 1 , FlightRes.HitPos  )
+				ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+				ACE.BulletEndFlight( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 
 			end
 		}
@@ -370,16 +370,16 @@ do
 			end
 
 			if not util.IsInWorld(ScaledPos) then
-			ACE.RemoveBullet( Index )
+				ACE.RemoveBullet( Index )
 			else
 
-			if Bullet.OnEndFlight then
-				Bullet.OnEndFlight(Index, Bullet, nil)
-			end -- nil was flightres, garbage data this early in code
+				if Bullet.OnEndFlight then
+					Bullet.OnEndFlight(Index, Bullet, nil)
+				end -- nil was flightres, garbage data this early in code
 
-			ACE.BulletClient( Index, Bullet, "Update" , 1 , ScaledPos  ) -- defined at bottom
-			ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
-			ACE.BulletEndFlight( Index, Bullet, ScaledPos, Bullet.Flight:GetNormalized() )
+				ACE.BulletClient( Index, Bullet, "Update" , 1 , ScaledPos  ) -- defined at bottom
+				ACE.BulletEndFlight = ACE.RoundTypes[Bullet.Type]["endflight"]
+				ACE.BulletEndFlight( Index, Bullet, ScaledPos, Bullet.Flight:GetNormalized() )
 
 				debugoverlay.Sphere(ScaledPos, 10, DebugTime, Color(255,100,0,255) )
 				debugoverlay.Text(ScaledPos, "Orange Sphere: Bullet Detonated here!", DebugTime )
@@ -394,7 +394,7 @@ do
 
 			--We don't want to calculate bullets that will never come back to map
 			if (ACE.CurTime - Bullet.LifeTime) > 100 then
-			ACE.RemoveBullet( Index )
+				ACE.RemoveBullet( Index )
 				return
 			end
 
@@ -405,7 +405,7 @@ do
 
 			--We do want rounds outside of the world but not skybox top to be deleted
 			elseif not util.IsInWorld(Bullet.NextPos) then
-			ACE.RemoveBullet( Index )
+				ACE.RemoveBullet( Index )
 				return
 			--We fall back to this default
 			else
@@ -445,7 +445,7 @@ do
 			end
 
 			--If we should do the same trace again, then do so
-		ACE.PerformHitResolution(Index, Bullet, FlightRes, Retry, "propimpact")
+			ACE.PerformHitResolution(Index, Bullet, FlightRes, Retry, "propimpact")
 
 		--bullet hit the world
 		elseif FlightRes.HitWorld then
@@ -457,7 +457,7 @@ do
 				local Retry = BulletWorldImpact( Index, Bullet, FlightRes.HitPos, FlightRes.HitNormal )
 
 				--If we should do the same trace again, then do so
-			ACE.PerformHitResolution(Index, Bullet, FlightRes, Retry, "worldimpact")
+				ACE.PerformHitResolution(Index, Bullet, FlightRes, Retry, "worldimpact")
 
 			--hit skybox
 			else
@@ -470,7 +470,7 @@ do
 						Bullet.LifeTime = ACE.CurTime
 						Bullet.Pos      = Bullet.NextPos
 					else
-					ACE.RemoveBullet( Index )
+						ACE.RemoveBullet( Index )
 						return
 					end
 				end
@@ -480,7 +480,7 @@ do
 		else
 			--If its an infinite map. Remove any bullet if it passed 1 source map distance
 			if InfMap and Bullet.NextPos.z < (-32760 * 2) then
-			ACE.RemoveBullet( Index )
+				ACE.RemoveBullet( Index )
 				return
 			end
 

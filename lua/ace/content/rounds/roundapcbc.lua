@@ -11,9 +11,7 @@ Round.netid = 19											-- Unique ammotype ID for network transmission
 Round.Type  = "APCBC"
 
 function Round.create( _, BulletData )
-
-ACE.CreateBullet( BulletData )
-
+	ACE.CreateBullet( BulletData )
 end
 
 -- Function to convert the player's slider data into the complete round data
@@ -129,7 +127,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 
 			if HitRes.Overkill > 0 then
 				table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
-			ACE.Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
+			ACE.CreateSpall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss , Bullet.Caliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 				Bullet.Flight = Bullet.Flight:GetNormalized() * (Energy.Kinetic * (1-HitRes.Loss) * 2000 / Bullet.ProjMass) ^ 0.5 * 39.37
 				Bullet.Normalize = false
 				return "Penetrated"
@@ -166,7 +164,7 @@ end
 
 function Round.endflight( Index )
 
-ACE.RemoveBullet( Index )
+	ACE.RemoveBullet( Index )
 
 end
 
@@ -250,8 +248,8 @@ function Round.guiupdate( Panel )
 	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. (math.floor(Data.PropMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.PropMass, 1)) .. " kg" )  --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g" .. "/ " .. (math.Round(Data.ProjMass, 1)) .. " kg")  --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 
-ACE.UpperCommonDataDisplay( Data, PlayerData )
-ACE.CommonDataDisplay( Data )
+	ACE.UpperCommonDataDisplay( Data, PlayerData )
+	ACE.CommonDataDisplay( Data )
 
 end
 

@@ -12,9 +12,7 @@ Round.netid = 15 --Unique ammotype ID for network transmission
 Round.Type  = "THEAT"
 
 function Round.create( _, BulletData )
-
-ACE.CreateBullet( BulletData )
-
+	ACE.CreateBullet( BulletData )
 end
 
 function Round.ConeCalc( ConeAngle, Radius )
@@ -305,7 +303,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 			if HitRes.Overkill > 0 then
 
 				table.insert( Bullet.Filter , Target )				--"Penetrate" (Ingoring the prop for the retry trace)
-			ACE.Spall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss + 0.2 , Bullet.CannonCaliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
+			ACE.CreateSpall( HitPos , Bullet.Flight , Bullet.Filter , Energy.Kinetic * HitRes.Loss + 0.2 , Bullet.CannonCaliber , Target.ACE.Armour , Bullet.Owner , Target.ACE.Material) --Do some spalling
 				Bullet.Flight = Bullet.Flight:GetNormalized() * math.sqrt(Energy.Kinetic * (1 - HitRes.Loss) * ((Bullet.NotFirstPen and ACE.HEATPenLayerMul) or 1) * 2000 / Bullet.ProjMass) * 39.37
 
 				return "Penetrated"
@@ -494,7 +492,7 @@ function Round.guiupdate( Panel )
 	ACE.MenuSendTableValue("Data", "RoundData", "TwoPiece", Data.TwoPiece)
 
 	---------------------------Ammo Capacity-------------------------------------
-ACE.AmmoCapacityDisplay( Data )
+	ACE.AmmoCapacityDisplay( Data )
 	-------------------------------------------------------------------------------
 	acemenupanel:AmmoSlider("PropLength", Data.PropLength, Data.MinPropLength, Data.MaxTotalLength, 3, "Propellant Length", "Propellant Mass : " .. math.floor(Data.PropMass * 1000) .. " g" .. "/ " .. math.Round(Data.PropMass, 1) .. " kg") --Propellant Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("ProjLength", Data.ProjLength, Data.MinProjLength, Data.MaxTotalLength, 3, "Projectile Length", "Projectile Mass : " .. math.floor(Data.ProjMass * 1000) .. " g" .. "/ " .. math.Round(Data.ProjMass, 1) .. " kg") --Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
@@ -503,7 +501,7 @@ ACE.AmmoCapacityDisplay( Data )
 	acemenupanel:AmmoSlider("FillerVol", Data.FillerVol, Data.MinFillerVol, Data.MaxFillerVol, 3, "HE Filler Volume", "HE Filler Mass : " .. math.floor(Data.FillerMass * 1000) .. " g") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("HEAllocation", Data.HEAllocation, 0.05, 0.95, 2, "HE Filler Distribution", "HE Filler Ratio : " .. math.floor((1 - Data.HEAllocation) * 100) .. "% (1st), " .. math.floor(Data.HEAllocation * 100) .. "% (2nd)") --HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 
-ACE.Checkboxes( Data )
+	ACE.Checkboxes( Data )
 
 	acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.RoundType].desc) --Description (Name, Desc)
 	acemenupanel:CPanelText("LengthDisplay", "Round Length : " .. (math.floor((Data.PropLength + Data.ProjLength + (math.floor(Data.Tracer * 5) / 10)) * 100) / 100) .. "/" .. Data.MaxTotalLength .. " cm") --Total round length (Name, Desc)

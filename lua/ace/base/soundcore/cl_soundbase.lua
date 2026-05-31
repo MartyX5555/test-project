@@ -292,7 +292,7 @@ do
 
 									--See if it supress the current tinnitus and creates a new one, from 0. Should stop the HE spam tinnitus
 									entply:StopSound("acf_other/explosions/ring/tinnitus.mp3")
-								ACE.EmitSound("acf_other/explosions/ring/tinnitus.mp3", entply, 75, 100, 1 )
+									ACE.EmitSound("acf_other/explosions/ring/tinnitus.mp3", entply, 75, 100, 1 )
 
 								end
 							end
@@ -305,18 +305,18 @@ do
 							VolFix = VolFix * 0.05
 						end
 
-					ACE.EmitSound( Sound or "", entply, 75, Pitch * PitchFix, Volume * VolFix )
+						ACE.EmitSound( Sound or "", entply, 75, Pitch * PitchFix, Volume * VolFix )
 
 						--play dirt sounds
 						if Radius >= ACE.SoundSmallEx and HitWorld then
-						ACE.EmitSound( ACE.Sounds["Debris"]["low"]["close"][math.random(1,#ACE.Sounds["Debris"]["low"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, Pitch * PitchFix, Volume * VolFix / 20 )
-						ACE.EmitSound( ACE.Sounds["Debris"]["high"]["close"][math.random(1,#ACE.Sounds["Debris"]["high"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, (Pitch * PitchFix) / 0.5, Volume * VolFix / 20 )
+							ACE.EmitSound( ACE.Sounds["Debris"]["low"]["close"][math.random(1,#ACE.Sounds["Debris"]["low"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, Pitch * PitchFix, Volume * VolFix / 20 )
+							ACE.EmitSound( ACE.Sounds["Debris"]["high"]["close"][math.random(1,#ACE.Sounds["Debris"]["high"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, (Pitch * PitchFix) / 0.5, Volume * VolFix / 20 )
 						end
 
 						--Underwater Explosions
 					else
-					ACE.EmitSound( "ambient/water/water_splash" .. math.random(1,3) .. ".wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
-					ACE.EmitSound( "^weapons/underwater_explode3.wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
+						ACE.EmitSound( "ambient/water/water_splash" .. math.random(1,3) .. ".wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
+						ACE.EmitSound( "^weapons/underwater_explode3.wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
 					end
 				end
 
@@ -366,7 +366,7 @@ do
 						VolFix = VolFix * 0.5
 					end
 
-				ACE.EmitSound( Sound, entply, 75, Pitch, Volume * VolFix )
+					ACE.EmitSound( Sound, entply, 75, Pitch, Volume * VolFix )
 				end
 
 				timer.Stop( ide )
@@ -443,7 +443,7 @@ do
 					end
 
 					if Sound ~= "" then
-					ACE.EmitSound( Sound or "", entply, 75, Pitch, Volume * VolFix )
+						ACE.EmitSound( Sound or "", entply, 75, Pitch, Volume * VolFix )
 					end
 				end
 
@@ -538,7 +538,7 @@ do
 					end
 
 					--Pos => Gun's pos before to timer. Not possible to use Gun:GetPos() due to risk of gun might not exist at this point.
-				ACE.EmitSound( Sound or "", plyPos + (Pos - plyPos):GetNormalized() * 64, 90, Pitch, Volume * VolFix )
+					ACE.EmitSound( Sound or "", plyPos + (Pos - plyPos):GetNormalized() * 64, 90, Pitch, Volume * VolFix )
 
 				end
 
@@ -611,7 +611,7 @@ do
 						VolFix = VolFix * 0.025
 					end
 
-				ACE.EmitSound( Sound or "" , entply, 75, 100, Volume * VolFix )
+					ACE.EmitSound( Sound or "" , entply, 75, 100, Volume * VolFix )
 				end
 				timer.Stop( ide )
 				timer.Remove( ide )
@@ -654,7 +654,7 @@ do
 						VolFix = VolFix * 0.025
 					end
 
-				ACE.EmitSound( Sound or "" , plyPos + (Origin - plyPos):GetNormalized() * 64, 100, Pitch, Volume * VolFix )
+					ACE.EmitSound( Sound or "" , plyPos + (Origin - plyPos):GetNormalized() * 64, 100, Pitch, Volume * VolFix )
 				end
 				timer.Stop( ide )
 				timer.Remove( ide )

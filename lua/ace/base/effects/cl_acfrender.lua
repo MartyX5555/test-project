@@ -10,13 +10,13 @@ do
 	}
 
 	hook.Add("PostDrawOpaqueRenderables", "ACE_RenderDamage", function()
-		if not ACE.HealthRenderList then return end
+		if not HealthRenderList then return end
 
 		cam.Start3D( EyePos(), EyeAngles() )
 
-			for k,ent in pairs( ACE.HealthRenderList ) do
+			for k,ent in pairs( HealthRenderList ) do
 				if not IsValid(ent) then
-				ACE.HealthRenderList[k] = nil
+				HealthRenderList[k] = nil
 					continue
 				end
 
@@ -41,7 +41,7 @@ do
 			local Health = net.ReadFloat()
 
 			if math.Round(MaxHealth) == math.Round(Health) then
-			ACE.HealthRenderList[Entity:EntIndex()] = nil
+			HealthRenderList[Entity:EntIndex()] = nil
 				return
 			end
 
@@ -57,7 +57,7 @@ do
 				Entity.ACE_Material = Damaged[3]
 			end
 
-		ACE.HealthRenderList[Entity:EntIndex()] = Entity
+		HealthRenderList[Entity:EntIndex()] = Entity
 
 		end
 	end)

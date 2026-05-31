@@ -109,9 +109,9 @@ function ACE.Check( Entity )
 
 	local physobj = Entity:GetPhysicsObject()
 	if not Entity.ACE or (Entity.ACE and isnumber(Entity.ACE.Material)) then
-	ACE.Activate( Entity )
+		ACE.Activate( Entity )
 	elseif Entity.ACE.Mass ~= physobj:GetMass() then
-	ACE.Activate( Entity , true )
+		ACE.Activate( Entity , true )
 	end
 
 	return Entity.ACE.Type
@@ -330,7 +330,7 @@ function ACE.GetAllPhysicalConstraints( ent, ResultTable )
 		-- skip shit that is attached by a nocollide
 		if con.Type ~= "NoCollide" then
 			for _, Ent in pairs( con.Entity ) do
-			ACE.GetAllPhysicalConstraints( Ent.Entity, ResultTable )
+				ACE.GetAllPhysicalConstraints( Ent.Entity, ResultTable )
 			end
 		end
 
@@ -355,7 +355,7 @@ function ACE.GetAllChildren( ent, ResultTable, IgnoreBase )
 
 	local ChildTable = ent:GetChildren()
 	for _, v in pairs( ChildTable ) do
-	ACE.GetAllChildren( v, ResultTable )
+		ACE.GetAllChildren( v, ResultTable )
 		ResultTable[ v ] = v
 	end
 

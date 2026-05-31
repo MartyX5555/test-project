@@ -21,16 +21,16 @@ end
 
 
 
-function ACEM_ModifyRoundDisplayFuncs()
+function ACEM.ModifyRoundDisplayFuncs()
 
 	local roundTypes = ACE.RoundTypes
 
-	if not ACEM_RoundDisplayFuncs then
+	if not ACEM.RoundDisplayFuncs then
 
-		ACEM_RoundDisplayFuncs = {}
+		ACEM.RoundDisplayFuncs = {}
 
 		for k, v in pairs(roundTypes) do
-			ACEM_RoundDisplayFuncs[k] = v.getDisplayData
+			ACEM.RoundDisplayFuncs[k] = v.getDisplayData
 		end
 
 	end
@@ -38,7 +38,7 @@ function ACEM_ModifyRoundDisplayFuncs()
 
 	for k, v in pairs(roundTypes) do
 
-		local oldDisplayData = ACEM_RoundDisplayFuncs[k]
+		local oldDisplayData = ACEM.RoundDisplayFuncs[k]
 
 		if oldDisplayData then
 			v.getDisplayData = function(data)
@@ -54,8 +54,8 @@ function ACEM_ModifyRoundDisplayFuncs()
 				local slugMV2 = data.SlugMV2
 
 				data.MuzzleVel = 0
-				data.SlugMV = (slugMV or 0) * (ACE_GetGunValue(data.Id, "penmul") or 1.2)
-				data.SlugMV2 = (slugMV2 or 0) * (ACE_GetGunValue(data.Id, "penmul") or 1.2)
+				data.SlugMV = (slugMV or 0) * (ACE.GetGunValue(data.Id, "penmul") or 1.2)
+				data.SlugMV2 = (slugMV2 or 0) * (ACE.GetGunValue(data.Id, "penmul") or 1.2)
 
 				local ret = oldDisplayData(data)
 
@@ -88,16 +88,16 @@ end
 
 
 
-function ACEM_ModifyCrateTextFuncs()
+function ACEM.ModifyCrateTextFuncs()
 
 	local roundTypes = ACE.RoundTypes
 
-	if not ACEM_CrateTextFuncs then
+	if not ACEM.CrateTextFuncs then
 
-		ACEM_CrateTextFuncs = {}
+		ACEM.CrateTextFuncs = {}
 
 		for k, v in pairs(roundTypes) do
-			ACEM_CrateTextFuncs[k] = v.cratetxt
+			ACEM.CrateTextFuncs[k] = v.cratetxt
 		end
 
 	end
@@ -105,7 +105,7 @@ function ACEM_ModifyCrateTextFuncs()
 
 	for k, v in pairs(roundTypes) do
 
-		local oldCratetxt = ACEM_CrateTextFuncs[k]
+		local oldCratetxt = ACEM.CrateTextFuncs[k]
 
 		if oldCratetxt then
 			v.cratetxt = function(data, crate)
@@ -124,7 +124,7 @@ function ACEM_ModifyCrateTextFuncs()
 				local fuse	= IsValid(crate) and crate.RoundData.Fuse
 
 				if guidance then
-					guidance = ACEM_CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
+					guidance = ACEM.CreateConfigurable(guidance, ACE.Guidance, bdata, "guidance")
 					if guidance and guidance.Name ~= "Dumb" then
 						str[#str + 1] = "\n\n"
 						str[#str + 1] = guidance.Name
@@ -135,7 +135,7 @@ function ACEM_ModifyCrateTextFuncs()
 				end
 
 				if fuse then
-					fuse = ACEM_CreateConfigurable(fuse, ACE.Fuse, bdata, "fuses")
+					fuse = ACEM.CreateConfigurable(fuse, ACE.Fuse, bdata, "fuses")
 					if fuse then
 						str[#str + 1] = "\n\n"
 						str[#str + 1] = fuse.Name
@@ -157,9 +157,9 @@ end
 
 
 
-function ACEM_ModifyRoundBaseGunpowder()
+function ACEM.ModifyRoundBaseGunpowder()
 
-	local oldGunpowder = ACEM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE.RoundBaseGunpowder
+	local oldGunpowder = ACEM.ModifiedRoundBaseGunpowder and oldGunpowder or ACE.RoundBaseGunpowder
 
 
 ACE.RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
@@ -173,13 +173,13 @@ ACE.RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
 	end
 
 
-	ACEM_ModifiedRoundBaseGunpowder = true
+	ACEM.ModifiedRoundBaseGunpowder = true
 
 end
 
-timer.Simple(1, ACEM_ModifyRoundBaseGunpowder)
-timer.Simple(1, ACEM_ModifyRoundDisplayFuncs)
-timer.Simple(1, ACEM_ModifyCrateTextFuncs)
+timer.Simple(1, ACEM.ModifyRoundBaseGunpowder)
+timer.Simple(1, ACEM.ModifyRoundDisplayFuncs)
+timer.Simple(1, ACEM.ModifyCrateTextFuncs)
 
 
 

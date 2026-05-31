@@ -126,7 +126,7 @@ end )
 hook.Add("ACE_PlayerChangedZone", "ACE_TellPlyAboutSafezoneBattle", function(ply, zone)
 	if not this.NotifySafezones[table.KeyFromValue(this.Modes, this.DamagePermission)] then return end
 
-ACE.SendMsg(ply, zone and Color(0, 255, 0) or Color(255, 0, 0), "You have entered the " .. (zone and zone .. " safezone." or "battlefield!"))
+	ACE.SendMsg(ply, zone and Color(0, 255, 0) or Color(255, 0, 0), "You have entered the " .. (zone and zone .. " safezone." or "battlefield!"))
 end)
 
 local plyzones = {}
@@ -357,7 +357,7 @@ concommand.Add( "ACE_SetDefaultPermissionMode", function(ply, _, args)
 
 		for _, v in pairs(player.GetAll()) do
 			if v:IsAdmin() then
-			ACE.SendMsg(v, Color(255, 0, 0), "Default permission mode for " .. game.GetMap() .. " has been set to " .. mode .. "!")
+				ACE.SendMsg(v, Color(255, 0, 0), "Default permission mode for " .. game.GetMap() .. " has been set to " .. mode .. "!")
 			end
 		end
 
@@ -396,7 +396,7 @@ local function tellPlysAboutDPMode(mode, oldmode)
 	if mode == oldmode then return end
 
 	for _, v in pairs(player.GetAll()) do
-	ACE.SendMsg(v, Color(255,0,0), "Damage protection has been changed to " .. mode .. " mode!")
+		ACE.SendMsg(v, Color(255,0,0), "Damage protection has been changed to " .. mode .. " mode!")
 	end
 end
 hook.Add("ACE_ProtectionModeChanged", "ACE_TellPlysAboutDPMode", tellPlysAboutDPMode)
@@ -594,7 +594,7 @@ net.Receive("ACE_dmgfriends", function(_, ply)
 				local note = v and "given you" or "removed your"
 				local MsgNote = v and "given" or "removed"
 
-			ACE.SendNotification(targ, ply:Nick() .. " has " .. note .. " permission to damage their objects with ACE!")
+				ACE.SendNotification(targ, ply:Nick() .. " has " .. note .. " permission to damage their objects with ACE!")
 				print("[ACE | INFO]- The user " .. ply:Nick() .. " has " .. MsgNote .. " permissions to damage objects with ACE " .. (v and "to" or "from") .. " " .. ((targ == ply) and "himself" or targ:Nick()))
 			end
 		end
@@ -638,7 +638,7 @@ function this.SendPermissionsState(ply)
 end
 util.AddNetworkString("ACE_refreshpermissions")
 net.Receive("ACE_refreshpermissions", function(_, ply)
-ACE.SendDPStatus()
+	ACE.SendDPStatus()
 	this.SendPermissionsState(ply)
 end)
 

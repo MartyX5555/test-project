@@ -383,64 +383,55 @@ else
 	end)
 end
 
---[[ IDK if this will take some usage
-function ACE.Msg( type, txt )
-
-	if not isstring(type) then
-		ErrorNoHaltWithStack(( "bad argument #1 to 'type' (string expected, got " .. type( type ) .. ")" ))
-		return
-	end
-
-	if not isstring(txt) then
-		ErrorNoHaltWithStack(( "bad argument #2 to 'txt' (string expected, got " .. type( type ) .. ")" ))
-		return
-	end
-
-	local Info
-
-	if type == "warn"
-		Info = "WARN"
-	elseif type == "error"
-		Info = "ERROR"
-	elseif type == "info"
-		Info = "INFO"
-	end
-
-	local prefix = "[ACE | " .. Info .. "]- "
-
-	print( prefix .. txt )
-
-end
-]]
-
 if SERVER then
 
 	function ACE.SendDPStatus()
-
 		local Cvar = GetConVar("ace_enable_dp"):GetInt()
 		local bool = tobool(Cvar)
 
 		net.Start("ACE_DPStatus")
 			net.WriteBool(bool)
 		net.Broadcast()
-
 	end
 
 	function ACE.SendNotify( ply, success, msg )
 		net.Start( "ACE_Notify" )
-		net.WriteBit( success )
-		net.WriteString( msg or "" )
+
+			net.WriteUInt( 0, 2 )
+			net.WriteBool( success )
+			net.WriteString( msg or "" )
+		net.Send( ply )
+	end
+
+	function ACE.PrintChatMessage( ply, success, msg )
+		net.Start( "ACE_Notify" )
+			net.WriteUInt( 1, 2 )
+			net.WriteBool( success )
+			net.WriteString( msg or "" )
 		net.Send( ply )
 	end
 else
 
-	local function Notify()
-		local Type = NOTIFY_ERROR
-		if tobool( net.ReadBit() ) then Type = NOTIFY_GENERIC end
-
-		GAMEMODE:AddNotify( net.ReadString(), Type, 7 )
+	function ACE.SendNotify( success, msg )
+		local Type = success and NOTIFY_GENERIC or NOTIFY_ERROR
+		GAMEMODE:AddNotify( msg, Type, 7 )
 	end
-	net.Receive( "ACE_Notify", ACE.Notify )
+
+	function ACE.PrintChatMessage( success, msg )
+		local color = success and Color(0,255,0) or Color(255,0,0)
+		chat.AddText( color, "[ACE]  ", Color( 255, 255, 255 ), msg )
+	end
+
+	local function ReceiveNotify()
+		local msgType = net.ReadUInt( 2 )
+
+		if msgType == 0 then
+			ACE.SendNotify( net.ReadBool(), net.ReadString() )
+		elseif msgType == 1 then
+			ACE.PrintChatMessage( net.ReadBool(), net.ReadString() )
+		end
+	end
+	net.Receive( "ACE_Notify", ReceiveNotify )
 end
 
 if CLIENT then
