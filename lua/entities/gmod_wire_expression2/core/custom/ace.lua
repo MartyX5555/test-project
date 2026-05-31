@@ -81,7 +81,7 @@ ACE.E2_LinkTables = ACE.E2_LinkTables or
 	local function getLinks(ent, enttype)
 		local ret = {}
 		-- find the link resources available for this ent type
-		for entry, mode in pairs(ACE_E2_LinkTables[enttype]) do
+		for entry, mode in pairs(ACE.E2_LinkTables[enttype]) do
 			if not ent[entry] then
 				error("Couldn't find link resource " .. entry .. " for entity " .. tostring(ent))
 
