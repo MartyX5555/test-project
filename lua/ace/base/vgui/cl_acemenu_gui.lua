@@ -385,115 +385,89 @@ end
 
 --[[=========================
 	ACE information folder content
-]]--=========================
+=========================]]--
 function ACFHomeGUICreate()
 	if not acemenupanel.CustomDisplay then return end
 
 	local currentpanel = acemenupanel.CustomDisplay
+	local isExperimental = ACE.Version > ACE.CurrentVersion
 
-	local versiontext = "Retrieving versions.... Please wait.\n\n"
-	local labelversion = vgui.Create( "DLabel" )
-	labelversion:SetText(versiontext)
-	labelversion:SetTextColor( Color( 0, 0, 0) )
-	labelversion:SizeToContents()
-
-	currentpanel:AddItem( labelversion )
-	acemenupanel["CData"]["VersionInit"] = labelversion
-
-	local labelversionstatus = vgui.Create( "DLabel" )
-	labelversionstatus:SetFont("Trebuchet18")
-	labelversionstatus:SetText("\n\n")
-	labelversionstatus:SetTextColor( Color( 0, 0, 0) )
-	labelversionstatus:SizeToContents()
-
-	currentpanel:AddItem( labelversionstatus )
-	acemenupanel["CData"]["VersionText"] = labelversionstatus
-	-- end version
-
-	acemenupanel:CPanelText("Header", "Changelog")  --changelog screen
-
---[[=========================
-	Changelog table maker
-]]--=========================
-
-	local changelist = vgui.Create("DTree")
-	changelist:SetSize( currentpanel:GetWide(), 60 )
-
-	currentpanel:AddItem( changelist )
-	acemenupanel["CData"]["Changelist"] = changelist
-
-	currentpanel:PerformLayout()
-
-	http.Fetch("http://raw.github.com/RedDeadlyCreeper/ArmoredCombatExtended/master/changelog.txt", UpdateACFHomeGUI, function() end)
-end
-
---[[=========================
-	Changelog.txt
-]]--=========================
-
-function UpdateACFHomeGUI(contents)
-
-	local color
-	local versionstring
+	-- ====================================================
+	-- 1. Lógica de Versiones (Procesamos los datos primero)
+	-- ====================================================
+	local versionType = "Unknown"
+	local versionString = "No internet Connection available!"
+	local statusColor = Color(225, 0, 0, 255)
+	local statusText = versionString
 
 	if ACE.CurrentVersion > 0 then
-		if ACE.Version >= ACE.CurrentVersion then
-			versionstring = "Up To Date"
-			color = Color(0,225,0,255)
+		versionType = isExperimental and "Experimental" or "Default"
+
+		if isExperimental or ACE.Version == ACE.CurrentVersion then
+			versionString = "Up To Date"
+			statusColor = Color(0, 225, 0, 255)
 		else
-			versionstring = "Out Of Date"
-			color = Color(225,0,0,255)
+			versionString = "Out Of Date"
+			statusColor = Color(225, 0, 0, 255)
 		end
-	else
-		versionstring = "No internet Connection available!"
-		color = Color(225,0,0,255)
+
+		statusText = "ACE Is " .. versionString .. "!\n"
 	end
 
-	local txt
-
-	if ACE.CurrentVersion > 0 then
-		txt = "ACE Is " .. versionstring .. "!\n\n"
-	else
-		txt = versionstring
-	end
+	local versionInfoText = "Latest Version: " .. ACE.CurrentVersion .. "\nYour Version: " .. ACE.Version .. "\nCurrent Build: " .. versionType
 
 
-	local versiontext = "GitHub Version: " .. ACE.CurrentVersion .. "\nCurrent Version: " .. ACE.Version
-	acemenupanel["CData"]["VersionInit"]:SetText(versiontext)
+	-- ====================================================
+	-- 2. Creación de la Interfaz Gráfica (VGUI)
+	-- ====================================================
 
-	acemenupanel["CData"]["VersionText"]:SetText(txt)
-	acemenupanel["CData"]["VersionText"]:SetTextColor( Color( 0, 0, 0) )
-	acemenupanel["CData"]["VersionText"]:SetColor(color)
-	acemenupanel["CData"]["VersionText"]:SizeToContents()
+	local AboutHeader = vgui.Create( "DLabel" )
+	AboutHeader:SetColor( Color(10,10,10) )
+	AboutHeader:SetText("Version Details")
+	AboutHeader:SetFont("DermaDefaultBold")
+	AboutHeader:SizeToContents()
+	acemenupanel.CustomDisplay:AddItem( AboutHeader )
+	acemenupanel["CData"]["AboutHeader"] = AboutHeader
 
-	if true then return end
+	-- Etiqueta de información de versión
+	local labelVersion = vgui.Create("DLabel")
+	labelVersion:SetText(versionInfoText)
+	labelVersion:SetTextColor(Color(0, 0, 0))
+	labelVersion:SizeToContents()
 
-	acemenupanel.Changelog = {}
-	local Temp = string.Explode( "*", contents )
+	currentpanel:AddItem(labelVersion)
+	acemenupanel["CData"]["VersionInit"] = labelVersion
 
-	for _,String in pairs(Temp) do
-		acemenupanel.Changelog[tonumber(string.sub(String,2,4))] = string.Trim(string.sub(String, 5))
-	end
+	-- Etiqueta de estado de la versión
+	local labelVersionStatus = vgui.Create("DLabel")
+	labelVersionStatus:SetFont("Trebuchet18")
+	labelVersionStatus:SetText(statusText)
+	labelVersionStatus:SetTextColor(statusColor)
+	labelVersionStatus:SizeToContents()
 
-	table.SortByKey(acemenupanel.Changelog, true)
+	currentpanel:AddItem(labelVersionStatus)
+	acemenupanel["CData"]["VersionText"] = labelVersionStatus
 
-	for i = 0, table.maxn(acemenupanel.Changelog) - 100 do
+	-- Botón de Changelog (Solo se crea si no existe)
+	if not acemenupanel["CData"]["ChangelogButton"] then
+		acemenupanel:CPanelText("Header", "For a complete changelog, visit our Github")
 
-		local k = table.maxn(acemenupanel.Changelog) - i
-
-		local Node = changelist:AddNode( "Rev " .. k )
-		Node.mytable = {}
-		Node.mytable["rev"] = k
-		function Node:DoClick()
-			acemenupanel:UpdateAttribs( Node.mytable )
+		local changelogButton = vgui.Create("DButton")
+		changelogButton:SetText("View Commits")
+		changelogButton.DoClick = function()
+			local branch = isExperimental and "dev" or "main"
+			gui.OpenURL("https://github.com/MartyX5555/test-project/commits/" .. branch .. "/")
 		end
-		Node.Icon:SetImage( "icon16/newspaper.png" )
 
+		currentpanel:AddItem(changelogButton)
+		acemenupanel["CData"]["ChangelogButton"] = changelogButton
 	end
-	acemenupanel:CPanelText("Changelog", acemenupanel.Changelog[Table["rev"]])
-	acemenupanel.CustomDisplay:PerformLayout()
 
 
+	-- ====================================================
+	-- 3. Actualización Final
+	-- ====================================================
+	currentpanel:PerformLayout()
 end
 
 --[[=========================

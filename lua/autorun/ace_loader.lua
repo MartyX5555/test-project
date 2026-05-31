@@ -2,7 +2,7 @@ ACE = ACE or {}
 ACEM = ACEM or {} -- temporal as its expected to be merged with the ACE table.
 ---------------------------------- Version ----------------------------------
 
-ACE.Version           = 1001		-- ACE current version
+ACE.Version           = 1002		-- ACE current version
 ACE.CurrentVersion    = 0			-- just defining a variable, do not change
 ACE.Year              = 2026		-- Current Year
 
