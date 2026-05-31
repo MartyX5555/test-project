@@ -110,6 +110,7 @@ function PANEL:Init()
 	HomeNode.mytable = {}
 	HomeNode.mytable.guicreate = (function( _, Table ) ACFHomeGUICreate( Table ) end or nil)
 	HomeNode.mytable.guiupdate = (function( _, Table ) ACFHomeGUIUpdate( Table ) end or nil)
+	timer.Simple(0.1, function() HomeNode:DoClick() end) --Select the main menu on menu open
 
 	function HomeNode:DoClick()
 		acemenupanel:UpdateDisplay(self.mytable)
@@ -311,20 +312,21 @@ function PANEL:Init()
 		local SettingsNode = TreePanel:AddNode( "Settings", "icon16/wrench_orange.png" ) --Options folder
 
 		local CSNode = SettingsNode:AddNode("Client" , "icon16/user.png") --Client folder
-		local SSNode = SettingsNode:AddNode("Server", "icon16/cog.png")  --Server folder
-
 		CSNode.mytable = {}
-		SSNode.mytable = {}
 		CSNode.mytable.guicreate = function( _, Table ) ACFCLGUICreate( Table ) end or nil
-		SSNode.mytable.guicreate = function( _, Table ) ACFSVGUICreate( Table ) end or nil
-
 		function CSNode:DoClick()
 			acemenupanel:UpdateDisplay(self.mytable)
 		end
-		function SSNode:DoClick()
-			acemenupanel:UpdateDisplay(self.mytable)
-		end
 
+		local ply = LocalPlayer()
+		if ply:IsSuperAdmin() then
+			local SSNode = SettingsNode:AddNode("Server", "icon16/cog.png")  --Server folder
+			SSNode.mytable = {}
+			SSNode.mytable.guicreate = function( _, Table ) ACFSVGUICreate( Table ) end or nil
+			function SSNode:DoClick()
+				acemenupanel:UpdateDisplay(self.mytable)
+			end
+		end
 	end
 
 	self.WeaponSelect = TreePanel
@@ -555,7 +557,7 @@ local function MenuNotifyError()
 	local Note = vgui.Create( "DLabel" )
 	Note:SetPos( 0, 0 )
 	Note:SetColor( Color(10,10,10) )
-	Note:SetText("Not available in this moment")
+	Note:SetText("To edit the server side settings, use the console commands and ")
 	Note:SizeToContents()
 	acemenupanel.CustomDisplay:AddItem( Note )
 
@@ -569,7 +571,6 @@ function ACFSVGUICreate()	--Serverside folder content
 
 	local ply = LocalPlayer()
 	if not IsValid(ply) then return end
-	if not ply:IsSuperAdmin() then return end
 	if game.IsDedicated() then MenuNotifyError() return end
 
 	local Server = acemenupanel["CData"]["Options"]
