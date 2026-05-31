@@ -1054,7 +1054,7 @@ end
 	4-
 ]]---------------------------------------
 
-function ACE_CPanelText(Name, Desc, Font, Panel)
+function ACE.CPanelText(Name, Desc, Font, Panel)
 
 	if not acemenupanel["CData"][Name .. "_text"] then
 
@@ -1085,5 +1085,5 @@ end
 
 --quick fix
 function PANEL:CPanelText(Name, Desc, Font, Panel)
-	ACE_CPanelText(Name, Desc, Font, Panel)
+ACE.CPanelText(Name, Desc, Font, Panel)
 end

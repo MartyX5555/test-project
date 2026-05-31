@@ -141,7 +141,7 @@ ACE.RegisterWeapon("170mmC", {
 	}
 } )
 
-ACE_DefineMuzzleFlash("C", {
+ACE.DefineMuzzleFlash("C", {
 	function(Effect)
 
 		local Origin = Effect.Origin

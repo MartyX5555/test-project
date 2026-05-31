@@ -240,8 +240,8 @@ if SERVER then
 		elseif CVar == "ace_explosions_scaled_ents_max" then
 			ACE.ScaledEntsMax = math.max(New,1)
 		elseif CVar == "ace_enable_dp" then
-			if ACE_SendDPStatus then
-				ACE_SendDPStatus()
+			if ACE.SendDPStatus then
+			ACE.SendDPStatus()
 			end
 		end
 	end

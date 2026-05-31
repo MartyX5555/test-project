@@ -70,7 +70,7 @@ function SWEP:Think()
 		local tr = util.TraceLine( trace )
 		local ent = tr.Entity
 
-		if IsValid(ent) and not ent:IsPlayer() and not ent:IsNPC() and ACE_Check( ent ) then
+		if IsValid(ent) and not ent:IsPlayer() and not ent:IsNPC() and ACE.Check( ent ) then
 			self:SetNWFloat( "HP", ent.ACE.Health )
 			self:SetNWFloat( "Armour", ent.ACE.Armour )
 			self:SetNWFloat( "MaxHP", ent.ACE.MaxHealth )
@@ -139,14 +139,14 @@ do
 
 				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
 
-				if ACE_Check( ent ) and ent.ACE.Health < ent.ACE.MaxHealth then
+				if ACE.Check( ent ) and ent.ACE.Health < ent.ACE.MaxHealth then
 
 					ent.ACE.Health = math.min(ent.ACE.Health + (600 / ent.ACE.MaxArmour), ent.ACE.MaxHealth)
 					ent.ACE.Armour = math.min(ent.ACE.MaxArmour * (ent.ACE.Health / ent.ACE.MaxHealth), ent.ACE.MaxArmour)
 					ent:EmitSound( "ambient/energy/NewSpark0" .. tostring( math.random( 3, 5 ) ) .. ".wav", 75, 100, 1, CHAN_WEAPON )
 					TeslaSpark(tr.HitPos , 1 )
 
-					ACE_UpdateVisualHealth(ent)
+				ACE.UpdateVisualHealth(ent)
 
 					self:SetNWFloat( "HP", ent.ACE.Health )
 					self:SetNWFloat( "Armour", ent.ACE.Armour )
@@ -188,7 +188,7 @@ do
 
 		if not IsValid(ent) then return end
 
-		if ACE_Check ( ent ) then
+		if ACE.Check ( ent ) then
 
 			self:SetNWFloat( "HP", ent.ACE.Health )
 			self:SetNWFloat( "Armour", ent.ACE.Armour )
@@ -201,19 +201,19 @@ do
 			if ent:IsPlayer() or ent:IsNPC() or ent:IsNextBot() then
 
 				Energy = { Kinetic = 0.2,Momentum = 0,Penetration = 0.2 }
-				HitRes = ACE_Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
+				HitRes = ACE.Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 			else
 
 				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
 
 				Energy = { Kinetic = 500, Momentum = 0, Penetration = 500 }
-				HitRes = ACE_Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
+				HitRes = ACE.Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 
 			end
 
 			if HitRes.Kill and not ent:IsPlayer() then
 
-				ACE_APKill( ent, VectorRand() , 0)
+			ACE.APKill( ent, VectorRand() , 0)
 				ent:EmitSound("ambient/energy/NewSpark0" .. tostring(math.random(3, 5)) .. ".wav", 75, 100, 1, CHAN_AUTO)
 			else
 				local effectdata = EffectData()

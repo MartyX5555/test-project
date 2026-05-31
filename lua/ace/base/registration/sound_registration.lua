@@ -1,4 +1,4 @@
---Table Main concept. function for all sounds needs to be function ACE_Sound(HitPos ,Energy ,HitWorld ,HitWater, Type). This will cover:
+--Table Main concept. function for all sounds needs to be function ACE.Sound(HitPos ,Energy ,HitWorld ,HitWater, Type). This will cover:
 	--Explosions
 	--Penetrations
 	--Ricochets

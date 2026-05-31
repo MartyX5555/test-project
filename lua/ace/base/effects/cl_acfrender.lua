@@ -1,7 +1,7 @@
 
 ---------------- ACE Damage Material rendering ----------------
 do
-	local ACE_HealthRenderList = {}
+	local HealthRenderList = {}
 
 	local Damaged = {
 		CreateMaterial("ACE_Damaged1", "VertexLitGeneric", {["$basetexture"] = "damaged/damaged1"}),
@@ -10,13 +10,13 @@ do
 	}
 
 	hook.Add("PostDrawOpaqueRenderables", "ACE_RenderDamage", function()
-		if not ACE_HealthRenderList then return end
+		if not ACE.HealthRenderList then return end
 
 		cam.Start3D( EyePos(), EyeAngles() )
 
-			for k,ent in pairs( ACE_HealthRenderList ) do
+			for k,ent in pairs( ACE.HealthRenderList ) do
 				if not IsValid(ent) then
-					ACE_HealthRenderList[k] = nil
+				ACE.HealthRenderList[k] = nil
 					continue
 				end
 
@@ -41,7 +41,7 @@ do
 			local Health = net.ReadFloat()
 
 			if math.Round(MaxHealth) == math.Round(Health) then
-				ACE_HealthRenderList[Entity:EntIndex()] = nil
+			ACE.HealthRenderList[Entity:EntIndex()] = nil
 				return
 			end
 
@@ -57,7 +57,7 @@ do
 				Entity.ACE_Material = Damaged[3]
 			end
 
-			ACE_HealthRenderList[Entity:EntIndex()] = Entity
+		ACE.HealthRenderList[Entity:EntIndex()] = Entity
 
 		end
 	end)
@@ -75,7 +75,7 @@ do
 	end
 
 	--[[
-		ACE_RenderLight(idx, lightSize, colour, pos, duration)
+	ACE.RenderLight(idx, lightSize, colour, pos, duration)
 
 		- idx		: the index of this light. Use the entity index, or 0 for the world.
 		- lightSize	: sets the scale size factor of the light.
@@ -83,7 +83,7 @@ do
 		- pos 		: the position
 		- duration	: the duration, in seconds, that this light will stand before turning off.
 	]]
-	function ACE_RenderLight(idx, lightSize, colour, pos, duration)
+	function ACE.RenderLight(idx, lightSize, colour, pos, duration)
 		if not CanEmitLight(lightSize) then return end
 
 		local dlight = DynamicLight( idx )

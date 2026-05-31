@@ -71,7 +71,7 @@ function EFFECT:Init( data )
 	if self.Id and not RoundTypesIgnore[self.Id] or (IsValid(TraceEntity) and not EntityFilter[TraceEntity:GetClass()]) then
 
 		local Mat = SurfaceTr.MatType
-		local Material = ACE_GetMaterialName( Mat )
+		local Material = ACE.GetMaterialName( Mat )
 		local SmokeColor = ACE.DustMaterialColor[Material] or ACE.DustMaterialColor["Concrete"]
 
 		if Material == "Metal" then

@@ -112,7 +112,7 @@ function TOOL:LeftClick( trace )
 			duplicator.StoreEntityModifier( ent, "material", { MaterialOverride = EntityData.EntityMaterial} )
 			duplicator.StoreEntityModifier( ent, "WireName", { name = EntityData.EntityWireName } )
 		end
-		ACE_SendNotify( ply, success, msg )
+	ACE.SendNotify( ply, success, msg )
 	elseif self.GetEntityData[self.EntityClass] then
 		local NewEntClass = self.EntityClass
 		local DupeClass = duplicator.FindEntityClass( NewEntClass )
@@ -125,7 +125,7 @@ function TOOL:LeftClick( trace )
 
 			-- Using the Duplicator entity register to find the right factory function
 			local NewEnt = DupeClass.Func( ply, Pos, Ang, EntityData.Id, EntityData ) --aka function like MakeACE_Ammo
-			if not IsValid(NewEnt) then ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
+			if not IsValid(NewEnt) then ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
 
 			local TruePos = NewEnt:LocalToWorld(Vector(0,0,-NewEnt:OBBMins().z + 1))
 			NewEnt:SetPos(TruePos)
@@ -144,7 +144,7 @@ function TOOL:LeftClick( trace )
 				undo.SetPlayer( ply )
 			undo.Finish()
 		else
-			ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
+		ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
 			return false
 		end
 	end
@@ -162,7 +162,7 @@ function TOOL:RightClick( trace )
 	if isfunction(GetEntityData) then
 		self.EntityData = GetEntityData(ent)
 		self.EntityClass = Class
-		ACE_SendNotify( ply, true, "ACE Entity '" .. self.EntityData.EntityWireName .. "' (" .. Class .. ") copied succesfully" )
+	ACE.SendNotify( ply, true, "ACE Entity '" .. self.EntityData.EntityWireName .. "' (" .. Class .. ") copied succesfully" )
 	end
 	return true
 end

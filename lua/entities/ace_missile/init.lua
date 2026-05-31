@@ -13,8 +13,8 @@ function ENT:Initialize()
 	self.BulletData = {}
 
 	self.DetonateOffset = nil
-	self.SpecialDamage = true	-- If true needs a special ACE_OnDamage function
-	self.SpecialHealth = true	-- If true needs a special ACE_Activate function
+	self.SpecialDamage = true	-- If true needs a special ACE.OnDamage function
+	self.SpecialHealth = true	-- If true needs a special ACE.Activate function
 	self.DoNotDuplicate  = true
 
 	self.Launcher = NULL
@@ -55,7 +55,7 @@ function ENT:SetCrateData(Crate)
 
 	local BulletData = table.Copy(Crate.BulletData)
 	local gun = GunTable[BulletData.Id]
-	local roundWeight = ACE_GetGunValue(bdata, "weight") or 10
+	local roundWeight = ACE.GetGunValue(bdata, "weight") or 10
 
 	BulletData.Entity = self
 	BulletData.Crate = self:EntIndex()
@@ -462,7 +462,7 @@ do
 			end )
 		elseif not GunData.prepush then
 
-			local noThrust  = ACE_GetGunValue(BulletData, "nothrust")
+			local noThrust  = ACE.GetGunValue(BulletData, "nothrust")
 			local Time	= CurTime()
 
 			if noThrust then
@@ -558,7 +558,7 @@ function ENT:Think()
 
 			if not (self:WaterLevel() == 3 and self.NotDrownable) then
 
-				local effect = ACE_GetGunValue(self.BulletData, "effect")
+				local effect = ACE.GetGunValue(self.BulletData, "effect")
 
 				if effect then
 					ParticleEffectAttach( effect, PATTACH_POINT_FOLLOW, self, self:LookupAttachment("exhaust") or 0 )
@@ -675,7 +675,7 @@ function ENT:UpdateSkin()
 
 		local warhead = self.BulletData.Type
 
-		local skins = ACE_GetGunValue(self.BulletData, "skinindex")
+		local skins = ACE.GetGunValue(self.BulletData, "skinindex")
 		if not skins then return end
 
 		local skin = skins[warhead] or 0
@@ -739,7 +739,7 @@ function ENT:ACE_Activate( Recalc )
 		self.ACE.Volume = PhysObj:GetVolume() * 16.38
 	end
 
-	local ForceArmour = ACE_GetGunValue(self.BulletData, "armour")
+	local ForceArmour = ACE.GetGunValue(self.BulletData, "armour")
 
 	local Armour = ForceArmour or (EmptyMass * 1000 / self.ACE.Area / 0.78)	--So we get the equivalent thickness of that prop in mm if all it's weight was a steel plate
 	local Health = self.ACE.Volume / ACE.Threshold							--Setting the threshold of the prop Area gone
@@ -758,7 +758,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density	= (self.PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type	= "Prop"
 
-	self.ACE.Material = ACE_VerifyMaterial(self.ACE.Material)
+	self.ACE.Material = ACE.VerifyMaterial(self.ACE.Material)
 
 end
 
@@ -770,7 +770,7 @@ do
 
 		if self.Detonated or self.DisableDamage then return table.Copy(nullhit) end
 
-		local HitRes = ACE_PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
+		local HitRes = ACE.PropDamage( Entity , Energy , FrArea , Angle , Inflictor )	--Calling the standard damage prop function
 
 		-- Detonate if the shot penetrates the casing.
 		HitRes.Kill = HitRes.Kill or HitRes.Overkill > 0

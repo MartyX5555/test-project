@@ -227,7 +227,7 @@ function CreateRackSelectGUI(node)
 	end
 
 	acemenupanel.CData.RackSelect:Clear()
-	for _, Value in pairs( ACE_GetCompatibleRacks(node.mytable.id) ) do
+	for _, Value in pairs( ACE.GetCompatibleRacks(node.mytable.id) ) do
 		acemenupanel.CData.RackSelect:AddChoice( Value, Value, Value == Current_Rack )
 	end
 end

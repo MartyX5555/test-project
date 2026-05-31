@@ -17,13 +17,13 @@ CreateClientConVar( "acearmorprop_area", 0, false, true ) -- we don't want this 
 -- Calculates mass, armor, and health given prop area and desired ductility and thickness.
 local function CalcArmor( Area, Ductility, Thickness, Mat )
 
-	Mat = ACE_VerifyMaterial(Mat)
+	Mat = ACE.VerifyMaterial(Mat)
 
-	local MatData    = ACE_GetMaterialData( Mat )
+	local MatData    = ACE.GetMaterialData( Mat )
 	local MassMod    = MatData.massMod
 
 	local mass       = Area * ( 1 + Ductility ) ^ 0.5 * Thickness * 0.00078 * MassMod
-	local armor      = ACE_CalcArmor( Area, Ductility, mass / MassMod )
+	local armor      = ACE.CalcArmor( Area, Ductility, mass / MassMod )
 	local health     = ( Area + Area * Ductility ) / ACE.Threshold
 
 	return mass, armor, health
@@ -32,7 +32,7 @@ end
 
 --[[
 -- changes here will be automatically reflected in the armor properties tool
-function ACE_CalcArmor( Area, Ductility, Mass )
+function ACE.CalcArmor( Area, Ductility, Mass )
 
 	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACE.ArmorMod
 
@@ -49,7 +49,7 @@ if CLIENT then
 
 	--Required in order to update material data inserted in client convars
 	local function PreMaterilCheck( Material )
-		local NewMaterial = ACE_VerifyMaterial(Material)
+		local NewMaterial = ACE.VerifyMaterial(Material)
 		if NewMaterial ~= Material then
 			--Updates the convar with the proper material
 			RunConsoleCommand( "acearmorprop_material", NewMaterial )
@@ -207,12 +207,12 @@ if CLIENT then
 	cvars.RemoveChangeCallback("acearmorprop_material", "ace_material")
 	cvars.AddChangeCallback( "acearmorprop_material", function( _, _, value )
 
-		local Mat = ACE_VerifyMaterial(value)
+		local Mat = ACE.VerifyMaterial(value)
 		if Mat ~= value then RunConsoleCommand( "acearmorprop_material", Mat) end
 
 		if not ToolPanel.panel then return end
 
-		local MatData = ACE_GetMaterialData( Mat )
+		local MatData = ACE.GetMaterialData( Mat )
 
 		--Too redundant, ik, but looks like the unique way to have it working even when right clicking a prop
 		ToolPanel.ComboMat:SetText(MatData.sname)
@@ -264,7 +264,7 @@ function TOOL:LeftClick( trace )
 
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
-	if not ACE_Check( ent ) then return false end
+	if not ACE.Check( ent ) then return false end
 
 	local ply		= self:GetOwner()
 
@@ -290,13 +290,13 @@ function TOOL:RightClick( trace )
 
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
-	if not ACE_Check( ent ) then return false end
+	if not ACE.Check( ent ) then return false end
 
 	local ply = self:GetOwner()
 
 	ply:ConCommand( "acearmorprop_ductility " .. (ent.ACE.Ductility or 0) * 100 )
 	ply:ConCommand( "acearmorprop_thickness " .. ent.ACE.MaxArmour )
-	ply:ConCommand( "acearmorprop_material " .. ACE_VerifyMaterial(ent.ACE.Material) )
+	ply:ConCommand( "acearmorprop_material " .. ACE.VerifyMaterial(ent.ACE.Material) )
 
 	-- this invalidates the entity and forces a refresh of networked armor values
 	self.AimEntity = nil
@@ -313,7 +313,7 @@ function TOOL:Reload( trace )
 	if not IsValid( ent ) or ent:IsPlayer() then return false end
 	if CLIENT then return true end
 
-	local data = ACE_CalcMassRatio(ent)
+	local data = ACE.CalcMassRatio(ent)
 	local con = ACE.GetContraption(ent)
 	if not con then return end
 
@@ -408,10 +408,10 @@ function TOOL:Think()
 	local ent = trace.Entity
 	if ent == self.AimEntity then return end
 
-	if ACE_Check( ent ) then
+	if ACE.Check( ent ) then
 
-		local Mat = ACE_VerifyMaterial(ent.ACE.Material)
-		local MatData =  ACE_GetMaterialData( Mat )
+		local Mat = ACE.VerifyMaterial(ent.ACE.Material)
+		local MatData =  ACE.GetMaterialData( Mat )
 
 		ply:ConCommand( "acearmorprop_area " .. ent.ACE.Area )
 		self.Weapon:SetNWFloat( "WeightMass", ent:GetPhysicsObject():GetMass() )
@@ -453,7 +453,7 @@ function TOOL:DrawHUD()
 	local thickness	= GetConVar( "acearmorprop_thickness" ):GetFloat()
 	local mat		= GetConVar( "acearmorprop_material" ):GetString()
 
-	local MatData	= ACE_GetMaterialData( mat )
+	local MatData	= ACE.GetMaterialData( mat )
 
 	local mass, armor, health = CalcArmor( area, ductility / 100, thickness , mat)
 	mass = math.min( mass, 50000 )

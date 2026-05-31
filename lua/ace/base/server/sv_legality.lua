@@ -3,7 +3,7 @@
 	set up to provide a random, fairly low cost legality check that discourages trying to game legality checking
 	with a hard to predict check time and punishing lockout time
 	usage:
-	Ent.Legal, Ent.LegalIssues = ACE_CheckLegal(Ent, Model, MinMass, MinInertia, NeedsGateParent, CanVisclip )
+	Ent.Legal, Ent.LegalIssues = ACE.CheckLegal(Ent, Model, MinMass, MinInertia, NeedsGateParent, CanVisclip )
 	Ent.NextLegalCheck = ACE.LegalSettings:NextCheck(Ent.Legal)
 ]]
 
@@ -47,13 +47,13 @@ do
 	}
 
 	--TODO: remove unused functions
-	function ACE_CheckLegal(Ent, Model, MinMass, MinInertia, _, CanVisclip )
+	function ACE.CheckLegal(Ent, Model, MinMass, MinInertia, _, CanVisclip )
 
 		local problems = {} --problems table definition
 		if not IsLegalityActivated() then return #problems == 0, table.concat(problems, ", ") end
 
 		-- check it exists
-		if not ACE_Check( Ent ) then return { Legal = false, Problems = {"Invalid Ent"} } end
+		if not ACE.Check( Ent ) then return { Legal = false, Problems = {"Invalid Ent"} } end
 
 		local physobj = Ent:GetPhysicsObject()
 
@@ -87,7 +87,7 @@ do
 		-- Allowed materials: rha, cast and aluminum
 		if IsRestricted("material") then
 
-			local material = ACE_VerifyMaterial(Ent.ACE.Material)
+			local material = ACE.VerifyMaterial(Ent.ACE.Material)
 
 			if not AllowedMaterials[material] then
 				table.insert(problems,"Material not legal")

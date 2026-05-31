@@ -75,7 +75,7 @@ if CLIENT then
 	gun_base.guicreate           = function( _, Table ) ACFGunGUICreate( Table )		end or nil
 	gun_base.guiupdate           = function() return end
 
-	engine_base.guicreate        = function( _, tbl ) ACE_EngineGUI_Update( tbl )		end or nil
+	engine_base.guicreate        = function( _, tbl ) ACE.EngineGUI_Update( tbl )		end or nil
 
 	gearbox_base.guicreate       = function( _, tbl ) ACFGearboxGUICreate( tbl )		end or nil
 	gearbox_base.guiupdate       = function() return end
@@ -110,18 +110,18 @@ function ACE.RegisterWeapon( id, data )
 end
 
 -- Muzzleflash definition. The definitions are likely to be placed at the same location as the gun itself
-function ACE_DefineMuzzleFlash(id, data)
+function ACE.DefineMuzzleFlash(id, data)
 	data.id = id
 	MuzzlesFlashes[id] = data
 end
 
-function ACE_DefineAmmoCrate( id, data )
+function ACE.DefineAmmoCrate( id, data )
 	data.id = id
 	table.Inherit( data, ammo_base )
 	Weapons.Ammo[id] = data
 end
 
-function ACE_DefineLegacyAmmoCrate( id, data )
+function ACE.DefineLegacyAmmoCrate( id, data )
 	data.id = id
 	Weapons.LegacyAmmo[id] = data
 end
@@ -142,7 +142,7 @@ end
 --Engine definition
 function ACE.RegisterEngine( id, data )
 	if (data.year or 0) < ACE.Year then
-		local engineData = ACE_CalcEnginePerformanceData(data.torquecurve or ACE.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
+		local engineData = ACE.CalcEnginePerformanceData(data.torquecurve or ACE.GenericTorqueCurves[data.enginetype], data.torque, data.idlerpm, data.limitrpm)
 
 		data.peaktqrpm    = engineData.peakTqRPM
 		data.peakpower    = engineData.peakPower
@@ -195,7 +195,7 @@ function ACE.RegisterRadar( id, data )
 end
 
 -- Tracking Radar Class definition
-function ACE_RegisterTrackRadarClass( id, data )
+function ACE.RegisterTrackRadarClass( id, data )
 	data.id = id
 	Classes.Radar[id] = data
 end
@@ -232,13 +232,13 @@ function ACE.RegisterGuidance( id, data )
 	ACE.Guidance[id] = data
 end
 
-function ACE_DefineModelData( id, data )
+function ACE.DefineModelData( id, data )
 	data.id = id
 	ACE.ModelData[id] = data
 	ACE.ModelData[data.Model] = data -- I will allow both model or fast name as id.
 end
 
-function ACE_DefineMine(id, data)
+function ACE.DefineMine(id, data)
 	data.id = id
 	ACE.MineData[id] = data
 end

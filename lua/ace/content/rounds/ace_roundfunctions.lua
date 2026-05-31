@@ -16,7 +16,7 @@ do
 		end
 	end
 
-	function ACE_RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
+	function ACE.RoundBaseGunpowder( PlayerData, Data, ServerData, GUIData )
 
 		--print("======================================")
 		--print("AMMODATA DURING ROUNDBASE GUNPOWDER")
@@ -64,7 +64,7 @@ do
 		return PlayerData, Data, ServerData, GUIData
 	end
 
-	function ACE_RoundShellCapacity( Momentum, FrArea, Caliber, ProjLength )
+	function ACE.RoundShellCapacity( Momentum, FrArea, Caliber, ProjLength )
 
 		local MinWall = 0.2 + ((Momentum / FrArea) ^ 0.7) / 50 --The minimal shell wall thickness required to survive firing at the current energy level
 		local Length = math.max(ProjLength - MinWall, 0)
@@ -74,7 +74,7 @@ do
 		return  Volume, Length, Radius --Returning the cavity volume and the minimum wall thickness
 	end
 
-	function ACE_RicoProbability( Rico, Speed )
+	function ACE.RicoProbability( Rico, Speed )
 
 		local RicoAngle = math.Round(math.min(Rico -  (( (Speed-800) / 39.37 ) / 5),89))
 
@@ -89,7 +89,7 @@ do
 	--Formula from https://mathscinotes.wordpress.com/2013/10/03/parameter-determination-for-pejsa-velocity-model/
 	--not terribly accurate for ace, particularly small caliber (7.62mm off by 120 m/s at 800m), but is good enough for quick indicator
 	--range in m, vel is m/s
-	function ACE_PenRanging(MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel, Range)
+	function ACE.PenRanging(MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel, Range)
 		local V0 = MuzzleVel * 39.37 * ACE.VelScale -- initial velocity
 		local D0 = DragCoef * V0 ^ 2 / ACE.DragDiv -- initial drag
 		local K1 = (D0 / (V0 ^ (3 / 2))) ^ -1 -- estimated drag coefficient
@@ -140,7 +140,7 @@ do
 
 		local toInche = 2.54		--Number used for cm -> inche conversion
 
-		function ACE_AmmoCapacity( Data )
+		function ACE.AmmoCapacity( Data )
 
 			local GunId	= acemenupanel.AmmoData.Data.id
 			local AmmoGunData = ACE.Weapons.Guns[GunId]
@@ -164,7 +164,7 @@ do
 			local Id		= acemenupanel.AmmoData.Id
 			local Dimensions = vector_origin
 
-			if not ACE_CheckAmmo( Id ) then
+			if not ACE.CheckAmmo( Id ) then
 				Dimensions = CreateRealScale(Id)
 			else
 				local AmmoData	= ACE.Weapons.Ammo[Id]
@@ -197,9 +197,9 @@ do
 		end
 
 		--General Ammo Capacity diplay shown on ammo config
-		function ACE_AmmoCapacityDisplay(Data)
+		function ACE.AmmoCapacityDisplay(Data)
 
-			local Cap, RoFNerf, TwoPiece = ACE_AmmoCapacity( Data )
+			local Cap, RoFNerf, TwoPiece = ACE.AmmoCapacity( Data )
 
 			local plur = "" .. Cap .. " " .. (Cap > 1 and "rounds" or "round")
 
@@ -213,7 +213,7 @@ do
 
 	end
 
-	function ACE_AmmoRangeStats( MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel )
+	function ACE.AmmoRangeStats( MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel )
 
 		local Range	= {}
 		Range.Vel		= {}
@@ -223,7 +223,7 @@ do
 
 		for i = 1, 4 do
 			Range.Distance[i] = (2 ^ (i - 1)) * 100
-			Range.Vel[i], Range.Pen[i] = ACE_PenRanging(MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel, Range.Distance[i])
+			Range.Vel[i], Range.Pen[i] = ACE.PenRanging(MuzzleVel, DragCoef, ProjMass, PenArea, LimitVel, Range.Distance[i])
 
 			final_text[i] = "At " .. Range.Distance[i] .. "m pen: " .. Floor(Range.Pen[i]) .. "mm @ " .. Floor(Range.Vel[i]) .. "m\\s\n"
 		end
@@ -234,7 +234,7 @@ do
 
 	end
 
-	function ACE_AmmoStats(RoundLength, MaxTotalLength, MuzzleVel, MaxPen)
+	function ACE.AmmoStats(RoundLength, MaxTotalLength, MuzzleVel, MaxPen)
 	acemenupanel:CPanelText("BoldAmmoStats", "Round information: ", "DermaDefaultBold")
 	acemenupanel:CPanelText("AmmoStats", "Round Length: " .. RoundLength .. "/" .. MaxTotalLength .. " cms (" .. math.Round(RoundLength / 2.54, 2) .. " inches)\nMuzzle Velocity: " .. MuzzleVel .. " m\\s\nMax penetration: " .. MaxPen .. " mm RHA") --Total round length (Name, Desc)
 
@@ -242,7 +242,7 @@ do
 
 	do
 
-		function ACE_UpperCommonDataDisplay( Data, PlayerData )
+		function ACE.UpperCommonDataDisplay( Data, PlayerData )
 
 			if not acemenupanel then return end
 
@@ -251,14 +251,14 @@ do
 
 				acemenupanel:CPanelText("BonusDisplay", "\n")
 				acemenupanel:CPanelText("Desc", "")
-				ACE_AmmoStats( 0, 0, 0, 0 )
+			ACE.AmmoStats( 0, 0, 0, 0 )
 
 			else
 				acemenupanel:CPanelText("CrateInfoBold", "Crate information:", "DermaDefaultBold")
 
-				ACE_AmmoCapacityDisplay( Data )
+			ACE.AmmoCapacityDisplay( Data )
 				acemenupanel:CPanelText("Desc", ACE.RoundTypes[PlayerData.RoundType].desc)
-				ACE_AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
+			ACE.AmmoStats(Floor((Data.PropLength + Data.ProjLength + (Floor(Data.Tracer * 5) / 10)) * 100) / 100, Data.MaxTotalLength, Floor(Data.MuzzleVel * ACE.VelScale), Floor(Data.MaxPen))
 			end
 
 		end
@@ -267,7 +267,7 @@ do
 		local TPtip = "Attempts to increase the ammo capacity by dividing the round in 2 pieces, at the cost of more reload time.\n\nWorks with rounds above 50mm and does nothing for missiles/bombs or when the cap cannot be increased."
 		local Trtip = "Adds a trail to the shell, which will be seen during the flight. \nUseful for cases when you want to correct trayectories.\n\nProTip: Apply a color to the crate to change the tracer color."
 
-		function ACE_CommonDataDisplay( Data )
+		function ACE.CommonDataDisplay( Data )
 
 			if not acemenupanel then return end
 
@@ -282,15 +282,15 @@ do
 				acemenupanel:AmmoCheckbox("Tracer", "Enable Tracer: " .. (Floor(Data.Tracer * 5) / 10) .. "cm\n", "", Trtip) --Tracer checkbox (Name, Title, Desc)
 				acemenupanel:AmmoCheckbox("TwoPiece", "Enable Two Piece Storage", "", TPtip )
 
-				local None, Mean, Max = ACE_RicoProbability(Data.Ricochet, Data.MuzzleVel * ACE.VelScale)
+				local None, Mean, Max = ACE.RicoProbability(Data.Ricochet, Data.MuzzleVel * ACE.VelScale)
 				acemenupanel:CPanelText("RicoDisplay", "0% chance of ricochet at: " .. None .. "°\n50% chance of ricochet at: " .. Mean .. "°\n100% chance of ricochet at: " .. Max .. "°")
 
-				ACE_AmmoRangeStats( Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel )
+			ACE.AmmoRangeStats( Data.MuzzleVel, Data.DragCoef, Data.ProjMass, Data.PenArea, Data.LimitVel )
 			end
 		end
 
 		--Because HE/Shaped rounds are different. Intented not to be merged into main function above, as its temporal.
-		function ACE_Checkboxes( Data )
+		function ACE.Checkboxes( Data )
 
 			if not acemenupanel then return end
 
@@ -307,7 +307,7 @@ do
 	--=====================[ DEPRECATED FUNCTION ]=====================--
 
 	--This function is not used by ACE anymore, but i´ll keep it just for those acf2 custom ammos dont break
-	function ACE_CalcCrateStats()
+	function ACE.CalcCrateStats()
 		return 0, 0, 0
 	end
 

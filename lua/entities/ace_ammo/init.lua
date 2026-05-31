@@ -29,8 +29,8 @@ local Outputs = {
 
 function ENT:Initialize()
 
-	self.SpecialHealth       = true  --If true needs a special ACE_Activate function
-	self.SpecialDamage       = true  --If true needs a special ACE_OnDamage function
+	self.SpecialHealth       = true  --If true needs a special ACE.Activate function
+	self.SpecialDamage       = true  --If true needs a special ACE.OnDamage function
 
 	self.IsExplosive         = true
 	self.Exploding           = false
@@ -109,7 +109,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density   = (self:GetPhysicsObject():GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type      = "Prop"
 
-	self.ACE.Material	= ACE_VerifyMaterial(self.ACE.Material)
+	self.ACE.Material	= ACE.VerifyMaterial(self.ACE.Material)
 
 	--Forces an update of mass
 	self.LastMass = 1
@@ -135,7 +135,7 @@ do
 	function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
 		local Mul	= (( HEATtbl[Type] and ACE.HEATMulAmmo ) or 1) --Heat penetrators deal bonus damage to ammo
-		local HitRes	= ACE_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
+		local HitRes	= ACE.PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 		if self.Exploding or not self.IsExplosive then return HitRes end
 
@@ -150,7 +150,7 @@ do
 			end
 
 			if self.Ammo > 1 and self.BulletData.Type ~= "Refill" then
-				ACE_ScaledExplosion( self )
+			ACE.ScaledExplosion( self )
 			else
 				self:Remove()
 			end
@@ -264,10 +264,10 @@ do
 	local function VerifyRoundData(Data)
 		if istable(Data.RoundData) then
 			local RoundData = Data.RoundData
-			if not ACE_CheckGun( RoundData.RoundGunClass ) then
+			if not ACE.CheckGun( RoundData.RoundGunClass ) then
 				RoundData.RoundGunClass = BackComp[RoundData.RoundGunClass] or "100mmC"
 			end
-			if not ACE_CheckRound( RoundData.RoundType ) then
+			if not ACE.CheckRound( RoundData.RoundType ) then
 				RoundData.RoundType = AmmoComp[ RoundData.RoundType ] or "AP"
 				RoundData.RoundPropellant = tonumber(RoundData.RoundPropellant) or 0
 				RoundData.RoundProjectile = tonumber(RoundData.RoundProjectile) or 0
@@ -275,10 +275,10 @@ do
 				RoundData.TwoPiece = tonumber(RoundData.TwoPiece) or 0
 			end
 		else
-			if not ACE_CheckGun(Data.RoundId) then
+			if not ACE.CheckGun(Data.RoundId) then
 				Data.RoundId = BackComp[Data.RoundId] or "100mmC"
 			end
-			if not ACE_CheckRound(Data.RoundType) then
+			if not ACE.CheckRound(Data.RoundType) then
 				Data.RoundType = AmmoComp[ Data.RoundType ] or "AP"
 			end
 			if ACE.LegacyRoundData[Data.RoundType] then
@@ -348,7 +348,7 @@ do
 				Ammo.IsScalable = true
 				Ammo:ACE_SetScale( Ammo.ScaleData )
 			else
-				if not ACE_CheckAmmo( Id ) then
+				if not ACE.CheckAmmo( Id ) then
 					Id = "Shell100mm"
 				end
 				local AmmoData = AmmoTable[Id]
@@ -657,7 +657,7 @@ function ENT:Think()
 
 	if ACE.CurTime > self.NextLegalCheck then
 
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.min(math.Round(self.EmptyMass,2),50000), nil, true, true)
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, math.min(math.Round(self.EmptyMass,2),50000), nil, true, true)
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:UpdateOverlayText()
 
@@ -713,14 +713,14 @@ function ENT:Think()
 		-- immediately detonate if there's 1 or 0 shells
 		elseif self.Ammo <= 1 or self.Damaged < CurTime() then
 
-			ACE_ScaledExplosion( self ) -- going to let empty crates harmlessly poot still, as an audio cue it died
+		ACE.ScaledExplosion( self ) -- going to let empty crates harmlessly poot still, as an audio cue it died
 
 		else
 
 			if math.Rand(0,150) > self.BulletData.RoundVolume ^ 0.5 and math.Rand(0,1) < self.Ammo / math.max(self.Capacity,1) and ACE.RoundTypes[CrateType] then
 
 				self:EmitSound( "ambient/explosions/explode_4.wav", 350, math.max(255 - self.BulletData.PropMass * 100,60)  )
-				self.BulletCookSpeed	= self.BulletCookSpeed or ACE_MuzzleVelocity( self.BulletData.PropMass, self.BulletData.ProjMass / 2, self.Caliber )
+				self.BulletCookSpeed	= self.BulletCookSpeed or ACE.MuzzleVelocity( self.BulletData.PropMass, self.BulletData.ProjMass / 2, self.Caliber )
 
 				self.BulletData.Pos = self:LocalToWorld(self:OBBCenter() + VectorRand() * (self:OBBMaxs() - self:OBBMins()) / 2)
 				self.BulletData.Flight  = (VectorRand()):GetNormalized() * self.BulletCookSpeed * 39.37 + self:GetVelocity()

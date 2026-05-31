@@ -24,7 +24,7 @@ function Guidance:Configure(missile)
 	self.ViewCone		= (ACE_GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone) * 1.2
 	self.ViewConeCos		= (math.cos(math.rad(self.ViewCone))) * 1.2
 	self.SeekCone		= (ACE_GetGunValue(missile.BulletData, "seekcone") or Guidance.SeekCone) * 1.2
-	self.SeekSensitivity	= ACE_GetGunValue(missile.BulletData, "seeksensitivity") or Guidance.SeekSensitivity
+	self.SeekSensitivity	= ACE.GetGunValue(missile.BulletData, "seeksensitivity") or Guidance.SeekSensitivity
 
 end
 
@@ -165,7 +165,7 @@ function Guidance:AcquireLock(missile)
 			--check if it's not frozen. If so, skip it, unmoveable stuff should not be even considered
 			if IsValid(physEnt) and not physEnt:IsMoveable() then continue end
 
-			Heat = ACE_InfraredHeatFromProp( self, classifyent , dist )
+			Heat = ACE.InfraredHeatFromProp( self, classifyent , dist )
 		end
 
 		--Skip if not Hotter than AmbientTemp in deg C.

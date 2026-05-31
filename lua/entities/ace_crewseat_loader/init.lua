@@ -111,13 +111,13 @@ function ENT:Think()
 	self.AnglePenalty = clamp(remap(curSeatAngle, startPenalty, maxPenalty, 0, 1), 0, 1)
 
 	if self.ACE.Health <= self.ACE.MaxHealth * 0.97 then
-		ACE_HEKill(self, VectorRand(), 0)
+	ACE.HEKill(self, VectorRand(), 0)
 		self:EmitSound("npc/combine_soldier/die" .. tostring(random(1, 3)) .. ".wav", 60)
 	end
 
 	if ACE.CurTime > self.NextLegalCheck then
 
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, round(self.Weight, 2), nil, true, true)
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, round(self.Weight, 2), nil, true, true)
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 
 	end

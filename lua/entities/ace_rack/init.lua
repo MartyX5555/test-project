@@ -123,7 +123,7 @@ function ENT:Initialize()
 end
 
 function ENT:CanLoadCaliber(cal)
-	return ACE_RackCanLoadCaliber(self.Id, cal)
+	return ACE.RackCanLoadCaliber(self.Id, cal)
 end
 
 function ENT:CanLinkCrate(crate)
@@ -136,7 +136,7 @@ function ENT:CanLinkCrate(crate)
 	end
 
 	-- Don't link if it's a blacklisted round type for this rack
-	local class = ACE_GetGunValue(bdata, "gunclass")
+	local class = ACE.GetGunValue(bdata, "gunclass")
 	local Blacklist = ACE.AmmoBlacklist[ bdata.RoundType or bdata.Type ] or {}
 
 	if not class or table.HasValue( Blacklist, class ) then
@@ -149,7 +149,7 @@ function ENT:CanLinkCrate(crate)
 	end
 
 	-- Don't link if it's not a missile.
-	local ret, msg = ACE_CanLinkRack(self.Id, bdata.Id, bdata, self)
+	local ret, msg = ACE.CanLinkRack(self.Id, bdata.Id, bdata, self)
 	if not ret then return ret, msg end
 
 	-- Don't link if it's already linked
@@ -218,7 +218,7 @@ end
 function ENT:TriggerInput( iname , value )
 	if ( iname == "Fire" and value ~= 0 and ACE.GunfireEnabled and self.Legal ) then
 		if self.NextFire >= 1 then
-			self.User = ACE_GetWeaponUser( self, self.Inputs.Fire.Src )
+			self.User = ACE.GetWeaponUser( self, self.Inputs.Fire.Src )
 			if not IsValid(self.User) then self.User = ACE.GetEntityOwner(self) end
 			self:FireMissile()
 			self:Think()
@@ -335,7 +335,7 @@ end
 function ENT:Think()
 
 	if ACE.CurTime > self.NextLegalCheck then
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, nil, math.Round(self.Mass,2), self.ModelInertia, nil, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, nil, math.Round(self.Mass,2), self.ModelInertia, nil, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 
 		if not self.Legal and self.Firing then
@@ -529,7 +529,7 @@ function ENT:AddMissile()
 	missile:SetAngles(self:GetAngles())
 
 	--For pod based launchers
-	local rackmodel = ACE_GetRackValue(self.Id, "rackmdl") or ACE_GetGunValue(Crate.BulletData.Id, "rackmdl")
+	local rackmodel = ACE.GetRackValue(self.Id, "rackmdl") or ACE.GetGunValue(Crate.BulletData.Id, "rackmdl")
 	if rackmodel then
 		missile:InitializePhysics(rackmodel)
 		missile.RackModelApplied = true
@@ -601,7 +601,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	Owner:AddCount("_ace_rack", Rack)
 	Owner:AddCleanup( "acemenu", Rack )
 
-	if not ACE_CheckRack( Id ) then
+	if not ACE.CheckRack( Id ) then
 		Id = "1xRK"
 	end
 
@@ -637,12 +637,12 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	Rack.SoundPitch        = 100
 	Rack.Inaccuracy        = gundef["spread"]	or gunclass["spread"]	or 1
 
-	Rack.HideMissile       = ACE_GetRackValue(Id, "hidemissile")			or false
+	Rack.HideMissile       = ACE.GetRackValue(Id, "hidemissile")			or false
 	Rack.ProtectMissile    = gundef.protectmissile or gunclass.protectmissile  or false
 	Rack.CustomArmour      = gundef.armour		or gunclass.armour		or 1
 
-	Rack.ReloadMultiplier  = ACE_GetRackValue(Id, "reloadmul")
-	Rack.WhitelistOnly     = ACE_GetRackValue(Id, "whitelistonly")
+	Rack.ReloadMultiplier  = ACE.GetRackValue(Id, "reloadmul")
+	Rack.WhitelistOnly     = ACE.GetRackValue(Id, "whitelistonly")
 
 	Rack:SetNWString("WireName",Rack.name)
 	Rack:SetNWString( "Class",  Rack.Class )
@@ -674,7 +674,7 @@ function ENT:FireMissile()
 
 	if self.Ready and self.Legal and (self.PostReloadWait < CurTime()) then
 
-		self.BaseEntity = ACE_GetPhysicalParent(self) or game.GetWorld()
+		self.BaseEntity = ACE.GetPhysicalParent(self) or game.GetWorld()
 
 		local nextMsl = self:PeekMissile()
 
@@ -714,7 +714,7 @@ function ENT:FireMissile()
 			local BulletData = missile.BulletData
 
 			if missile.RackModelApplied then
-				local model = ACE_GetGunValue(BulletData.Id, "model")
+				local model = ACE.GetGunValue(BulletData.Id, "model")
 				missile:InitializePhysics(model)
 				missile.RackModelApplied = nil
 			end

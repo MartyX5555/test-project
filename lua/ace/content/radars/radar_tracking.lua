@@ -1,5 +1,5 @@
 
-ACE_RegisterTrackRadarClass("DIR-TRACK", {
+ACE.RegisterTrackRadarClass("DIR-TRACK", {
 	name = "Tracking Radar",
 	type = "Tracking-Radar",
 	desc = "A radar with unlimited range but limited view cone. Unlike the antimissile radar, this can detect vehicles in front of it, but is affected by ground clutter and subject to jamming."

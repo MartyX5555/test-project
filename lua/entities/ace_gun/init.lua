@@ -136,7 +136,7 @@ do
 		local Gun = ents.Create("ace_gun")
 		if not IsValid(Gun) then return false end
 
-		if not ACE_CheckGun( Id ) then
+		if not ACE.CheckGun( Id ) then
 			Id = BackComp[Id] or "100mmC"
 		end
 
@@ -266,7 +266,7 @@ do
 
 		Owner:AddCleanup("acemenu", Gun)
 
-		ACE_Activate(Gun, 0)
+	ACE.Activate(Gun, 0)
 
 		return Gun
 
@@ -316,7 +316,7 @@ end
 
 local function IsInRetDist( enta, entb, Distance )
 	if not IsValid(enta) or not IsValid(entb) then return end
-	return ACE_InDist( enta:GetPos(), entb:GetPos(), Distance )
+	return ACE.InDist( enta:GetPos(), entb:GetPos(), Distance )
 end
 
 local BreakSoundTbl = {
@@ -522,7 +522,7 @@ function ENT:TriggerInput(iname, value)
 		-- Triggered to fire if conditions are met
 		if self.NextFire < CurTime() then
 			-- Check if it's time to fire
-			self.User = ACE_GetWeaponUser(self, self.Inputs.Fire.Src)
+			self.User = ACE.GetWeaponUser(self, self.Inputs.Fire.Src)
 			if not IsValid(self.User) then
 				self.User = ACE.GetEntityOwner(self)
 			end
@@ -562,7 +562,7 @@ function ENT:Heat_Function()
 
 	--print(DeltaTime)
 
-	self.Heat = ACE_HeatFromGun( self , self.Heat, self.DeltaTime )
+	self.Heat = ACE.HeatFromGun( self , self.Heat, self.DeltaTime )
 	Wire_TriggerOutput(self, "Heat", math.Round(self.Heat))
 
 	-- TODO: instead of breaking the gun by heat, decrease accurancy and jam it
@@ -575,14 +575,14 @@ function ENT:Heat_Function()
 		local phys = self:GetPhysicsObject()
 		local Mass = phys:GetMass()
 
-		HitRes = ACE_Damage(self, {
+		HitRes = ACE.Damage(self, {
 			Kinetic = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1)),
 			Momentum = 0,
 			Penetration = (1 * OverHeat) * (1 + math.max(Mass - 300, 0.1))
 		}, 2, 0, ACE.GetEntityOwner(self))
 
 		if HitRes.Kill then
-			ACE_HEKill( self, VectorRand() , 0)
+		ACE.HEKill( self, VectorRand() , 0)
 		end
 
 	else
@@ -616,14 +616,14 @@ function ENT:Think()
 	if ACE.CurTime > self.NextLegalCheck then
 
 		-- check gun is legal
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.Mass,2), self.ModelInertia, nil, true)
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, math.Round(self.Mass,2), self.ModelInertia, nil, true)
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 
 		-- check the seat is legal
 		local seat = IsValid(self.User) and self.User:GetVehicle() or nil
 
 		if IsValid(seat) then
-			local legal, issues = ACE_CheckLegal(seat, nil, nil, nil, nil, false)
+			local legal, issues = ACE.CheckLegal(seat, nil, nil, nil, nil, false)
 			if not legal then
 				self.Legal = false
 				self.LegalIssues = self.LegalIssues .. "\nSeat not legal: " .. issues
@@ -858,7 +858,7 @@ do
 					-- we need also check for visclips in the way
 					while Retry and visCount < MaxvisclipPerBullet do
 						Retry = false
-						if ACE_CheckClips( PathTrace.Entity, PathTrace.HitPos ) then
+						if ACE.CheckClips( PathTrace.Entity, PathTrace.HitPos ) then
 							table.insert( BulletFilter, PathTrace.Entity )
 							PathTrace = util.QuickTrace( MuzzlePos, Tracelength, BulletFilter )
 							Retry = true
@@ -883,7 +883,7 @@ do
 
 				-- Recoil
 				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 4000 * 39.37) * (GetConVar("ace_recoilpush"):GetFloat() or 1) -- 3500
-				ACE_KEShove(self, GPos , -MuzzleVec , KE )
+			ACE.KEShove(self, GPos , -MuzzleVec , KE )
 
 				self.Ready = false
 				self.CurrentShot = math.min(self.CurrentShot + 1, self.MagSize)

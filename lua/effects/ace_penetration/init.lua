@@ -48,7 +48,7 @@ function EFFECT:Init( data )
 	end
 
 	self:CreatePenetrationEffect()
-	ACE_SPenetration( self.Origin, self.Velocity, self.Mass )
+ACE.SPenetration( self.Origin, self.Velocity, self.Mass )
 
 	if IsValid(self.Emitter) then self.Emitter:Finish() end
 end

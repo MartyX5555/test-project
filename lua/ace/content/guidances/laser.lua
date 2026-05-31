@@ -37,7 +37,7 @@ function Guidance:Configure(missile)
 		end
 	end
 
-	self.ViewCone = ACE_GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone
+	self.ViewCone = ACE.GetGunValue(missile.BulletData, "viewcone") or Guidance.ViewCone
 	self.ViewConeCos = math.cos(math.rad(self.ViewCone))
 
 end

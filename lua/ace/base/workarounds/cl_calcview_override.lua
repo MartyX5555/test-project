@@ -1,6 +1,6 @@
 
 --Copied from garrysmod CalcVehicleView function, to allow ace ents to be included into the filter
-function ACE_CalcVehicleView( Vehicle, ply, view )
+function ACE.CalcVehicleView( Vehicle, ply, view )
 
 	--Make sure that allowed seats use this override.
 	if not Vehicle.ACE_CamOverride then return end
@@ -52,4 +52,4 @@ function ACE_CalcVehicleView( Vehicle, ply, view )
 end
 
 hook.Remove( "CalcVehicleView", "ACE_CalcVehicleView_Override")
-hook.Add( "CalcVehicleView", "ACE_CalcVehicleView_Override", ACE_CalcVehicleView)
+hook.Add( "CalcVehicleView", "ACE_CalcVehicleView_Override", ACE.CalcVehicleView)

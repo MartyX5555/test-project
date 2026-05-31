@@ -13,7 +13,7 @@ local dupeformat = ".vmt"
 	-- Explanation:
 	-- If the dupespawned file doesnt exist, that means all the dupes must be loaded.
 	-- If the dupespawned file exists, we only update the dupes that exists on the advdupe2 folder, and ignore those that the user could remove. Completely abort the process if the user has removed all the dupes, since that means they dont want them at all.
-function ACE_Dupes_Refresh()
+function ACE.Dupes_Refresh()
 
 	if not CanDeploy() then
 		return true, "Dupes deployment is disabled." -- We return true here because we dont want to show an error message if the user has intentionally disabled the deployment, since that is not an error.
@@ -71,7 +71,7 @@ function ACE_Dupes_Refresh()
 end
 
 timer.Simple(1,function()
-	local success, message = ACE_Dupes_Refresh()
+	local success, message = ACE.Dupes_Refresh()
 	print("[ACE | " .. (success and "INFO" or "ERROR") .. "]- " .. message)
 end)
 
@@ -80,7 +80,7 @@ concommand.Remove("ace_dupes_remount") -- We remove it first to avoid duplicates
 concommand.Add( "ace_dupes_remount", function()
 
 	file.Delete("ace/ace_dupespawn.txt")
-	local success, message = ACE_Dupes_Refresh()
+	local success, message = ACE.Dupes_Refresh()
 	print("[ACE | " .. (success and "INFO" or "ERROR") .. "]- " .. message)
 
 	notification.AddLegacy(message, success and NOTIFY_GENERIC or NOTIFY_ERROR, 7)

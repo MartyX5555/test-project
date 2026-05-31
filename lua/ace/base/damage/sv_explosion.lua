@@ -35,7 +35,7 @@ end
 
 --[[----------------------------------------------------------------------------
 	Function:
-		ACE_HE
+	ACE.HE
 	Arguments:
 		HitPos	- detonation center,
 		FillerMass  - mass of TNT being detonated in KG
@@ -48,9 +48,9 @@ end
 ------------------------------------------------------------------------------]]
 
 local PI = math.pi
-function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
+function ACE.HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 
-	local Radius       = ACE_CalculateHERadius(FillerMass) -- Scalling law found on the net, based on 1PSI overpressure from 1 kg of TNT at 15m.
+	local Radius       = ACE.CalculateHERadius(FillerMass) -- Scalling law found on the net, based on 1PSI overpressure from 1 kg of TNT at 15m.
 	local MaxSphere    = 4 * PI * (Radius * 2.54) ^ 2 -- Surface Area of the sphere at maximum radius
 	local Power        = FillerMass * ACE.HEPower -- Power in KiloJoules of the filler mass of  TNT
 	local Amp          = math.min(Power / 2000, 50)
@@ -77,7 +77,7 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 			if not IsValid(Tar) then continue end
 			if Power <= 0 or Tar.Exploding then continue end
 
-			local Type = ACE_Check(Tar)
+			local Type = ACE.Check(Tar)
 			if Type then
 
 				local TargetPos = Tar:GetPos()
@@ -208,26 +208,26 @@ function ACE_HE( Hitpos , _ , FillerMass, FragMass, Inflictor, NoOcc, Gun )
 			local FragRes
 			local FragHit	= Fragments * AreaFraction
 			FragVel	= math.max(FragVel - ( (Table.Dist / FragVel) * FragVel ^ 2 * FragWeight ^ 0.33 / 10000 ) / ACE.DragDiv,0)
-			local FragKE	= ACE_Kinetic( FragVel , FragWeight * FragHit, 1500 )
+			local FragKE	= ACE.Kinetic( FragVel , FragWeight * FragHit, 1500 )
 			if FragHit < 0 then
 				if math.Rand(0,1) > FragHit then FragHit = 1 else FragHit = 0 end
 			end
 
 			--if true then continue end
 
-			BlastRes = ACE_Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
-			FragRes = ACE_Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
+			BlastRes = ACE.Damage( Tar  , Blast , AreaAdjusted , 0 , Inflictor ,0 , Gun, "HE" )
+			FragRes = ACE.Damage( Tar , FragKE , FragArea * FragHit , 0 , Inflictor , 0, Gun, "Frag" )
 
 			if (BlastRes and BlastRes.Kill) or (FragRes and FragRes.Kill) then
 
 				--Add the debris created to the ignore so we don't hit it in other rounds
-				local Debris = ACE_HEKill( Tar , Table.Vec , PowerFraction , Hitpos )
+				local Debris = ACE.HEKill( Tar , Table.Vec , PowerFraction , Hitpos )
 				table.insert( OccFilter , Debris )
 
 				LoopKill = true --look for fresh targets since we blew a hole somewhere
 			else
 				--Assuming about 1/30th of the explosive energy goes to propelling the target prop (Power in KJ * 1000 to get J then divided by 33)
-				ACE_KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("ace_hepush"):GetFloat() or 1) )
+			ACE.KEShove(Tar, Hitpos, Table.Vec, PowerFraction * 20 * (GetConVar("ace_hepush"):GetFloat() or 1) )
 			end
 
 			PowerSpent = PowerSpent + PowerFraction * BlastRes.Loss / 2--Removing the energy spent killing props
@@ -249,7 +249,7 @@ do
 	local FuelExplosionScale = 0.005
 
 	--converts what would be multiple simultaneous cache detonations into one large explosion
-	function ACE_ScaledExplosion( ent )
+	function ACE.ScaledExplosion( ent )
 		if ent.RoundData and ent.RoundData.RoundType and ent.RoundData.RoundType == "Refill" then return end
 
 		local HEWeight
@@ -277,7 +277,7 @@ do
 			HEWeight = ( ( HE + Propel * ( ACE.PBase / ACE.HEPower ) ) * Ammo ) * AmmoExplosionScale
 		end
 
-		local Radius    = ACE_CalculateHERadius( HEWeight )
+		local Radius    = ACE.CalculateHERadius( HEWeight )
 		local Pos       = ent:LocalToWorld(ent:OBBCenter())
 
 		table.insert(ExplodePos, Pos)
@@ -376,7 +376,7 @@ do
 			if HEWeight > LastHE then
 				Search = true
 				LastHE = HEWeight
-				Radius = ACE_CalculateHERadius( HEWeight )
+				Radius = ACE.CalculateHERadius( HEWeight )
 			else
 				Search = false
 			end
@@ -390,9 +390,9 @@ do
 		local AvgPos = totalpos / #ExplodePos
 
 		HEWeight	= HEWeight * ACE.BoomMult
-		Radius	= ACE_CalculateHERadius( HEWeight )
+		Radius	= ACE.CalculateHERadius( HEWeight )
 
-		ACE_HE( AvgPos , vector_origin , HEWeight , HEWeight , Inflictor , ent, ent )
+	ACE.HE( AvgPos , vector_origin , HEWeight , HEWeight , Inflictor , ent, ent )
 
 		--util.Effect not working during MP workaround. Waiting a while fixes the issue.
 		timer.Simple(0, function()
@@ -408,7 +408,7 @@ do
 
 end
 
-function ACE_CalculateHERadius( HEWeight )
+function ACE.CalculateHERadius( HEWeight )
 	local Radius = HEWeight ^ 0.33 * 8 * 39.37
 	return Radius
 end

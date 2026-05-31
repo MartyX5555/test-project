@@ -1,6 +1,6 @@
 local ACE = ACE or {}
 
-function ACE_GetHitAngle( HitNormal , HitVector )
+function ACE.GetHitAngle( HitNormal , HitVector )
 
 	HitVector = HitVector * -1
 	local Angle = math.min(math.deg(math.acos(HitNormal:Dot( HitVector:GetNormalized() ) ) ),89.999 )
@@ -10,7 +10,7 @@ function ACE_GetHitAngle( HitNormal , HitVector )
 end
 
 --Calculates the vector of the ricochet of a round upon impact at a set angle
-function ACE_RicochetVector(Flight, HitNormal)
+function ACE.RicochetVector(Flight, HitNormal)
 	local Vec = Flight:GetNormalized()
 
 	return Vec - ( 2 * Vec:Dot(HitNormal) ) * HitNormal
@@ -22,12 +22,12 @@ local MissileClasses = {
 }
 
 -- Handles the impact of a round on a target
-function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone  )
+function ACE.RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bone  )
 
 	Bullet.Ricochets = Bullet.Ricochets or 0
 
-	local Angle	= ACE_GetHitAngle( HitNormal , Bullet.Flight )
-	local HitRes = ACE_Damage( Target, Energy, Bullet.PenArea, Angle, Bullet.Owner, Bone, Bullet.Gun, Bullet.Type )
+	local Angle	= ACE.GetHitAngle( HitNormal , Bullet.Flight )
+	local HitRes = ACE.Damage( Target, Energy, Bullet.PenArea, Angle, Bullet.Owner, Bone, Bullet.Gun, Bullet.Type )
 
 	HitRes.Ricochet = false
 
@@ -61,7 +61,7 @@ function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 	end
 
 	if HitRes.Kill then
-		local Debris = ACE_APKill( Target , (Bullet.Flight):GetNormalized() , Energy.Kinetic )
+		local Debris = ACE.APKill( Target , (Bullet.Flight):GetNormalized() , Energy.Kinetic )
 		table.insert( Bullet.Filter , Debris )
 	end
 
@@ -72,7 +72,7 @@ function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 		Bullet.FlightTime   = 0
 		Bullet.Flight       = (ACE_RicochetVector(Bullet.Flight, HitNormal) + VectorRand() * 0.025):GetNormalized() * Speed * Ricochet
 
-		local TargetBase = ACE_GetPhysicalParent(Target)
+		local TargetBase = ACE.GetPhysicalParent(Target)
 		local BaseObj = TargetBase:GetPhysicsObject()
 		if IsValid( BaseObj ) then
 			Bullet.TraceBackComp = math.max(BaseObj:GetVelocity():Dot(Bullet.Flight:GetNormalized()),0)
@@ -82,13 +82,13 @@ function ACE_RoundImpact( Bullet, Speed, Energy, Target, HitPos, HitNormal , Bon
 
 	end
 
-	ACE_KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("ace_recoilpush"):GetFloat() or 1))
+ACE.KEShove( Target, HitPos, Bullet.Flight:GetNormalized(), Energy.Kinetic * HitRes.Loss * 1000 * Bullet.ShovePower * (GetConVar("ace_recoilpush"):GetFloat() or 1))
 
 	return HitRes
 end
 
 --Handles Ground penetrations
-function ACE_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
+function ACE.PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 
 	Bullet.GroundRicos = Bullet.GroundRicos or 0
 
@@ -121,7 +121,7 @@ function ACE_PenetrateGround( Bullet, Energy, HitPos, HitNormal )
 
 		local Ricochet  = 0
 		local Speed	= Bullet.Flight:Length() / ACE.VelScale
-		local Angle	= ACE_GetHitAngle( HitNormal, Bullet.Flight )
+		local Angle	= ACE.GetHitAngle( HitNormal, Bullet.Flight )
 		local MinAngle  = math.min(Bullet.Ricochet - Speed / 39.37 / 30 + 20,89.9)  --Making the chance of a ricochet get higher as the speeds increase
 
 		if Angle > math.random(MinAngle,90) and Angle < 89.9 then	--Checking for ricochet
@@ -148,7 +148,7 @@ end
 --helper function to replace ENT:ApplyForceOffset()
 --Gmod applyforce creates weird torque when moving https://github.com/Facepunch/garrysmod-issues/issues/5159
 local m_insq = 1 / 39.37 ^ 2
-local function ACE_ApplyForceOffset(Phys, Force, Pos)
+local function ApplyForceOffset(Phys, Force, Pos)
 	Phys:ApplyForceCenter(Force)
 	local off = Pos - Phys:LocalToWorld(Phys:GetMassCenter())
 	local angf = off:Cross(Force) * m_insq * 360 / (2 * 3.1416)
@@ -156,15 +156,15 @@ local function ACE_ApplyForceOffset(Phys, Force, Pos)
 end
 
 --Handles ACE forces (HE Push, Recoil, etc)
-function ACE_KEShove(Target, Pos, Vec, KE )
+function ACE.KEShove(Target, Pos, Vec, KE )
 	if not IsValid(Target) then return end
 
 	local CanDo = hook.Run("ACE_KEShove", Target, Pos, Vec, KE )
 	if CanDo == false then return end
 
 	--Gets the baseplate of target
-	local parent = ACE_GetPhysicalParent(Target)
-	if not ACE_CanCheck(parent) then return end
+	local parent = ACE.GetPhysicalParent(Target)
+	if not ACE.CanCheck(parent) then return end
 	local phys	= parent:GetPhysicsObject()
 	if not IsValid(phys) then return end
 
@@ -184,6 +184,6 @@ function ACE_KEShove(Target, Pos, Vec, KE )
 		massratio = ACE.GetContraptionMassRatio( con )
 	end
 
-	ACE_ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
+ACE.ApplyForceOffset(phys, Vec:GetNormalized() * KE * massratio, Pos )
 
 end

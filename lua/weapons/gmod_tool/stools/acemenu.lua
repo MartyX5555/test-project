@@ -91,11 +91,11 @@ function TOOL:LeftClick( trace )
 
 		if trace.Entity:GetClass() == entClass and trace.Entity.CanUpdate then
 			local success, msg = trace.Entity:Update( ply, Id, Data )
-			ACE_SendNotify( ply, success, msg )
+		ACE.SendNotify( ply, success, msg )
 		else
 			-- Using the Duplicator entity register to find the right factory function
 			local Ent = DupeClass.Func( ply, Pos, Ang, Id, Data ) --aka function like MakeACE_Ammo
-			if not IsValid(Ent) then ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
+			if not IsValid(Ent) then ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
 
 			local TruePos = Ent:LocalToWorld(Vector(0,0,-Ent:OBBMins().z + 1))
 			Ent:SetPos(TruePos)
@@ -110,7 +110,7 @@ function TOOL:LeftClick( trace )
 
 		return true
 	else
-		ACE_SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
+	ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
 	end
 
 end
@@ -191,7 +191,7 @@ function TOOL:RightClick( trace )
 					if ent ~= selected and validEnt and IsValid(selected) then
 						local success, msg = linkEnts(ent, selected, holdingUse)
 
-						ACE_SendNotify(ply, success, msg)
+					ACE.SendNotify(ply, success, msg)
 					end
 				end
 			end

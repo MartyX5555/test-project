@@ -63,7 +63,7 @@ do
 	--Global sound function. In order to be modified by a convar config
 	--If the Origin is an entity, uses entity:EmitSound( SoundTxt , SoundLevel, Pitch, Volume )
 	--If the Origin is a vector Position, uses sound.Play(SoundTxt, Position, SoundLevel, Pitch, Volume)
-	function ACE_EmitSound( SoundTxt, Origin, SoundLevel, Pitch, Volume )
+	function ACE.EmitSound( SoundTxt, Origin, SoundLevel, Pitch, Volume )
 
 		Volume = math.min( Volume, 1 )
 		local VolumeConfig = GetConVar("ace_sound_volume"):GetInt() / 100
@@ -76,7 +76,7 @@ do
 	end
 
 	--Gets the player's point of view if he's using a camera. Returns the entity input if no external entity is involved.
-	function ACE_SGetHearingEntity( ply )
+	function ACE.SGetHearingEntity( ply )
 		if not IsValid(ply) then return ply end
 
 		------------------------------- Method 1: Via Camera tool -------------------------------
@@ -103,7 +103,7 @@ do
 	end
 
 	-- Gets the sound speed time. 13503.9 is around 343m/s
-	function ACE_GetDistanceTime( Dist )
+	function ACE.GetDistanceTime( Dist )
 		return (Dist / 13503.9) * ACE.DelayMultipler
 	end
 
@@ -115,19 +115,19 @@ do
 	end
 
 	--Used for those extremely quiet sounds, which should be heard close to the player
-	function ACE_SInDistance( Pos, Distance )
+	function ACE.SInDistance( Pos, Distance )
 
 		local ply    = LocalPlayer()
 
-		local entply = ACE_SGetHearingEntity( ply )
+		local entply = ACE.SGetHearingEntity( ply )
 		local plyPos = entply:IsPlayer() and GetHeadPos( ply ) or entply:GetPos()
 
 		--return true if the distance is lower than the maximum distance
-		return ACE_InDist( plyPos, Pos, Distance )
+		return ACE.InDist( plyPos, Pos, Distance )
 	end
 
 	--Used to see if the player has line of sight with the event
-	function ACE_SHasLOS( EventPos )
+	function ACE.SHasLOS( EventPos )
 
 		local ply = LocalPlayer()
 		local headPos = GetHeadPos( ply )
@@ -142,11 +142,11 @@ do
 		return false
 	end
 
-	function ACE_SIsInDoor(HitPos)
-		if ACE_SHasLOS( HitPos ) then return false end
+	function ACE.SIsInDoor(HitPos)
+		if ACE.SHasLOS( HitPos ) then return false end
 
 		local ply    = LocalPlayer()
-		local entply = ACE_SGetHearingEntity( ply )
+		local entply = ACE.SGetHearingEntity( ply )
 		local plyPos = entply.aceposoverride or entply:GetPos()
 
 		local CeilTr	= {}
@@ -165,7 +165,7 @@ end
 do
 
 	--Handles Explosion sounds
-	function ACE_SBlast( HitPos, Radius, HitWater, HitWorld )
+	function ACE.SBlast( HitPos, Radius, HitWater, HitWorld )
 
 		local ply = LocalPlayer()
 
@@ -179,13 +179,13 @@ do
 
 			count = count + 1
 
-			local entply    = ACE_SGetHearingEntity( ply )
+			local entply    = ACE.SGetHearingEntity( ply )
 
 			local plyPos    = entply.aceposoverride or entply:GetPos()
 			local Dist      = (plyPos - HitPos):Length()
 			local Volume    = 1 / (Dist / 500) * Radius * 0.2
 			local Pitch     = math.Clamp(1000 / Radius, 25, 130)
-			local Delay     = ACE_GetDistanceTime( Dist )
+			local Delay     = ACE.GetDistanceTime( Dist )
 
 			if count > Delay then
 
@@ -284,7 +284,7 @@ do
 						if not ply:HasGodMode() then
 							local TinZone = math.max(Radius * 80, 50) * ACE.TinnitusZoneMultipler
 
-							if Dist <= TinZone and ACE_SHasLOS(HitPos) and entply == ply and not ply.aceposoverride then
+							if Dist <= TinZone and ACE.SHasLOS(HitPos) and entply == ply and not ply.aceposoverride then
 
 								entply:SetDSP(33, true)
 
@@ -292,7 +292,7 @@ do
 
 									--See if it supress the current tinnitus and creates a new one, from 0. Should stop the HE spam tinnitus
 									entply:StopSound("acf_other/explosions/ring/tinnitus.mp3")
-									ACE_EmitSound("acf_other/explosions/ring/tinnitus.mp3", entply, 75, 100, 1 )
+								ACE.EmitSound("acf_other/explosions/ring/tinnitus.mp3", entply, 75, 100, 1 )
 
 								end
 							end
@@ -300,23 +300,23 @@ do
 						end
 
 						--If a wall is in front of the player and is indoor, reduces its vol
-						if ACE_SIsInDoor(HitPos) then
+						if ACE.SIsInDoor(HitPos) then
 							--print("Inside of building")
 							VolFix = VolFix * 0.05
 						end
 
-						ACE_EmitSound( Sound or "", entply, 75, Pitch * PitchFix, Volume * VolFix )
+					ACE.EmitSound( Sound or "", entply, 75, Pitch * PitchFix, Volume * VolFix )
 
 						--play dirt sounds
 						if Radius >= ACE.SoundSmallEx and HitWorld then
-							ACE_EmitSound( ACE.Sounds["Debris"]["low"]["close"][math.random(1,#ACE.Sounds["Debris"]["low"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, Pitch * PitchFix, Volume * VolFix / 20 )
-							ACE_EmitSound( ACE.Sounds["Debris"]["high"]["close"][math.random(1,#ACE.Sounds["Debris"]["high"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, (Pitch * PitchFix) / 0.5, Volume * VolFix / 20 )
+						ACE.EmitSound( ACE.Sounds["Debris"]["low"]["close"][math.random(1,#ACE.Sounds["Debris"]["low"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, Pitch * PitchFix, Volume * VolFix / 20 )
+						ACE.EmitSound( ACE.Sounds["Debris"]["high"]["close"][math.random(1,#ACE.Sounds["Debris"]["high"]["close"])] or "", plyPos + (HitPos - plyPos):GetNormalized() * 64, 80, (Pitch * PitchFix) / 0.5, Volume * VolFix / 20 )
 						end
 
 						--Underwater Explosions
 					else
-						ACE_EmitSound( "ambient/water/water_splash" .. math.random(1,3) .. ".wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
-						ACE_EmitSound( "^weapons/underwater_explode3.wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
+					ACE.EmitSound( "ambient/water/water_splash" .. math.random(1,3) .. ".wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
+					ACE.EmitSound( "^weapons/underwater_explode3.wav", entply, 75, math.max(Pitch * 0.75,65), Volume * 0.075 )
 					end
 				end
 
@@ -328,7 +328,7 @@ do
 	end
 
 	--Handles penetration sounds
-	function ACE_SPenetration( HitPos, Velocity, Mass )
+	function ACE.SPenetration( HitPos, Velocity, Mass )
 
 		--Don't start this without a player
 		local ply = LocalPlayer()
@@ -343,13 +343,13 @@ do
 
 			count = count + 1
 
-			local entply = ACE_SGetHearingEntity( ply )
+			local entply = ACE.SGetHearingEntity( ply )
 
 			local plyPos    = entply.aceposoverride or entply:GetPos()
 			local Dist      = (plyPos - HitPos):Length()
 			local Volume    = 1 / (Dist / 500) * Mass / 17.5
 			local Pitch     = math.Clamp(Velocity * 1, 90, 150)
-			local Delay     = ACE_GetDistanceTime( Dist )
+			local Delay     = ACE.GetDistanceTime( Dist )
 
 			if count > Delay then
 
@@ -361,12 +361,12 @@ do
 					local VolFix = 0.5
 
 					--If a wall is in front of the player and is indoor, reduces its vol at 50%
-					if ACE_SIsInDoor(HitPos) then
+					if ACE.SIsInDoor(HitPos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.5
 					end
 
-					ACE_EmitSound( Sound, entply, 75, Pitch, Volume * VolFix )
+				ACE.EmitSound( Sound, entply, 75, Pitch, Volume * VolFix )
 				end
 
 				timer.Stop( ide )
@@ -376,7 +376,7 @@ do
 	end
 
 	--Handles ricochet sounds
-	function ACE_SRicochet( HitPos, Caliber, Velocity, HitWorld )
+	function ACE.SRicochet( HitPos, Caliber, Velocity, HitWorld )
 
 		local ply = LocalPlayer()
 
@@ -391,13 +391,13 @@ do
 
 			count = count + 1
 
-			local entply = ACE_SGetHearingEntity( ply )
+			local entply = ACE.SGetHearingEntity( ply )
 
 			local plyPos    = entply.aceposoverride or entply:GetPos()
 			local Dist      = (plyPos - HitPos):Length()
 			local Volume    = 1 / (Dist / 500) * Velocity / 130000
 			local Pitch     = math.Clamp(Velocity * 0.001, 90, 150)
-			local Delay     = ACE_GetDistanceTime( Dist )
+			local Delay     = ACE.GetDistanceTime( Dist )
 
 			if count > Delay then
 
@@ -437,13 +437,13 @@ do
 					end
 
 					--If a wall is in front of the player and is indoor, reduces its vol at 50%
-					if ACE_SIsInDoor(HitPos) then
+					if ACE.SIsInDoor(HitPos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.5
 					end
 
 					if Sound ~= "" then
-						ACE_EmitSound( Sound or "", entply, 75, Pitch, Volume * VolFix )
+					ACE.EmitSound( Sound or "", entply, 75, Pitch, Volume * VolFix )
 					end
 				end
 
@@ -453,7 +453,7 @@ do
 		end )
 	end
 
-	function ACE_SGunFire( Gun, Sound, PitchOverride, Propellant )
+	function ACE.SGunFire( Gun, Sound, PitchOverride, Propellant )
 
 		if not IsValid(Gun) then return end
 		if not Sound or Sound == "" then return end
@@ -475,12 +475,12 @@ do
 
 			count = count + 1
 
-			local entply = ACE_SGetHearingEntity( ply )
+			local entply = ACE.SGetHearingEntity( ply )
 
 			local plyPos    = entply.aceposoverride or entply:GetPos()
 			local Dist      = (plyPos - Pos):Length()
 			local Volume    = 1 / (Dist / 500) * Propellant / 18
-			local Delay     = ACE_GetDistanceTime( Dist )
+			local Delay     = ACE.GetDistanceTime( Dist )
 
 			if count > Delay then
 
@@ -532,13 +532,13 @@ do
 					end
 
 					--If a wall is in front of the player and is indoor, reduces its vol at 50%
-					if ACE_SIsInDoor(Pos) then
+					if ACE.SIsInDoor(Pos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.5
 					end
 
 					--Pos => Gun's pos before to timer. Not possible to use Gun:GetPos() due to risk of gun might not exist at this point.
-					ACE_EmitSound( Sound or "", plyPos + (Pos - plyPos):GetNormalized() * 64, 90, Pitch, Volume * VolFix )
+				ACE.EmitSound( Sound or "", plyPos + (Pos - plyPos):GetNormalized() * 64, 90, Pitch, Volume * VolFix )
 
 				end
 
@@ -549,7 +549,7 @@ do
 	end
 
 	--TODO: Leave 5 sounds per caliber type. 22 7.26mm sounds go brrrr
-	function ACE_SBulletCrack( BulletData, Caliber )
+	function ACE.SBulletCrack( BulletData, Caliber )
 
 		debugoverlay.Cross(BulletData.SimPos, 10, 5, Color(0,0,255))
 
@@ -567,14 +567,14 @@ do
 
 			count = count + 1
 
-			local entply = ACE_SGetHearingEntity( ply )
+			local entply = ACE.SGetHearingEntity( ply )
 			local plyPos = entply.aceposoverride or entply:GetPos() --print(plyPos)
 
 			--Delayed event report.
 			local CrackPos    = BulletData.SimPos - BulletData.SimFlight:GetNormalized() * 5000
 			local Dist        = (plyPos - CrackPos):Length()
 			local Volume      = 10000 / Dist
-			local Delay       = ACE_GetDistanceTime( Dist )
+			local Delay       = ACE.GetDistanceTime( Dist )
 
 			if count > Delay then
 
@@ -606,12 +606,12 @@ do
 					end
 
 					--If a wall is in front of the player and is indoor, reduces its vol
-					if ACE_SIsInDoor(CrackPos) then
+					if ACE.SIsInDoor(CrackPos) then
 						--print("Inside of building")
 						VolFix = VolFix * 0.025
 					end
 
-					ACE_EmitSound( Sound or "" , entply, 75, 100, Volume * VolFix )
+				ACE.EmitSound( Sound or "" , entply, 75, 100, Volume * VolFix )
 				end
 				timer.Stop( ide )
 				timer.Remove( ide )
@@ -620,7 +620,7 @@ do
 	end
 
 	--For any miscellaneous sound. BaseDistVolume is the Max dist where Volume will be 1. The volume will start losing dbs beyond this distance. In Units.
-	function ACE_SimpleSound( Sound, Origin, Pitch, BaseDistVolume  )
+	function ACE.SimpleSound( Sound, Origin, Pitch, BaseDistVolume  )
 
 		local ply = LocalPlayer()
 		local count    = 1
@@ -633,12 +633,12 @@ do
 
 			count = count + 1
 
-			local entply = ACE_SGetHearingEntity( ply )
+			local entply = ACE.SGetHearingEntity( ply )
 			local plyPos = entply.aceposoverride or entply:GetPos()
 
 			--Delayed event report.
 			local Dist        = (plyPos - Origin):Length()
-			local Delay       = ACE_GetDistanceTime( Dist )
+			local Delay       = ACE.GetDistanceTime( Dist )
 			local Volume      = BaseDistVolume / Dist
 
 			if count > Delay then
@@ -650,11 +650,11 @@ do
 					local VolFix = 1
 
 					--If a wall is in front of the player and is indoor, reduces its vol
-					if ACE_SIsInDoor(Origin) then
+					if ACE.SIsInDoor(Origin) then
 						VolFix = VolFix * 0.025
 					end
 
-					ACE_EmitSound( Sound or "" , plyPos + (Origin - plyPos):GetNormalized() * 64, 100, Pitch, Volume * VolFix )
+				ACE.EmitSound( Sound or "" , plyPos + (Origin - plyPos):GetNormalized() * 64, 100, Pitch, Volume * VolFix )
 				end
 				timer.Stop( ide )
 				timer.Remove( ide )
@@ -664,7 +664,7 @@ do
 	end
 
 	--Coming soon
-	--function ACE_SBulletImpact()
+	--function ACE.SBulletImpact()
 	--end
 
 end

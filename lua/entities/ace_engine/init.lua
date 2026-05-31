@@ -83,7 +83,7 @@ do
 		local Engine = ents.Create( "ace_engine" )
 		if not IsValid( Engine ) then return false end
 
-		if not ACE_CheckEngine( Id ) then
+		if not ACE.CheckEngine( Id ) then
 			Id = BackComp[Id] or "5.7-V8"
 		end
 
@@ -154,7 +154,7 @@ do
 		Owner:AddCount("_ace_engine", Engine)
 		Owner:AddCleanup( "acemenu", Engine )
 
-		ACE_Activate( Engine, 0 )
+	ACE.Activate( Engine, 0 )
 
 		return Engine
 	end
@@ -232,7 +232,7 @@ function ENT:Update( _, Id, _ )
 	self:SetNWString( "WireName", Lookup.name )
 	self:UpdateOverlayText()
 
-	ACE_Activate( self, 1 )
+ACE.Activate( self, 1 )
 
 	return true, "Engine updated successfully!" .. Feedback
 end
@@ -356,14 +356,14 @@ function ENT:ACE_Activate()
 	Entity.ACE.Mass      = PhysObj:GetMass()
 	Entity.ACE.Type      = "Prop"
 
-	Entity.ACE.Material	= ACE_VerifyMaterial(Entity.ACE.Material)
+	Entity.ACE.Material	= ACE.VerifyMaterial(Entity.ACE.Material)
 
 end
 
 function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
 	local Mul = (((Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS") and ACE.HEATMulEngine) or 1) --Heat penetrators deal bonus damage to engines
-	local HitRes = ACE_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
+	local HitRes = ACE.PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 	return HitRes --This function needs to return HitRes
 end
@@ -379,7 +379,7 @@ end
 function ENT:Think()
 
 	if ACE.CurTime > self.NextLegalCheck then
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.Weight,2), self.ModelInertia, true, true)
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, math.Round(self.Weight,2), self.ModelInertia, true, true)
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:CheckRopes()
 		self:CheckFuel()
@@ -408,7 +408,7 @@ function ENT:Think()
 		self.NextUpdate = ACE.CurTime + 1
 	end
 
-	self.Heat = ACE_HeatFromEngine( self )
+	self.Heat = ACE.HeatFromEngine( self )
 	Wire_TriggerOutput(self, "EngineHeat", self.Heat)
 
 	if ACE.CurTime > self.NextUpdate then
@@ -462,10 +462,10 @@ function ENT:CalcMassRatio()
 	local Check = nil
 
 	-- get the shit that is physically attached to the vehicle
-	local PhysEnts = ACE_GetAllPhysicalConstraints( self )
+	local PhysEnts = ACE.GetAllPhysicalConstraints( self )
 
 	-- get the wheels directly connected to the drivetrain
-	local Wheels = ACE_GetLinkedWheels(self)
+	local Wheels = ACE.GetLinkedWheels(self)
 
 	-- check if any wheels aren't in the physicalconstraint tree
 	for _,Ent in pairs( Wheels ) do
@@ -482,13 +482,13 @@ function ENT:CalcMassRatio()
 		-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
 		if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
 			table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
-			ACE_GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
+		ACE.GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
 		end
 
 		-- add any parented but not constrained props you sneaky bastards
 		local AllEnts = table.Copy( PhysEnts )
 		for v, _ in pairs( PhysEnts ) do
-			table.Merge( AllEnts, ACE_GetAllChildren( v ) )
+			table.Merge( AllEnts, ACE.GetAllChildren( v ) )
 		end
 
 		for v, _ in pairs( AllEnts ) do
@@ -596,7 +596,7 @@ function ENT:CalcRPM()
 
 	-- Calculate the current torque from flywheel RPM.
 	local perc = math.Remap(self.FlyRPM, self.IdleRPM, self.LimitRPM, 0, 1)
-	self.Torque = boost * self.Throttle * ACE_CalcCurve(self.TorqueCurve, perc) * self.PeakTorque * (self.FlyRPM < self.LimitRPM and 1 or 0)
+	self.Torque = boost * self.Throttle * ACE.CalcCurve(self.TorqueCurve, perc) * self.PeakTorque * (self.FlyRPM < self.LimitRPM and 1 or 0)
 
 	-- Let's accelerate the flywheel based on that torque.
 	-- Calculate drag
@@ -635,14 +635,14 @@ function ENT:CalcRPM()
 
 
 	-- Heat Temperature calculation. Below is the damage caused by rpm if damaged.
-	self.Heat = ACE_HeatFromEngine( self )
+	self.Heat = ACE.HeatFromEngine( self )
 
 	local HealthRatio = self.ACE.Health / self.ACE.MaxHealth
 	if HealthRatio < 0.95 then
 		if HealthRatio > 0.025 then
 			local PhysObj = self:GetPhysicsObject()
 			local Mass = PhysObj:GetMass()
-			ACE_Damage(self, {
+		ACE.Damage(self, {
 				Kinetic = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100,
 				Momentum = 0,
 				Penetration = (1 + math.max(Mass / 2, 20) / 2.5) / self.Throttle * 100
@@ -825,7 +825,7 @@ do
 
 		local Rope = nil
 		if ACE.GetEntityOwner(self):GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
-			Rope = ACE_CreateLinkRope( OutPos, self, self.Out, Target, Target.In )
+			Rope = ACE.CreateLinkRope( OutPos, self, self.Out, Target, Target.In )
 		end
 
 		local Link = {

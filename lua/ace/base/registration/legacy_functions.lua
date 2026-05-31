@@ -103,7 +103,7 @@ function ACF_DefineTrackRadarClass( id, data )
     if ACF_OlddefineTrackRadarClass then
         ACF_OlddefineTrackRadarClass( id, data )
     end
-    ACE_RegisterTrackRadarClass( id, data )
+    ACE.RegisterTrackRadarClass( id, data )
 end
 
 -- Tracking Radar definition

@@ -46,7 +46,7 @@ function ACEM_CreateConfigurable_Raw(str, configurables, bdata, wlistPath)
 
 
 		if bdata then
-			local allowed = ACE_GetGunValue(bdata, wlistPath)
+			local allowed = ACE.GetGunValue(bdata, wlistPath)
 			if not table.HasValue(allowed, name) then return nil end
 		end
 

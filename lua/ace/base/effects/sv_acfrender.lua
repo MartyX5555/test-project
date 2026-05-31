@@ -4,7 +4,7 @@ do
 		Entities = {},
 		Clock = 0
 	}
-	function ACE_UpdateVisualHealth( Entity )
+	function ACE.UpdateVisualHealth( Entity )
 		if not Entity.ACE.OnRenderQueue then
 			table.insert(RenderProps.Entities, Entity )
 			Entity.ACE.OnRenderQueue = true

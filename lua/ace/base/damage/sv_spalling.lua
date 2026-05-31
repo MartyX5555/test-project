@@ -22,13 +22,13 @@ ACE.CritEnts = {
 
 
 --Handles normal spalling
-function ACE_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
+function ACE.Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor , Material)
 
 	--Don't use it if it's not allowed to
 	if not ACE.Spalling then return end
 
-	local Mat		= ACE_VerifyMaterial(Material)
-	local MatData	= ACE_GetMaterialData( Mat )
+	local Mat		= ACE.VerifyMaterial(Material)
+	local MatData	= ACE.GetMaterialData( Mat )
 
 	-- Spall damage
 	local SpallMul	= MatData.spallmult or 1
@@ -55,7 +55,7 @@ function ACE_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 		local SpallWeight = TotalWeight / Spall * SpallMul
 		local SpallVel = (KE * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul * Velocityfactor
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
-		local SpallEnergy = ACE_Kinetic(SpallVel, SpallWeight, 800)
+		local SpallEnergy = ACE.Kinetic(SpallVel, SpallWeight, 800)
 
 		for i = 1,Spall do
 
@@ -74,7 +74,7 @@ function ACE_Spall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inflictor
 			ACE.Spall[Index].mins	= Vector(0,0,0)
 			ACE.Spall[Index].maxs	= Vector(0,0,0)
 
-			ACE_SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
+		ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
 
 			--little sound optimization
 			if i < math.max(math.Round(Spall / 2), 1) then
@@ -159,8 +159,8 @@ local function PropShockwave( HitPos, HitVec, Filter, Caliber )
 				local space = math.abs( (HitFronts[iteration] - HitBacks[iteration - 1]):Length() )
 
 				--prop's material
-				local mat = ACE_VerifyMaterial(tracefront.Entity.ACE)
-				local MatData = ACE_GetMaterialData( mat )
+				local mat = ACE.VerifyMaterial(tracefront.Entity.ACE)
+				local MatData = ACE.GetMaterialData( mat )
 
 				local Hasvoid = false
 				local NotOverlap = false
@@ -247,12 +247,12 @@ end
 
 
 --Handles HESH spalling
-function ACE_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
+function ACE.Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Inflictor, Material )
 
 	local spallPos, Armour, PEnts, fNormal = PropShockwave( HitPos, HitVec, Filter, Caliber )
 
-	local Mat		= ACE_VerifyMaterial(Material)
-	local MatData	= ACE_GetMaterialData( Mat )
+	local Mat		= ACE.VerifyMaterial(Material)
+	local MatData	= ACE.GetMaterialData( Mat )
 
 	-- Spall damage
 	local SpallMul	= MatData.spallmult or 1
@@ -272,7 +272,7 @@ function ACE_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Infl
 		local SpallWeight = TotalWeight / Spall * SpallMul
 		local SpallVel = (HEFiller * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
-		local SpallEnergy = ACE_Kinetic(SpallVel, SpallWeight, 800)
+		local SpallEnergy = ACE.Kinetic(SpallVel, SpallWeight, 800)
 
 		for i = 1,Spall do
 
@@ -289,7 +289,7 @@ function ACE_Spall_HESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour, Infl
 			ACE.Spall[Index].endpos	= spallPos + ((fNormal * 2500 + HitVec):GetNormalized() + VectorRand() / 3):GetNormalized() * math.max(SpallVel * 10,math.random(450,600)) --I got bored of spall not going across the tank
 			ACE.Spall[Index].filter	= table.Copy(PEnts)
 
-			ACE_SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
+		ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
 
 			--little sound optimization
 			if i < math.max(math.Round(Spall / 4), 1) then
@@ -301,32 +301,32 @@ end
 
 
 --Spall trace core. For HESH and normal spalling
-function ACE_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
+function ACE.SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 
 	local SpallRes = util.TraceLine(ACE.Spall[Index])
 
 	-- Check if spalling hit something
-	if SpallRes.Hit and ACE_Check( SpallRes.Entity ) then
+	if SpallRes.Hit and ACE.Check( SpallRes.Entity ) then
 
 		do
 
 			local phys = SpallRes.Entity:GetPhysicsObject()
 
-			if IsValid(phys) and ACE_CheckClips( SpallRes.Entity, SpallRes.HitPos ) then
+			if IsValid(phys) and ACE.CheckClips( SpallRes.Entity, SpallRes.HitPos ) then
 
 				table.insert( ACE.Spall[Index].filter , SpallRes.Entity )
 
-				ACE_SpallTrace( SpallRes.StartPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+			ACE.SpallTrace( SpallRes.StartPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 				return
 			end
 
 		end
 
 		-- Get the spalling hitAngle
-		local Angle		= ACE_GetHitAngle( SpallRes.HitNormal , HitVec )
+		local Angle		= ACE.GetHitAngle( SpallRes.HitNormal , HitVec )
 
-		local Mat		= ACE_VerifyMaterial(SpallRes.Entity.ACE.Material)
-		local MatData	= ACE_GetMaterialData( Mat )
+		local Mat		= ACE.VerifyMaterial(SpallRes.Entity.ACE.Material)
+		local MatData	= ACE.GetMaterialData( Mat )
 
 		local spallarmor	= MatData.spallarmor
 
@@ -338,14 +338,14 @@ function ACE_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 		end
 
 		-- Applies the damage to the impacted entity
-		local HitRes = ACE_Damage( SpallRes.Entity , SpallEnergy , SpallArea , Angle , Inflictor, 0, nil, "Spall")
+		local HitRes = ACE.Damage( SpallRes.Entity , SpallEnergy , SpallArea , Angle , Inflictor, 0, nil, "Spall")
 
 		-- If it's able to destroy it, kill it and filter it
 		if HitRes.Kill then
-			local Debris = ACE_APKill( SpallRes.Entity , HitVec:GetNormalized() , SpallEnergy.Kinetic )
+			local Debris = ACE.APKill( SpallRes.Entity , HitVec:GetNormalized() , SpallEnergy.Kinetic )
 			if IsValid(Debris) then
 				table.insert( ACE.Spall[Index].filter , Debris )
-				ACE_SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+			ACE.SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 			end
 		end
 
@@ -362,7 +362,7 @@ function ACE_SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 			SpallEnergy.Momentum = SpallEnergy.Momentum * (1-HitRes.Loss)
 
 			-- Retry
-			ACE_SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
+		ACE.SpallTrace( SpallRes.HitPos , Index , SpallEnergy , SpallArea , Inflictor, Material )
 
 			debugoverlay.Line( SpallRes.StartPos + Vector(2,0,0), SpallRes.HitPos + Vector(2,0,0), 10 , Color(255,255,0), true )
 

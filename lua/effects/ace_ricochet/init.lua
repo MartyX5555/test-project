@@ -55,7 +55,7 @@ function EFFECT:Init( data )
 	if not RoundTypesIgnore[self.Id] then
 
 		local Mat = SurfaceTr.MatType
-		local Material = ACE_GetMaterialName( Mat )
+		local Material = ACE.GetMaterialName( Mat )
 		local SmokeColor = ACE.DustMaterialColor[Material] or ACE.DustMaterialColor["Concrete"]
 
 		if Material == "Metal" then
@@ -66,7 +66,7 @@ function EFFECT:Init( data )
 	end
 
 	util.Decal("Impact.Concrete", self.Origin + self.DirVec * 10, self.Origin - self.DirVec * 10 )
-	ACE_SRicochet( self.Origin, self.Caliber, self.Velocity, SurfaceTr.HitWorld )
+ACE.SRicochet( self.Origin, self.Caliber, self.Velocity, SurfaceTr.HitWorld )
 
 	if IsValid(self.Emitter) then self.Emitter:Finish() end
 end

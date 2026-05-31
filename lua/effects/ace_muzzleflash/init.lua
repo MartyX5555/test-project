@@ -35,7 +35,7 @@ function EFFECT:Init( data )
 			Sound = ClassData.sound
 		end
 
-		ACE_SGunFire( Gun, Sound, SoundPitch, Propellant )
+	ACE.SGunFire( Gun, Sound, SoundPitch, Propellant )
 
 		local Muzzle = Gun:GetAttachment( Gun:LookupAttachment(Attachment)) or { Pos = Gun:GetPos(), Ang = Gun:GetAngles() }
 
@@ -52,7 +52,7 @@ function EFFECT:Init( data )
 		ParticleEffect( MuzzleEffect , Muzzle.Pos, Muzzle.Ang, Gun )
 
 		if Gun:WaterLevel() ~= 3 and not ClassData.nolights then
-			ACE_RenderLight(Gun:EntIndex(), Caliber * 75, Color(255, 128, 48), Muzzle.Pos + Muzzle.Ang:Forward() * (Caliber / 5))
+		ACE.RenderLight(Gun:EntIndex(), Caliber * 75, Color(255, 128, 48), Muzzle.Pos + Muzzle.Ang:Forward() * (Caliber / 5))
 		end
 
 		if Gun.Animate then

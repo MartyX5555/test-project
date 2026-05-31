@@ -33,7 +33,7 @@ function EFFECT:Init( data )
 	end
 
 	local Mat = Ground.MatType
-	local Material = ACE_GetMaterialName( Mat )
+	local Material = ACE.GetMaterialName( Mat )
 	local SmokeColor = ACE.DustMaterialColor[Material] or ACE.DustMaterialColor["Concrete"]
 	self.HitNormal = Ground.HitNormal
 
@@ -61,8 +61,8 @@ function EFFECT:Init( data )
 
 	--Main explosion
 	self:Core( self.HitWater )
-	ACE_SBlast( self.Origin, self.Radius, self.HitWater, Ground.HitWorld )
-	ACE_RenderLight( 0, self.Radius * 500, Color(255, 128, 48), self.Origin, 0.1) -- idx 0: world
+ACE.SBlast( self.Origin, self.Radius, self.HitWater, Ground.HitWorld )
+ACE.RenderLight( 0, self.Radius * 500, Color(255, 128, 48), self.Origin, 0.1) -- idx 0: world
 
 	if IsValid(self.Emitter) then self.Emitter:Finish() end
 end

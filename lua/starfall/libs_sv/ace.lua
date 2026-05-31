@@ -250,7 +250,7 @@ do
 		hitpos = vunwrap(hitpos)
 
 		checkpermission(instance, this, "entities.ace")
-		if ACE_CheckClips(nil, nil, this, hitpos) then
+		if ACE.CheckClips(nil, nil, this, hitpos) then
 			return true
 		else
 			return false
@@ -344,7 +344,7 @@ do
 		end
 
 		if notify then
-			ACE_SendNotify(instance.player, success, msg)
+		ACE.SendNotify(instance.player, success, msg)
 		end
 
 		return success, msg
@@ -384,7 +384,7 @@ do
 		end
 
 		if notify then
-			ACE_SendNotify(instance.player, success, msg)
+		ACE.SendNotify(instance.player, success, msg)
 		end
 
 		return success, msg
@@ -401,9 +401,9 @@ do
 
 		local Heat
 		if isGun(this) then
-			Heat = ACE_HeatFromGun(this, this.Heat, this.DeltaTime)
+			Heat = ACE.HeatFromGun(this, this.Heat, this.DeltaTime)
 		elseif isEngine(this) then
-			Heat = ACE_HeatFromEngine(this)
+			Heat = ACE.HeatFromEngine(this)
 		else
 			Heat = ACE.AmbientTemp
 		end
@@ -456,7 +456,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACE_Check(this) then return 0 end
+		if not ACE.Check(this) then return 0 end
 
 		return round(this.ACE.Health, 3)
 	end
@@ -469,7 +469,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACE_Check(this) then return 0 end
+		if not ACE.Check(this) then return 0 end
 
 		return round(this.ACE.Armour, 3)
 	end
@@ -482,7 +482,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACE_Check(this) then return 0 end
+		if not ACE.Check(this) then return 0 end
 
 		return round(this.ACE.MaxHealth, 3)
 	end
@@ -495,7 +495,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACE_Check(this) then return 0 end
+		if not ACE.Check(this) then return 0 end
 
 		return round(this.ACE.MaxArmour, 3)
 	end
@@ -508,7 +508,7 @@ do
 
 		if not validPhysics(this) then return 0 end
 		if restrictInfo(this) then return 0 end
-		if not ACE_Check(this) then return 0 end
+		if not ACE.Check(this) then return 0 end
 
 		return this.ACE.Ductility * 100
 	end
@@ -522,7 +522,7 @@ do
 
 		if not validPhysics(this) then return empty end
 		if restrictInfo(this) then return empty end
-		if not ACE_Check(this) then return empty end
+		if not ACE.Check(this) then return empty end
 
 		local mat = this.ACE.Material
 		if not mat then return empty end
@@ -952,17 +952,17 @@ do
 		local Energy
 
 		if Type == "AP" or Type == "APHE" then
-			Energy = ACE_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["ProjMass"] - (this.BulletData["FillerMass"] or 0), this.BulletData["LimitVel"])
+			Energy = ACE.Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["ProjMass"] - (this.BulletData["FillerMass"] or 0), this.BulletData["LimitVel"])
 
 			return round((Energy.Penetration / this.BulletData["PenArea"]) * ACE.KEtoRHA, 3)
 		elseif Type == "HEAT" then
 			local Crushed, HEATFillerMass, _ = ACE.RoundTypes["HEAT"].CrushCalc(this.BulletData.MuzzleVel, this.BulletData.FillerMass)
 			if Crushed == 1 then return 0 end -- no HEAT jet to fire off, it was all converted to HE
-			Energy = ACE_Kinetic(ACE.RoundTypes["HEAT"].CalcSlugMV(this.BulletData, HEATFillerMass) * 39.37, this.BulletData["SlugMass"], 9999999)
+			Energy = ACE.Kinetic(ACE.RoundTypes["HEAT"].CalcSlugMV(this.BulletData, HEATFillerMass) * 39.37, this.BulletData["SlugMass"], 9999999)
 
 			return round((Energy.Penetration / this.BulletData["SlugPenArea"]) * ACE.KEtoRHA, 3)
 		elseif Type == "FL" then
-			Energy = ACE_Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["FlechetteMass"], this.BulletData["LimitVel"])
+			Energy = ACE.Kinetic(this.BulletData["MuzzleVel"] * 39.37, this.BulletData["FlechetteMass"], this.BulletData["LimitVel"])
 
 			return round((Energy.Penetration / this.BulletData["FlechettePenArea"]) * ACE.KEtoRHA, 3)
 		end

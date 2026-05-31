@@ -3,7 +3,7 @@
 --Ammocrate Shells 75mm -> 170mm
 ------------------------------
 
-ACE_DefineAmmoCrate( "Shell75mm", {
+ACE.DefineAmmoCrate( "Shell75mm", {
 	name   = "Modular Ammo Crate",
 	desc   = "A single 75mm Shell. As an alternative to the bulky ammocrates.\n",
 	model  = "models/munitions/round_75mm.mdl",
@@ -13,7 +13,7 @@ ACE_DefineAmmoCrate( "Shell75mm", {
 	Height = 31,
 })
 
-ACE_DefineAmmoCrate("Shell100mm", {
+ACE.DefineAmmoCrate("Shell100mm", {
 	name   = "Modular Ammo Crate",
 	desc   = "A single 100mm Shell. As an alternative to the bulky ammocrates.\n",
 	model  = "models/munitions/round_100mm.mdl",
@@ -23,7 +23,7 @@ ACE_DefineAmmoCrate("Shell100mm", {
 	Height = 36.7,
 })
 
-ACE_DefineAmmoCrate("Shell120mm", {
+ACE.DefineAmmoCrate("Shell120mm", {
 	name   = "Modular Ammo Crate",
 	desc   = "A single 120mm Shell. As an alternative to the bulky ammocrates.\n",
 	model  = "models/munitions/round_120mm.mdl",
@@ -33,7 +33,7 @@ ACE_DefineAmmoCrate("Shell120mm", {
 	Height = 44,
 })
 
-ACE_DefineAmmoCrate("Shell120mmAP", {
+ACE.DefineAmmoCrate("Shell120mmAP", {
 	name   = "Modular Ammo Crate",
 	desc   = "A single 120mm AP Shell. As an alternative to the bulky ammocrates.\n",
 	model  = "models/munitions/round_120mm_ap.mdl",
@@ -43,7 +43,7 @@ ACE_DefineAmmoCrate("Shell120mmAP", {
 	Height = 44,
 })
 
-ACE_DefineAmmoCrate("Shell140mm", {
+ACE.DefineAmmoCrate("Shell140mm", {
 	name   = "Modular Ammo Crate",
 	desc   = "A single 140mm Shell. As an alternative to the bulky ammocrates.\n",
 	model  = "models/munitions/round_130mm.mdl",
@@ -53,7 +53,7 @@ ACE_DefineAmmoCrate("Shell140mm", {
 	Height = 50,
 })
 
-ACE_DefineAmmoCrate("Shell170mm", {
+ACE.DefineAmmoCrate("Shell170mm", {
 	name   = "Modular Ammo Crate",
 	desc   = "A single 170mm Shell. As an alternative to the bulky ammocrates.\n",
 	model  = "models/munitions/round_200mm.mdl",

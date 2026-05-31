@@ -159,10 +159,10 @@ end
 
 function ACEM_ModifyRoundBaseGunpowder()
 
-	local oldGunpowder = ACEM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE_RoundBaseGunpowder
+	local oldGunpowder = ACEM_ModifiedRoundBaseGunpowder and oldGunpowder or ACE.RoundBaseGunpowder
 
 
-	ACE_RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
+ACE.RoundBaseGunpowder = function(PlayerData, Data, ServerData, GUIData)
 
 		PlayerData, Data, ServerData, GUIData = oldGunpowder(PlayerData, Data, ServerData, GUIData)
 

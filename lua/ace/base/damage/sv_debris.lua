@@ -9,11 +9,11 @@ end
 
 -- helper function to process children of an ace-destroyed prop
 -- AP will HE-kill children props like a detonation; looks better than a directional spray of unrelated debris from the AP kill
-local function ACE_KillChildProps( Entity, BlastPos, Energy )
+local function KillChildProps( Entity, BlastPos, Energy )
 
 	if ACE.DebrisChance <= 0 then return end
 
-	local children = ACE_GetAllChildren(Entity, {}, true)
+	local children = ACE.GetAllChildren(Entity, {}, true)
 	RemoveEntity( Entity )
 
 	-- Only do this if the Entity has real children with it.
@@ -24,7 +24,7 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 
 		-- do an initial processing pass on children, separating out explodey things to handle last
 		for ent, _ in pairs( children ) do --print('table children: ' .. table.Count( children ))
-			if not ACE_CanCheck(ent) then continue end -- we would be potentially dealing with props parented to holograms, being the last one that we need to discard.
+			if not ACE.CanCheck(ent) then continue end -- we would be potentially dealing with props parented to holograms, being the last one that we need to discard.
 
 			-- mark that it's already processed
 			ent.ACE_Killed = true
@@ -57,7 +57,7 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 				-- ignore some of the debris props to save lag
 				if count > 10 and rand > ACE.DebrisChance then continue end
 
-				ACE_HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
+			ACE.HEKill( child, (child:GetPos() - BlastPos):GetNormalized(), power )
 			end
 		end
 
@@ -69,7 +69,7 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 				if not IsValid(child) or child.Exploding then continue end
 
 				child.Exploding = true
-				ACE_ScaledExplosion( child ) -- explode any crates that are getting removed
+			ACE.ScaledExplosion( child ) -- explode any crates that are getting removed
 
 			end
 		end
@@ -77,12 +77,12 @@ local function ACE_KillChildProps( Entity, BlastPos, Energy )
 end
 
 -- Creates a debris related to explosive destruction.
-function ACE_HEKill( Entity , HitVector , Energy , BlastPos )
+function ACE.HEKill( Entity , HitVector , Energy , BlastPos )
 
 	-- Completely Delete the Entity and blow out all the props attached to it via parent.
 	-- if it hasn't been processed yet, check for children
 	if not Entity.ACE_Killed then
-		ACE_KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy )
+	KillChildProps( Entity, BlastPos or Entity:GetPos(), Energy )
 	end
 
 	local Debris
@@ -106,7 +106,7 @@ function ACE_HEKill( Entity , HitVector , Energy , BlastPos )
 			-- Applies force to this debris
 			local phys = Debris:GetPhysicsObject()
 			local physent = Entity:GetPhysicsObject()
-			local Parent = ACE_GetPhysicalParent( Entity )
+			local Parent = ACE.GetPhysicalParent( Entity )
 
 			if IsValid(phys) and IsValid(physent) then
 				phys:SetDragCoefficient( -50 )
@@ -129,10 +129,10 @@ end
 
 
 -- Creates a debris related to kinetic destruction.
-function ACE_APKill( Entity , HitVector , Power )
+function ACE.APKill( Entity , HitVector , Power )
 
 	-- Completely Delete the Entity and blow out all the props attached to it via parent.
-	ACE_KillChildProps( Entity, Entity:GetPos(), Power )
+KillChildProps( Entity, Entity:GetPos(), Power )
 
 	local Debris
 	-- Create a debris only if the dead entity is greater than the specified scale.
@@ -152,7 +152,7 @@ function ACE_APKill( Entity , HitVector , Power )
 			--Applies force to this debris
 			local phys = Debris:GetPhysicsObject()
 			local physent = Entity:GetPhysicsObject()
-			local Parent =  ACE_GetPhysicalParent( Entity )
+			local Parent =  ACE.GetPhysicalParent( Entity )
 
 			if IsValid(phys) and IsValid(physent) then
 				phys:SetDragCoefficient( -50 )

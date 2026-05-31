@@ -22,8 +22,8 @@ function ENT:Initialize()
 
 	self.DestructOnMiss = false --Detonate the missile the distance to the target increases(when the missile misses or runs out of energy)
 
-	self.SpecialHealth  = true  --If true, use the ACE_Activate function defined by this ent
-	self.SpecialDamage  = true  --If true, use the ACE_OnDamage function defined by this ent
+	self.SpecialHealth  = true  --If true, use the ACE.Activate function defined by this ent
+	self.SpecialDamage  = true  --If true, use the ACE.OnDamage function defined by this ent
 
 	self.TopAttackGuidance = false
 	self.DirectFireDist = 125 * 39.37
@@ -253,7 +253,7 @@ function ENT:ACE_Activate( Recalc )
 		self.ACE.Volume = PhysObj:GetVolume() * 16.38
 	end
 
-	local ForceArmour = ACE_GetGunValue(self.BulletData, "armour")
+	local ForceArmour = ACE.GetGunValue(self.BulletData, "armour")
 
 	local Armour = ForceArmour or (EmptyMass * 1000 / self.ACE.Area / 0.78)	--So we get the equivalent thickness of that prop in mm if all it's weight was a steel plate
 	local Health = self.ACE.Volume / ACE.Threshold							--Setting the threshold of the prop Area gone
@@ -272,7 +272,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density	= (PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type	= "Prop"
 
-	self.ACE.Material	= ACE_VerifyMaterial(self.ACE.Material)
+	self.ACE.Material	= ACE.VerifyMaterial(self.ACE.Material)
 
 end
 
@@ -282,7 +282,7 @@ function ENT:ACE_OnDamage( Entity , Energy , FrArea , Ang , Inflictor )	--This f
 
 	if self.Detonated or self.DisableDamage then return table.Copy(nullhit) end
 
-	local HitRes = ACE_PropDamage( Entity , Energy , FrArea , Ang , Inflictor )	--Calling the standard damage prop function
+	local HitRes = ACE.PropDamage( Entity , Energy , FrArea , Ang , Inflictor )	--Calling the standard damage prop function
 
 	-- Detonate if the shot penetrates the casing.
 	HitRes.Kill = HitRes.Kill or HitRes.Overkill > 0
@@ -420,7 +420,7 @@ function ENT:AcquireLock()
 				end
 
 				dist = difpos:Length()
-				Heat = ACE_InfraredHeatFromProp(self, scanEnt, dist)
+				Heat = ACE.InfraredHeatFromProp(self, scanEnt, dist)
 			end
 
 			--Skip if not Hotter than AmbientTemp in deg C.

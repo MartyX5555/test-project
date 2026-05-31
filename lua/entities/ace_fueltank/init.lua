@@ -25,8 +25,8 @@ do
 	function ENT:Initialize()
 
 		self.CanUpdate        = true
-		self.SpecialHealth    = true  --If true, use the ACE_Activate function defined by this ent
-		self.SpecialDamage    = true  --If true, use the ACE_OnDamage function defined by this ent
+		self.SpecialHealth    = true  --If true, use the ACE.Activate function defined by this ent
+		self.SpecialDamage    = true  --If true, use the ACE.OnDamage function defined by this ent
 		self.IsExplosive      = true
 		self.Exploding        = false
 
@@ -92,7 +92,7 @@ function ENT:ACE_Activate( Recalc )
 	self.ACE.Density   = (PhysObj:GetMass() * 1000) / self.ACE.Volume
 	self.ACE.Type      = "Prop"
 
-	self.ACE.Material = ACE_VerifyMaterial(self.ACE.Material)
+	self.ACE.Material = ACE.VerifyMaterial(self.ACE.Material)
 
 	--Forces an update of mass
 	self.LastMass = 1
@@ -103,7 +103,7 @@ end
 function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	--This function needs to return HitRes
 
 	local Mul = (((Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS") and ACE.HEATMulFuel) or 1) --Heat penetrators deal bonus damage to fuel
-	local HitRes = ACE_PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
+	local HitRes = ACE.PropDamage( Entity, Energy, FrArea * Mul, Angle, Inflictor ) --Calling the standard damage prop function
 
 	local NoExplode = self.FuelType == "Diesel" and not (Type == "HE" or Type == "HEAT" or Type == "THEAT" or Type == "HEATFS" or Type == "THEATFS")
 	if self.Exploding or NoExplode or not self.IsExplosive then return HitRes end
@@ -118,7 +118,7 @@ function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	-
 			self.Inflictor = Inflictor
 		end
 
-		ACE_ScaledExplosion( self )
+	ACE.ScaledExplosion( self )
 
 		return HitRes
 	end
@@ -136,7 +136,7 @@ function ENT:ACE_OnDamage( Entity, Energy, FrArea, Angle, Inflictor, _, Type )	-
 
 		timer.Simple(math.Rand(0.1, 1), function()
 			if IsValid(self) then
-				ACE_ScaledExplosion( self )
+			ACE.ScaledExplosion( self )
 			end
 		end )
 
@@ -201,7 +201,7 @@ do
 			Data.Dimensions = GetCrateDimensions(Data)
 			Data.Shape = ACE.ModelData[Data.Shape] and Data.Shape or "Box"
 		else
-			Data.SizeId = ACE_CheckFuelTank( Data.SizeId ) and Data.SizeId or "Tank_4x4x2"
+			Data.SizeId = ACE.CheckFuelTank( Data.SizeId ) and Data.SizeId or "Tank_4x4x2"
 		end
 		Data.FuelType = ACE.FuelDensity[Data.FuelType] and Data.FuelType or "Petrol"
 	end
@@ -459,7 +459,7 @@ function ENT:Think()
 
 	if ACE.CurTime > self.NextLegalCheck then
 		--local minmass = math.floor(self.Mass-6)  -- fuel is light, may as well save complexity and just check it's above empty mass
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.EmptyMass,2), nil, true, true) -- mass-6, as mass update is granular to 5 kg
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, math.Round(self.EmptyMass,2), nil, true, true) -- mass-6, as mass update is granular to 5 kg
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:UpdateOverlayText()
 	end

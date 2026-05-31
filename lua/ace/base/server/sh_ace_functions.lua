@@ -3,7 +3,7 @@ local Clamp = math.Clamp
 
 --Calculates a position along a catmull-rom spline (as defined on https://www.mvps.org/directx/articles/catmull/)
 --This is used for calculating engine torque curves
-function ACE_CalcCurve(Points, Pos)
+function ACE.CalcCurve(Points, Pos)
 	local Count = #Points
 
 	if Count < 3 then return 0 end
@@ -28,7 +28,7 @@ function ACE_CalcCurve(Points, Pos)
 end
 
 --Calculates the performance characteristics of an engine, given a torque curve, max torque (in nm), idle, and redline rpm
-function ACE_CalcEnginePerformanceData(curve, maxTq, idle, redline)
+function ACE.CalcEnginePerformanceData(curve, maxTq, idle, redline)
 	local peakTq = 0
 	local peakTqRPM
 	local peakPower = 0
@@ -39,7 +39,7 @@ function ACE_CalcEnginePerformanceData(curve, maxTq, idle, redline)
 	for i = 0, res do
 		local rpm = i / res * redline
 		local perc = math.Remap(rpm, idle, redline, 0, 1)
-		local curTq = ACE_CalcCurve(curve, perc)
+		local curTq = ACE.CalcCurve(curve, perc)
 		local power = maxTq * curTq * rpm / 9548.8
 
 		powerTable[i] = power
@@ -82,7 +82,7 @@ function ACE_CalcEnginePerformanceData(curve, maxTq, idle, redline)
 end
 
 -- A cheap way to check if the distance between 2 points is within a target distance.
-function ACE_InDist( Pos1, Pos2, Distance )
+function ACE.InDist( Pos1, Pos2, Distance )
 	return (Pos2 - Pos1):LengthSqr() < Distance ^ 2
 end
 
@@ -106,7 +106,7 @@ end
 	-- 87 WOOD
 	-- 89 GLASS
 
-function ACE_GetMaterialName( Mat )
+function ACE.GetMaterialName( Mat )
 	--concrete
 	local GroundMat = "Concrete"
 
@@ -127,13 +127,13 @@ function ACE_GetMaterialName( Mat )
 end
 
 -- changes here will be automatically reflected in the armor properties tool
-function ACE_CalcArmor( Area, Ductility, Mass )
+function ACE.CalcArmor( Area, Ductility, Mass )
 
 	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACE.ArmorMod
 
 end
 
-function ACE_MuzzleVelocity( Propellant, Mass )
+function ACE.MuzzleVelocity( Propellant, Mass )
 
 	local PEnergy	= ACE.PBase * ((1 + Propellant) ^ ACE.PScale-1)
 	local Speed	= ((PEnergy * 2000 / Mass) ^ ACE.MVScale)
@@ -142,7 +142,7 @@ function ACE_MuzzleVelocity( Propellant, Mass )
 	return Final
 end
 
-function ACE_Kinetic( Speed , Mass, LimitVel )
+function ACE.Kinetic( Speed , Mass, LimitVel )
 
 	LimitVel = LimitVel or 99999
 	Speed = Speed / 39.37
@@ -160,7 +160,7 @@ end
 do
 
 	-- Global Ratio Setting Function
-	function ACE_CalcMassRatio( obj )
+	function ACE.CalcMassRatio( obj )
 		if not IsValid(obj) then return end
 		local power		= 0
 		local fuel		= 0
@@ -173,7 +173,7 @@ do
 		if con then
 			local AllEnts = con.ents
 			for v, _ in pairs( AllEnts ) do
-				if not ACE_Check( v ) then continue end
+				if not ACE.Check( v ) then continue end
 				if not pwr then continue end
 
 				if v:GetClass() == "ace_engine" then
@@ -186,7 +186,7 @@ do
 				local PhysObj = v:GetPhysicsObject()
 				if IsValid(PhysObj) then
 
-					local material = ACE_VerifyMaterial(v.ACE.Material)
+					local material = ACE.VerifyMaterial(v.ACE.Material)
 					Compositions[material]  = Compositions[material] or {}
 
 					table.insert(Compositions[material], PhysObj:GetMass() )
@@ -245,7 +245,7 @@ local function OnhttpFail()
 end
 
 --Checks if theres new versions for ACE
-function ACE_UpdateChecking( )
+function ACE.UpdateChecking( )
 	http.Fetch("https://raw.githubusercontent.com/MartyX5555/test-project/refs/heads/main/lua/autorun/ace_loader.lua",OnhttpSucess, OnhttpFail)
 end
 
@@ -271,82 +271,82 @@ end
 
 
 timer.Simple(1, function()
-	ACE_UpdateChecking()
+ACE.UpdateChecking()
 end )
 
 local default_material = "RHA"
-function ACE_VerifyMaterial(mattype)
-	if ACE_CheckMaterial( mattype ) then return mattype end
+function ACE.VerifyMaterial(mattype)
+	if ACE.CheckMaterial( mattype ) then return mattype end
 	local BackCompMat = ACE.BackCompMat[tonumber(mattype)]
 	if BackCompMat then return BackCompMat end
 	return default_material
 end
 
 --TODO: Use a universal function
-function ACE_CheckMaterial( MatId )
+function ACE.CheckMaterial( MatId )
 	local matdata = ACE.ArmorMaterials[ MatId ]
 	if not matdata then return false end
 	return true
 end
 
 --Dedicated function to get the material due to old numeric ids must be passed to the new string indexing now. Could change in a future.
-function ACE_GetMaterialData( mattype )
-	mattype = ACE_VerifyMaterial(mattype)
+function ACE.GetMaterialData( mattype )
+	mattype = ACE.VerifyMaterial(mattype)
 	local MatData = ACE.ArmorMaterials[mattype]
 	return MatData
 end
 
-function ACE_CheckRound( id )
+function ACE.CheckRound( id )
 	local rounddata = ACE.RoundTypes[ id ]
 	if not rounddata then return false end
 	return true
 end
 
-function ACE_CheckGun( gunid )
+function ACE.CheckGun( gunid )
 	local gundata = ACE.Weapons.Guns[ gunid ]
 	if not gundata then return false end
 	return true
 end
 
-function ACE_CheckRack( rackid )
+function ACE.CheckRack( rackid )
 	local rackdata = ACE.Weapons.Racks[ rackid ]
 	if not rackdata then return false end
 	return true
 end
 
-function ACE_CheckAmmo( ammoid )
+function ACE.CheckAmmo( ammoid )
 	local Ammodata = ACE.Weapons.Ammo[ ammoid ]
 	if not Ammodata then return false end
 	return true
 end
 
-function ACE_CheckEngine( engineid )
+function ACE.CheckEngine( engineid )
 	local enginedata = ACE.Weapons.Engines[ engineid ]
 	if not enginedata then return false end
 	return true
 end
 
-function ACE_CheckGearbox( gearid )
+function ACE.CheckGearbox( gearid )
 	local geardata = ACE.Weapons.Gearboxes[ gearid ]
 	if not geardata then return false end
 	return true
 end
 
-function ACE_CheckFuelTank( fueltankid )
+function ACE.CheckFuelTank( fueltankid )
 	local fueltankid = ACE.Weapons.FuelTanksSize[ fueltankid ]
 	if not fueltankid then return false end
 	return true
 end
 
 if SERVER then
-	function ACE_SendMsg(ply, ...)
+	function ACE.SendMsg(ply, ...)
 		net.Start("ACE_SendMessage")
 		net.WriteBool(false)
 		net.WriteTable({...})
 		net.Send(ply)
 	end
 
-	function ACE_SendNotification(ply, hint, duration)
+	function ACE.SendNotification(ply, hint, duration)
 		net.Start("ACE_SendMessage")
 		net.WriteBool(true)
 		net.WriteString(hint)
@@ -354,7 +354,7 @@ if SERVER then
 		net.Send(ply)
 	end
 
-	function ACE_BroadcastMsg(...)
+	function ACE.BroadcastMsg(...)
 		net.Start("ACE_SendMessage")
 		net.WriteBool(false)
 		net.WriteTable({...})
@@ -384,7 +384,7 @@ else
 end
 
 --[[ IDK if this will take some usage
-function ACE_Msg( type, txt )
+function ACE.Msg( type, txt )
 
 	if not isstring(type) then
 		ErrorNoHaltWithStack(( "bad argument #1 to 'type' (string expected, got " .. type( type ) .. ")" ))
@@ -415,7 +415,7 @@ end
 
 if SERVER then
 
-	function ACE_SendDPStatus()
+	function ACE.SendDPStatus()
 
 		local Cvar = GetConVar("ace_enable_dp"):GetInt()
 		local bool = tobool(Cvar)
@@ -426,7 +426,7 @@ if SERVER then
 
 	end
 
-	function ACE_SendNotify( ply, success, msg )
+	function ACE.SendNotify( ply, success, msg )
 		net.Start( "ACE_Notify" )
 		net.WriteBit( success )
 		net.WriteString( msg or "" )
@@ -434,13 +434,13 @@ if SERVER then
 	end
 else
 
-	local function ACE_Notify()
+	local function Notify()
 		local Type = NOTIFY_ERROR
 		if tobool( net.ReadBit() ) then Type = NOTIFY_GENERIC end
 
 		GAMEMODE:AddNotify( net.ReadString(), Type, 7 )
 	end
-	net.Receive( "ACE_Notify", ACE_Notify )
+	net.Receive( "ACE_Notify", ACE.Notify )
 end
 
 if CLIENT then

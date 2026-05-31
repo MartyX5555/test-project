@@ -16,7 +16,7 @@
 ----------------------------------------------------------------------------------------/
 
 --[[-------------------------------------------------------------------------------------
-	ACE_InfraredHeatFromProp( self, Target , dist )  --used mostly by infrared guidance
+ACE.InfraredHeatFromProp( self, Target , dist )  --used mostly by infrared guidance
 
 ->  Input information:
 
@@ -25,7 +25,7 @@
 	dist - distance between the missile and the Target
 
 ]]---------------------------------------------------------------------------------------
-function ACE_InfraredHeatFromProp( guidance, Target , dist )
+function ACE.InfraredHeatFromProp( guidance, Target , dist )
 
 	if not guidance.SeekSensitivity then print("[ACE | WARN]- Unable to track Heat. SeekSensitivity not found!") return 0 end
 	if not IsValid(Target) then print("[ACE | WARN]- Unable to track Heat. Target Entity not valid!") return 0 end
@@ -38,7 +38,7 @@ function ACE_InfraredHeatFromProp( guidance, Target , dist )
 end
 
 --[[-------------------------------------------------------------------------------------
-	ACE_HeatFromGun( Gun, Heat, DeltaTime )  --used by Guns
+ACE.HeatFromGun( Gun, Heat, DeltaTime )  --used by Guns
 
 ->  Input information:
 
@@ -47,7 +47,7 @@ end
 	DeltaTime - Delta time of this gun
 
 ]]---------------------------------------------------------------------------------------
-function ACE_HeatFromGun( Gun , Heat, DeltaTime )
+function ACE.HeatFromGun( Gun , Heat, DeltaTime )
 
 	local phys = Gun:GetPhysicsObject()
 	local Mass = phys:GetMass()
@@ -75,14 +75,14 @@ function ACE_HeatFromGun( Gun , Heat, DeltaTime )
 end
 
 --[[-------------------------------------------------------------------------------------
-	ACE_HeatFromEngine( Engine , Radiator )  --used mostly by engines
+ACE.HeatFromEngine( Engine , Radiator )  --used mostly by engines
 
 ->  Input information:
 
 	Engine - The Engine Entity
 
 ]]---------------------------------------------------------------------------------------
-function ACE_HeatFromEngine( Engine )
+function ACE.HeatFromEngine( Engine )
 
 	--bullshiet code below, better using tables next time
 
@@ -154,7 +154,7 @@ function ACE_HeatFromEngine( Engine )
 end
 
 --[[-------------------------------------------------------------------------------------
-	ACE_HeatFromGearbox( Gearbox )  --used mostly by gearboxes. Not used atm
+ACE.HeatFromGearbox( Gearbox )  --used mostly by gearboxes. Not used atm
 
 ->  Input information:
 
@@ -162,7 +162,7 @@ end
 
 ]]---------------------------------------------------------------------------------------
 --NOTE: disabled until i compile more information about gearbox code. the code works though
-function ACE_HeatFromGearbox( Gearbox , InputRPM )
+function ACE.HeatFromGearbox( Gearbox , InputRPM )
 
 	if not Gearbox:IsValid() then
 		print("Missing Gearbox")
@@ -191,7 +191,7 @@ end
 
 --THIS CODE NEEDS A REWRITE, USELESS ATM BUT I WILL KEEP IT HERE
 --[[
-function ACE_HeatFromEngine( Engine , Radiator )  --radiator?!? woooo
+function ACE.HeatFromEngine( Engine , Radiator )  --radiator?!? woooo
 
 	--print(Engine.EngineType)
 

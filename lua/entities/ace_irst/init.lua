@@ -279,7 +279,7 @@ function ENT:AcquireLock()
 				if IsValid(physEnt) and not physEnt:IsMoveable() then continue end
 
 				dist = difpos:Length()
-				Heat = ACE_InfraredHeatFromProp( self, scanEnt , dist )
+				Heat = ACE.InfraredHeatFromProp( self, scanEnt , dist )
 
 			end
 
@@ -353,7 +353,7 @@ function ENT:Think()
 	-- Legal check system
 	if ACE.CurTime > self.NextLegalCheck then
 
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.Weight,2), nil, true, true)
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, math.Round(self.Weight,2), nil, true, true)
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 
 		if not self.Legal then

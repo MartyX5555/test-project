@@ -1,5 +1,5 @@
 
-function ACE_GetGunValue(bdata, val)
+function ACE.GetGunValue(bdata, val)
 
 	bdata = (type(bdata) == "table" and bdata.Id) or bdata
 
@@ -37,7 +37,7 @@ end
 
 
 
-function ACE_GetRackValue(rdata, val)
+function ACE.GetRackValue(rdata, val)
 
 	rdata = (type(rdata) == "table" and rdata.Id) or rdata
 
@@ -62,7 +62,7 @@ end
 
 
 
-function ACE_RackCanLoadCaliber(rackId, cal)
+function ACE.RackCanLoadCaliber(rackId, cal)
 
 	local rack = ACE.Weapons.Racks[rackId]
 	if not rack then return false, "Rack '" .. tostring(rackId) .. "' does not exist." end
@@ -88,7 +88,7 @@ end
 
 
 
-function ACE_CanLinkRack(rackId, ammoId, bdata, rack)
+function ACE.CanLinkRack(rackId, ammoId, bdata, rack)
 
 	local rack = ACE.Weapons.Racks[rackId]
 	if not rack then return false, "Rack '" .. tostring(rackId) .. "' does not exist." end
@@ -99,7 +99,7 @@ function ACE_CanLinkRack(rackId, ammoId, bdata, rack)
 	if not rack then return false, "Ammo '" .. tostring(ammoId) .. "' does not exist." end
 
 
-	local rackAllow = ACE_GetGunValue(ammoId, "racks")
+	local rackAllow = ACE.GetGunValue(ammoId, "racks")
 
 	local rackAllowed = true
 	local allowType = type(rackAllow)
@@ -117,7 +117,7 @@ function ACE_CanLinkRack(rackId, ammoId, bdata, rack)
 	end
 
 
-	local canCaliber, calMsg = ACE_RackCanLoadCaliber(rackId, gun.caliber)
+	local canCaliber, calMsg = ACE.RackCanLoadCaliber(rackId, gun.caliber)
 	if not canCaliber then
 		return false, calMsg
 	end
@@ -134,12 +134,12 @@ end
 
 
 
-function ACE_GetCompatibleRacks(ammoId)
+function ACE.GetCompatibleRacks(ammoId)
 
 	local ret = {}
 
 	for rackId in pairs(ACE.Weapons.Racks) do
-		if ACE_CanLinkRack(rackId, ammoId) then
+		if ACE.CanLinkRack(rackId, ammoId) then
 			ret[#ret + 1] = rackId
 		end
 	end

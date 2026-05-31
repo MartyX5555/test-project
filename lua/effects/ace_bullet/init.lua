@@ -5,7 +5,7 @@ do
 
 
 	--This is a fully loaded bullet removal
-	function ACE_RemoveBulletClient( Bullet, Index )
+	function ACE.RemoveBulletClient( Bullet, Index )
 
 		if Bullet then
 
@@ -73,7 +73,7 @@ do
 				BulletData.Counter = 0
 			end
 
-			ACE_SimBulletFlight( BulletData, self.Index )
+		ACE.SimBulletFlight( BulletData, self.Index )
 			RemoveBulletEffect( self )
 
 		else
@@ -123,7 +123,7 @@ do
 			ACE.BulletEffect[self.Index] = BulletData
 			self.Alive = true
 
-			ACE_SimBulletFlight( BulletData, self.Index )
+		ACE.SimBulletFlight( BulletData, self.Index )
 
 		end
 
@@ -166,8 +166,8 @@ local function CanBulletCrack( Bullet )
 
 	if Bullet.IsMissile then return false end
 	if Bullet.CrackCreated then return false end
-	if ACE_SInDistance( Bullet.InitialPos, 750 ) then return false end
-	if not ACE_SInDistance( Bullet.SimPos, math.max(Bullet.Caliber * 100 * ACE.CrackDistanceMultipler,250) ) then return false end
+	if ACE.SInDistance( Bullet.InitialPos, 750 ) then return false end
+	if not ACE.SInDistance( Bullet.SimPos, math.max(Bullet.Caliber * 100 * ACE.CrackDistanceMultipler,250) ) then return false end
 	if Bullet.Impacted then return false end
 
 	local SqrtSpeed = (Bullet.SimPos - Bullet.SimPosLast):LengthSqr()
@@ -182,13 +182,13 @@ function EFFECT:ApplyMovement( Bullet, Index )
 	-- the bullet will never come back to the map.
 	local setPos = Bullet.SimPos
 	if (math.abs(setPos.x) > 16380) or (math.abs(setPos.y) > 16380) or (setPos.z < -16380) then
-		ACE_RemoveBulletClient( Bullet, Index )
+	ACE.RemoveBulletClient( Bullet, Index )
 		return
 	end
 
 	--We don't need small bullets to stay outside of skybox. This is meant for large calibers only.
 	if setPos.z > 16380 and Bullet.Caliber < 5 then
-		ACE_RemoveBulletClient( Bullet, Index )
+	ACE.RemoveBulletClient( Bullet, Index )
 		return
 	end
 
@@ -197,7 +197,7 @@ function EFFECT:ApplyMovement( Bullet, Index )
 
 	--sonic crack sound
 	if CanBulletCrack( Bullet ) then
-		ACE_SBulletCrack(Bullet, Bullet.Caliber)
+	ACE.SBulletCrack(Bullet, Bullet.Caliber)
 	end
 
 	if Bullet.Tracer and IsValid(Bullet.Tracer) then

@@ -61,7 +61,7 @@ function ENT:isLegal()
 	if self:GetPhysicsObject():GetMass() < 1000 then return false end
 	if not self:IsSolid() then return false end
 
-	local Base = ACE_GetPhysicalParent(self)
+	local Base = ACE.GetPhysicalParent(self)
 	self.IsLegal = Base:IsSolid()
 
 	return self.IsLegal

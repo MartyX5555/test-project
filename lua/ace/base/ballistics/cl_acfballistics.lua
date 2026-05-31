@@ -1,21 +1,21 @@
-
+local ACE = ACE
 ACE.BulletEffect = {}
 
-function ACE_ManageBulletEffects()
+function ACE.ManageBulletEffects()
 
 	if next(ACE.BulletEffect) then
 
 		for Index,Bullet in pairs(ACE.BulletEffect) do
-			ACE_SimBulletFlight( Bullet, Index )			--This is the bullet entry in the table, the omnipresent Index var refers to this
+		ACE.SimBulletFlight( Bullet, Index )			--This is the bullet entry in the table, the omnipresent Index var refers to this
 		end
 	end
 end
 hook.Remove( "Think", "ACE_ManageBulletEffects" )
-hook.Add("Think", "ACE_ManageBulletEffects", ACE_ManageBulletEffects)
+hook.Add("Think", "ACE_ManageBulletEffects", ACE.ManageBulletEffects)
 
 
 
-function ACE_SimBulletFlight( Bullet, Index )
+function ACE.SimBulletFlight( Bullet, Index )
 	if not Bullet or not Index then return end
 
 	Bullet.DeltaTime = CurTime() - Bullet.LastThink --intentionally not using cached curtime value

@@ -74,7 +74,7 @@ do
 	local Max = math.max
 	local ToNumber = tonumber
 	local function VerifyGearboxId(Id)
-		if not ACE_CheckGearbox( Id ) then
+		if not ACE.CheckGearbox( Id ) then
 			return "1Gear-T-S" --deal with it
 		end
 		return Id
@@ -234,7 +234,7 @@ do
 		Gearbox:SetNWString( "WireName", GearboxData.name )
 		Gearbox:UpdateOverlayText()
 
-		ACE_Activate( Gearbox, 0 )
+	ACE.Activate( Gearbox, 0 )
 
 		return Gearbox
 	end
@@ -338,7 +338,7 @@ function ENT:Update( _, Id, Data )
 	self:SetNWString( "WireName", GearboxData.name )
 	self:UpdateOverlayText()
 
-	ACE_Activate( self, 1 )
+ACE.Activate( self, 1 )
 
 	return true, "Gearbox updated successfully!"
 end
@@ -433,11 +433,11 @@ end
 function ENT:Think()
 
 	if ACE.CurTime > self.NextLegalCheck then
-		self.Legal, self.LegalIssues = ACE_CheckLegal(self, self.Model, math.Round(self.Mass,2), self.ModelInertia, true, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
+		self.Legal, self.LegalIssues = ACE.CheckLegal(self, self.Model, math.Round(self.Mass,2), self.ModelInertia, true, true) -- requiresweld overrides parentable, need to set it false for parent-only gearboxes
 		self.NextLegalCheck = ACE.Legal.NextCheck(self.legal)
 		self:UpdateOverlayText()
 
-		if self.Legal and self.Parentable then self.RootParent = ACE_GetPhysicalParent(self) end
+		if self.Legal and self.Parentable then self.RootParent = ACE.GetPhysicalParent(self) end
 	end
 
 	local Time = CurTime()
@@ -529,7 +529,7 @@ function ENT:Calc( InputRPM, InputInertia )
 	end
 
 	if self.Auto and self.Drive == 1 and self.InGear then
-		local Base = ACE_GetPhysicalParent( self )
+		local Base = ACE.GetPhysicalParent( self )
 		local PhysObj = Base:GetPhysicsObject()
 		local vel = PhysObj:GetVelocity():Length()
 		if vel > (self.ShiftPoints[self.Gear] * self.ShiftScale) and not (self.Gear == self.Gears) and not self.Hold then
@@ -589,7 +589,7 @@ function ENT:Calc( InputRPM, InputInertia )
 	end
 
 	--I would need to learn more about this, disabled atm
-	--self.Heat = ACE_HeatFromGearbox( self , InputRPM)
+	--self.Heat = ACE.HeatFromGearbox( self , InputRPM)
 	--Wire_TriggerOutput(self, "Heat", self.Heat)
 
 	return math.min( self.TotalReqTq, self.MaxTorque )
@@ -799,7 +799,7 @@ function ENT:Link( Target )
 
 	local Rope = nil
 	if ACE.GetEntityOwner(self):GetInfoNum( "ACE_MobilityRopeLinks", 1) == 1 then
-		Rope = ACE_CreateLinkRope( OutPosWorld, self, OutPos, Target, InPos )
+		Rope = ACE.CreateLinkRope( OutPosWorld, self, OutPos, Target, InPos )
 	end
 
 	local Phys	= Target:GetPhysicsObject()

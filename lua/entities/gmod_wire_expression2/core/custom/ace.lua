@@ -65,10 +65,10 @@ do
 		if not validPhysics(ent) then return false end
 		local entClass = ent:GetClass()
 	
-		return ACE_E2_LinkTables[entClass] ~= nil
+		return ACE.E2_LinkTables[entClass] ~= nil
 	end
 
-	ACE_E2_LinkTables = ACE_E2_LinkTables or
+ACE.E2_LinkTables = ACE.E2_LinkTables or
 	{ -- link resources within each ent type.  should point to an ent: true if adding link.Ent, false to add link itself
 		ace_engine		= {GearLink = true, FuelLink = false},
 		ace_gearbox		= {WheelLink = true, Master = false},
@@ -124,7 +124,7 @@ do
 
 		local class = this:GetClass()
 
-		if not ACE_E2_LinkTables[class] then
+		if not ACE.E2_LinkTables[class] then
 			return searchForGearboxLinks(this)
 		end
 
@@ -202,7 +202,7 @@ do
 	[nodiscard]
 	e2function number entity:aceHitClip(vector hitPos)
 		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot target this entity", 0) end
-		return ACE_CheckClips(this, hitPos) and 1 or 0
+		return ACE.CheckClips(this, hitPos) and 1 or 0
 	end
 
 	__e2setcost(2)
@@ -365,7 +365,7 @@ do
 		end
 
 		if notify > 0 then
-			ACE_SendNotify(self.player, success, msg)
+		ACE.SendNotify(self.player, success, msg)
 		end
 
 		return success and 1 or 0
@@ -396,7 +396,7 @@ do
 		end
 
 		if notify > 0 then
-			ACE_SendNotify(self.player, success, msg)
+		ACE.SendNotify(self.player, success, msg)
 		end
 
 		return success and 1 or 0
@@ -1163,7 +1163,7 @@ do
 	e2function number entity:acePenetration()
 		if not (isAmmo(this) or isGun(this)) then return self:throw("Entity is not a valid ACE ammo crate or gun", 0) end
 		if restrictInfo(self.player, this) then return 0 end
-		if not ACE_CheckRound(this.BulletData.Type) then return 0 end
+		if not ACE.CheckRound(this.BulletData.Type) then return 0 end
 
 		return ACE.RoundTypes[this.BulletData.Type].getDisplayData(this.BulletData).MaxPen or 0
 	end
@@ -1173,7 +1173,7 @@ do
 	e2function number entity:acePenetration(number index)
 		if not (isAmmo(this) or isGun(this)) then return self:throw("Entity is not a valid ACE ammo crate or gun", 0) end
 		if restrictInfo(self.player, this) then return 0 end
-		if not ACE_CheckRound(this.BulletData.Type) then return 0 end
+		if not ACE.CheckRound(this.BulletData.Type) then return 0 end
 
 		local displayData = ACE.RoundTypes[this.BulletData.Type].getDisplayData(this.BulletData)
 
@@ -1191,7 +1191,7 @@ do
 	e2function number entity:aceBlastRadius()
 		if not (isAmmo(this) or isGun(this)) then return self:throw("Entity is not a valid ACE ammo crate or gun", 0) end
 		if restrictInfo(self.player, this) then return 0 end
-		if not ACE_CheckRound(this.BulletData.Type) then return 0 end
+		if not ACE.CheckRound(this.BulletData.Type) then return 0 end
 
 		local type = this.BulletData.Type
 
@@ -1225,7 +1225,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACE or not this.ACE.Health then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return 0 end
 		end
@@ -1239,7 +1239,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACE or not this.ACE.Armour then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return 0 end
 		end
@@ -1253,7 +1253,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACE or not this.ACE.MaxHealth then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return 0 end
 		end
@@ -1267,7 +1267,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACE or not this.ACE.MaxArmour then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return 0 end
 		end
@@ -1281,7 +1281,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 		if not this.ACE then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return 0 end
 		end
@@ -1296,7 +1296,7 @@ do
 		if not (this and validPhysics(ent)) then return self:throw("Entity is not valid", 0) end
 		if restrictInfo(self.player, ent) then return 0 end
 		if not ent.ACE then
-			local check = ACE_Check(ent)
+			local check = ACE.Check(ent)
 
 			if not check then return 0 end
 		end
@@ -1311,7 +1311,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", "") end
 		if restrictInfo(self.player, this) then return "" end
 		if not this.ACE then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return "" end
 		end
@@ -1329,7 +1329,7 @@ do
 		if not validPhysics(this) then return self:throw("Entity is not valid", ret) end
 		if restrictInfo(self.player, this) then return ret end
 		if not this.ACE then
-			local check = ACE_Check(this)
+			local check = ACE.Check(this)
 
 			if not check then return ret end
 		end
