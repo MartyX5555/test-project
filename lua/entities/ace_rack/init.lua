@@ -766,7 +766,7 @@ function ENT:PreEntityCopy()
 	end
 	info.entities = entids
 	if info.entities then
-		duplicator.StoreEntityModifier( self, "ACEAmmoLink", info )
+		duplicator.StoreEntityModifier( self, "ACFAmmoLink", info )
 	end
 
 	--Wire dupe info
@@ -776,8 +776,8 @@ end
 
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 
-	if Ent.EntityMods and Ent.EntityMods.ACEAmmoLink and Ent.EntityMods.ACEAmmoLink.entities then
-		local AmmoLink = Ent.EntityMods.ACEAmmoLink
+	if Ent.EntityMods and Ent.EntityMods.ACFAmmoLink and Ent.EntityMods.ACFAmmoLink.entities then
+		local AmmoLink = Ent.EntityMods.ACFAmmoLink
 		if AmmoLink.entities and next(AmmoLink.entities) then
 			for _,AmmoID in pairs(AmmoLink.entities) do
 				local Ammo = CreatedEntities[ AmmoID ]
@@ -786,7 +786,7 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 				end
 			end
 		end
-		Ent.EntityMods.ACEAmmoLink = nil
+		Ent.EntityMods.ACFAmmoLink = nil
 	end
 
 	--Wire dupe info

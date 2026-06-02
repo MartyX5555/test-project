@@ -1066,6 +1066,7 @@ function ENT:MuzzleEffect()
 
 	if self.AutoSound and self.Sound ~= "" then
 		timer.Simple(0.6, function()
+			if not IsValid(self) then return end
 			self:EmitSound(self.AutoSound, 73, math.random(84, 86))
 		end )
 	end
@@ -1104,19 +1105,20 @@ function ENT:PreEntityCopy()
 	end
 	info.entities = entids
 	if info.entities then
-		duplicator.StoreEntityModifier( self, "ACEAmmoLink", info )
+		duplicator.StoreEntityModifier( self, "ACFAmmoLink", info )
 	end
 
 	--Wire dupe info
-	self.BaseClass.PreEntityCopy( self )
+	self.BaseClass.PreEntityCopy(self  )
 
 end
 
+
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 
-	if Ent.EntityMods and Ent.EntityMods.ACEAmmoLink and Ent.EntityMods.ACEAmmoLink.entities then
+	if Ent.EntityMods and Ent.EntityMods.ACFAmmoLink and Ent.EntityMods.ACFAmmoLink.entities then
 
-		local AmmoLink = Ent.EntityMods.ACEAmmoLink
+		local AmmoLink = Ent.EntityMods.ACFAmmoLink
 
 		if AmmoLink.entities and table.Count(AmmoLink.entities) > 0 then
 
@@ -1139,7 +1141,7 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 			end
 		end
 
-		Ent.EntityMods.ACEAmmoLink = nil
+		Ent.EntityMods.ACFAmmoLink = nil
 	end
 
 	--Wire dupe info
