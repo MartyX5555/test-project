@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("RAC", {
 	type = "Gun",
 	spread = 0.35,
 	name = "Rotary Autocannon",
-	desc = ACFTranslation.GunClasses[11],
+	desc = ACETranslation.GunClasses[11],
 	muzzleflash = "50cal_muzzleflash_noscale",
 	rofmod = 0.07,
 	year = 1962,

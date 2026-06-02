@@ -176,7 +176,7 @@ if CLIENT then
 		if success then
 			for _, enttable in pairs(dupe.Entities) do
 
-				-- Replaces any old ACF related class with a new one.
+				-- Replaces any old ACE related class with a new one.
 				if ACFToACEtbl[enttable.Class] then
 					enttable.Class = ACFToACEtbl[enttable.Class]
 				end
@@ -262,7 +262,7 @@ if CLIENT then
 		if not AdvDupe2 then
 			panel:Help( "Unable to use this tool. You need Advanced Duplicator 2 to be installed on the server.")
 			if game.IsDedicated() then
-				panel:Help("If unintended, ")
+				panel:Help("If unintended, please inform this error to the server administrator.")
 			end
 			return
 		end

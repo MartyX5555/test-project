@@ -58,7 +58,7 @@ do
 		Wire_TriggerOutput( self, "Entity", self )
 		Wire_TriggerOutput(self, "EngineHeat", self.Heat)
 
-		self.WireDebugName = "ACF Engine"
+		self.WireDebugName = "ACE Engine"
 
 	end
 
@@ -295,7 +295,7 @@ function ENT:TriggerInput( iname, value )
 					self.Sound:PlayEx(0.5,100)
 
 				end
-				self:ACFInit()
+				self:ACEInit()
 			end
 		elseif (value <= 0 and self.Active) then
 			self.Active = false
@@ -520,7 +520,7 @@ function ENT:CalcMassRatio()
 	end
 end
 ]]
-function ENT:ACFInit()
+function ENT:ACEInit()
 
 	self:CalcMassRatio()
 
@@ -1004,7 +1004,7 @@ do
 		if Ent.EntityMods and Ent.EntityMods.GearLink and Ent.EntityMods.GearLink.entities then
 			local GearLink = Ent.EntityMods.GearLink
 			if GearLink.entities and next(GearLink.entities) then
-				timer.Simple( 0, function() -- this timer is a workaround for an ad2/makespherical issue https://github.com/nrlulz/ACF/issues/14#issuecomment-22844064
+				timer.Simple( 0, function() -- this timer is a workaround for an ad2/makespherical issue https://github.com/nrlulz/ACE/issues/14#issuecomment-22844064
 					for _,ID in pairs(GearLink.entities) do
 						local Linked = CreatedEntities[ ID ]
 						if IsValid( Linked ) then

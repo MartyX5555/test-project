@@ -4,7 +4,7 @@ ACE.RegisterWeaponClass("FFAR", {
 	type			= "missile",
 	spread		= 1,
 	name			= "[FFAR] - Folding-Fin Aerial Rockets",
-	desc			= ACFTranslation.MissileClasses[7],
+	desc			= ACETranslation.MissileClasses[7],
 	muzzleflash	= "40mm_muzzleflash_noscale",
 	rofmod		= 1,
 	year = 1960,

@@ -1,5 +1,5 @@
 
--- Workaround to issue: https://github.com/Facepunch/garrysmod-issues/issues/4142. Brought from ACF3
+-- Workaround to issue: https://github.com/Facepunch/garrysmod-issues/issues/4142. Brought from ACE3
 -- WARNING: MASK_SHOT breaks the tracehull stability, leaving in traceline level.
 local Hull = util.TraceHull
 local Zero = Vector()

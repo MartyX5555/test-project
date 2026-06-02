@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("AC", {
 	type = "Gun",
 	spread = 0.14,
 	name = "Autocannon",
-	desc = ACFTranslation.GunClasses[2],
+	desc = ACETranslation.GunClasses[2],
 	muzzleflash = "30mm_muzzleflash_noscale",
 	rofmod = 0.35,
 	year = 1930,

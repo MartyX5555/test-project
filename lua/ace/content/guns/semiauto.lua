@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("SA", {
 	type = "Gun",
 	spread = 0.11,
 	name = "Semiautomatic Cannon",
-	desc = ACFTranslation.GunClasses[12],
+	desc = ACETranslation.GunClasses[12],
 	muzzleflash = "30mm_muzzleflash_noscale",
 	rofmod = 0.5,
 	year = 1935,

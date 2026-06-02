@@ -81,7 +81,7 @@ do
 	end)
 end
 
---Brought from the ACF3
+--Brought from the ACE3
 do -- AdvDupe2 duped parented ammo workaround
 	-- Duped parented scalable entities were uncapable of spawning on the correct position
 	-- That's why they're parented AFTER the dupe is done pasting
@@ -110,7 +110,7 @@ do -- AdvDupe2 duped parented ammo workaround
 		BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 	end
 
-	hook.Add("AdvDupe_FinishPasting", "ACF Parented Scalable Ent Fix", function(DupeInfo)
+	hook.Add("AdvDupe_FinishPasting", "ACE Parented Scalable Ent Fix", function(DupeInfo)
 		local Dupe	= unpack(DupeInfo, 1, 1)
 		local Player	= Dupe.Player
 		local CanParent = not IsValid(Player) or tobool(Player:GetInfo("advdupe2_paste_parents"))

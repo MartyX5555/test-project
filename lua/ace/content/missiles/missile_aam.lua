@@ -4,7 +4,7 @@ ACE.RegisterWeaponClass("AAM", {
 	type           = "missile",
 	spread         = 1,
 	name           = "[AAM] - Air-To-Air Missile",
-	desc           = ACFTranslation.MissileClasses[1],
+	desc           = ACETranslation.MissileClasses[1],
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	rofmod         = 1,
 	sound          = "acf_extra/airfx/rocket_fire2.wav",

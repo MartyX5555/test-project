@@ -72,24 +72,24 @@ local irst_base = {
 
 -- add gui stuff to base classes if this is client
 if CLIENT then
-	gun_base.guicreate           = function( _, Table ) ACFGunGUICreate( Table )		end or nil
+	gun_base.guicreate           = function( _, Table ) ACEGunGUICreate( Table )		end or nil
 	gun_base.guiupdate           = function() return end
 
-	engine_base.guicreate        = function( _, tbl ) ACE.EngineGUI_Update( tbl )		end or nil
+	engine_base.guicreate        = function( _, tbl ) ACEEngineGUI_Update( tbl )		end or nil
 
-	gearbox_base.guicreate       = function( _, tbl ) ACFGearboxGUICreate( tbl )		end or nil
+	gearbox_base.guicreate       = function( _, tbl ) ACEGearboxGUICreate( tbl )		end or nil
 	gearbox_base.guiupdate       = function() return end
 
-	fueltank_base.guicreate      = function( _, tbl ) ACFFuelTankGUICreate( tbl )		end or nil
-	fueltank_base.guiupdate      = function( _, tbl ) ACFFuelTankGUIUpdate( tbl )		end or nil
+	fueltank_base.guicreate      = function( _, tbl ) ACEFuelTankGUICreate( tbl )		end or nil
+	fueltank_base.guiupdate      = function( _, tbl ) ACEFuelTankGUIUpdate( tbl )		end or nil
 
-	radar_base.guicreate         = function( _, Table ) ACFRadarGUICreate( Table )	end
+	radar_base.guicreate         = function( _, Table ) ACERadarGUICreate( Table )	end
 	radar_base.guiupdate         = function() return end
 
-	trackradar_base.guicreate    = function( _, Table ) ACFTrackRadarGUICreate( Table )  end or nil
+	trackradar_base.guicreate    = function( _, Table ) ACETrackRadarGUICreate( Table )  end or nil
 	trackradar_base.guiupdate    = function() return end
 
-	irst_base.guicreate          = function( _, Table ) ACFIRSTGUICreate( Table )		end or nil
+	irst_base.guicreate          = function( _, Table ) ACEIRSTGUICreate( Table )		end or nil
 	irst_base.guiupdate          = function() return end
 end
 

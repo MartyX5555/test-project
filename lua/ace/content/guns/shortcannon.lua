@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("SC", {
 	type = "Gun",
 	spread = 0.20,
 	name = "Short-Barrel Cannon",
-	desc = ACFTranslation.GunClasses[13],
+	desc = ACETranslation.GunClasses[13],
 	muzzleflash = "120mm_muzzleflash_noscale",
 	rofmod = 1.3,
 	maxrof = 25, -- maximum rounds per minute

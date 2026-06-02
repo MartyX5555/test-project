@@ -6,9 +6,9 @@ TOOL.ConfigName		= ""
 
 TOOL.ClientConVar["pitch"] = "1"
 if CLIENT then
-	language.Add( "Tool.acesound.name", ACFTranslation.SoundToolText[1] )
-	language.Add( "Tool.acesound.desc", ACFTranslation.SoundToolText[2] )
-	language.Add( "Tool.acesound.0", ACFTranslation.SoundToolText[3] )
+	language.Add( "Tool.acesound.name", ACETranslation.SoundToolText[1] )
+	language.Add( "Tool.acesound.desc", ACETranslation.SoundToolText[2] )
+	language.Add( "Tool.acesound.0", ACETranslation.SoundToolText[3] )
 end
 
 if CLIENT then
@@ -21,9 +21,9 @@ if CLIENT then
 
 	}
 
-	language.Add( "Tool.acesound.name", ACFTranslation.SoundToolText[1] )
-	language.Add( "Tool.acesound.desc", ACFTranslation.SoundToolText[2] )
-	--language.Add( "Tool.acesound.0", ACFTranslation.SoundToolText[3] )
+	language.Add( "Tool.acesound.name", ACETranslation.SoundToolText[1] )
+	language.Add( "Tool.acesound.desc", ACETranslation.SoundToolText[2] )
+	--language.Add( "Tool.acesound.0", ACETranslation.SoundToolText[3] )
 
 	language.Add( "Tool.acesound.left", "Apply the new sound. You can use empty sounds too." )
 	language.Add( "Tool.acesound.right", "Copy the sound." )
@@ -179,9 +179,9 @@ local function IsReallyValid(trace, ply)
 	if not ACE.SoundToolSupport[class] then
 
 		if string.StartWith(class, "ace_") then
-		ACE.SendNotify( ply, false, class .. ACFTranslation.SoundToolText[4] )
+		ACE.SendNotify( ply, false, class .. ACETranslation.SoundToolText[4] )
 		else
-		ACE.SendNotify( ply, false, ACFTranslation.SoundToolText[5] )
+		ACE.SendNotify( ply, false, ACETranslation.SoundToolText[5] )
 		end
 
 		return false

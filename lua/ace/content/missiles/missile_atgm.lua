@@ -2,7 +2,7 @@ ACE.RegisterWeaponClass("ATGM", {
 	type			= "missile",
 	spread			= 1,
 	name			= "[ATGM] - Anti-Tank Guided Missile",
-	desc			= ACFTranslation.MissileClasses[4],
+	desc			= ACETranslation.MissileClasses[4],
 	muzzleflash		= "40mm_muzzleflash_noscale",
 	rofmod			= 1,
 	sound			= "acf_extra/airfx/rocket_fire2.wav",

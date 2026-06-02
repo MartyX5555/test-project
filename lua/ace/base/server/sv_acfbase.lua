@@ -28,7 +28,7 @@ function ACE.GetPhysicalParent( obj )
 	return Parent
 end
 
---Creates or updates the ACF entity data in a passive way. Meaning this entity wont be updated unless it really requires it (like a shot, damage, looking it using armor tool, etc)
+--Creates or updates the ACE entity data in a passive way. Meaning this entity wont be updated unless it really requires it (like a shot, damage, looking it using armor tool, etc)
 function ACE.Activate( Entity , Recalc )
 
 	--Density of steel = 7.8g cm3 so 7.8kg for a 1mx1m plate 1m thick

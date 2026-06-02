@@ -13,13 +13,13 @@ SWEP.AdminSpawnable			= true
 SWEP.Author					= "Lazermaniac"
 SWEP.Contact				= "lazermaniac@gmail.com"
 
-SWEP.Instructions			= ACFTranslation.ACFCuttingTorch[3]
+SWEP.Instructions			= ACETranslation.ACECuttingTorch[3]
 
 SWEP.Primary.Ammo			= "none"
 SWEP.Primary.Automatic		= true
 SWEP.Primary.ClipSize		= -1
 SWEP.Primary.DefaultClip	= -1
-SWEP.Purpose				= ACFTranslation.ACFCuttingTorch[2]
+SWEP.Purpose				= ACETranslation.ACECuttingTorch[2]
 SWEP.Secondary.Ammo			= "none"
 SWEP.Secondary.Automatic	= true
 SWEP.Secondary.ClipSize		= -1
@@ -30,7 +30,7 @@ SWEP.ViewModelFOV			= 55
 SWEP.ViewModel				= "models/weapons/v_cuttingtorch.mdl"
 SWEP.WorldModel				= "models/weapons/w_cuttingtorch.mdl"
 
-SWEP.PrintName			= ACFTranslation.ACFCuttingTorch[1]
+SWEP.PrintName			= ACETranslation.ACECuttingTorch[1]
 SWEP.Slot				= 0
 SWEP.SlotPos			= 6
 SWEP.IconLetter			= "G"

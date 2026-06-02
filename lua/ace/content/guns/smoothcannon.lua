@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("SBC", {
 	type = "Gun",
 	spread = 0.095,
 	name = "Smooth-Bore Cannon",
-	desc = ACFTranslation.GunClasses[15],
+	desc = ACETranslation.GunClasses[15],
 	muzzleflash = "120mm_muzzleflash_noscale",
 	rofmod = 1.7,
 	maxrof = 20, -- maximum rounds per minute

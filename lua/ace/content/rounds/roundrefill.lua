@@ -2,9 +2,9 @@
 local Round = {}
 
 Round.type = "Ammo" --Tells the spawn menu what entity to spawn
-Round.name = "[Supply] - " .. ACFTranslation.ShellRef[1] --Human readable name
+Round.name = "[Supply] - " .. ACETranslation.ShellRef[1] --Human readable name
 Round.model = "models/munitions/round_100mm_shot.mdl" --Shell flight model
-Round.desc = ACFTranslation.ShellRef[2]
+Round.desc = ACETranslation.ShellRef[2]
 
 Round.Type  = "Refill"
 
@@ -55,7 +55,7 @@ end
 function Round.guicreate( Panel, Table )
 
 	acemenupanel:AmmoSelect()
-	acemenupanel:CPanelText("Desc", ACFTranslation.ShellRef[2])	--Description (Name, Desc)
+	acemenupanel:CPanelText("Desc", ACETranslation.ShellRef[2])	--Description (Name, Desc)
 	Round.guiupdate( Panel, Table )
 
 end

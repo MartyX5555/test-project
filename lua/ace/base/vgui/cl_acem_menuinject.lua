@@ -37,7 +37,7 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 				if guidance and guidance.desc then
 					acemenupanel:CPanelText("GuidanceDesc", guidance.desc .. "\n")
 
-					local configPanel = ACFMissiles_CreateMenuConfiguration(guidance, self, "Guidance", self.ConfigPanel, gun)
+					local configPanel = ACEMissiles_CreateMenuConfiguration(guidance, self, "Guidance", self.ConfigPanel, gun)
 					self.ConfigPanel = configPanel
 				else
 					acemenupanel:CPanelText("GuidanceDesc", "Missiles and bombs can be given a guidance package to steer them during flight.\n")
@@ -85,13 +85,13 @@ function SetMissileGUIEnabled(_, enabled, gundata)
 				if fuse and fuse.desc then
 					acemenupanel:CPanelText("FuseDesc", fuse.desc .. "\n")
 
-					local configPanel = ACFMissiles_CreateMenuConfiguration(fuse, self, "Fuse", self.ConfigPanel, gun)
+					local configPanel = ACEMissiles_CreateMenuConfiguration(fuse, self, "Fuse", self.ConfigPanel, gun)
 					self.ConfigPanel = configPanel
 				else
 					acemenupanel:CPanelText("FuseDesc", "Missiles and bombs can be given a fuse to control when they detonate.\n")
 				end
 
-				ACFMissiles_SetCommand(FuseSelect, FuseSelect.ControlGroup, "Fuse")
+				ACEMissiles_SetCommand(FuseSelect, FuseSelect.ControlGroup, "Fuse")
 			end
 
 			acemenupanel.CustomDisplay:AddItem( FuseSelect )
@@ -235,7 +235,7 @@ end
 
 
 
-function ModifyACFMenu(panel)
+function ModifyACEMenu(panel)
 
 	oldAmmoSelect = oldAmmoSelect or panel.AmmoSelect
 
@@ -291,7 +291,7 @@ function ModifyACFMenu(panel)
 				for _, gun in pairs(gunNodes) do
 					local class = gunClasses[gun.mytable.gunclass]
 
-					if (class and class.type == "missile") and not gun.ACFMOverridden then
+					if (class and class.type == "missile") and not gun.ACEMOverridden then
 						local oldclick = gun.DoClick
 
 						gun.DoClick = function(self)
@@ -299,7 +299,7 @@ function ModifyACFMenu(panel)
 							CreateRackSelectGUI(self)
 						end
 
-						gun.ACFMOverridden = true
+						gun.ACEMOverridden = true
 					end
 				end
 			else
@@ -307,12 +307,12 @@ function ModifyACFMenu(panel)
 			end
 		end
 	else
-		ErrorNoHalt("ACEM: Unable to find the ACF Guns node.")
+		ErrorNoHalt("ACEM: Unable to find the ACE Guns node.")
 	end
 
 end
 
 hook.Add("ACE_PostMenuLoad", "ACE_MissileModifications", function()
 	if not acemenupanel then ErrorNoHalt("ACE Menu didnt initialize properly. This should not happen!!!") return end
-	ModifyACFMenu(acemenupanel)
+	ModifyACEMenu(acemenupanel)
 end)

@@ -129,7 +129,7 @@ do
 	end
 end
 
-hook.Add( "InitPostEntity", "ACFMissiles_DupeDeny", function()
+hook.Add( "InitPostEntity", "ACE_Missiles_DupeDeny", function()
 	-- Need to ensure this is called after InitPostEntity because Adv. Dupe 2 resets its whitelist upon this event.
 	timer.Simple(1, function()
 		duplicator.Deny("ace_missile")
@@ -137,7 +137,7 @@ hook.Add( "InitPostEntity", "ACFMissiles_DupeDeny", function()
 	end)
 end )
 
-hook.Add( "InitPostEntity", "ACFMissiles_AddLinkable", function()
+hook.Add( "InitPostEntity", "ACE_Missiles_AddLinkable", function()
 	-- Need to ensure this is called after InitPostEntity because Adv. Dupe 2 resets its whitelist upon this event.
 	timer.Simple(1, function()
 		if ACE.E2_LinkTables and istable(ACE.E2_LinkTables) then

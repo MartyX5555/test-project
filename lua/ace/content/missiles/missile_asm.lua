@@ -4,7 +4,7 @@ ACE.RegisterWeaponClass("ASM", {
 	type           = "missile",
 	spread         = 1,
 	name           = "[ASM] - Air-To-Surface Missile",
-	desc           = ACFTranslation.MissileClasses[3],
+	desc           = ACETranslation.MissileClasses[3],
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	year           = 1969,
 	rofmod         = 1,

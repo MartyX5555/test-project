@@ -4,7 +4,7 @@ ACE.RegisterWeaponClass("ARTY", {
 	type           = "missile",
 	spread         = 1,
 	name           = "[ARTY] - Artillery Rockets",
-	desc           = ACFTranslation.MissileClasses[2],
+	desc           = ACETranslation.MissileClasses[2],
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	rofmod         = 1,
 	sound          = "acf_extra/airfx/rocket_fire2.wav",

@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("GBU", {
 	type			= "missile",  -- i know i know
 	spread		= 1,
 	name			= "[GBU] - Guided Bomb Unit",
-	desc			= ACFTranslation.MissileClasses[6],
+	desc			= ACETranslation.MissileClasses[6],
 	muzzleflash	= "40mm_muzzleflash_noscale",
 	rofmod		= 0.1,
 	year = 1967,

@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("BOMB", {
 	type           = "missile",  -- i know i know
 	spread         = 1,
 	name           = "[Bomb] - General Purpose Bomb",
-	desc           = ACFTranslation.MissileClasses[5],
+	desc           = ACETranslation.MissileClasses[5],
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	rofmod         = 0.1,
 	year           = 1915,
@@ -193,7 +193,7 @@ ACE.RegisterWeapon("500kgBOMB", {						-- id
 
 ACE.RegisterWeapon("1000kgBOMB", {					-- id
 	name             = "1000kg Free Falling Bomb",
-	desc             = "A 2000lb bomb. As close to a nuke as you can get in ACF, this munition will turn everything it touches to ashes. Handle with care.",
+	desc             = "A 2000lb bomb. As close to a nuke as you can get in ACE, this munition will turn everything it touches to ashes. Handle with care.",
 	model            = "models/bombs/an_m66.mdl",
 	gunclass         = "BOMB",
 	rack             = "1xRK",					-- Which rack to spawn this missile on?

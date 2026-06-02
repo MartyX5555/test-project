@@ -145,10 +145,10 @@ end
 list.Set( "ACECvars", "ace_radar", {"id"} )
 duplicator.RegisterEntityClass("ace_radar", MakeACE_MissileRadar, "Pos", "Angle", "Id" )
 
-function ENT:CreateRadar(ACFName, ConeDegs)
+function ENT:CreateRadar(ACEName, ConeDegs)
 
 	self.ConeDegs = ConeDegs
-	self.ACEName = ACFName
+	self.ACEName = ACEName
 
 	self:RefreshClientInfo()
 

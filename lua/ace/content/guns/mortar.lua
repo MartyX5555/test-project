@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("MO", {
 	type = "Gun",
 	spread = 0.7,
 	name = "Mortar",
-	desc = ACFTranslation.GunClasses[10],
+	desc = ACETranslation.GunClasses[10],
 	muzzleflash = "40mm_muzzleflash_noscale",
 	rofmod = 2,
 	maxrof = 35, -- maximum rounds per minute

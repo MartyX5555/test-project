@@ -886,7 +886,7 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 	if Ent.EntityMods and Ent.EntityMods.WheelLink and Ent.EntityMods.WheelLink.entities then
 		local WheelLink = Ent.EntityMods.WheelLink
 		if WheelLink.entities and next( WheelLink.entities ) then
-			timer.Simple( 0, function() -- this timer is a workaround for an ad2/makespherical issue https://github.com/nrlulz/ACF/issues/14#issuecomment-22844064
+			timer.Simple( 0, function() -- this timer is a workaround for an ad2/makespherical issue https://github.com/nrlulz/ACE/issues/14#issuecomment-22844064
 				for _, ID in pairs( WheelLink.entities ) do
 					local Linked = CreatedEntities[ ID ]
 					if IsValid( Linked ) then

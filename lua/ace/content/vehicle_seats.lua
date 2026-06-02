@@ -1,10 +1,10 @@
 
-local Category = "Armoured Combat Framework" -- If ACF3 or ACE, the vehicles should be in the same category
+local Category = "Armoured Combat Framework" -- If ACE3 or ACE, the vehicles should be in the same category
 
--- There is ACF or ACF3 installed
-if not ACF then
+-- There is ACE or ACE3 installed
+if not ACE then
 
-	local function HandleACFPodAnimation( _, player )
+	local function HandleACEPodAnimation( _, player )
 		return player:LookupSequence("drive_pd")
 	end
 
@@ -21,7 +21,7 @@ if not ACF then
 			limitview		=	"0"
 		},
 		Members = {
-			HandleAnimation = HandleACFPodAnimation
+			HandleAnimation = HandleACEPodAnimation
 		}
 	} )
 

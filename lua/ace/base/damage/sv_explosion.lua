@@ -44,7 +44,7 @@ end
 		NoOcc	- table with entities to ignore
 		Gun		- gun entity from which round is fired
 	Purpose:
-		Handles ACF explosions
+		Handles ACE explosions
 ------------------------------------------------------------------------------]]
 
 local PI = math.pi

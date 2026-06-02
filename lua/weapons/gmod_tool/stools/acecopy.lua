@@ -74,8 +74,8 @@ TOOL.GetEntityData = {
 
 if CLIENT then
 
-	language.Add( "Tool.acecopy.listname", ACFTranslation.CopyToolText[1] )
-	language.Add( "Tool.acecopy.name", ACFTranslation.CopyToolText[2] )
+	language.Add( "Tool.acecopy.listname", ACETranslation.CopyToolText[1] )
+	language.Add( "Tool.acecopy.name", ACETranslation.CopyToolText[2] )
 	language.Add( "Tool.acecopy.desc", "Copy, update and create ACE compatible entities." )
 	language.Add( "Tool.acecopy.left", "Create/Update an ACE Entity" )
 	language.Add( "Tool.acecopy.right", "Copy an ACE entity" )
@@ -125,7 +125,7 @@ function TOOL:LeftClick( trace )
 
 			-- Using the Duplicator entity register to find the right factory function
 			local NewEnt = DupeClass.Func( ply, Pos, Ang, EntityData.Id, EntityData ) --aka function like MakeACE_Ammo
-			if not IsValid(NewEnt) then ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
+			if not IsValid(NewEnt) then ACE.SendNotify(ply, false, ACETranslation.ACEMenuTool[15]) return false end
 
 			local TruePos = NewEnt:LocalToWorld(Vector(0,0,-NewEnt:OBBMins().z + 1))
 			NewEnt:SetPos(TruePos)
@@ -144,7 +144,7 @@ function TOOL:LeftClick( trace )
 				undo.SetPlayer( ply )
 			undo.Finish()
 		else
-		ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
+		ACE.SendNotify(ply, false, ACETranslation.ACEMenuTool[16])
 			return false
 		end
 	end

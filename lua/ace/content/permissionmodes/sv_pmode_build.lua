@@ -1,12 +1,12 @@
 --[[
-	ACF Permission mode: Build
+	ACE Permission mode: Build
 		This mode blocks all damage to entities without the owner's permission.
 		Owners can permit damage from specific players.
 		Players and NPCs remain vulnerable to damage.  This is what admin mods are for.
 		This mode requires a CPPI-compatible prop-protector to function properly.
 ]]
 
-if not ACE or not ACE.Permissions or not ACE.Permissions.RegisterMode then error("ACF: Tried to load the " .. modename .. " permission-mode before the permission-core has loaded!") end
+if not ACE or not ACE.Permissions or not ACE.Permissions.RegisterMode then error("ACE: Tried to load the " .. modename .. " permission-mode before the permission-core has loaded!") end
 local perms = ACE.Permissions
 
 
@@ -14,18 +14,18 @@ local perms = ACE.Permissions
 local modename = "build"
 
 -- a short description of what the mode does
-local modedescription = "Disables all ACF damage unless the owner permits it. PvP is allowed."
+local modedescription = "Disables all ACE damage unless the owner permits it. PvP is allowed."
 
 -- if the attacker or victim can't be identified, what should we do?  true allows damage, false blocks it.
 local DefaultPermission = false
 
 
 --[[
-	Defines the behaviour of ACF damage protection under this protection mode.
-	This function is called every time an entity can be affected by potential ACF damage.
+	Defines the behaviour of ACE damage protection under this protection mode.
+	This function is called every time an entity can be affected by potential ACE damage.
 	Args;
 		owner		Player:	The owner of the potentially-damaged entity
-		attacker	Player:	The initiator of the ACF damage event
+		attacker	Player:	The initiator of the ACE damage event
 		ent			Entity:	The entity which may be damaged.
 	Return: boolean
 		true if the entity should be damaged, false if the entity should be protected from the damage.
@@ -38,7 +38,7 @@ local function modepermission(owner, attacker, ent)
 	end
 
 	if not (owner.SteamID or attacker.SteamID) then
-		--print("ACF ERROR: owner or attacker is not a player!", tostring(owner), tostring(attacker), "\n", debug.traceback())
+		--print("ACE ERROR: owner or attacker is not a player!", tostring(owner), tostring(attacker), "\n", debug.traceback())
 		if DefaultPermission then return
 		else return DefaultPermission end
 	end

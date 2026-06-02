@@ -4,7 +4,7 @@ ACE.RegisterWeaponClass("UAR", {
 	type			= "missile",
 	spread		= 0.2,
 	name			= "[ASR] - Unguided Aerial Rockets",
-	desc			= ACFTranslation.MissileClasses[9],
+	desc			= ACETranslation.MissileClasses[9],
 	muzzleflash	= "40mm_muzzleflash_noscale",
 	rofmod		= 0.5,
 	year = 1933,

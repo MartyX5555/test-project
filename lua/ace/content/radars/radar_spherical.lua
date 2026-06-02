@@ -2,7 +2,7 @@
 ACE.RegisterRadarClass("OMNI-AM", {
 	name = "Spherical Anti-missile Radar",
 	type = "Anti-missile",
-	desc = ACFTranslation.Radar[5],
+	desc = ACETranslation.Radar[5],
 } )
 
 
@@ -11,7 +11,7 @@ ACE.RegisterRadarClass("OMNI-AM", {
 ACE.RegisterRadar("SmallOMNI-AM", {
 	name		= "Small Spherical Anti-Missile Radar",
 	ent			= "ace_radar",
-	desc		= ACFTranslation.Radar[6],
+	desc		= ACETranslation.Radar[6],
 	model		= "models/radar/radar_sp_sml.mdl",
 	class		= "OMNI-AM",
 	weight		= 300,
@@ -22,7 +22,7 @@ ACE.RegisterRadar("SmallOMNI-AM", {
 ACE.RegisterRadar("MediumOMNI-AM", {
 	name		= "Medium Spherical Anti-Missile Radar",
 	ent			= "ace_radar",
-	desc		= ACFTranslation.Radar[7],
+	desc		= ACETranslation.Radar[7],
 	model		= "models/radar/radar_sp_mid.mdl", -- medium one is for now scalled big one - will be changed
 	class		= "OMNI-AM",
 	weight		= 600,
@@ -33,7 +33,7 @@ ACE.RegisterRadar("MediumOMNI-AM", {
 ACE.RegisterRadar("LargeOMNI-AM", {
 	name		= "Large Spherical Anti-Missile Radar",
 	ent			= "ace_radar",
-	desc		= ACFTranslation.Radar[8],
+	desc		= ACETranslation.Radar[8],
 	model		= "models/radar/radar_sp_big.mdl",
 	class		= "OMNI-AM",
 	weight		= 1200,

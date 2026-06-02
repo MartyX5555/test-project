@@ -1,6 +1,3 @@
---Every funciton will return Heat. The only difference is how the Heat is created from
---VERY IMPORTANT: If ACF3 changed some of their functions/value names, then it would be required to check this code below too.
-
 -----------------------------------[ HEAT PARAMETERS ]-----------------------------------
 
 
@@ -116,7 +113,7 @@ function ACE.HeatFromEngine( Engine )
 			Heat = RPM / 60000
 			ExTemp = 5
 
-		--completely messy code, i hate it. ACF3 will cover this better
+		--completely messy code, i hate it.
 		elseif Engine.FuelType == "Multifuel" then
 			--print("MultiFuel Category")
 

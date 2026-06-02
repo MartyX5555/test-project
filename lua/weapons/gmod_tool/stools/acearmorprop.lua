@@ -41,9 +41,9 @@ end
 
 if CLIENT then
 
-	language.Add( "tool.acearmorprop.name", ACFTranslation.ArmorPropertiesText[1] )
-	language.Add( "tool.acearmorprop.desc", ACFTranslation.ArmorPropertiesText[2] )
-	language.Add( "tool.acearmorprop.0", ACFTranslation.ArmorPropertiesText[3] )
+	language.Add( "tool.acearmorprop.name", ACETranslation.ArmorPropertiesText[1] )
+	language.Add( "tool.acearmorprop.desc", ACETranslation.ArmorPropertiesText[2] )
+	language.Add( "tool.acearmorprop.0", ACETranslation.ArmorPropertiesText[3] )
 
 	surface.CreateFont( "Torchfont", { size = 40, weight = 1000, font = "arial" } )
 
@@ -137,11 +137,11 @@ if CLIENT then
 
 		panel:AddItem( Presets )
 
-		panel:NumSlider( ACFTranslation.ArmorPropertiesText[4], "acearmorprop_thickness", 1, 5000 )
-		panel:ControlHelp( ACFTranslation.ArmorPropertiesText[5] )
+		panel:NumSlider( ACETranslation.ArmorPropertiesText[4], "acearmorprop_thickness", 1, 5000 )
+		panel:ControlHelp( ACETranslation.ArmorPropertiesText[5] )
 
-		panel:NumSlider( ACFTranslation.ArmorPropertiesText[6], "acearmorprop_ductility", -80, 80 )
-		panel:ControlHelp( ACFTranslation.ArmorPropertiesText[7] )
+		panel:NumSlider( ACETranslation.ArmorPropertiesText[6], "acearmorprop_ductility", -80, 80 )
+		panel:ControlHelp( ACETranslation.ArmorPropertiesText[7] )
 
 		MaterialTable(panel)
 
@@ -459,15 +459,15 @@ function TOOL:DrawHUD()
 	mass = math.min( mass, 50000 )
 
 	local text = ""
-	text = text .. ACFTranslation.ArmorPropertiesText[14] .. math.Round( curmass, 2 )
-	text = text .. ACFTranslation.ArmorPropertiesText[15] .. math.Round( curarmor, 2 )
-	text = text .. ACFTranslation.ArmorPropertiesText[16] .. math.Round( curhealth, 2 )
-	text = text .. ACFTranslation.ArmorPropertiesText[17] .. material
+	text = text .. ACETranslation.ArmorPropertiesText[14] .. math.Round( curmass, 2 )
+	text = text .. ACETranslation.ArmorPropertiesText[15] .. math.Round( curarmor, 2 )
+	text = text .. ACETranslation.ArmorPropertiesText[16] .. math.Round( curhealth, 2 )
+	text = text .. ACETranslation.ArmorPropertiesText[17] .. material
 
-	text = text .. ACFTranslation.ArmorPropertiesText[18] .. math.Round( mass, 2 )
-	text = text .. ACFTranslation.ArmorPropertiesText[15] .. math.Round( armor, 2 )
-	text = text .. ACFTranslation.ArmorPropertiesText[16] .. math.Round( health, 2 )
-	text = text .. ACFTranslation.ArmorPropertiesText[17] .. MatData.sname
+	text = text .. ACETranslation.ArmorPropertiesText[18] .. math.Round( mass, 2 )
+	text = text .. ACETranslation.ArmorPropertiesText[15] .. math.Round( armor, 2 )
+	text = text .. ACETranslation.ArmorPropertiesText[16] .. math.Round( health, 2 )
+	text = text .. ACETranslation.ArmorPropertiesText[17] .. MatData.sname
 
 	local pos = ent:WorldSpaceCenter()
 	AddWorldTip( nil, text, nil, pos, nil )
@@ -495,7 +495,7 @@ function TOOL:DrawToolScreen()
 		surface.SetFont( "Torchfont" )
 
 		-- header
-		draw.SimpleTextOutlined( ACFTranslation.ArmorPropertiesText[19], "Torchfont", 128, 30, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
+		draw.SimpleTextOutlined( ACETranslation.ArmorPropertiesText[19], "Torchfont", 128, 30, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
 
 		-- armor bar
 		draw.RoundedBox( 6, 10, 83, 236, 64, Color( 200, 200, 200, 255 ) )
@@ -503,7 +503,7 @@ function TOOL:DrawToolScreen()
 			draw.RoundedBox( 6, 15, 88, Armour / MaxArmour * 226, 54, Color( 0, 0, 200, 255 ) )
 		end
 
-		draw.SimpleTextOutlined( ACFTranslation.ArmorPropertiesText[20], "Torchfont", 128, 100, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
+		draw.SimpleTextOutlined( ACETranslation.ArmorPropertiesText[20], "Torchfont", 128, 100, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
 		draw.SimpleTextOutlined( ArmourTxt, "Torchfont", 128, 130, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
 
 		-- health bar
@@ -512,7 +512,7 @@ function TOOL:DrawToolScreen()
 			draw.RoundedBox( 6, 15, 188, Health / MaxHealth * 226, 54, Color( 200, 0, 0, 255 ) )
 		end
 
-		draw.SimpleTextOutlined( ACFTranslation.ArmorPropertiesText[21], "Torchfont", 128, 200, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
+		draw.SimpleTextOutlined( ACETranslation.ArmorPropertiesText[21], "Torchfont", 128, 200, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
 		draw.SimpleTextOutlined( HealthTxt, "Torchfont", 128, 230, Color( 224, 224, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 4, color_black )
 	cam.End2D()
 

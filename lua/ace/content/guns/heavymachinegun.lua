@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("HMG", {
 	type = "Gun",
 	spread = 0.4,
 	name = "Heavy Machinegun",
-	desc = ACFTranslation.GunClasses[7],
+	desc = ACETranslation.GunClasses[7],
 	muzzleflash = "50cal_muzzleflash_noscale",
 	rofmod = 0.17,
 	year = 1935,

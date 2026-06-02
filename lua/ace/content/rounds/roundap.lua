@@ -5,9 +5,9 @@ ACE.AmmoBlacklist.AP =  { "MO", "RM", "SL", "GL", "BOMB" , "GBU", "ASM", "AAM", 
 local Round   = {}
 
 Round.type    = "Ammo"									-- Tells the spawn menu what entity to spawn
-Round.name    = "[AP] - " .. ACFTranslation.ShellAP[1]	-- Human readable name
+Round.name    = "[AP] - " .. ACETranslation.ShellAP[1]	-- Human readable name
 Round.model   = "models/munitions/round_100mm_shot.mdl"	-- Shell flight model
-Round.desc    = ACFTranslation.ShellAP[2]				-- Ammo description
+Round.desc    = ACETranslation.ShellAP[2]				-- Ammo description
 Round.netid   = 1										-- Unique ID for this ammo
 
 Round.Type  = "AP"

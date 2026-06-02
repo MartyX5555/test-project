@@ -42,11 +42,11 @@ do
 			local Scale = Vector(X,Y,Z)
 			acemenupanel.FuelTankData["Id"] = Scale
 			ACE.MenuSendValue( "Data", "Dimensions", Scale )
-			ACFFuelTankGUIUpdate()
+			ACEFuelTankGUIUpdate()
 		end
 	end
 
-	function ACFFuelTankGUICreate( Table )
+	function ACEFuelTankGUICreate( Table )
 		if not acemenupanel.CustomDisplay then return end
 
 		local MainPanel = acemenupanel.CustomDisplay
@@ -88,7 +88,7 @@ do
 			function FuelTypeComboList:OnSelect( _, data)
 				ACE.MenuSendValue( "Data", "FuelType", data )
 				acemenupanel.FuelTankData.FuelID = data
-				ACFFuelTankGUIUpdate( Table )
+				ACEFuelTankGUIUpdate( Table )
 			end
 
 			FuelTypeComboList:SetText(acemenupanel.FuelTankData.FuelID)
@@ -161,7 +161,7 @@ do
 			ShapeComboList.OnSelect = function( _, _, data )
 				acemenupanel.FuelPanelConfig["Crate_Shape"] = data
 				ACE.MenuSendValue("Data", "Shape", data)
-				ACFFuelTankGUIUpdate( Table )
+				ACEFuelTankGUIUpdate( Table )
 			end
 
 			ShapeComboList:SetText(acemenupanel.FuelPanelConfig["Crate_Shape"])
@@ -234,7 +234,7 @@ do
 					ACE.MenuDeleteValue("Data", "Shape")
 
 					ACE.MenuSendValue( "Data", "SizeId", acemenupanel.FuelTankData.IdLegacy )
-					ACFFuelTankGUIUpdate( Table )
+					ACEFuelTankGUIUpdate( Table )
 				else
 					ACE.MenuDeleteValue("Data", "SizeId")
 					ACE.MenuSendValue("Data", "Shape",acemenupanel.FuelPanelConfig["Crate_Shape"])
@@ -254,7 +254,7 @@ do
 			function FuelTankComboList:OnSelect( _, data)
 				acemenupanel.FuelTankData.IdLegacy = data
 				ACE.MenuSendValue( "Data", "SizeId", acemenupanel.FuelTankData.IdLegacy )
-				ACFFuelTankGUIUpdate( Table )
+				ACEFuelTankGUIUpdate( Table )
 
 				if acemenupanel.CData.DisplayModel then
 
@@ -292,13 +292,13 @@ do
 			ACE.MenuSendValue( "Data", "SizeId", acemenupanel.FuelTankData.IdLegacy )
 		end
 
-		ACFFuelTankGUIUpdate( Table )
+		ACEFuelTankGUIUpdate( Table )
 
 		MainPanel:PerformLayout()
 
 	end
 
-	function ACFFuelTankGUIUpdate( _ )
+	function ACEFuelTankGUIUpdate( _ )
 
 		if not acemenupanel.CustomDisplay then return end
 

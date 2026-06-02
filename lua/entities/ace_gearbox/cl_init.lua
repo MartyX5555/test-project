@@ -19,7 +19,7 @@ function ENT:Draw()
 
 end
 
-function ACFGearboxGUICreate( Table )
+function ACEGearboxGUICreate( Table )
 
 	--automatic related stuff. This is the shift point, value used to shift gears.
 	if not acemenupanel.Serialize then

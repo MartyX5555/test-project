@@ -2,7 +2,7 @@
 ACE.RegisterRadarClass("DIR-AM", {
 	name = "Directional Anti-missile Radar",
 	type = "Anti-missile",
-	desc = ACFTranslation.Radar[1],
+	desc = ACETranslation.Radar[1],
 } )
 
 
@@ -11,7 +11,7 @@ ACE.RegisterRadarClass("DIR-AM", {
 ACE.RegisterRadar("SmallDIR-AM", {
 	name		= "Small Directional Anti-Missile Radar",
 	ent			= "ace_radar",
-	desc		= ACFTranslation.Radar[2],
+	desc		= ACETranslation.Radar[2],
 	model		= "models/radar/radar_sml.mdl",
 	class		= "DIR-AM",
 	weight		= 200,
@@ -22,7 +22,7 @@ ACE.RegisterRadar("SmallDIR-AM", {
 ACE.RegisterRadar("MediumDIR-AM", {
 	name		= "Medium Directional Anti-Missile Radar",
 	ent			= "ace_radar",
-	desc		= ACFTranslation.Radar[3],
+	desc		= ACETranslation.Radar[3],
 	model		= "models/radar/radar_mid.mdl", -- medium one is for now scalled big one - will be changed
 	class		= "DIR-AM",
 	weight		= 400,
@@ -33,7 +33,7 @@ ACE.RegisterRadar("MediumDIR-AM", {
 ACE.RegisterRadar("LargeDIR-AM", {
 	name		= "Large Directional Anti-Missile Radar",
 	ent			= "ace_radar",
-	desc		= ACFTranslation.Radar[4],
+	desc		= ACETranslation.Radar[4],
 	model		= "models/radar/radar_big.mdl",
 	class		= "DIR-AM",
 	weight		= 600,

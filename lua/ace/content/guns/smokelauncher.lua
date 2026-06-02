@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("SL", {
 	type		= "Gun",
 	spread		= 0.15,
 	name		= "Smoke Launcher",
-	desc		= ACFTranslation.GunClasses[14],
+	desc		= ACETranslation.GunClasses[14],
 	muzzleflash = "40mm_muzzleflash_noscale",
 	rofmod		= 45,
 	year		= 1941,

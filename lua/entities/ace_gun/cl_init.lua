@@ -71,7 +71,7 @@ function ENT:Animate( _, ReloadTime, LoadOnly )
 
 end
 
-function ACFGunGUICreate( Table )
+function ACEGunGUICreate( Table )
 
 	if not (ACE and next(ACE.Classes) and next(ACE.Classes.GunClass) and Table) then
 		acemenupanel:CPanelText("Error1", "There was an error trying to gather the information for this gun", "DermaDefaultBold")

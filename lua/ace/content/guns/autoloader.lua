@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("AL", {
 	type = "Gun",
 	spread = 0.1,
 	name = "Autoloader",
-	desc = ACFTranslation.GunClasses[3],
+	desc = ACETranslation.GunClasses[3],
 	muzzleflash = "120mm_muzzleflash_noscale",
 	rofmod = 0.64,
 	year = 1946,

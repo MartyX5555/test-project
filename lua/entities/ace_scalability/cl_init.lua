@@ -11,7 +11,7 @@ function ENT:Initialize()
 	end
 end
 
---Brought from ACF3. Fixes the physgun grabbing beam glitch
+--Brought from ACE3. Fixes the physgun grabbing beam glitch
 function ENT:CalcAbsolutePosition() -- Faking sync
 	local PhysObj  = self:GetPhysicsObject()
 	local Position = self:GetPos()

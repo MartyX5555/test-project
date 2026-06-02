@@ -5,9 +5,9 @@ local Round = table.Copy(RoundTypes.AP) -- inherit from AP
 ACE.AmmoBlacklist.HP = ACE.AmmoBlacklist.AP
 
 Round.type = "Ammo" --Tells the spawn menu what entity to spawn
-Round.name = "[HP] - " .. ACFTranslation.HP[1] --Human readable name
+Round.name = "[HP] - " .. ACETranslation.HP[1] --Human readable name
 Round.model = "models/munitions/round_100mm_shot.mdl" --Shell flight model
-Round.desc = ACFTranslation.HP[2]
+Round.desc = ACETranslation.HP[2]
 Round.netid = 3 --Unique ammotype ID for network transmission
 
 Round.Type  = "HP"

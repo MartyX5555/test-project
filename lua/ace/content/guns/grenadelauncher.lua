@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("GL", {
 	type = "Gun",
 	spread = 0.4,
 	name = "Grenade Launcher",
-	desc = ACFTranslation.GunClasses[6],
+	desc = ACETranslation.GunClasses[6],
 	muzzleflash = "40mm_muzzleflash_noscale",
 	rofmod = 1,
 	year = 1970,

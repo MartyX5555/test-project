@@ -108,8 +108,8 @@ function PANEL:Init()
 	HomeNode:SetExpanded(true)
 
 	HomeNode.mytable = {}
-	HomeNode.mytable.guicreate = (function( _, Table ) ACFHomeGUICreate( Table ) end or nil)
-	HomeNode.mytable.guiupdate = (function( _, Table ) ACFHomeGUIUpdate( Table ) end or nil)
+	HomeNode.mytable.guicreate = (function( _, Table ) ACEHomeGUICreate( Table ) end or nil)
+	HomeNode.mytable.guiupdate = (function( _, Table ) ACEHomeGUIUpdate( Table ) end or nil)
 	timer.Simple(0.1, function() HomeNode:DoClick() end) --Select the main menu on menu open
 
 	function HomeNode:DoClick()
@@ -313,7 +313,7 @@ function PANEL:Init()
 
 		local CSNode = SettingsNode:AddNode("Client" , "icon16/user.png") --Client folder
 		CSNode.mytable = {}
-		CSNode.mytable.guicreate = function( _, Table ) ACFCLGUICreate( Table ) end or nil
+		CSNode.mytable.guicreate = function( _, Table ) ACECLGUICreate( Table ) end or nil
 		function CSNode:DoClick()
 			acemenupanel:UpdateDisplay(self.mytable)
 		end
@@ -322,7 +322,7 @@ function PANEL:Init()
 		if ply:IsSuperAdmin() then
 			local SSNode = SettingsNode:AddNode("Server", "icon16/cog.png")  --Server folder
 			SSNode.mytable = {}
-			SSNode.mytable.guicreate = function( _, Table ) ACFSVGUICreate( Table ) end or nil
+			SSNode.mytable.guicreate = function( _, Table ) ACESVGUICreate( Table ) end or nil
 			function SSNode:DoClick()
 				acemenupanel:UpdateDisplay(self.mytable)
 			end
@@ -386,7 +386,7 @@ end
 --[[=========================
 	ACE information folder content
 =========================]]--
-function ACFHomeGUICreate()
+function ACEHomeGUICreate()
 	if not acemenupanel.CustomDisplay then return end
 
 	local currentpanel = acemenupanel.CustomDisplay
@@ -473,7 +473,7 @@ end
 --[[=========================
 	Clientside folder content
 ]]--=========================
-function ACFCLGUICreate()
+function ACECLGUICreate()
 
 	local Client = acemenupanel["CData"]["Options"]
 
@@ -541,7 +541,7 @@ end
 --[[=========================
 	Serverside folder content
 ]]--=========================
-function ACFSVGUICreate()	--Serverside folder content
+function ACESVGUICreate()	--Serverside folder content
 
 	local ply = LocalPlayer()
 	if not IsValid(ply) then return end

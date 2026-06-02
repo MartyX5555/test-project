@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("HW", {
 	type = "Gun",
 	spread = 0.3,
 	name = "Howitzer",
-	desc = ACFTranslation.GunClasses[8],
+	desc = ACETranslation.GunClasses[8],
 	muzzleflash = "120mm_muzzleflash_noscale",
 	rofmod = 1.5,
 	maxrof = 20, -- maximum rounds per minute

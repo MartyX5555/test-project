@@ -7,21 +7,21 @@ TOOL.SelectedEntities = {}
 cleanup.Register( "acemenu" )
 
 if CLIENT then
-	language.Add( "Tool.acemenu.listname", ACFTranslation.ACFMenuTool[1] )
-	language.Add( "Tool.acemenu.name", ACFTranslation.ACFMenuTool[2] )
-	language.Add( "Tool.acemenu.desc", ACFTranslation.ACFMenuTool[3] )
-	language.Add( "Tool.acemenu.0", ACFTranslation.ACFMenuTool[4] )
-	language.Add( "Tool.acemenu.1", ACFTranslation.ACFMenuTool[5] )
+	language.Add( "Tool.acemenu.listname", ACETranslation.ACEMenuTool[1] )
+	language.Add( "Tool.acemenu.name", ACETranslation.ACEMenuTool[2] )
+	language.Add( "Tool.acemenu.desc", ACETranslation.ACEMenuTool[3] )
+	language.Add( "Tool.acemenu.0", ACETranslation.ACEMenuTool[4] )
+	language.Add( "Tool.acemenu.1", ACETranslation.ACEMenuTool[5] )
 
-	language.Add( "Undone_ACF Entity", ACFTranslation.ACFMenuTool[6] )
-	language.Add( "Undone_ace_engine",ACFTranslation.ACFMenuTool[7] )
-	language.Add( "Undone_ace_gearbox", ACFTranslation.ACFMenuTool[8] )
-	language.Add( "Undone_ace_ammo", ACFTranslation.ACFMenuTool[9] )
-	language.Add( "Undone_ace_gun", ACFTranslation.ACFMenuTool[10] )
-	language.Add( "SBoxLimit_ace_gun", ACFTranslation.ACFMenuTool[11] )
-	language.Add( "SBoxLimit_ace_rack", ACFTranslation.ACFMenuTool[12] )
-	language.Add( "SBoxLimit_ace_ammo", ACFTranslation.ACFMenuTool[13] )
-	language.Add( "SBoxLimit_ace_sensor", ACFTranslation.ACFMenuTool[14] )
+	language.Add( "Undone_ACE Entity", ACETranslation.ACEMenuTool[6] )
+	language.Add( "Undone_ace_engine",ACETranslation.ACEMenuTool[7] )
+	language.Add( "Undone_ace_gearbox", ACETranslation.ACEMenuTool[8] )
+	language.Add( "Undone_ace_ammo", ACETranslation.ACEMenuTool[9] )
+	language.Add( "Undone_ace_gun", ACETranslation.ACEMenuTool[10] )
+	language.Add( "SBoxLimit_ace_gun", ACETranslation.ACEMenuTool[11] )
+	language.Add( "SBoxLimit_ace_rack", ACETranslation.ACEMenuTool[12] )
+	language.Add( "SBoxLimit_ace_ammo", ACETranslation.ACEMenuTool[13] )
+	language.Add( "SBoxLimit_ace_sensor", ACETranslation.ACEMenuTool[14] )
 
 	-- These still need translations, hardcoding as english for now
 	language.Add("tool.acemenu.left", "Create/Update entity")
@@ -47,10 +47,10 @@ if CLIENT then
 	--------------------------------------]]
 	function TOOL.BuildCPanel( CPanel )
 
-		local pnldef_ACFmenu = vgui.RegisterFile( "ace/base/vgui/cl_acemenu_gui.lua" )
+		local pnldef_ACEmenu = vgui.RegisterFile( "ace/base/vgui/cl_acemenu_gui.lua" )
 
 		-- create
-		local DPanel = vgui.CreateFromTable( pnldef_ACFmenu )
+		local DPanel = vgui.CreateFromTable( pnldef_ACEmenu )
 		CPanel:AddPanel( DPanel )
 		hook.Run("ACE_PostMenuLoad")
 
@@ -95,7 +95,7 @@ function TOOL:LeftClick( trace )
 		else
 			-- Using the Duplicator entity register to find the right factory function
 			local Ent = DupeClass.Func( ply, Pos, Ang, Id, Data ) --aka function like MakeACE_Ammo
-			if not IsValid(Ent) then ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[15]) return false end
+			if not IsValid(Ent) then ACE.SendNotify(ply, false, ACETranslation.ACEMenuTool[15]) return false end
 
 			local TruePos = Ent:LocalToWorld(Vector(0,0,-Ent:OBBMins().z + 1))
 			Ent:SetPos(TruePos)
@@ -110,7 +110,7 @@ function TOOL:LeftClick( trace )
 
 		return true
 	else
-	ACE.SendNotify(ply, false, ACFTranslation.ACFMenuTool[16])
+	ACE.SendNotify(ply, false, ACETranslation.ACEMenuTool[16])
 	end
 
 end

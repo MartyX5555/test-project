@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("SAM", {
 	type           = "missile",  -- i know i know
 	spread         = 1,
 	name           = "[SAM] - Surface-To-Air Missile",
-	desc           = ACFTranslation.MissileClasses[8],
+	desc           = ACETranslation.MissileClasses[8],
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	rofmod         = 1,
 	year           = 1960,

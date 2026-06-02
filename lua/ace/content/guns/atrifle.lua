@@ -3,7 +3,7 @@ ACE.RegisterWeaponClass("ATR", {
 	type = "Gun",
 	spread = 0.02,
 	name = "Anti-Tank Rifle",
-	desc = ACFTranslation.GunClasses[1],
+	desc = ACETranslation.GunClasses[1],
 	muzzleflash = "30mm_muzzleflash_noscale",
 	rofmod = 10,
 	year = 1917,
