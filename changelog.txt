@@ -1,7 +1,0 @@
-r1000
---For an extended version history, please visit the github changelog.  https://github.com/MartyX5555/test-project/commits/main/
-
-r1001
-- Fixed this changelog until a better solution is used.
-- Now this version will be used to improve the new ACE Core: ACE-2
-- Too many changes were already implemented and im unable to list them again. Sorry

@@ -1,15 +1,12 @@
 # Security Policy
 
 ## What is a Vulnerability?
+A vulnerability is a flaw or bug in the code that allows users to trigger unexpected behaviors. This can lead to issues such as annoying bugs, unfair advantages, or temporary/permanent damage to the server itself.
 
-A vulnerability is an exploit that allows to users to do unexpected behaviours inside of a code, leading to damages, as such as
-annoying bugs, unfair advantages or even, damages to the own server, that can be temporal or permanent.
-
-## What version do we support?
-Actually, we support this branch, to the latest version and our [workshop branch]() under the same terms. 
-Any other unauthorized distribution or outdated version of this code are not supported and we will not recieve security reports from them.
+## Supported Versions
+Currently, we support the `main` branch and our `workshop branch` under the same terms. Any unauthorized distribution or outdated version of this code is not supported, and we will not accept security reports for them.
 
 ## Reporting a Vulnerability
+To report a vulnerability, please send a Direct Message (DM) to Marty on Discord (`martyx5555`). You can find our server [here](https://discord.gg/Y8aEYU6).
 
-To report a vulnerability, it's a must to do this by sending a direct message to the main developer via dm by discord. You can find us [here](https://discord.gg/Y8aEYU6).
-Any provided detail about the exploit will remain in secret by the ACE team and you will be notified when issue is gone and you can update to the latest version.
+All provided information will be handled with strict confidentiality by the ACE team. We ask that you practice responsible disclosure and keep the issue private until we can release a patch. It is possible we will reach out to you for more details to reproduce the bug if necessary. We will let you know once the issue is fixed.
