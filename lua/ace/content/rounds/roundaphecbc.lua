@@ -155,7 +155,7 @@ function Round.propimpact( Index, Bullet, Target, HitNormal, HitPos, Bone )
 				if Bullet.HasPenned == false then --Activate APHE Fuse
 
 					Bullet.HasPenned	= true
-					Bullet.FuseLength	= Bullet.FuseDelay or 0
+					Bullet.FuseDelay	= Bullet.FuseDelay or 0
 					Bullet.InitTime	= SysTime()
 					Bullet.FlightTime	= 0
 

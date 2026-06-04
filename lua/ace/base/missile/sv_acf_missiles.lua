@@ -32,7 +32,7 @@ function ACEM.BulletLaunch(BulletData)
 	BulletData.FlightTime	= 0
 	BulletData.TraceBackComp	= 0
 
-	BulletData.FuseLength	= type(BulletData.FuseLength) == "number" and BulletData.FuseLength or 0
+	BulletData.FuseDelay	= type(BulletData.FuseDelay) == "number" and BulletData.FuseDelay or 0
 
 	if BulletData.Filter then
 		table.Add(BulletData.Filter, { BulletData.Gun } )

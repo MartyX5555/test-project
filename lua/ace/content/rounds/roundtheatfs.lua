@@ -204,7 +204,7 @@ function Round.detonate( _, Bullet, HitPos, HitNormal )
 		Bullet.Pos			= HitPos
 		Bullet.Flight		= Bullet.Flight:GetNormalized() * Bullet.SlugMV * 39.37
 		Bullet.FlightTime	= 0 --reseting timer
-		Bullet.FuseLength	= 0.1 + 10 / (Bullet.Flight:Length() * 0.0254)
+		Bullet.FuseDelay	= 0.1 + 10 / (Bullet.Flight:Length() * 0.0254)
 		Bullet.DragCoef		= Bullet.SlugDragCoef
 
 		Bullet.ProjMass		= Bullet.SlugMass
@@ -228,7 +228,7 @@ function Round.detonate( _, Bullet, HitPos, HitNormal )
 		Bullet.Pos		= HitPos
 		Bullet.Flight	= Bullet.Flight:GetNormalized() * Bullet.SlugMV2 * 39.37
 		Bullet.FlightTime	= 0 --reseting timer
-		Bullet.FuseLength	= 0.1 + 10 / (Bullet.Flight:Length() * 0.0254)
+		Bullet.FuseDelay	= 0.1 + 10 / (Bullet.Flight:Length() * 0.0254)
 		Bullet.DragCoef	= Bullet.SlugDragCoef2
 
 		Bullet.ProjMass	= Bullet.SlugMass2

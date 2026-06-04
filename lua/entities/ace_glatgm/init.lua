@@ -163,7 +163,7 @@ function ENT:Detonate()
 		btdat["Flight"]		= self.BulletData.Flight
 		btdat["FlightTime"]	= 0
 		btdat["FrArea"]		= self.BulletData.FrArea
-		btdat["FuseLength"]	= 0
+		btdat["FuseDelay"]	= 0
 		btdat["Gun"]			= self
 		btdat["Id"]			= self.BulletData.Id
 		btdat["KETransfert"]	= self.BulletData.KETransfert

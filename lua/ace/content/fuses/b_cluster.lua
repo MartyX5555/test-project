@@ -103,7 +103,7 @@ do
 		missile.BulletData["Flight"]		= bdata.Flight
 		missile.BulletData["FlightTime"]	= 0
 		missile.BulletData["FrArea"]		= bdata.FrArea
-		missile.BulletData["FuseLength"]	= 0
+		missile.BulletData["FuseDelay"]	= 0
 		missile.BulletData["Gun"]			= missile
 		missile.BulletData["Id"]			= bdata.Id
 		missile.BulletData["KETransfert"]	= bdata.KETransfert

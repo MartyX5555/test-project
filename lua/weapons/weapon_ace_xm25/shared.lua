@@ -79,7 +79,7 @@ end
 function SWEP:OnPrimaryAttack()
 	self.BulletData.Owner = self:GetOwner()
 	self.BulletData.Gun = self
-	self.BulletData.FuseLength = self.FuseDelay
+	self.BulletData.FuseDelay = self.FuseDelay
 
 end
 

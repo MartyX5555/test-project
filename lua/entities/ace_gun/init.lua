@@ -875,7 +875,7 @@ do
 
 				--using fusetime via wire will override the ammo fusetime!
 				if self.Caliber < 14 and FusedRounds[self.BulletData.Type] and FusedRounds[self.BulletData.Type] and self.OverrideFuse then
-					self.BulletData.FuseLength = self.FuseTime
+					self.BulletData.FuseDelay = self.FuseTime
 				end
 
 				self.CreateShell = ACE.RoundTypes[self.BulletData.Type].create

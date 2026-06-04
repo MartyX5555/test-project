@@ -183,7 +183,7 @@ ACE.HE( HitPos - Bullet.Flight:GetNormalized() * 3, HitNormal, Bullet.BoomFiller
 	Bullet.Detonated		= true
 	Bullet.InitTime		= SysTime()
 	Bullet.FlightTime	= 0 --reseting timer
-	Bullet.FuseLength	= 0.005 + 40 / ((Bullet.Flight + Bullet.Flight:GetNormalized() * Bullet.SlugMV * 39.37):Length() * 0.0254)
+	Bullet.FuseDelay	= 0.005 + 40 / ((Bullet.Flight + Bullet.Flight:GetNormalized() * Bullet.SlugMV * 39.37):Length() * 0.0254)
 	Bullet.Pos			= HitPos
 	Bullet.Flight		= Bullet.Flight:GetNormalized() * Bullet.SlugMV * 39.37
 	Bullet.DragCoef		= Bullet.SlugDragCoef

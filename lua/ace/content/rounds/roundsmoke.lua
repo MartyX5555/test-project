@@ -260,7 +260,7 @@ function Round.guicreate( Panel, Table )
 	acemenupanel:AmmoSlider("ProjLength",0,0,1000,3, "Projectile Length", "")	--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("FillerVol",0,0,1000,3, "Smoke Filler", "")			--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("WPVol",0,0,1000,3, "WP Filler", "")			--Slider (Name, Value, Min, Max, Decimals, Title, Desc)
-	acemenupanel:AmmoSlider("FuseLength",0,0,1000,3, "Timed Fuse", "")
+	acemenupanel:AmmoSlider("FuseDelay",0,0,1000,3, "Timed Fuse", "")
 
 ACE.Checkboxes()
 
@@ -304,7 +304,7 @@ function Round.guiupdate( Panel )
 	acemenupanel:AmmoSlider("ProjLength",Data.ProjLength,Data.MinProjLength,Data.MaxTotalLength,3, "Projectile Length", "Projectile Mass : " .. (math.floor(Data.ProjMass * 1000)) .. " g")	--Projectile Length Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("FillerVol",Data.FillerVol,Data.MinFillerVol,Data.MaxFillerVol,3, "Smoke Filler Volume", "Smoke Filler Mass : " .. (math.floor(Data.FillerMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
 	acemenupanel:AmmoSlider("WPVol",Data.WPVol,Data.MinFillerVol,Data.MaxFillerVol,3, "WP Filler Volume", "WP Filler Mass : " .. (math.floor(Data.WPMass * 1000)) .. " g")	--HE Filler Slider (Name, Min, Max, Decimals, Title, Desc)
-	acemenupanel:AmmoSlider("FuseLength",Data.FuseDelay,0,10,1, "Fuse Time", Data.FuseDelay .. " s")
+	acemenupanel:AmmoSlider("FuseDelay",Data.FuseDelay,0,10,1, "Fuse Time", Data.FuseDelay .. " s")
 
 	ACE.Checkboxes( Data )
 

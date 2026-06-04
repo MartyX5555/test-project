@@ -34,7 +34,7 @@ function ACE.CreateBullet( BulletData )
 	BulletData.FlightTime    = 0
 	BulletData.TraceBackComp = 0
 
-	BulletData.FuseLength	= type(BulletData.FuseLength) == "number" and BulletData.FuseLength or 0
+	BulletData.FuseDelay	= type(BulletData.FuseDelay) == "number" and BulletData.FuseDelay or 0
 
 	--Check the Gun's velocity and add a modifier to the flighttime so the traceback system doesn't hit the originating contraption if it's moving along the shell path
 	local Parent = ACE.GetPhysicalParent(BulletData.Gun)
@@ -359,9 +359,9 @@ do
 		PerformTrace( Bullet )
 
 		--Fuse detonation. Note: Its possible that the bullet prefers to hit the incoming prop instead of detonate. Not a big concern.
-		if Bullet.FuseLength and Bullet.FuseLength > 0 and Bullet.FlightTime > Bullet.FuseLength then
+		if Bullet.FuseDelay and Bullet.FuseDelay > 0 and Bullet.FlightTime > Bullet.FuseDelay then
 
-			local Diff         = Bullet.FlightTime - Bullet.FuseLength
+			local Diff         = Bullet.FlightTime - Bullet.FuseDelay
 			local ratio        = 1 - (Diff / Bullet.DeltaTime)
 			local ScaledPos    = LerpVector(ratio, Bullet.Pos, Bullet.NextPos)
 

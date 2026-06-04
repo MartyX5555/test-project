@@ -132,7 +132,7 @@ function Round.propimpact( _, Bullet, Target, HitNormal, HitPos, Bone )
 			if Bullet.HasPenned == false then
 
 				Bullet.HasPenned	= true
-				Bullet.FuseLength	= Bullet.FuseDelay or 0
+				Bullet.FuseDelay	= Bullet.FuseDelay or 0
 				Bullet.InitTime	= SysTime()
 				Bullet.FlightTime	= 0
 			end

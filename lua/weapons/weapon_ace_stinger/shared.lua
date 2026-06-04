@@ -161,7 +161,7 @@ function SWEP:InitBulletData()
 	self.DragCoef = self.BulletData.DragCoef
 	self.Colour = self.BulletData.Colour
 	self.DetonatorAngle = 80
-	self.BulletData.FuseLength = 0.001
+	self.BulletData.FuseDelay = 0.001
 end
 
 

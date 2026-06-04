@@ -148,7 +148,7 @@ function SWEP:InitBulletData()
 	self.Colour = self.BulletData.Colour
 	self.DetonatorAngle = 80
 
-	self.BulletData.FuseLength = 0.1
+	self.BulletData.FuseDelay = 0.1
 end
 
 function SWEP:PrimaryAttack()
