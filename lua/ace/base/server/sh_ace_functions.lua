@@ -203,7 +203,7 @@ do
 				end
 
 				--Gets the actual material percent of the contraption
-				PercentMat[material] = ( MatSums[material] / con.totalmass ) or 0
+				PercentMat[material] = ( MatSums[material] / con.totalMass ) or 0
 			end
 
 			return { Power = power, Fuel = fuel, MaterialPercent = PercentMat, MaterialMass = MatSums }

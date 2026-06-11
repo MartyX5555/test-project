@@ -3,85 +3,42 @@ local ACE = ACE or {}
 
 -------------------------- CFW Massratio Calculation --------------------------
 do
-
-	local function HasValidConstraints(ent)
-
-		local bool = false
-
-		if constraint.HasConstraints(ent) then -- Actually not the same, since nocollide could be here.
-			local contable = constraint.GetTable(ent)
-			for _, con in ipairs( contable ) do
-
-				-- skip shit that is attached by a nocollide
-				if con.Type == "NoCollide" then continue end
-				bool = true
-			end
-		end
-
-		return bool
-	end
-
-
+	--Key values: con.physicalMass, con.parentedMass & con.totalMass
 	local function IsPhysical( ent )
-		return HasValidConstraints( ent ) or not IsValid(ent:GetParent())
+		return not IsValid(ent:GetParent())
 	end
 
 	local function CreateData(con)
-		con.aceparenttotal = 0 -- Parent ent count
-		con.acephystotal = 0 -- Constraint ent count. It could contain parent-constrained props
-
-		con.parented = {}
-		con.physical = {}
-		con.massratio = 0
-		con.totalmass = 0 -- i know, i know
-		hook.Run("ACE.CFW.ContraptionCreated", con)
+		con.ace_parentedents = {}
+		con.ace_physicalents = {}
+		con.ace_massratio = 0
+		hook.Run("ACE.CFW.Init", con)
 	end
 
 	-- Contraption creation also calls the entityadded hook twice
-	hook.Add("cfw.contraption.created", "ACE.PropGroups", CreateData)
-	hook.Add("cfw.family.created", "PropGroups", CreateData)
+	hook.Add("cfw.contraption.init", "ACE.PropGroups", CreateData)
+	hook.Add("cfw.family.init", "ACE.PropGroups", CreateData)
 
 	local function AddData(con, ent)
-		local physObj = ent:GetPhysicsObject()
-		if IsValid(physObj) then
-
-			local mass = physObj:GetMass()
-			ent.acemass = mass
-
-			con.totalmass = con.totalmass + mass --print("ADDMASS", con.totalmass)
-
-			if IsPhysical( ent ) then
-				con.physical[ent] = true
-				con.acephystotal = con.acephystotal + mass
-			else
-				con.parented[ent] = true
-			end
-			con.aceparenttotal = con.totalmass - con.acephystotal
-			con.massratio = math.min(con.acephystotal / con.totalmass, 1)
+		if IsPhysical( ent ) then
+			con.ace_physicalents[ent] = true
+		else
+			con.ace_parentedents[ent] = true
 		end
+		con.ace_massratio = math.min(con.physicalMass / con.totalMass, 1)
 
 		hook.Run("ACE.CFW.EntityAdded", con, ent)
 	end
-
 	hook.Add("cfw.contraption.entityAdded", "ACE.PropGroups", AddData)
-	hook.Add("cfw.family.added", "PropGroups", AddData)
+	hook.Add("cfw.family.added", "ACE.PropGroups", AddData)
 
 	local function RemoveData(con, ent)
-		local physObj = ent:GetPhysicsObject()
-		if IsValid(physObj) then
-			local mass = physObj:GetMass()
-
-			con.totalmass = con.totalmass - mass
-
-			if IsPhysical( ent ) then
-				con.physical[ent] = nil
-				con.acephystotal = con.acephystotal - mass
-			else
-				con.parented[ent] = nil
-			end
-			con.aceparenttotal = con.totalmass - con.acephystotal
-			con.massratio = math.min(con.acephystotal / con.totalmass, 1)
+		if IsPhysical( ent ) then
+			con.ace_physicalents[ent] = nil
+		else
+			con.ace_parentedents[ent] = nil
 		end
+		con.ace_massratio = math.min(con.physicalMass / con.totalMass, 1)
 
 		hook.Run("ACE.CFW.EntityRemoved", con, ent)
 	end
@@ -89,40 +46,11 @@ do
 	hook.Add("cfw.contraption.entityRemoved", "ACE.PropGroups", RemoveData)
 	hook.Add("cfw.family.subbed", "ACE.PropGroups", RemoveData)
 
-	local PHYSOBJ = FindMetaTable("PhysObj")
-	if not PHYSOBJ.LegacySetMass then
-		PHYSOBJ.LegacySetMass = PHYSOBJ.SetMass
+	local function MassChanged(con)
+		con.ace_massratio = math.min(con.physicalMass / con.totalMass, 1)
 	end
-	function PHYSOBJ:SetMass(mass, ...)
-		timer.Simple(0,function()
-			if not IsValid(self) then return end
-			local ent = self:GetEntity()
-
-			local oldmass = ent.acemass or 0 --print("mass:", mass, "oldmass:", oldmass, "physmass")
-
-			if oldmass == 0 then return end
-			ent.acemass = mass
-
-			local con = ACE.GetContraption(ent)
-			if con then
-
-				con.totalmass = con.totalmass + (mass - oldmass) --print("SetMass ADDMASS", con.totalmass) print("operation!!!!")
-
-				if IsPhysical( ent ) then
-					--print("physical mass change!!!")
-					con.acephystotal = con.acephystotal + (mass - oldmass)
-				end
-
-				con.aceparenttotal = con.totalmass - con.acephystotal
-				con.massratio = math.min(con.acephystotal / con.totalmass, 1)
-
-				--print("totalmass:", con.totalmass, con.acephystotal, con.aceparenttotal )
-				--print("originalmass:", con.totalMass)
-			end
-		end)
-		self:LegacySetMass(mass, ...)
-	end
-
+	hook.Add("cfw.contraption.massChanged", "ACE.CFW.massChanged", MassChanged)
+	hook.Add("cfw.family.massChanged", "ACE.CFW.massChanged", MassChanged)
 end
 
 
@@ -138,22 +66,22 @@ do
 		return ent:CFW_GetContraption()
 	end
 
-	function ACE.GetContraptionaceTotalMass( con )
+	function ACE.GetContraptionTotalMass( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
-		return con.totalmass
+		return con.totalMass
 	end
 
 	function ACE.GetContraptionPhysicalMass( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
-		return con.acephystotal
+		return con.physicalMass
 	end
 
-	function ACE.GetContraptionaceparentotal( con )
+	function ACE.GetContraptionaParentMass( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
-		return con.aceparenttotal
+		return con.parentedMass
 	end
 
 	function ACE.GetContraptionMassRatio( con )

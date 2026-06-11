@@ -441,9 +441,9 @@ function ENT:CalcMassRatio()
 	local con = ACE.GetContraption(self)
 	local phys = self:GetPhysicsObject()
 	if con then
-		Mass = con.totalmass
-		PhysMass = con.acephystotal
-		self.MassRatio = con.massratio
+		Mass = con.totalMass
+		PhysMass = con.physicalMass
+		self.MassRatio = con.ace_massratio
 	elseif IsValid(phys) then
 		local EngineMass = phys:GetMass()
 		Mass = EngineMass
@@ -454,72 +454,6 @@ function ENT:CalcMassRatio()
 
 end
 
---[[
-function ENT:CalcMassRatio()
-
-	local Mass = 0
-	local PhysMass = 0
-	local Check = nil
-
-	-- get the shit that is physically attached to the vehicle
-	local PhysEnts = ACE.GetAllPhysicalConstraints( self )
-
-	-- get the wheels directly connected to the drivetrain
-	local Wheels = ACE.GetLinkedWheels(self)
-
-	-- check if any wheels aren't in the physicalconstraint tree
-	for _,Ent in pairs( Wheels ) do
-		if not PhysEnts[Ent] then -- WE GOT EM BOIS
-			Check = Ent
-			Wheels[Ent] = nil -- manual removal, idk how table.remove would handle indexing by ent. probably not well. indexing by entity sucks, please use ent id.
-			break
-		end
-	end
-
-	local con = ACE.GetContraption( self )
-	if con then
-
-		-- if there's a wheel that's not in the engine constraint tree, use it as a start for getting physical constraints
-		if IsValid(Check) then -- sneaky bastards trying to get away with remote engines...  NOT ANYMORE
-			table.Merge(PhysEnts, Wheels) -- I mean, they'll still be remote... but they wont get free extra power from calcmass not seeing the contraption it's powering
-		ACE.GetAllPhysicalConstraints( Check, PhysEnts ) -- no need for assignment here
-		end
-
-		-- add any parented but not constrained props you sneaky bastards
-		local AllEnts = table.Copy( PhysEnts )
-		for v, _ in pairs( PhysEnts ) do
-			table.Merge( AllEnts, ACE.GetAllChildren( v ) )
-		end
-
-		for v, _ in pairs( AllEnts ) do
-			if not IsValid(v) then continue end
-
-			local phys = v:GetPhysicsObject()
-			if not IsValid( phys ) then continue end
-
-			Mass = Mass + phys:GetMass()
-
-			if PhysEnts[ v ] then
-				PhysMass = PhysMass + phys:GetMass()
-			end
-
-		end
-
-		--phys / parented
-		--total: 6000 kgs
-		--5000/1000 = 5 ratio
-		--1000/5000 = 0.2 ratio
-		--local Tmass = PhysMass + Mass
-
-		self.MassRatio = PhysMass / Mass print("Engine Ratio:", self.MassRatio)
-		--self.MassRatio = 1 / (Tmass/10000)
-		--self.MassRatio = (PhysMass ^ 0.9225) / Mass
-
-		Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
-		Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
-	end
-end
-]]
 function ENT:ACEInit()
 
 	self:CalcMassRatio()

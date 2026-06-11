@@ -317,10 +317,10 @@ function TOOL:Reload( trace )
 	local con = ACE.GetContraption(ent)
 	if not con then return end
 
-	local total = con.totalmass
-	local phystotal	= con.acephystotal
-	local parenttotal = con.aceparenttotal
-	local physratio	= con.massratio * 100
+	local total = con.totalMass
+	local phystotal	= con.physicalMass
+	local parenttotal = con.parentedMass
+	local physratio	= con.ace_massratio * 100
 
 	local power		= data.Power
 	local fuel		= data.Fuel
