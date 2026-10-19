@@ -4,7 +4,7 @@ SWEP.Category = "ACE Weapons"
 SWEP.SubCategory = "Grenades/Mines"
 
 if CLIENT then
-	SWEP.PrintName		= "Frag Grenade"
+	SWEP.PrintName		= "HE Grenade"
 	SWEP.Slot			= 4
 	SWEP.SlotPos		= 3
 end
@@ -31,7 +31,7 @@ SWEP.Primary.Sound			= "weapons/slam/throw.wav"
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Delay			= 2
 SWEP.Primary.ClipSize		= 1
-SWEP.Primary.DefaultClip	= 20
+SWEP.Primary.DefaultClip	= 5
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo		= "Grenade"
 
@@ -78,14 +78,16 @@ function SWEP:ThrowNade(power, heightoffset)
 			power = 0
 		end
 
-		local aim = owner:GetAimVector() + Vector(0,0,0.1)
+		local aim = owner:GetAimVector() * 9 + Vector(0,0,0.1)
 
 		local ent = ents.Create("ace_grenade")
 		ent:SetPos(owner:GetShootPos() + Vector(0, 0, heightoffset))
 		ent:SetAngles(owner:EyeAngles())
 		ent:Spawn()
 		ent:GetPhysicsObject():ApplyForceCenter(aim * power + owner:GetVelocity() * ent:GetPhysicsObject():GetMass())
-		ACE.SetEntityOwner(ent, Entity(0))
+		if CPPI then
+			ent:CPPISetOwner( Entity(0) )
+		end
 		ent.DamageOwner = owner -- Done to avoid owners from manipulating the entity, but allowing the damage to be credited by him.
 	end)
 end
@@ -102,7 +104,7 @@ function SWEP:PrimaryAttack()
 
 	self:SendWeaponAnim(ACT_VM_PULLPIN)
 
-	self:ThrowNade(5000, -7)
+	self:ThrowNade(300, -7)  -- Was 5000, now 300 for 0.3kg grenade
 end
 
 
@@ -126,7 +128,7 @@ function SWEP:SecondaryAttack()
 	self:SendWeaponAnim( ACT_VM_PULLPIN  )
 	owner:SetAnimation( PLAYER_ATTACK1 )
 
-	self:ThrowNade(1000, -10)
+	self:ThrowNade(80, -10)  -- Was 1000, now 80 for underhand toss
 end
 
 function SWEP:Think()

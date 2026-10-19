@@ -10,11 +10,11 @@ function SWEP:DoAmmoStatDisplay()
 
 	local sendInfo = string.format( "Frag Grenade")
 
-			sendInfo = sendInfo .. string.format(", %.1fm blast", 4 ^ 0.33 * 8) --4 taken from mine entity
+			sendInfo = sendInfo .. string.format(", %.1fm blast", 0.5 ^ 0.33 * 8) --4 taken from mine entity
 
 
 
-ACE.SendNotification(self:GetOwner(), sendInfo, 10)
+	ACE.SendNotification(self:GetOwner(), sendInfo, 10)
 end
 
 function SWEP:Equip()

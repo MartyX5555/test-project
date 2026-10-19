@@ -10,7 +10,7 @@ SWEP.SlotPos = 1 --Priority in which the weapon appears, 1 tries to put it at th
 DEFINE_BASECLASS("weapon_ace_base")
 
 --Main settings--
-SWEP.Primary.Delay = 10 --Reload in seconds
+SWEP.Primary.Delay = 20 --Reload in seconds
 
 SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 1
@@ -21,7 +21,7 @@ SWEP.Primary.LightScale = 200 --Muzzleflash light radius
 SWEP.Primary.BulletCount = 1 --Number of bullets to fire each shot, used for shotguns
 
 SWEP.TrackSound = "acf_extra/airfx/caution2.wav"
-SWEP.LockSound = "acf_extra/ACE/BF3/MissileLock/LockedStinger.wav"
+SWEP.LockSound = "acf_extra/ACE/missiles/Seeker/SidewinderTone.wav"
 
 SWEP.DirectFireDist = 125 * 39.37
 
@@ -81,7 +81,7 @@ SWEP.IronSightsAng = Vector( 0, 0, 0 )
 
 SWEP.SeekSensitivity = 1
 
-SWEP.Lockrate = 0.014 --Lock rate per second
+SWEP.Lockrate = 0.032 --Lock rate per second
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 1, "LaunchAuth")
@@ -154,7 +154,7 @@ function SWEP:InitBulletData()
 	self.BulletData.PropMass = self.BulletData.FrArea * (self.BulletData.PropLength * ACE.PDensity / 1000) --Volume of the case as a cylinder * Powder density converted from g to kg
 	self.BulletData.FillerVol = self.BulletData.Data5
 	self.BulletData.FillerMass = self.BulletData.FillerVol * ACE.HEDensity / 1000
-	self.BulletData.BoomFillerMass = self.BulletData.FillerMass / 250
+	self.BulletData.BoomFillerMass = self.BulletData.FillerMass / 30
 	local ConeArea = 3.1416 * self.BulletData.Caliber / 2 * ((self.BulletData.Caliber / 2) ^ 2 + self.BulletData.ProjLength ^ 2) ^ 0.5
 	local ConeThick = self.BulletData.Caliber / 50
 	local ConeVol = ConeArea * ConeThick
@@ -192,7 +192,7 @@ function SWEP:InitBulletData()
 	self.BulletData.Ricochet = 999
 	self.BulletData.Flight = Vector(0, 0, 0)
 	self.BulletData.BoomPower = self.BulletData.PropMass + self.BulletData.FillerMass
-	--		local SlugEnergy = ACE.Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
+	--		local SlugEnergy = ACE_Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
 	local SlugEnergy = ACE.Kinetic(self.BulletData.SlugMV * 39.37, self.BulletData.SlugMass, 999999)
 	self.BulletData.MaxPen = (SlugEnergy.Penetration / self.BulletData.SlugPenArea) * ACE.KEtoRHA
 	--		print("SlugPen: " .. self.BulletData.MaxPen)
@@ -210,7 +210,7 @@ function SWEP:InitBulletData()
 	self.DragCoef = self.BulletData.DragCoef
 	self.Colour = self.BulletData.Colour
 	self.DetonatorAngle = 80
-	self.BulletData.FuseDelay = 0.1
+	self.BulletData.FuseLength = 0.1
 end
 
 
@@ -242,8 +242,8 @@ end
 function SWEP:GetWhitelistedEntsInCone()
 	local owner = self:GetOwner()
 
-	local ScanArray = ACE.GlobalEntities
-	if not next(ScanArray) then return {} end
+	local ScanArray = ACE.contraptionEnts
+	if table.IsEmpty(ScanArray) then return {} end
 
 	local WhitelistEnts = {}
 	local LOSdata	= {}
@@ -258,33 +258,32 @@ function SWEP:GetWhitelistedEntsInCone()
 	local MinimumDistance = 1	*  39.37
 	local MaximumDistance = 2400  *  39.37
 
-	for scanEnt, _ in pairs(ScanArray) do
+	for _, scanEnt in ipairs(ScanArray) do
 
 		-- skip any invalid entity
-		if not IsValid(scanEnt) then continue end
-		if not scanEnt.Heat and ACE.HasParent(scanEnt) then continue end
+		if IsValid(scanEnt) then
 
-		entpos  = scanEnt:GetPos()
-		difpos  = entpos - IRSTPos
-		dist	= difpos:Length()
+			entpos  = scanEnt:GetPos()
+			difpos  = entpos - IRSTPos
+			dist	= difpos:Length()
 
-		if dist > MinimumDistance and dist < MaximumDistance then
+			if dist > MinimumDistance and dist < MaximumDistance then
 
-			LOSdata.start             = IRSTPos
-			LOSdata.endpos            = entpos
-			LOSdata.collisiongroup    = COLLISION_GROUP_WORLD
-			LOSdata.filter            = function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
-			LOSdata.mins              = vector_origin
-			LOSdata.maxs              = LOSdata.mins
+				LOSdata.start		= IRSTPos
+				LOSdata.endpos		= entpos
+				LOSdata.collisiongroup  = COLLISION_GROUP_WORLD
+				LOSdata.filter		= function( ent ) if ( ent:GetClass() ~= "worldspawn" ) then return false end end
+				LOSdata.mins			= vector_origin
+				LOSdata.maxs			= LOSdata.mins
 
-			LOStr = util.TraceHull( LOSdata )
+				LOStr = util.TraceHull( LOSdata )
 
-			--Trace did not hit world
-			if not LOStr.Hit then
-				table.insert(WhitelistEnts, scanEnt)
+				--Trace did not hit world
+				if not LOStr.Hit then
+					table.insert(WhitelistEnts, scanEnt)
+				end
 			end
 		end
-
 	end
 
 	return WhitelistEnts
@@ -294,23 +293,25 @@ end
 function SWEP:AcquireLock()
 	local owner = self:GetOwner()
 
-	local found          = self:GetWhitelistedEntsInCone()
-	local IRSTPos        = owner:GetShootPos()
-	local Owners         = {}
+	local found			= self:GetWhitelistedEntsInCone()
 
-	self.ClosestToBeam   = -1
-	local besterr        = math.huge --Hugh mungus number
+	local IRSTPos		= owner:GetShootPos()
 
-	local entpos         = vector_origin
-	local difpos         = vector_origin
-	local nonlocang      = Angle()
-	local ang            = Angle()
-	local absang         = Angle()
-	local dist           = 0
+	local Owners			= {}
 
-	local bestEnt        = NULL
+	self.ClosestToBeam = -1
+	local besterr		= math.huge --Hugh mungus number
 
-	local LockCone       = 2.5
+	local entpos			= Vector()
+	local difpos			= Vector()
+	local nonlocang		= Angle()
+	local ang			= Angle()
+	local absang			= Angle()
+	local dist			= 0
+
+	local bestEnt		= NULL
+
+	local LockCone = 2.5
 
 	for _, scanEnt in ipairs(found) do
 		entpos	= scanEnt:WorldSpaceCenter()
@@ -336,7 +337,7 @@ function SWEP:AcquireLock()
 				end
 
 				dist = difpos:Length()
-				Heat = ACE.InfraredHeatFromProp(self, scanEnt, dist)
+				Heat = ACE.InfraredHeatFromProp(scanEnt, dist)
 			end
 
 			--Skip if not Hotter than AmbientTemp in deg C.
@@ -400,42 +401,53 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
 	if SERVER and IsValid( self.TarEnt ) and self:GetLaunchAuth() then
-		local ent = ents.Create( "ace_missile_swep_guided" )
 
-		if ( IsValid( ent ) ) then
-			ent:SetPos(owner:GetShootPos() + owner:GetAimVector() * Vector(10, 30, -25))
+		local MDat = {
+			Owner = owner,
+			Launcher = owner,
 
-			local targetDist = self.TarEnt:GetPos():Distance(owner:GetShootPos())
-			local topAttack = targetDist > self.DirectFireDist
---			ent:SetAngles(owner:GetAimVector():Angle() + Angle(topAttack and -20 or -5, 0, 0))
-			ent:SetAngles(owner:GetAimVector():Angle() + Angle(-20, 0, 0))
+			Pos = owner:GetShootPos() + owner:GetAimVector() * Vector(10, 30, -25),
+			Ang = owner:GetAimVector():Angle() + Angle(-20, 0, 0),
 
-			ent:Spawn()
-			ent:SetOwner(Gun)
-			ent:SetModel("models/mcace/Jevelinemissile.mdl")
+			Mdl = "models/mcace/Jevelinemissile.mdl",
 
-			ent.phys:ApplyForceCenter(20 * (ent:GetForward() * 500))
+			TurnRate = 320,
+			FinMul = 1.0,
+			ThrusterTurnRate = 30,
 
-			timer.Simple(0.1, function()
-				ParticleEffectAttach("Rocket Motor ATGM", 4, ent, 1)
-			end)
+			InitialVelocity = 20,
+			Thrust = 15,
+			BurnTime = 8,
+			MotorDelay = 0,
 
-			ent.MaxTurnRate = 80
-			ent.TrackCone = 180
-			ent.MissileThrust = 3500
-			ent.MotorIncrements = 0.55
-			ent.MissileBurnTime = 15
-			ent.FuseTime = 25
-			ent.tarent = self.TarEnt
-			ent.Bulletdata = self.BulletData
-			ent.LeadMul = 1.5
-			ent.TopAttackGuidance = topAttack
-			ent.DirectFireDist = self.DirectFireDist
+			BoostThrust = 140,
+			BoostTime = 0.1,
+			BoostDelay = 0.45,
 
+			Drag = 0.003,
+			GuidanceName = "Top_Attack_IR",
+			FuseName = "Contact",
+			HasInertial = true,
+			HasDatalink = false,
 
-			ent:SetOwner(owner)
-			ACE.SetEntityOwner(ent, owner)
-		end
+			ArmDelay = 0.2,
+			DelayPrediction = 0.2,
+			ArmorThickness = 16,
+
+			MotorSound = "acf_extra/ACE/missiles/Launch/Javelin.wav",
+			BoostEffect = "ACE_MissileTiny",
+			MotorEffect = "ACE_MissileTiny"
+		}
+		local BData = self.BulletData
+		BData.BulletData = nil
+
+		BData.FakeCrate = ents.Create("acf_fakecrate2")
+		BData.FakeCrate:RegisterTo(BData)
+		BData.Crate = BData.FakeCrate:EntIndex()
+		--self:DeleteOnRemove(BData.FakeCrate)
+
+		local MisEnt = ACE.GenerateMissile(MDat,BData.FakeCrate,BData)
+		MisEnt.TargetPos = self.TarEnt:GetPos()
 
 		self:EmitSound(self.Primary.Sound)
 		self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)

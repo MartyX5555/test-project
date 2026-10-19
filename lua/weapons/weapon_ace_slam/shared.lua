@@ -132,7 +132,7 @@ function SWEP:InitBulletData()
 	self.BulletData.Ricochet = 999
 	self.BulletData.Flight = Vector(0, 0, 0)
 	self.BulletData.BoomPower = self.BulletData.PropMass + self.BulletData.FillerMass
-	--		local SlugEnergy = ACE.Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
+	--		local SlugEnergy = ACE_Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
 	local SlugEnergy = ACE.Kinetic(self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37, self.BulletData.SlugMass, 999999)
 	self.BulletData.MaxPen = (SlugEnergy.Penetration / self.BulletData.SlugPenArea) * ACE.KEtoRHA
 	--		print("SlugPen: " .. self.BulletData.MaxPen)
@@ -148,7 +148,7 @@ function SWEP:InitBulletData()
 	self.Colour = self.BulletData.Colour
 	self.DetonatorAngle = 80
 
-	self.BulletData.FuseDelay = 0.1
+	self.BulletData.FuseLength = 0.1
 end
 
 function SWEP:PrimaryAttack()
@@ -191,9 +191,11 @@ function SWEP:PrimaryAttack()
 				--ent:SetAngles(hitNormal:Angle() + Angle(90, 0, 0))
 				ent:Spawn()
 				ent.Bulletdata = self.BulletData
-				owner:AddCleanup( "ACE Mines", ent )
+				owner:AddCleanup( "aceexplosives", ent )
 
-				ACE.SetEntityOwner(ent, Entity(0))
+				if CPPI then
+					ent:CPPISetOwner( Entity(0) )
+				end
 
 				if IsValid(traceEnt) then
 					ent:SetParent(traceEnt)

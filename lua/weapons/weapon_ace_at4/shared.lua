@@ -9,10 +9,10 @@ SWEP.SlotPos = 3 --Priority in which the weapon appears, 1 tries to put it at th
 
 
 --Main settings--
-SWEP.FireRate = 0.35 --Rounds per second
+SWEP.FireRate = 0.2 --Rounds per second
 
 SWEP.Primary.ClipSize = 1
-SWEP.Primary.DefaultClip = 10
+SWEP.Primary.DefaultClip = 1
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "RPG_Round"
 SWEP.Primary.Sound = "ace_weapons/sweps/multi_sound/at4_multi.mp3"
@@ -28,10 +28,9 @@ SWEP.HasScope = false --True if the weapon has a sniper-style scope
 
 --Recoil (crosshair movement) settings--
 --"Heat" is a number that represents how long you've been firing, affecting how quickly your crosshair moves upwards
-SWEP.HeatReductionRate = 75 --Heat loss per second when not firing
-SWEP.HeatReductionDelay = 0.25 --Delay after firing before beginning to reduce heat
-SWEP.HeatPerShot = 10 --Heat generated per shot
-SWEP.HeatMax = 25 --Maximum heat - determines max rate at which recoil is applied to eye angles
+SWEP.HeatReductionRate = 25 --Heat loss per second when not firing
+SWEP.HeatPerShot = 100 --Heat generated per shot
+SWEP.HeatMax = 100 --Maximum heat - determines max rate at which recoil is applied to eye angles
 				--Also determines point at which random spread is at its highest intensity
 				--HeatMax divided by HeatPerShot gives you how many shots until you reach MaxSpread
 
@@ -40,17 +39,17 @@ SWEP.RecoilSideBias = 0.1 --How much the recoil is biased to one side proportion
 
 SWEP.ZoomRecoilBonus = 0.5 --Reduce recoil by this amount when zoomed or scoped
 SWEP.CrouchRecoilBonus = 0.5 --Reduce recoil by this amount when crouching
-SWEP.ViewPunchAmount = 10 --Degrees to punch the view upwards each shot - does not actually move crosshair, just a visual effect
+SWEP.ViewPunchAmount = 400 --Degrees to punch the view upwards each shot - does not actually move crosshair, just a visual effect
 
 
 --Spread (aimcone) settings--
-SWEP.BaseSpread = 0.75 --First-shot random spread, in degrees
-SWEP.MaxSpread = 0 --Maximum added random spread from heat value, in degrees
+SWEP.BaseSpread = 0.15 --First-shot random spread, in degrees
+SWEP.MaxSpread = 15 --Maximum added random spread from heat value, in degrees
 					--If HeatMax is 0 this will be ignored and only BaseSpread will be taken into account (AT4 for example)
-SWEP.MovementSpread = 10 --Increase aimcone to this many degrees when sprinting at full speed
-SWEP.UnscopedSpread = 7 --Spread, in degrees, when unscoped with a scoped weapon
+SWEP.MovementSpread = 2 --Increase aimcone to this many degrees when sprinting at full speed
+SWEP.UnscopedSpread = 0.5 --Spread, in degrees, when unscoped with a scoped weapon
 
-SWEP.CarrySpeedMul			= 0.6
+SWEP.CarrySpeedMul			= 0.7
 
 --Model settings--
 SWEP.ViewModelFlip = false
@@ -86,7 +85,7 @@ function SWEP:InitBulletData()
 	self.BulletData.PropMass = self.BulletData.FrArea * (self.BulletData.PropLength * ACE.PDensity / 1000) --Volume of the case as a cylinder * Powder density converted from g to kg
 	self.BulletData.FillerVol = self.BulletData.Data5
 	self.BulletData.FillerMass = self.BulletData.FillerVol * ACE.HEDensity / 1000
-	self.BulletData.BoomFillerMass = self.BulletData.FillerMass / 130
+	self.BulletData.BoomFillerMass = self.BulletData.FillerMass
 	local ConeArea = 3.1416 * self.BulletData.Caliber / 2 * ((self.BulletData.Caliber / 2) ^ 2 + self.BulletData.ProjLength ^ 2) ^ 0.5
 	local ConeThick = self.BulletData.Caliber / 50
 	local ConeVol = ConeArea * ConeThick
@@ -97,14 +96,16 @@ function SWEP:InitBulletData()
 	--		print("SlugMV: " .. self.BulletData.SlugMV)
 	local SlugFrArea = 3.1416 * (self.BulletData.SlugCaliber / 2) ^ 2
 	self.BulletData.SlugPenArea = SlugFrArea ^ ACE.PenAreaMod
-	self.BulletData.SlugDragCoef = ((SlugFrArea / 10000) / self.BulletData.SlugMass) * 1000
+	self.BulletData.SlugDragCoef = ((SlugFrArea / 10000) / self.BulletData.SlugMass)
 	self.BulletData.SlugRicochet = 500 --Base ricochet angle (The HEAT slug shouldn't ricochet at all)
 	self.BulletData.CasingMass = self.BulletData.ProjMass - self.BulletData.FillerMass - ConeVol * 7.9 / 1000
 	self.BulletData.Fragments = math.max(math.floor((self.BulletData.BoomFillerMass / self.BulletData.CasingMass) * ACE.HEFrag), 2)
 	self.BulletData.FragMass = self.BulletData.CasingMass / self.BulletData.Fragments
 	--		self.BulletData.DragCoef  = 0 --Alternatively manually set it
 	self.BulletData.DragCoef = ((self.BulletData.FrArea / 10000) / self.BulletData.ProjMass)
-	print(self.BulletData.SlugDragCoef)
+	self.BulletData.FillerMass = self.BulletData.FillerMass / 5
+	self.BulletData.BoomFillerMass = self.BulletData.FillerMass
+	--print(self.BulletData.SlugDragCoef)
 	--Don't touch below here
 	self.BulletData.MuzzleVel = ACE.MuzzleVelocity(self.BulletData.PropMass, self.BulletData.ProjMass, self.BulletData.Caliber)
 	self.BulletData.ShovePower = 0.2
@@ -115,7 +116,7 @@ function SWEP:InitBulletData()
 	self.BulletData.Ricochet = 999
 	self.BulletData.Flight = Vector(0, 0, 0)
 	self.BulletData.BoomPower = self.BulletData.PropMass + self.BulletData.FillerMass
-	--		local SlugEnergy = ACE.Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
+	--		local SlugEnergy = ACE_Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
 	local SlugEnergy = ACE.Kinetic(self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37, self.BulletData.SlugMass, 999999)
 	self.BulletData.MaxPen = (SlugEnergy.Penetration / self.BulletData.SlugPenArea) * ACE.KEtoRHA
 	--		print("SlugPen: " .. self.BulletData.MaxPen)
@@ -130,4 +131,87 @@ function SWEP:InitBulletData()
 	self.DragCoef = self.BulletData.DragCoef
 	self.Colour = self.BulletData.Colour
 	self.DetonatorAngle = 80
+end
+
+
+function SWEP:PrimaryAttack()
+
+	if self:Clip1() == 0 and self:Ammo1() > 0 then
+		self:Reload()
+
+		return
+	end
+
+	if not self:CanPrimaryAttack() then return end
+
+	local owner = self:GetOwner()
+	if (IsFirstTimePredicted() or game.SinglePlayer()) and owner:IsPlayer() then
+		self:GetOwner():ViewPunch(Angle(-5, 0, 0))
+	end
+
+	self:SetNextPrimaryFire( CurTime() + (1 / self.FireRate) )
+
+		if SERVER then
+
+			local MDat = {
+				Owner = owner,
+				Launcher = owner,
+
+				Pos = owner:GetShootPos() + owner:GetAimVector() * 1500,
+				Ang = owner:GetAimVector():Angle(),
+
+				Mdl = "models/munitions/round_100mm_mortar_shot.mdl",
+
+				TurnRate = 0,
+				FinMul = 0,
+				ThrusterTurnRate = 0,
+
+				InitialVelocity = 234,
+				Thrust = 0,
+				BurnTime = 5,
+				MotorDelay = 0,
+
+				BoostThrust = 0,
+				BoostTime = 0,
+				BoostDelay = 0,
+
+				Drag = 0.003,
+				GuidanceName = "Dumb",
+				FuseName = "Contact",
+				HasInertial = false,
+				HasDatalink = false,
+
+				ArmDelay = 0,
+				DelayPrediction = 0.1,
+				ArmorThickness = 8,
+
+				MotorSound = "acf_extra/airfx/rpg_fire.wav",
+				BoostEffect = "rocket_smoke",
+				MotorEffect = "rocket_smoke"
+			}
+			local BData = self.BulletData
+			BData.BulletData = nil
+
+			BData.FakeCrate = ents.Create("acf_fakecrate2")
+			BData.FakeCrate:RegisterTo(BData)
+			BData.Crate = BData.FakeCrate:EntIndex()
+			--self:DeleteOnRemove(BData.FakeCrate)
+
+			ACE.GenerateMissile(MDat,BData.FakeCrate,BData)
+
+		self:EmitSound(self.Primary.Sound)
+		self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+		self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+
+		if owner:IsPlayer() then
+			if self:Ammo1() > 0 then
+				self:GetOwner():RemoveAmmo( 1, "RPG_Round")
+				self:SetZoomState(false)
+				self:SetOwnerZoomSpeed(false)
+			else
+				self:TakePrimaryAmmo(1)
+			end
+		end
+
+	end
 end

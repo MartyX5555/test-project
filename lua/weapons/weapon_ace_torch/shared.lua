@@ -13,13 +13,11 @@ SWEP.AdminSpawnable			= true
 SWEP.Author					= "Lazermaniac"
 SWEP.Contact				= "lazermaniac@gmail.com"
 
-SWEP.Instructions			= ACETranslation.ACECuttingTorch[3]
-
 SWEP.Primary.Ammo			= "none"
 SWEP.Primary.Automatic		= true
 SWEP.Primary.ClipSize		= -1
 SWEP.Primary.DefaultClip	= -1
-SWEP.Purpose				= ACETranslation.ACECuttingTorch[2]
+SWEP.Purpose				= "#acetorch.purpose"
 SWEP.Secondary.Ammo			= "none"
 SWEP.Secondary.Automatic	= true
 SWEP.Secondary.ClipSize		= -1
@@ -30,7 +28,7 @@ SWEP.ViewModelFOV			= 55
 SWEP.ViewModel				= "models/weapons/v_cuttingtorch.mdl"
 SWEP.WorldModel				= "models/weapons/w_cuttingtorch.mdl"
 
-SWEP.PrintName			= ACETranslation.ACECuttingTorch[1]
+SWEP.PrintName			= "#acetorch.name"
 SWEP.Slot				= 0
 SWEP.SlotPos			= 6
 SWEP.IconLetter			= "G"
@@ -144,9 +142,9 @@ do
 					ent.ACE.Health = math.min(ent.ACE.Health + (600 / ent.ACE.MaxArmour), ent.ACE.MaxHealth)
 					ent.ACE.Armour = math.min(ent.ACE.MaxArmour * (ent.ACE.Health / ent.ACE.MaxHealth), ent.ACE.MaxArmour)
 					ent:EmitSound( "ambient/energy/NewSpark0" .. tostring( math.random( 3, 5 ) ) .. ".wav", 75, 100, 1, CHAN_WEAPON )
-					TeslaSpark(tr.HitPos , 1 )
+					ACE.TeslaSpark(tr.HitPos , 1 )
 
-				ACE.UpdateVisualHealth(ent)
+					ACE.UpdateVisualHealth(ent)
 
 					self:SetNWFloat( "HP", ent.ACE.Health )
 					self:SetNWFloat( "Armour", ent.ACE.Armour )
@@ -188,7 +186,7 @@ do
 
 		if not IsValid(ent) then return end
 
-		if ACE.Check ( ent ) then
+		if ACE.Check( ent ) then
 
 			self:SetNWFloat( "HP", ent.ACE.Health )
 			self:SetNWFloat( "Armour", ent.ACE.Armour )
@@ -201,19 +199,19 @@ do
 			if ent:IsPlayer() or ent:IsNPC() or ent:IsNextBot() then
 
 				Energy = { Kinetic = 0.2,Momentum = 0,Penetration = 0.2 }
-				HitRes = ACE.Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
+				HitRes = ACE.Damage( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 			else
 
 				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
 
 				Energy = { Kinetic = 500, Momentum = 0, Penetration = 500 }
-				HitRes = ACE.Damage ( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
+				HitRes = ACE.Damage( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 
 			end
 
 			if HitRes.Kill and not ent:IsPlayer() then
 
-			ACE.APKill( ent, VectorRand() , 0)
+				ACE.APKill( ent, VectorRand() , 0)
 				ent:EmitSound("ambient/energy/NewSpark0" .. tostring(math.random(3, 5)) .. ".wav", 75, 100, 1, CHAN_AUTO)
 			else
 				local effectdata = EffectData()
@@ -242,7 +240,7 @@ end
 
 
 
-function TeslaSpark(pos, magnitude)
+function ACE.TeslaSpark(pos, magnitude)
 	zap = ents.Create("point_tesla")
 	zap:SetKeyValue("targetname", "teslab")
 	zap:SetKeyValue("m_SoundName" ,"null")
