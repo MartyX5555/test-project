@@ -196,8 +196,8 @@ end
 function SWEP:GetWhitelistedEntsInCone()
 	local owner = self:GetOwner()
 
-	local ScanArray = ACE.contraptionEnts
-	if table.IsEmpty(ScanArray) then return {} end
+	local ScanArray = ACE.GlobalEntities
+	if not next(ScanArray) then print("No whitelisted entities found.") return {} end
 
 	local WhitelistEnts = {}
 	local LOSdata	= {}
@@ -212,7 +212,7 @@ function SWEP:GetWhitelistedEntsInCone()
 	local MinimumDistance = 1	*  39.37
 	local MaximumDistance = 2400  *  39.37
 
-	for _, scanEnt in ipairs(ScanArray) do
+	for scanEnt, _ in pairs(ScanArray) do
 
 		-- skip any invalid entity
 		if IsValid(scanEnt) then
@@ -290,7 +290,7 @@ function SWEP:AcquireLock()
 				end
 
 				dist = difpos:Length()
-				Heat = ACE.InfraredHeatFromProp(scanEnt, dist)
+				Heat = ACE.InfraredHeatFromProp(self, scanEnt, dist)
 			end
 
 			--Skip if not Hotter than AmbientTemp in deg C.
@@ -395,7 +395,7 @@ function SWEP:PrimaryAttack()
 		local BData = self.BulletData
 		BData.BulletData = nil
 
-		BData.FakeCrate = ents.Create("acf_fakecrate2")
+		BData.FakeCrate = ents.Create("ace_fakecrate2")
 		BData.FakeCrate:RegisterTo(BData)
 		BData.Crate = BData.FakeCrate:EntIndex()
 		--self:DeleteOnRemove(BData.FakeCrate)

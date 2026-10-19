@@ -205,7 +205,7 @@ function SWEP:PrimaryAttack()
 			local BData = self.BulletData
 			BData.BulletData = nil
 
-			BData.FakeCrate = ents.Create("acf_fakecrate2")
+			BData.FakeCrate = ents.Create("ace_fakecrate2")
 			BData.FakeCrate:RegisterTo(BData)
 			BData.Crate = BData.FakeCrate:EntIndex()
 			--self:DeleteOnRemove(BData.FakeCrate)

@@ -8,7 +8,7 @@ SWEP.AutoSwitchTo = false
 
 function SWEP:UpdateFakeCrate()
 	if not IsValid(self.FakeCrate) then
-		self.FakeCrate = ents.Create("acf_fakecrate2")
+		self.FakeCrate = ents.Create("ace_fakecrate2")
 	end
 
 	self.FakeCrate:RegisterTo(self)
