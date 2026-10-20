@@ -88,10 +88,6 @@ end
 SWEP.SwayScale = 0.5
 SWEP.BobScale = 1.5
 
-
-AddCSLuaFile("cl_ace_spawnmenu.lua")
-include("cl_ace_spawnmenu.lua")
-
 function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 0, "ZoomState")
 	self:NetworkVar("Int", 0, "RandomSeed")
