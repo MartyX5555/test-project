@@ -62,8 +62,6 @@ end
 local function validateSZs(safetable)
 	if type(safetable) ~= "table" then return false end
 
-	--PrintTable(safetable)
-
 	for k, v in pairs(safetable) do
 		if type(k) ~= "string" then return false end
 		if not (#v == 2 and v[1] and v[2]) then return false end
@@ -98,8 +96,12 @@ local function getMapSZs()
 	end
 
 	this.Safezones = safezones
+
+	timer.Simple( 5, function() this.visualizeSafeZones() end )
+
 	return true
 end
+getMapSZs()
 
 local function getMapDPMFilename()
 	return mapDPMDir .. game.GetMap() .. ".txt"
@@ -527,7 +529,7 @@ end
 function this.PermissionsRaw(ownerid, attackerid, value)
 	if not ownerid then return end
 
-	local ownerprefs = this.GetDamagePermissions(ownerid) --PrintTable(ownerprefs)
+	local ownerprefs = this.GetDamagePermissions(ownerid)
 
 	if attackerid then
 		local old = ownerprefs[attackerid] and true or nil
@@ -700,7 +702,7 @@ function ACE.CreateSZRope( Pos, Ent, LPos1, LPos2 )
 
 end
 
--- Used to visualize safezones in the world. 
+-- Used to visualize safezones in the world.
 function ACE.VisualizeSZ(Point1, Point2)
 
 	local SZEnt = ents.Create("prop_physics")
@@ -800,3 +802,20 @@ function ACE.VisualizeSZ(Point1, Point2)
 
 	return SZEnt
 end
+
+function this.visualizeSafeZones()
+	if not this.Safezones then print("No safe zones to show") return false end
+
+	--szname is _ because unused. I could potentially color the visual safezones???
+	for _, szpts in pairs(this.Safezones) do
+		szmin = szpts[1]
+		szmax = szpts[2]
+		ACE.VisualizeSZ(szmin, szmax)
+	end
+
+	return false
+end
+
+hook.Add( "PostCleanupMap", "ACE_RestoreSZsCleanup", function( _ )
+	this.visualizeSafeZones()
+end )

@@ -220,11 +220,11 @@ local function OnhttpSucess(contents)
 
 		if rev and ACE.Version == rev  and rev ~= 0 then
 
-			print("[ACE | INFO]- You have the latest version! Current version: " .. rev)
+			print("[ACE | INFO]- You are using the latest version! Current version: " .. rev)
 
 		elseif rev and ACE.Version > rev and rev ~= 0 then
 
-			print("[ACE | INFO]- You have an experimental version! Your version: " .. ACE.Version .. ". Main version: " .. rev)
+			print("[ACE | INFO]- You are using an experimental version! Your version: " .. ACE.Version .. ". Main version: " .. rev)
 		elseif rev == 0 then
 
 			print("[ACE | ERROR]- Unable to find the latest version! Failed to connect to GitHub.")

@@ -148,6 +148,7 @@ function SWEP:Think()
 end
 
 function SWEP:Reload()
+	if CLIENT then return end
 
 	if CurTime() < self.LastMenuOpen then return false end
 	self.LastMenuOpen = CurTime() + 2

@@ -17,7 +17,7 @@ SWEP.Primary.Ammo			= "none"
 SWEP.Primary.Automatic		= true
 SWEP.Primary.ClipSize		= -1
 SWEP.Primary.DefaultClip	= -1
-SWEP.Purpose				= "#acetorch.purpose"
+SWEP.Purpose				= "Used to clear baricades and repair vehicles."
 SWEP.Secondary.Ammo			= "none"
 SWEP.Secondary.Automatic	= true
 SWEP.Secondary.ClipSize		= -1
@@ -28,7 +28,7 @@ SWEP.ViewModelFOV			= 55
 SWEP.ViewModel				= "models/weapons/v_cuttingtorch.mdl"
 SWEP.WorldModel				= "models/weapons/w_cuttingtorch.mdl"
 
-SWEP.PrintName			= "#acetorch.name"
+SWEP.PrintName			= "ACE Cutting torch"
 SWEP.Slot				= 0
 SWEP.SlotPos			= 6
 SWEP.IconLetter			= "G"

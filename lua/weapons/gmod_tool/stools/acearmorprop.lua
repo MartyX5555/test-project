@@ -10,7 +10,8 @@ TOOL.ClientConVar["ductility"]  = 0
 TOOL.ClientConVar["material"]	= "RHA"
 
 --Used by the panel. If i can to use the TOOL itself for this, i would be really appreciated
-local ToolPanel = ToolPanel or {}
+local ToolPanel = {}
+ToolPanel.TextLabels = {}
 
 CreateClientConVar( "acearmorprop_area", 0, false, true ) -- we don't want this one to save
 
@@ -30,15 +31,6 @@ local function CalcArmor( Area, Ductility, Thickness, Mat )
 
 end
 
---[[
--- changes here will be automatically reflected in the armor properties tool
-function ACE.CalcArmor( Area, Ductility, Mass )
-
-	return ( Mass * 1000 / Area / 0.78 ) / ( 1 + Ductility ) ^ 0.5 * ACE.ArmorMod
-
-end
-]]
-
 if CLIENT then
 
 	language.Add( "tool.acearmorprop.name", ACETranslation.ArmorPropertiesText[1] )
@@ -48,82 +40,40 @@ if CLIENT then
 	surface.CreateFont( "Torchfont", { size = 40, weight = 1000, font = "arial" } )
 
 	--Required in order to update material data inserted in client convars
-	local function PreMaterilCheck( Material )
+	local function PreMaterialCheck( Material )
 		local NewMaterial = ACE.VerifyMaterial(Material)
 		if NewMaterial ~= Material then
 			--Updates the convar with the proper material
 			RunConsoleCommand( "acearmorprop_material", NewMaterial )
 		end
 	end
-
 	--Looks like client convars are not initialized very quickly, so we will wait a bit until they become valid.
-	timer.Simple(0.1, function()
-		PreMaterilCheck( GetConVar("acearmorprop_material"):GetString() )
+	hook.Add( "InitPostEntity", "ACE.PreMaterialCheck", function()
+		PreMaterialCheck( GetConVar("acearmorprop_material"):GetString() )
+		hook.Remove( "InitPostEntity", "ACE.PreMaterialCheck" )
 	end )
 
-	--Replicated from PANEL:CPanelText(Name, Desc, Font). No idea why this doesnt work with this function out of this file
-	local function ArmorPanelText( name, panel, desc, font )
+	--Replicated from PANEL:CPanelText(Name, Desc, Font).
+	local function ArmorPanelText( name, desc, font, panel )
 
-		if not PanelTxt then PanelTxt = {} end
+		local Id = name .. "_aText"
+		local TextLabels = ToolPanel.TextLabels[Id]
 
-		if not PanelTxt[name .. "_aText"] then
-			PanelTxt[name .. "_aText"] = panel:Help(desc)
-			PanelTxt[name .. "_aText"]:SetContentAlignment( TEXT_ALIGN_CENTER )
-			PanelTxt[name .. "_aText"]:SetAutoStretchVertical(true)
-			if font then PanelTxt[name .. "_aText"]:SetFont( font ) end
-			PanelTxt[name .. "_aText"]:SizeToContents()
+		if not IsValid(TextLabels) then
+			TextLabels = panel:Help(desc)
+			TextLabels:SetContentAlignment( TEXT_ALIGN_CENTER )
+			TextLabels:SetAutoStretchVertical(true)
+			if font then TextLabels:SetFont( font ) end
+			TextLabels:SizeToContents()
 
-			panel:AddItem(PanelTxt[name .. "_aText"])
-
+			panel:AddItem(TextLabels)
 		end
 
-		PanelTxt[name .. "_aText"]:SetText( desc )
-		PanelTxt[name .. "_aText"]:SetSize( panel:GetWide(), 10 )
-		PanelTxt[name .. "_aText"]:SizeToContentsY()
+		TextLabels:SetText( desc )
+		TextLabels:SetSize( panel:GetWide(), 10 )
+		TextLabels:SizeToContentsY()
 
-	end
-
-	-- Material ComboBox creation
-	local function MaterialTable( panel )
-
-		local MaterialTypes = ACE.ArmorMaterials
-		if not MaterialTypes then return end
-
-		local Material = GetConVar("acearmorprop_material"):GetString()
-		local MaterialData  = MaterialTypes[Material]
-
-		ArmorPanelText( "ComboBox", panel, "Material" )
-
-		if not ToolPanel.ComboMat then
-
-			ToolPanel.panel = panel
-
-			ToolPanel.ComboMat = vgui.Create( "DComboBox" )
-			ToolPanel.ComboMat:SetPos( 5, 30 )
-			ToolPanel.ComboMat:SetSize( 100, 20 )
-			ToolPanel.ComboMat:SetValue( MaterialData.sname )
-			ToolPanel.panel:AddItem(ToolPanel.ComboMat)
-
-			for _, Mat  in pairs(MaterialTypes) do
-				if ACE.Year >= Mat.year then
-					ToolPanel.ComboMat:AddChoice(Mat.sname, Mat.id )
-				end
-			end
-
-			ArmorPanelText( "ComboTitle", ToolPanel.panel, MaterialData.name , "DermaDefaultBold" )
-			ArmorPanelText( "ComboDesc" , ToolPanel.panel, MaterialData.desc .. "\n" )
-
-			ArmorPanelText( "ComboCurve", ToolPanel.panel, "Curve : " .. MaterialData.curve )
-			ArmorPanelText( "ComboMass" , ToolPanel.panel, "Mass : " .. MaterialData.massMod .. "x RHA" )
-			ArmorPanelText( "ComboKE"	, ToolPanel.panel, "KE protection : " .. MaterialData.effectiveness .. "x RHA" )
-			ArmorPanelText( "ComboCHE"  , ToolPanel.panel, "CHEMICAL protection : " .. (MaterialData.HEATeffectiveness or MaterialData.effectiveness) .. "x RHA" )
-			ArmorPanelText( "ComboYear" , ToolPanel.panel, "Year : " .. (MaterialData.year or "unknown") )
-
-			function ToolPanel.ComboMat:OnSelect(self, _, value )
-
-				RunConsoleCommand( "acearmorprop_material", value )
-			end
-		end
+		ToolPanel.TextLabels[Id] = TextLabels
 	end
 
 	--Main menu building
@@ -137,13 +87,48 @@ if CLIENT then
 
 		panel:AddItem( Presets )
 
+		-- Armor
 		panel:NumSlider( ACETranslation.ArmorPropertiesText[4], "acearmorprop_thickness", 1, 5000 )
 		panel:ControlHelp( ACETranslation.ArmorPropertiesText[5] )
 
+		-- Ductility
 		panel:NumSlider( ACETranslation.ArmorPropertiesText[6], "acearmorprop_ductility", -80, 80 )
 		panel:ControlHelp( ACETranslation.ArmorPropertiesText[7] )
 
-		MaterialTable(panel)
+		-- Material
+		local MaterialTypes = ACE.ArmorMaterials
+		if not MaterialTypes then return end
+
+		local Material = GetConVar("acearmorprop_material"):GetString()
+		local MaterialData  = MaterialTypes[Material]
+
+		panel:Help("Material")
+
+		local combobox = vgui.Create( "DComboBox", panel )
+		combobox:SetSize( 100, 25 )
+		combobox:SetValue( MaterialData.sname )
+		panel:AddItem( combobox )
+
+		for _, Mat  in pairs(MaterialTypes) do
+			if ACE.Year >= Mat.year then
+				combobox:AddChoice(Mat.sname, Mat.id )
+			end
+		end
+		function combobox:OnSelect( _, _, data )
+			RunConsoleCommand( "acearmorprop_material", data )
+		end
+
+		ToolPanel.ComboMat = combobox
+		ToolPanel.panel = panel
+
+		ArmorPanelText( "ComboTitle",  MaterialData.name , "DermaDefaultBold", ToolPanel.panel )
+		ArmorPanelText( "ComboDesc" , MaterialData.desc .. "\n", nil, ToolPanel.panel )
+
+		ArmorPanelText( "ComboCurve", "Curve : " .. MaterialData.curve, nil, ToolPanel.panel )
+		ArmorPanelText( "ComboMass" , "Mass : " .. MaterialData.massMod .. "x RHA", nil, ToolPanel.panel )
+		ArmorPanelText( "ComboKE"	, "KE protection : " .. MaterialData.effectiveness .. "x RHA", nil, ToolPanel.panel )
+		ArmorPanelText( "ComboCHE"  , "CHEMICAL protection : " .. (MaterialData.HEATeffectiveness or MaterialData.effectiveness) .. "x RHA", nil, ToolPanel.panel )
+		ArmorPanelText( "ComboYear" , "Year : " .. (MaterialData.year or "unknown"), nil, ToolPanel.panel )
 
 	end
 
@@ -215,16 +200,16 @@ if CLIENT then
 		local MatData = ACE.GetMaterialData( Mat )
 
 		--Too redundant, ik, but looks like the unique way to have it working even when right clicking a prop
-		ToolPanel.ComboMat:SetText(MatData.sname)
+		ToolPanel.ComboMat:SetValue(MatData.sname)
 
-		ArmorPanelText( "ComboTitle", ToolPanel.panel, MatData.name , "DermaDefaultBold" )
-		ArmorPanelText( "ComboDesc" , ToolPanel.panel, MatData.desc .. "\n" )
+		ArmorPanelText( "ComboTitle", MatData.name , "DermaDefaultBold", ToolPanel.panel )
+		ArmorPanelText( "ComboDesc" , MatData.desc .. "\n", nil, ToolPanel.panel )
 
-		ArmorPanelText( "ComboCurve", ToolPanel.panel, "Curve : " .. MatData.curve )
-		ArmorPanelText( "ComboMass" , ToolPanel.panel, "Mass scale: " .. MatData.massMod .. "x RHA")
-		ArmorPanelText( "ComboKE"	, ToolPanel.panel, "KE protection : " .. MatData.effectiveness .. "x RHA" )
-		ArmorPanelText( "ComboCHE"  , ToolPanel.panel, "CHEMICAL protection : " .. (MatData.HEATeffectiveness or MatData.effectiveness) .. "x RHA" )
-		ArmorPanelText( "ComboYear" , ToolPanel.panel, "Year : " .. (MatData.year or "unknown") )
+		ArmorPanelText( "ComboCurve", "Curve : " .. MatData.curve, nil, ToolPanel.panel )
+		ArmorPanelText( "ComboMass" , "Mass scale: " .. MatData.massMod .. "x RHA", nil, ToolPanel.panel )
+		ArmorPanelText( "ComboKE"	, "KE protection : " .. MatData.effectiveness .. "x RHA", nil, ToolPanel.panel )
+		ArmorPanelText( "ComboCHE"  , "CHEMICAL protection : " .. (MatData.HEATeffectiveness or MatData.effectiveness) .. "x RHA", nil, ToolPanel.panel )
+		ArmorPanelText( "ComboYear" , "Year : " .. (MatData.year or "unknown"), nil, ToolPanel.panel )
 
 	end, "ace_material" )
 end
