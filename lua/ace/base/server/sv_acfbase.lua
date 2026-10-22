@@ -503,4 +503,3 @@ function ACE.GetWeaponUser( Weapon, inp )
 
 	return ACE.GetEntityOwner(inp)
 end
-

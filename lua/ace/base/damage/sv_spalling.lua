@@ -74,7 +74,7 @@ function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inf
 			ACE.Spall[Index].mins	= Vector(0,0,0)
 			ACE.Spall[Index].maxs	= Vector(0,0,0)
 
-		ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
+			ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
 
 			--little sound optimization
 			if i < math.max(math.Round(Spall / 2), 1) then

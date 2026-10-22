@@ -693,10 +693,8 @@ function ENT:FireMissile()
 
 			local MuzzleVec		= self:GetAngles():Forward()
 
-			local coneAng          = math.tan(math.rad(self:GetInaccuracy()))
-			local randUnitSquare   = (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-			local spread           = randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
-			local ShootVec         = (MuzzleVec + spread):GetNormalized()
+			local coneAng = self:GetInaccuracy()
+			local ShootVec = ACE.GetCircularSpread(MuzzleVec, coneAng)
 
 			local filter = {}
 			for _, v in pairs(self.Missiles) do
