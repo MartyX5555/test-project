@@ -73,8 +73,6 @@ function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inf
 			ACE.Spall[Index].start  = HitPos
 			ACE.Spall[Index].endpos = HitPos + spallDir * spallDist
 			ACE.Spall[Index].filter = table.Copy(Filter)
-			ACE.Spall[Index].mins	= Vector(0,0,0)
-			ACE.Spall[Index].maxs	= Vector(0,0,0)
 
 			ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
 
@@ -280,8 +278,6 @@ function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour,
 
 		for i = 1,Spall do
 
-			local spallDir = ACE.GetCircularSpread(baseDir, 18.43)
-
 			ACE.CurSpallIndex = ACE.CurSpallIndex + 1
 			if ACE.CurSpallIndex > ACE.SpallMax then
 				ACE.CurSpallIndex = 1
@@ -289,6 +285,7 @@ function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour,
 
 			-- HESH trace creation
 			local Index = ACE.CurSpallIndex
+			local spallDir = ACE.GetCircularSpread(baseDir, 18.43)
 
 			ACE.Spall[Index]			= {}
 			ACE.Spall[Index].start	= spallPos
