@@ -56,6 +56,7 @@ function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inf
 		local SpallVel = (KE * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul * Velocityfactor
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
 		local SpallEnergy = ACE.Kinetic(SpallVel, SpallWeight, 800)
+		local spallDist = math.max(SpallVel, 600)
 
 		for i = 1,Spall do
 
@@ -66,10 +67,11 @@ function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inf
 
 			-- Normal Trace creation
 			local Index = ACE.CurSpallIndex
+			local spallDir = ACE.GetCircularSpread(HitVec, ACE.SpallingCone)
 
 			ACE.Spall[Index] = {}
 			ACE.Spall[Index].start  = HitPos
-			ACE.Spall[Index].endpos = HitPos + ( HitVec:GetNormalized() + VectorRand() * ACE.SpallingDistribution ):GetNormalized() * math.max( SpallVel, 600 ) --Spall endtrace. Used to determine spread and the spall trace length. Only adjust the value in the max to determine the minimum distance spall will travel. 600 should be fine.
+			ACE.Spall[Index].endpos = HitPos + spallDir * spallDist
 			ACE.Spall[Index].filter = table.Copy(Filter)
 			ACE.Spall[Index].mins	= Vector(0,0,0)
 			ACE.Spall[Index].maxs	= Vector(0,0,0)
@@ -273,8 +275,12 @@ function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour,
 		local SpallVel = (HEFiller * 16 / SpallWeight) ^ 0.5 / Spall * SpallMul
 		local SpallArea = (SpallWeight / 7.8) ^ 0.33
 		local SpallEnergy = ACE.Kinetic(SpallVel, SpallWeight, 800)
+		local baseDir = (fNormal * 2500 + HitVec):GetNormalized()
+		local spallDist = math.max(SpallVel * 10, math.random(450, 600))
 
 		for i = 1,Spall do
+
+			local spallDir = ACE.GetCircularSpread(baseDir, 18.43)
 
 			ACE.CurSpallIndex = ACE.CurSpallIndex + 1
 			if ACE.CurSpallIndex > ACE.SpallMax then
@@ -286,10 +292,10 @@ function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour,
 
 			ACE.Spall[Index]			= {}
 			ACE.Spall[Index].start	= spallPos
-			ACE.Spall[Index].endpos	= spallPos + ((fNormal * 2500 + HitVec):GetNormalized() + VectorRand() / 3):GetNormalized() * math.max(SpallVel * 10,math.random(450,600)) --I got bored of spall not going across the tank
+			ACE.Spall[Index].endpos	= spallPos + spallDir * spallDist
 			ACE.Spall[Index].filter	= table.Copy(PEnts)
 
-		ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
+			ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
 
 			--little sound optimization
 			if i < math.max(math.Round(Spall / 4), 1) then
@@ -369,7 +375,7 @@ function ACE.SpallTrace(HitVec, Index, SpallEnergy, SpallArea, Inflictor )
 			return
 		end
 ]]
-		--debugoverlay.Line( SpallRes.StartPos + Vector(1,0,0), SpallRes.HitPos + Vector(1,0,0), 10 , Color(255,0,0), true )
+		debugoverlay.Line( SpallRes.StartPos + Vector(1,0,0), SpallRes.HitPos + Vector(1,0,0), 10 , Color(255,0,0), true )
 
 	end
 
