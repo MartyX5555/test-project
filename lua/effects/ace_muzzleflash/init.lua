@@ -31,7 +31,7 @@ function EFFECT:Init( data )
 			Attachment = longbarrel.newpos
 		end
 
-		if not IsValidSound( Sound ) then
+		if not ACE.IsValidSound( Sound ) then
 			Sound = ClassData.sound
 		end
 

@@ -58,7 +58,7 @@ function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inf
 		local SpallEnergy = ACE.Kinetic(SpallVel, SpallWeight, 800)
 		local spallDist = math.max(SpallVel, 600)
 
-		for i = 1,Spall do
+		for _ = 1,Spall do
 
 			ACE.CurSpallIndex = ACE.CurSpallIndex + 1
 			if ACE.CurSpallIndex > ACE.SpallMax then
@@ -76,11 +76,7 @@ function ACE.CreateSpall( HitPos , HitVec , Filter , KE , Caliber , Armour , Inf
 
 			ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor)
 
-			--little sound optimization
-			if i < math.max(math.Round(Spall / 2), 1) then
-				sound.Play(ACE.Sounds["Penetrations"]["large"]["close"][math.random(1,#ACE.Sounds["Penetrations"]["large"]["close"])], HitPos, 75, 100, 0.5)
-			end
-
+			-- TODO: See if spall can do their own penetration non serverside sounds.
 		end
 	end
 end
@@ -276,7 +272,7 @@ function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour,
 		local baseDir = (fNormal * 2500 + HitVec):GetNormalized()
 		local spallDist = math.max(SpallVel * 10, math.random(450, 600))
 
-		for i = 1,Spall do
+		for _ = 1,Spall do
 
 			ACE.CurSpallIndex = ACE.CurSpallIndex + 1
 			if ACE.CurSpallIndex > ACE.SpallMax then
@@ -294,10 +290,7 @@ function ACE.CreateSpallHESH( HitPos, HitVec, Filter, HEFiller, Caliber, Armour,
 
 			ACE.SpallTrace(HitVec, Index , SpallEnergy , SpallArea , Inflictor )
 
-			--little sound optimization
-			if i < math.max(math.Round(Spall / 4), 1) then
-				sound.Play(ACE.Sounds["Penetrations"]["large"]["close"][math.random(1,#ACE.Sounds["Penetrations"]["large"]["close"])], spallPos, 75, 100, 0.5)
-			end
+			-- TODO: See if spall can do their own penetration non serverside sounds.
 		end
 	end
 end
