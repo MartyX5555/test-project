@@ -12,6 +12,7 @@ Round.netid = 8									-- Unique ammotype ID for network transmission
 
 Round.Type  = "FL"
 
+local GunInaccuracyBias           = 2	-- Higher numbers make shots more likely to be inaccurate.  Choose between 0.5 to 4. Default is 2 (unbiased).
 function Round.create( Gun, BulletData )
 
 	--setup flechettes
@@ -54,8 +55,8 @@ function Round.create( Gun, BulletData )
 		MuzzleVec = Gun:GetForward()
 
 		for _ = 1, BulletData["Flechettes"] do
-			BaseSpread			= BaseInaccuracy * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
-			AddSpread			= AddInaccuracy * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
+			BaseSpread			= BaseInaccuracy * (math.random() ^ (1 / math.Clamp(GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
+			AddSpread			= AddInaccuracy * (math.random() ^ (1 / math.Clamp(GunInaccuracyBias, 0.5, 4))) * (Gun:GetUp() * (2 * math.random() - 1) + Gun:GetRight() * (2 * math.random() - 1)):GetNormalized()
 			FlechetteData["Flight"] = (MuzzleVec + BaseSpread + AddSpread):GetNormalized() * BulletData["MuzzleVel"] * 39.37 + Gun:GetVelocity()
 		ACE.CreateBullet( FlechetteData )
 		end

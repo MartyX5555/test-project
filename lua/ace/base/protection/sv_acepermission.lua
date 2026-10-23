@@ -62,8 +62,6 @@ end
 local function validateSZs(safetable)
 	if type(safetable) ~= "table" then return false end
 
-	--PrintTable(safetable)
-
 	for k, v in pairs(safetable) do
 		if type(k) ~= "string" then return false end
 		if not (#v == 2 and v[1] and v[2]) then return false end
@@ -98,8 +96,12 @@ local function getMapSZs()
 	end
 
 	this.Safezones = safezones
+
+	timer.Simple( 5, function() this.visualizeSafeZones() end )
+
 	return true
 end
+getMapSZs()
 
 local function getMapDPMFilename()
 	return mapDPMDir .. game.GetMap() .. ".txt"
@@ -527,7 +529,7 @@ end
 function this.PermissionsRaw(ownerid, attackerid, value)
 	if not ownerid then return end
 
-	local ownerprefs = this.GetDamagePermissions(ownerid) --PrintTable(ownerprefs)
+	local ownerprefs = this.GetDamagePermissions(ownerid)
 
 	if attackerid then
 		local old = ownerprefs[attackerid] and true or nil
@@ -665,3 +667,155 @@ timer.Simple(0,function()
 		mode = "default"
 	end
 end)
+
+--[[----------------------------------------------------------------------
+	A variation of the CreateKeyframeRope( ... ) for visualizing safezones
+	This one is more simple than the original function.
+	Creates a rope without any constraint
+------------------------------------------------------------------------]]
+function ACE.CreateSZRope( Pos, Ent, LPos1, LPos2 )
+
+	local rope = ents.Create( "keyframe_rope" )
+	rope:SetPos( Pos )
+	rope:SetKeyValue( "Width", 15 )
+	rope:SetKeyValue( "Type", 2 )
+
+	rope:SetKeyValue( "RopeMaterial", "cable/physbeam" )
+
+	-- Attachment point 1
+	rope:SetEntity( "StartEntity", Ent )
+	rope:SetKeyValue( "StartOffset", tostring( LPos1 ) )
+	rope:SetKeyValue( "StartBone", 0 )
+
+	-- Attachment point 2
+	rope:SetEntity( "EndEntity", Ent )
+	rope:SetKeyValue( "EndOffset", tostring( LPos2 ) )
+	rope:SetKeyValue( "EndBone", 0 )
+
+	rope:Spawn()
+	rope:Activate()
+
+	-- Delete the rope if the attachments get killed
+	Ent:DeleteOnRemove( rope )
+
+	return rope
+
+end
+
+-- Used to visualize safezones in the world.
+function ACE.VisualizeSZ(Point1, Point2)
+
+	local SZEnt = ents.Create("prop_physics")
+	if SZEnt:IsValid() then
+		SZEnt:SetModel( "models/jaanus/wiretool/wiretool_pixel_med.mdl" )
+		SZEnt:Spawn()
+		SZEnt:SetColor( Color(255,0,0) )
+
+		local phys = SZEnt:GetPhysicsObject()
+		if (IsValid(phys)) then
+			phys:EnableMotion( false )
+		end
+		SZEnt:SetNotSolid( true )
+	end
+
+	--Upper Rectangle
+	local PT1 = Vector(Point1.x,Point1.y,Point2.z) + Vector(0,0,2)
+	local PT2 = Vector(Point2.x,Point1.y,Point2.z) + Vector(0,0,2)
+	local LPT1 = SZEnt:WorldToLocal(PT1)
+	local LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point1.x,Point1.y,Point2.z) + Vector(0,0,2)
+	PT2 = Vector(Point1.x,Point2.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point2.x,Point2.y,Point2.z) + Vector(0,0,2)
+	PT2 = Vector(Point1.x,Point2.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point2.x,Point2.y,Point2.z) + Vector(0,0,2)
+	PT2 = Vector(Point2.x,Point1.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	--Lower Rectangle
+	PT1 = Vector(Point1.x,Point1.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point2.x,Point1.y,Point1.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point1.x,Point1.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point1.x,Point2.y,Point1.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point2.x,Point2.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point1.x,Point2.y,Point1.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point2.x,Point2.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point2.x,Point1.y,Point1.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+	--4 corners
+	PT1 = Vector(Point2.x,Point2.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point2.x,Point2.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point1.x,Point1.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point1.x,Point1.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point1.x,Point2.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point1.x,Point2.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+	PT1 = Vector(Point2.x,Point1.y,Point1.z) + Vector(0,0,2)
+	PT2 = Vector(Point2.x,Point1.y,Point2.z) + Vector(0,0,2)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE.CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+
+--[[
+	PT1 = Vector(Point1.x,Point1.y,Point1.z)
+	PT2 = Vector(Point2.x,Point1.y,Point1.z)
+	LPT1 = SZEnt:WorldToLocal(PT1)
+	LPT2 = SZEnt:WorldToLocal(PT2)
+	ACE_CreateSZRope( PT1, SZEnt, LPT1, LPT2 )
+]]--
+
+	return SZEnt
+end
+
+function this.visualizeSafeZones()
+	if not this.Safezones then print("No safe zones to show") return false end
+
+	--szname is _ because unused. I could potentially color the visual safezones???
+	for _, szpts in pairs(this.Safezones) do
+		szmin = szpts[1]
+		szmax = szpts[2]
+		ACE.VisualizeSZ(szmin, szmax)
+	end
+
+	return false
+end
+
+hook.Add( "PostCleanupMap", "ACE_RestoreSZsCleanup", function( _ )
+	this.visualizeSafeZones()
+end )

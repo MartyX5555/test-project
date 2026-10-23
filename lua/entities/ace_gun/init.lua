@@ -831,10 +831,8 @@ do
 				local MuzzlePos         = self:LocalToWorld(self.Muzzle)
 				local MuzzleVec         = self:GetForward()
 
-				local coneAng           = math.tan(math.rad(self:GetInaccuracy()))
-				local randUnitSquare    = (self:GetUp() * (2 * math.random() - 1) + self:GetRight() * (2 * math.random() - 1))
-				local spread            = randUnitSquare:GetNormalized() * coneAng * (math.random() ^ (1 / math.Clamp(ACE.GunInaccuracyBias, 0.5, 4)))
-				local ShootVec          = (MuzzleVec + spread):GetNormalized()
+				local coneAng           = self:GetInaccuracy()
+				local ShootVec          = ACE.GetCircularSpread(MuzzleVec, coneAng)
 
 				self:MuzzleEffect( MuzzlePos, MuzzleVec )
 
@@ -883,7 +881,7 @@ do
 
 				-- Recoil
 				local KE = (self.BulletData.ProjMass * self.BulletData.MuzzleVel * 39.37 + self.BulletData.PropMass * 4000 * 39.37) * (GetConVar("ace_recoilpush"):GetFloat() or 1) -- 3500
-			ACE.KEShove(self, GPos , -MuzzleVec , KE )
+				ACE.KEShove(self, GPos , -MuzzleVec , KE )
 
 				self.Ready = false
 				self.CurrentShot = math.min(self.CurrentShot + 1, self.MagSize)

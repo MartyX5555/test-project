@@ -2,7 +2,7 @@ ACE = ACE or {}
 ACEM = ACEM or {} -- temporal as its expected to be merged with the ACE table.
 ---------------------------------- Version ----------------------------------
 
-ACE.Version           = 1005		-- ACE current version
+ACE.Version           = 1006		-- ACE current version
 ACE.CurrentVersion    = 0			-- just defining a variable, do not change
 ACE.Year              = 2026		-- Current Year
 
@@ -29,7 +29,7 @@ ACE.GunfireEnabled              = true
 
 ACE.SpreadScale                 = 16					-- The maximum amount that damage can decrease a gun's accuracy.  Default 4x
 ACE.GunInaccuracyScale          = 1						-- A multiplier for gun accuracy.
-ACE.GunInaccuracyBias           = 2						-- Higher numbers make shots more likely to be inaccurate.  Choose between 0.5 to 4. Default is 2 (unbiased).
+ACE.SWEPInaccuracyMul      		= 0.5
 
 ---------------------------------- Debris ----------------------------------
 
@@ -137,14 +137,7 @@ ACE.ArmorMod            = 1
 ACE.SlopeEffectFactor   = 1.1					-- Sloped armor effectiveness: armor / cos(angle) ^ factor
 ACE.Spalling            = 1
 ACE.SpallMult           = 1
-
-
---Math in globals????
-
---UNLESS YOU WANT SPALL TO FLY BACKWARDS, BE ABSOLUTELY SURE TO MAKE SURE THIS VECTOR LENGTH IS LESS THAN 1
---The vector controls the spread pattern. The multiplier adjusts the tightness of the spread cone. ABSOLUTELY DO NOT MAKE THE MULTIPLIER MORE THAN 1. A Vector of 1,1,0.5. Results in half the vertical spall spread
-ACE.SpallingDistribution = Vector(1,1,0.5):GetNormalized() * 0.45
-
+ACE.SpallingCone 		= 24.2
 
 ---------------------------------- Particle colors  ----------------------------------
 

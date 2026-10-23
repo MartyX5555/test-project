@@ -25,6 +25,7 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.ReloadSound = "Weapon_Pistol.Reload" --Sound other players hear when you reload - this is NOT your first-person sound
 										--Most models have a built-in first-person reload sound
 
+SWEP.ReticuleSize = 25
 SWEP.ZoomFOV = 60
 SWEP.HasScope = false --True if the weapon has a sniper-style scope
 
@@ -37,8 +38,11 @@ SWEP.HeatMax = 30 --Maximum heat - determines max rate at which recoil is applie
 				--Also determines point at which random spread is at its highest intensity
 				--HeatMax divided by HeatPerShot gives you how many shots until you reach MaxSpread
 
-SWEP.RecoilSideBias = 0.1 --How much the recoil is biased to one side proportional to vertical recoil
-						--Positive numbers bias to the right, negative to the left
+SWEP.AngularRecoil = 1	--Amount of angular recoil
+
+--How much the recoil is biased to one side proportional to vertical recoil
+--Positive numbers bias to the right, negative to the left
+SWEP.RecoilSideBias = 0.1
 
 SWEP.ZoomRecoilBonus = 0.5 --Reduce recoil by this amount when zoomed or scoped
 SWEP.CrouchRecoilBonus = 0.5 --Reduce recoil by this amount when crouching
@@ -46,11 +50,11 @@ SWEP.ViewPunchAmount = 0 --Degrees to punch the view upwards each shot - does no
 
 
 --Spread (aimcone) settings--
-SWEP.BaseSpread = 0 --First-shot random spread, in degrees
-SWEP.MaxSpread = 0.5 --Maximum added random spread from heat value, in degrees
+SWEP.BaseSpread = 0.3 --First-shot random spread, in degrees
+SWEP.MaxSpread = 3 --Maximum added random spread from heat value, in degrees
 					--If HeatMax is 0 this will be ignored and only BaseSpread will be taken into account (AT4 for example)
-SWEP.MovementSpread = 10 --Increase aimcone to this many degrees when sprinting at full speed
-SWEP.UnscopedSpread = 1 --Spread, in degrees, when unscoped with a scoped weapon
+SWEP.MovementSpread = 1.5 --Increase aimcone to this many degrees when sprinting at full speed
+SWEP.UnscopedSpread = 0.5 --Spread, in degrees, when unscoped with a scoped weapon
 
 
 --Model settings--
@@ -68,12 +72,21 @@ SWEP.CarrySpeedMul			= 1 --WalkSpeedMult when carrying the weapon
 SWEP.NormalPlayerWalkSpeed	= 200 --Default walk and sprint speed in case all else fails
 SWEP.NormalPlayerRunSpeed	= 400
 
-SWEP.SwayScale = 0.3
-SWEP.BobScale = 0.4
+SWEP.NPCMinBurst = 1 --Min bullets to fire per burst
+SWEP.NPCMaxBurst = 10 --Max bullets to fire per burst
 
 
-AddCSLuaFile("cl_ace_spawnmenu.lua")
-include("cl_ace_spawnmenu.lua")
+function SWEP:GetNPCBurstSettings()
+	return math.min(self.NPCMinBurst,self.Primary.ClipSize * 0.5), math.min(self.NPCMaxBurst,self.Primary.ClipSize * 0.5),0
+end
+
+function SWEP:GetNPCRestTimes()
+	local SecondDelay = 1 / self.FireRate
+	return SecondDelay,SecondDelay
+end
+
+SWEP.SwayScale = 0.5
+SWEP.BobScale = 1.5
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 0, "ZoomState")
@@ -90,8 +103,6 @@ function SWEP:SetupDataTables()
 			owner:SetCanZoom(not zoom) --Block HL2 suit zoom
 
 			timer.Simple(0, function() --If player is in a vehicle you need to delay by 1 tick because ???
-				if not IsValid(owner) then return end
-				if not IsValid(self) then return end
 				owner:SetFOV(zoom and self.ZoomFOV or 0, 0.25)
 			end)
 
@@ -193,24 +204,56 @@ SWEP.Heat = 0
 
 function SWEP:GetShootDir()
 	local owner = self:GetOwner()
+	--Inaccuracy based on player speed
+
+	local shootDir = vector_origin
+
+	if owner:IsPlayer() then
+
 	local spreadX, spreadY = self:GetSharedRandomSpread()
 	local degrees = math.Clamp((self.Heat / self.HeatMax) ^ 2 * self.MaxSpread + self.BaseSpread, self.BaseSpread, self.BaseSpread + self.MaxSpread)
 
-	--Inaccuracy based on player speed
 	degrees = degrees + math.min(owner:GetVelocity():Length() / self.NormalPlayerRunSpeed, 1) * self.MovementSpread
 
-	if not self:GetZoomState() and self.HasScope then
+	if not self:GetZoomState() then
 		degrees = degrees + self.UnscopedSpread * (owner:Crouching() and self.CrouchRecoilBonus or 1)
 	end
 
-	spreadX = spreadX * degrees
-	spreadY = spreadY * degrees
+	spreadX = spreadX * degrees * ACE.SWEPInaccuracyMul
+	spreadY = spreadY * degrees * ACE.SWEPInaccuracyMul
 
-	local shootDir = owner:GetAimVector()
+	shootDir = owner:GetAimVector()
 	local sideAxis = shootDir:Cross(Vector(0, 0, 1)):GetNormalized()
 	local upAxis = shootDir:Cross(sideAxis):GetNormalized()
 	shootDir = shootDir:RotateAroundAxis(upAxis, spreadX)
 	shootDir = shootDir:RotateAroundAxis(sideAxis, spreadY)
+
+	else
+
+		local Prof = 6 - owner:GetCurrentWeaponProficiency() --Inaccuracy multiplier based on NPC proficiency
+
+		local spreadX, spreadY = self:GetSharedRandomSpread()
+		local degrees = math.Clamp((self.Heat / self.HeatMax) ^ 2 * self.MaxSpread + self.BaseSpread, self.BaseSpread, self.BaseSpread + self.MaxSpread)
+		degrees = degrees + math.min(owner:GetVelocity():Length() / self.NormalPlayerRunSpeed, 1) * self.MovementSpread
+
+		degrees = (degrees + 0.5) * Prof
+
+		spreadX = spreadX * degrees * ACE.SWEPInaccuracyMul
+		spreadY = spreadY * degrees * ACE.SWEPInaccuracyMul
+
+		local Enemy = owner:GetEnemy()
+		local EnemyPos = Enemy:WorldSpaceCenter()
+		local NPCPos = owner:GetShootPos()
+		local DifPos = EnemyPos - NPCPos
+
+		local TravelTime = DifPos:Length() / self.BulletData.MuzzleVel / 39.37 + engine.TickInterval()
+
+		shootDir = (DifPos + Enemy:GetVelocity() * TravelTime):GetNormalized()
+		local sideAxis = shootDir:Cross(Vector(0, 0, 1)):GetNormalized()
+		local upAxis = shootDir:Cross(sideAxis):GetNormalized()
+		shootDir = shootDir:RotateAroundAxis(upAxis, spreadX)
+		shootDir = shootDir:RotateAroundAxis(sideAxis, spreadY + 0.5)
+	end
 
 	return shootDir
 end
@@ -219,8 +262,14 @@ function SWEP:Shoot()
 	local owner = self:GetOwner()
 
 	if SERVER then
-		self.BulletData.Filter = {self:GetOwner()}
-		self:ACEFireBullet(owner:GetShootPos() + owner:GetVelocity() * engine.TickInterval(), self:GetShootDir())
+		self.BulletData.Filter = {self:GetOwner()} -- / 200000
+		if owner:IsPlayer() then
+			owner:LagCompensation( true )
+		end
+		self:ACEFireBullet(owner:GetShootPos(), self:GetShootDir())
+		if owner:IsPlayer() then
+			owner:LagCompensation( false )
+		end
 	end
 end
 
@@ -237,17 +286,18 @@ function SWEP:DoSPClientEffects()
 	local MainSound = self.Primary.Sound
 	local sounds = ACE.GSounds.GunFire[MainSound]
 
-	if next(sounds) then
+	if istable(sounds) and next(sounds) then
 		self:EmitSound(sounds.main.Package[math.random(#sounds.main.Package)])
 	else
 		self:EmitSound(MainSound)
 	end
 
-ACE.RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
+	ACE.RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
 
 end
 
 function SWEP:PrimaryAttack()
+
 	if not self:CanPrimaryAttack() then return end
 
 	self:OnPrimaryAttack()
@@ -255,37 +305,46 @@ function SWEP:PrimaryAttack()
 	if self.ShotgunReload then
 		self.Reloading = false
 	end
+	local owner = self:GetOwner()
 
 	if IsFirstTimePredicted() or game.SinglePlayer() then
-		local owner = self:GetOwner()
 
 		for _ = 1, self.Primary.BulletCount do
 			self:Shoot()
 		end
 
+
 		if game.SinglePlayer() then
-		ACE.NetworkSPEffects( self, self.BulletData.PropMass) -- singleplayer, this whole function is not called clientside, so we need to network the client here
+			if owner:IsPlayer() then
+				ACE.NetworkSPEffects( self, self.BulletData.PropMass) -- singleplayer, this whole function is not called clientside, so we need to network the client here
+			else
+				ACE.NetworkMPEffects(owner, self, self.BulletData.PropMass)
+			end
 		else
 			--Client is called here. So lets go as usual.
 			local sounds = ACE.GSounds.GunFire[self.Primary.Sound]
-			if next(sounds) then
+			if istable(sounds) and next(sounds) then
 				if SERVER then
-				ACE.NetworkMPEffects(owner, self, self.BulletData.PropMass)
+					ACE.NetworkMPEffects(owner, self, self.BulletData.PropMass)
 				else
 					self:EmitSound(sounds.main.Package[math.random(#sounds.main.Package)])
 				end
-			elseif not next(sounds) and CLIENT then
+			elseif CLIENT then
 				self:EmitSound(self.Primary.Sound)
 			end
 
 			if CLIENT then
-			ACE.RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
+				ACE.RenderLight(self:EntIndex(), self.Primary.LightScale, Color(255, 128, 48), self:GetPos())
 			end
 		end
 
-		owner:ViewPunch(Angle(-self.ViewPunchAmount, 0, 0))
+
+		if owner:IsPlayer() then
+			owner:ViewPunch(Angle(-self.ViewPunchAmount, self.ViewPunchAmountSide, self.ViewPunchAmountRoll))
+		end
 
 		self.Heat = math.min(self.Heat + self.HeatPerShot, self.HeatMax)
+
 	end
 
 	if SERVER then
@@ -297,8 +356,11 @@ function SWEP:PrimaryAttack()
 
 	self.LastFired = CurTime()
 
-	if self.Primary.ClipSize == 1 and self:Clip1() == 0 and self:Ammo1() > 0 then
+
+	if self.Primary.ClipSize == 1 and self:Clip1() == 0 and (owner:IsPlayer() and self:Ammo1() > 0) then
+
 		self:Reload()
+		return false
 	end
 end
 
@@ -319,9 +381,11 @@ function SWEP:Holster()
 	if SERVER then
 		self:SetZoomState(false)
 		self:SetOwnerZoomSpeed(false)
-
-		self:GetOwner():SetWalkSpeed(self.NormalPlayerWalkSpeed)
-		self:GetOwner():SetRunSpeed(self.NormalPlayerRunSpeed)
+		local owner = self:GetOwner()
+		if IsValid(owner) and owner:IsPlayer() then
+			self:GetOwner():SetWalkSpeed(self.NormalPlayerWalkSpeed)
+			self:GetOwner():SetRunSpeed(self.NormalPlayerRunSpeed)
+		end
 	end
 
 	if self.ShotgunReload then
@@ -359,8 +423,8 @@ function SWEP:HandleRecoil()
 		local totalBonus = zoomBonus * crouchBonus
 
 		local eyeAngles = owner:EyeAngles()
-		eyeAngles.p = eyeAngles.p - delta * self.Heat * totalBonus
-		eyeAngles.y = eyeAngles.y - delta * self.Heat * self.RecoilSideBias * totalBonus
+		eyeAngles.p = eyeAngles.p - delta * self.AngularRecoil * self.Heat / self.HeatMax * totalBonus
+		eyeAngles.y = eyeAngles.y - delta * self.AngularRecoil * self.Heat / self.HeatMax * self.RecoilSideBias * totalBonus
 		owner:SetEyeAngles(eyeAngles)
 	end
 
@@ -393,9 +457,40 @@ function SWEP:Think()
 		end
 	end
 
+
 	self:HandleRecoil()
 	self:OnThink()
+
+--DEEPSEEKDEEPSEEKDEEPSEEKDEEPSEEKDEEPSEEK
+
+	-- Force speed on both sides
+	local zoom = self:GetZoomState()
+	local owner = self:GetOwner()
+	if IsValid(owner) and owner:IsPlayer() then
+		local mul = self.CarrySpeedMul or 1
+		local baseWalk = self.NormalPlayerWalkSpeed or 250
+		local baseRun = self.NormalPlayerRunSpeed or 500
+		local targetWalk, targetRun
+		if zoom then
+			targetWalk = baseWalk * 0.5 * mul
+			targetRun = baseRun * 0.5 * mul
+		else
+			targetWalk = baseWalk * mul
+			targetRun = baseRun * mul
+		end
+		-- Let's limit the maximum base speed (as in the original)
+		targetWalk = math.min(targetWalk, baseWalk)
+		targetRun = math.min(targetRun, baseRun)
+
+		if owner:GetWalkSpeed() ~= targetWalk then
+			owner:SetWalkSpeed(targetWalk)
+		end
+		if owner:GetRunSpeed() ~= targetRun then
+			owner:SetRunSpeed(targetRun)
+		end
+	end
 end
+
 
 function SWEP:OnReload()
 end
@@ -406,7 +501,10 @@ function SWEP:Reload()
 	local nextFire = util.IsValidModel( self.ViewModel ) and self:GetNextPrimaryFire() or (CurTime() + 4)
 
 	if self:Clip1() == self.Primary.ClipSize then return end
-	if self:Ammo1() == 0 then return end
+
+	local owner = self:GetOwner()
+
+	if owner:IsPlayer() and self:Ammo1() == 0 then return end
 
 	self:OnReload()
 
@@ -437,10 +535,21 @@ function SWEP:Reload()
 end
 
 function SWEP:Deploy()
+
 	self.Heat = 0
 
 	self:SendWeaponAnim(ACT_VM_DRAW)
 	self:SetNextPrimaryFire(CurTime() + self.DeployDelay)
+
+
+	local owner = self:GetOwner()
+	if not owner:IsPlayer() then
+		owner:SetMaxLookDistance( 10000 )
+
+if SERVER then
+self:SetOwnerZoomSpeed(self:GetZoomState())
+end
+	end
 end
 
 
@@ -450,11 +559,13 @@ function SWEP:SetOwnerZoomSpeed(setSpeed)
 
 	local owner = self:GetOwner()
 
-	if setSpeed then
-		owner:SetWalkSpeed(math.min(self.NormalPlayerWalkSpeed * 0.5 * self.CarrySpeedMul, self.NormalPlayerWalkSpeed))
-		owner:SetRunSpeed(math.min(self.NormalPlayerRunSpeed * 0.5 * self.CarrySpeedMul, self.NormalPlayerRunSpeed))
-	elseif self.NormalPlayerWalkSpeed and self.NormalPlayerRunSpeed then
-		owner:SetWalkSpeed(math.min(self.NormalPlayerWalkSpeed * self.CarrySpeedMul, self.NormalPlayerWalkSpeed))
-		owner:SetRunSpeed(math.min(self.NormalPlayerRunSpeed * self.CarrySpeedMul, self.NormalPlayerRunSpeed))
+	if IsValid(owner) and owner:IsPlayer() then
+		if setSpeed then
+			owner:SetWalkSpeed( self.NormalPlayerWalkSpeed * 0.5 * self.CarrySpeedMul )
+			owner:SetRunSpeed( self.NormalPlayerRunSpeed * 0.5 * self.CarrySpeedMul )
+		elseif self.NormalPlayerWalkSpeed and self.NormalPlayerRunSpeed then
+			owner:SetWalkSpeed( self.NormalPlayerWalkSpeed * self.CarrySpeedMul )
+			owner:SetRunSpeed( self.NormalPlayerRunSpeed * self.CarrySpeedMul )
+		end
 	end
 end

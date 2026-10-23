@@ -59,9 +59,12 @@ function SWEP:PrimaryAttack()
 			ent.Life = 1.5 / (0.4 * ACEM.FlareBurnMultiplier)
 			ent:Spawn()
 			ent:SetOwner( Gun )
+			ent:SetColor( Color( 0, 0, 1, 1 ) ) --Blue set to 1 for flare, set to 2 for chaff
 			increaseDrag(ent, 10)
 
-			ACE.SetEntityOwner(ent, owner)
+			if CPPI then
+				ent:CPPISetOwner(owner)
+			end
 
 			local phys = ent:GetPhysicsObject()
 			phys:SetVelocity( owner:GetAimVector() * 13000 )

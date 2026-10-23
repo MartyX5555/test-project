@@ -78,7 +78,7 @@ do
 		return con.physicalMass
 	end
 
-	function ACE.GetContraptionaParentMass( con )
+	function ACE.GetContraptionParentMass( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
 		return con.ace_parentedents
@@ -86,7 +86,7 @@ do
 
 	function ACE.GetContraptionMassRatio( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
-		if not con then print("doesnt exist") return 0 end
+		if not con then return 0 end
 		return con.ace_massratio
 	end
 

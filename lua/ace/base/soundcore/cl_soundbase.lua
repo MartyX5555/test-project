@@ -9,7 +9,7 @@
 --Downside of this, that due to gmod limits, one scripted sound per entity can be used at once. Which idk if it would be good for us.
 --We'll have more than one dynamic sound at once :/ weird
 
-ACE = ACE or {}
+local ACE = ACE or {}
 
 --Defines the delay time caused by the distance between the event and you. Increasing it will increment the required time to hear a distant event
 ACE.DelayMultipler            = 1
@@ -53,7 +53,7 @@ do
 	local IsValidCache = {}
 
 	-- Returns whether or not a sound actually exists, fixes client timeout issues
-	function IsValidSound( path )
+	function ACE.IsValidSound( path )
 		if not IsValidCache[path] then
 			IsValidCache[path] = file.Exists( string.format( "sound/%s", tostring( path ) ), "GAME" ) and true or false
 		end
@@ -131,12 +131,11 @@ do
 
 		local ply = LocalPlayer()
 		local headPos = GetHeadPos( ply )
-
-		local LOSTr	= {}
-		LOSTr.start    = EventPos + Vector(0,0,10)
-		LOSTr.endpos   = headPos
-		LOSTr.filter   = function( ent ) if ACE.Sounds.LOSWhitelist[ent:GetClass()] then return true end end --Only hits the whitelisted ents
-		local LOS	= util.TraceLine(LOSTr)
+		local LOS	= util.TraceLine({
+			start    = EventPos + Vector(0,0,10),
+			endpos   = headPos,
+			filter   = function( ent ) if ACE.Sounds.LOSWhitelist[ent:GetClass()] then return true end end --Only hits the whitelisted ents
+		})
 
 		if not LOS.Hit then return true end
 		return false
@@ -149,12 +148,11 @@ do
 		local entply = ACE.SGetHearingEntity( ply )
 		local plyPos = entply.aceposoverride or entply:GetPos()
 
-		local CeilTr	= {}
-		CeilTr.start	= plyPos
-		CeilTr.endpos	= plyPos + Vector(0,0,2000)
-		CeilTr.filter	= {}
-		CeilTr.mask	= MASK_SOLID_BRUSHONLY
-		local Ceil	= util.TraceLine(CeilTr)
+		local Ceil	= util.TraceLine({
+			start	= plyPos,
+			endpos	= plyPos + Vector(0,0,2000),
+			mask	= MASK_SOLID_BRUSHONLY,
+		})
 
 		if Ceil.Hit and Ceil.HitWorld then return true end
 		return false

@@ -81,6 +81,33 @@ function ACE.CalcEnginePerformanceData(curve, maxTq, idle, redline)
 	}
 end
 
+-- Returns a random direction around a original direction within a specified total cone.
+-- To replace the spalling/gun spread calculations with a more unified logic.
+-- cone: half of the total spread in degrees
+local PI = math.pi
+function ACE.GetCircularSpread(initialdir, cone)
+	if cone <= 0 then return initialdir:GetNormalized() end
+
+	local baseAng = initialdir:Angle()
+
+	-- 1. Radio angular máximo a escala en el plano tangente. 
+	-- Limited to 89.9 degrees to avoid infinite tangent values.
+	local maxRadius = math.tan(math.rad(math.min(cone, 89.9)))
+
+	-- 2. Muestreo polar con distribución uniforme en el disco (sqrt)
+	local randomAngle = math.Rand(0, PI * 2)
+	local randomRadius = maxRadius * math.sqrt(math.Rand(0, 1))
+
+	-- 3. Offset cartesiano sobre la base ortonormal local
+	local offsetX = math.cos(randomAngle) * randomRadius
+	local offsetY = math.sin(randomAngle) * randomRadius
+
+	local spreadDir = baseAng:Forward() + (baseAng:Right() * offsetX) + (baseAng:Up() * offsetY)
+	spreadDir:Normalize()
+
+	return spreadDir
+end
+
 -- A cheap way to check if the distance between 2 points is within a target distance.
 function ACE.InDist( Pos1, Pos2, Distance )
 	return (Pos2 - Pos1):LengthSqr() < Distance ^ 2
@@ -220,11 +247,11 @@ local function OnhttpSucess(contents)
 
 		if rev and ACE.Version == rev  and rev ~= 0 then
 
-			print("[ACE | INFO]- You have the latest version! Current version: " .. rev)
+			print("[ACE | INFO]- You are using the latest version! Current version: " .. rev)
 
 		elseif rev and ACE.Version > rev and rev ~= 0 then
 
-			print("[ACE | INFO]- You have an experimental version! Your version: " .. ACE.Version .. ". Main version: " .. rev)
+			print("[ACE | INFO]- You are using an experimental version! Your version: " .. ACE.Version .. ". Main version: " .. rev)
 		elseif rev == 0 then
 
 			print("[ACE | ERROR]- Unable to find the latest version! Failed to connect to GitHub.")

@@ -21,7 +21,14 @@ function SWEP:ACEFireBullet(Position, Direction)
 	self.BulletData.Pos = Position
 	self.BulletData.Flight = Direction * self.BulletData.MuzzleVel * 39.37
 
-	self.BulletData.Owner = self:GetParent()
+	local ShooterEnt = self:GetParent()
+
+	if ShooterEnt:IsPlayer() then
+		self.BulletData.Owner = ShooterEnt
+	else
+		self.BulletData.Owner = ShooterEnt:CPPIGetOwner() or ShooterEnt:GetOwner() or ShooterEnt
+	end
+
 	self.BulletData.Gun = self
 	self.BulletData.Crate = self.FakeCrate:EntIndex()
 
@@ -29,7 +36,7 @@ function SWEP:ACEFireBullet(Position, Direction)
 		self:BeforeFire()
 	end
 
-ACE.CreateBullet(self.BulletData)
+	ACE.CreateBullet(self.BulletData)
 end
 
 local nosplode = {
@@ -102,7 +109,7 @@ function SWEP:DoAmmoStatDisplay()
 		sendInfo = sendInfo .. string.format(", (2)%.1fmm pen", MaxPen)
 	end
 
-ACE.SendNotification(self:GetOwner(), sendInfo, 10)
+	ACE.SendNotification(self:GetOwner(), sendInfo, 10)
 end
 
 function SWEP:Equip()
@@ -111,6 +118,11 @@ function SWEP:Equip()
 	local owner = self:GetOwner()
 
 	self.BulletData.Filter = {owner}
+
+	local owner = self:GetOwner()
+	if not owner:IsPlayer() then
+		owner:SetMaxLookDistance( 10000 )
+	end
 end
 
 function SWEP:OnRemove()
@@ -124,7 +136,7 @@ function SWEP:OnRemove()
 		end
 	end)
 
-	if IsValid(owner) then
+	if IsValid(owner) and owner:IsPlayer() then
 		owner:SetWalkSpeed( self.NormalPlayerWalkSpeed)
 		owner:SetRunSpeed( self.NormalPlayerRunSpeed)
 	end
@@ -136,6 +148,10 @@ function SWEP:Initialize()
 
 	self:InitBulletData()
 	self:UpdateFakeCrate()
+
+	self.NPCMinBurst = math.min(self.NPCMinBurst,self.Primary.ClipSize)
+	self.NPCMaxBurst = math.min(self.NPCMaxBurst,self.Primary.ClipSize)
+
 end
 
 function SWEP:Deploy()

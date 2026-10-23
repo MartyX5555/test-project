@@ -29,7 +29,7 @@ SWEP.HasScope = true --True if the weapon has a sniper-style scope
 
 --Recoil (crosshair movement) settings--
 --"Heat" is a number that represents how long you've been firing, affecting how quickly your crosshair moves upwards
-SWEP.HeatReductionRate = 4.5 --Heat loss per second when not firing
+SWEP.HeatReductionRate = 12 --Heat loss per second when not firing
 SWEP.HeatReductionDelay = 0
 SWEP.HeatPerShot = 8 --Heat generated per shot
 SWEP.HeatMax = 8 --Maximum heat - determines max rate at which recoil is applied to eye angles
@@ -48,8 +48,8 @@ SWEP.ViewPunchAmount = 2 --Degrees to punch the view upwards each shot - does no
 SWEP.BaseSpread = 0 --First-shot random spread, in degrees
 SWEP.MaxSpread = 4 --Maximum added random spread from heat value, in degrees
 					--If HeatMax is 0 this will be ignored and only BaseSpread will be taken into account (AT4 for example)
-SWEP.MovementSpread = 8 --Increase aimcone to this many degrees when sprinting at full speed
-SWEP.UnscopedSpread = 1.5 --Spread, in degrees, when unscoped with a scoped weapon
+SWEP.MovementSpread = 2 --Increase aimcone to this many degrees when sprinting at full speed
+SWEP.UnscopedSpread = 0.75 --Spread, in degrees, when unscoped with a scoped weapon
 
 
 --Model settings--
@@ -79,7 +79,7 @@ end
 function SWEP:OnPrimaryAttack()
 	self.BulletData.Owner = self:GetOwner()
 	self.BulletData.Gun = self
-	self.BulletData.FuseDelay = self.FuseDelay
+	self.BulletData.FuseLength = self.FuseDelay
 
 end
 
@@ -93,7 +93,7 @@ function SWEP:SecondaryAttack()
 			local ZS = not self:GetZoomState()
 			self:SetZoomState(ZS)
 			self:SetOwnerZoomSpeed(ZS)
-			self:EmitSound("npc/turret_floor/click1.wav",35,75)
+			owner:EmitSound("npc/turret_floor/click1.wav",75,75)
 		end
 
 	else
@@ -101,7 +101,7 @@ function SWEP:SecondaryAttack()
 			if CLIENT then return end
 
 		--self:EmitSound("acf_extra/airfx/satellite_target.wav",35,35)
-		self:EmitSound("npc/turret_floor/ping.wav",35,21)
+		owner:EmitSound("npc/turret_floor/ping.wav",100,21)
 
 			local RangeTrace = util.QuickTrace(owner:GetShootPos(), owner:GetAimVector() * 50000, {owner})
 
@@ -120,7 +120,7 @@ function SWEP:SecondaryAttack()
 				self:SetPg(GetConVar("sv_gravity"):GetInt() * -1)
 			end
 
-		ACE.SendNotification(owner, "Fuse Delay: " .. (self.FuseDelay > 0 and (math.Round(self.FuseDelay * 184.871) .. " m") or "None"), 2)
+			ACE.SendNotification(owner, "Fuse Delay: " .. (self.FuseDelay > 0 and (math.Round(self.FuseDelay * 184.871) .. " m") or "None"), 2)
 			return
 
 	end
@@ -181,7 +181,7 @@ function SWEP:InitBulletData()
 	self.BulletData.Ricochet = 999
 	self.BulletData.Flight = Vector(0, 0, 0)
 	self.BulletData.BoomPower = self.BulletData.PropMass + self.BulletData.FillerMass
-	--		local SlugEnergy = ACE.Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
+	--		local SlugEnergy = ACE_Kinetic( self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37 , self.BulletData.SlugMass, 999999 )
 	local SlugEnergy = ACE.Kinetic(self.BulletData.MuzzleVel * 39.37 + self.BulletData.SlugMV * 39.37, self.BulletData.SlugMass, 999999)
 	self.BulletData.MaxPen = (SlugEnergy.Penetration / self.BulletData.SlugPenArea) * ACE.KEtoRHA
 	--		print("SlugPen: " .. self.BulletData.MaxPen)
