@@ -87,7 +87,6 @@ do
 	function ACE.GetContraptionMassRatio( con )
 		if not CFW then ErrorNoHaltWithStack(ErrorMsg) return 0 end
 		if not con then return 0 end
-		PrintTable(con)
 		return con.ace_massratio
 	end
 
