@@ -81,7 +81,7 @@ do
 
 				Mine.physObj:EnableMotion(true)
 				Mine.physObj:ApplyForceCenter( FinalForce )
-				Mine:EmitSound("weapons/amr/sniper_fire.wav", 75, 190, 1, CHAN_WEAPON )
+				Mine:EmitSound("weapons/amr/sniper_fire.mp3", 75, 190, 1, CHAN_WEAPON )
 
 				Mine.HasJumped = true
 			end

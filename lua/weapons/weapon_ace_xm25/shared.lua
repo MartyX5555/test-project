@@ -100,7 +100,7 @@ function SWEP:SecondaryAttack()
 
 			if CLIENT then return end
 
-		--self:EmitSound("acf_extra/airfx/satellite_target.wav",35,35)
+		--self:EmitSound("acf_extra/airfx/satellite_target.mp3",35,35)
 		owner:EmitSound("npc/turret_floor/ping.wav",100,21)
 
 			local RangeTrace = util.QuickTrace(owner:GetShootPos(), owner:GetAimVector() * 50000, {owner})

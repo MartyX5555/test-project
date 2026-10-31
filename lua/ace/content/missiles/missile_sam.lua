@@ -7,7 +7,7 @@ ACE.RegisterWeaponClass("SAM", {
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	rofmod         = 1,
 	year           = 1960,
-	sound          = "acf_extra/airfx/rocket_fire2.wav",
+	sound          = "acf_extra/airfx/rocket_fire2.mp3",
 	soundDistance  = " ",
 	soundNormal    = " ",
 	effect         = "Rocket Motor",

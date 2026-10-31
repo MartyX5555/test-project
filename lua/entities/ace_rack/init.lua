@@ -376,7 +376,7 @@ function ENT:Think()
 			self.ReloadTime = nil
 			self:Reload()
 		elseif self.ReloadTime and self.ReloadTime > 1 then
-			self:EmitSound( "acf_extra/airfx/weapon_select.wav", 75, 100 )
+			self:EmitSound( "acf_extra/airfx/weapon_select.mp3", 75, 100 )
 			self.ReloadTime = nil
 		end
 	elseif self.NextFire >= 1 and Ammo == 0 then
@@ -547,7 +547,7 @@ function ENT:AddMissile()
 
 	self:SetLoadedWeight()
 
-	self:EmitSound( "acf_extra/tankfx/resupply_single.wav", 75, 100 )
+	self:EmitSound( "acf_extra/tankfx/resupply_single.mp3", 75, 100 )
 
 	return missile
 end
@@ -632,7 +632,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	Rack.Muzzleflash       = gundef.muzzleflash	or gunclass.muzzleflash	or ""
 	Rack.RoFmod            = gunclass["rofmod"]								or 1
-	Rack.Sound             = gundef.sound		or gunclass.sound		or "acf_extra/airfx/rocket_fire2.wav"
+	Rack.Sound             = gundef.sound		or gunclass.sound		or "acf_extra/airfx/rocket_fire2.mp3"
 	Rack.DefaultSound      = Rack.Sound
 	Rack.SoundPitch        = 100
 	Rack.Inaccuracy        = gundef["spread"]	or gunclass["spread"]	or 1

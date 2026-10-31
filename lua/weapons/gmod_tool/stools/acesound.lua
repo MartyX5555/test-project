@@ -201,8 +201,15 @@ ACE.SoundToolSupport = {
 -- This is useful if the original sound had a extension change.
 -- This wont return the sound if said sound also had a soundpath change.
 local function GetFixedSound(rawsoundpath)
+	if ACE.IsValidSound( rawsoundpath ) then
+		return rawsoundpath
+	end
 	local cleanpath = string.StripExtension(rawsoundpath)
 	local Checkpath = cleanpath .. ".mp3"
+	if ACE.IsValidSound( Checkpath ) then
+		return Checkpath
+	end
+	Checkpath = cleanpath .. ".wav"
 	if ACE.IsValidSound( Checkpath ) then
 		return Checkpath
 	end

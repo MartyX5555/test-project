@@ -15,7 +15,7 @@ function EFFECT:Init( data )
 		local SoundPitch   = Rack:GetNWInt( "SoundPitch", 100 )
 
 		if not ACE.IsValidSound( Sound ) then
-			Sound = "acf_extra/airfx/rocket_fire2.wav"
+			Sound = "acf_extra/airfx/rocket_fire2.mp3"
 		end
 
 	ACE.SimpleSound( Sound, Missile:WorldSpaceCenter(), SoundPitch, 4000 )

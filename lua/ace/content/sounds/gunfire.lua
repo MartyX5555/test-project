@@ -584,16 +584,16 @@ ACE.RegisterWeaponFireSound( "ace_weapons/multi_sound/120mm_multi.mp3",
 )
 
 --Generic Howitzer gunfire
-ACE.RegisterWeaponFireSound( "ace_weapons/multi_sound/howitzer_multi.wav",
+ACE.RegisterWeaponFireSound( "ace_weapons/multi_sound/howitzer_multi.mp3",
 	{
 		main = {
 			Volume	= 10,
 			Pitch	= 100,
 			Package = {
-				"ace_weapons/multi_sound/content/howitzer/close/close1.wav",
-				"ace_weapons/multi_sound/content/howitzer/close/close2.wav",
-				"ace_weapons/multi_sound/content/howitzer/close/close3.wav",
-				"ace_weapons/multi_sound/content/howitzer/close/close4.wav"
+				"ace_weapons/multi_sound/content/howitzer/close/close1.mp3",
+				"ace_weapons/multi_sound/content/howitzer/close/close2.mp3",
+				"ace_weapons/multi_sound/content/howitzer/close/close3.mp3",
+				"ace_weapons/multi_sound/content/howitzer/close/close4.mp3"
 			}
 
 		},
@@ -601,10 +601,10 @@ ACE.RegisterWeaponFireSound( "ace_weapons/multi_sound/howitzer_multi.wav",
 			Volume	= 10,
 			Pitch	= 100,
 			Package = {
-				"ace_weapons/multi_sound/content/howitzer/medium/mid1.wav",
-				"ace_weapons/multi_sound/content/howitzer/medium/mid2.wav",
-				"ace_weapons/multi_sound/content/howitzer/medium/mid3.wav",
-				"ace_weapons/multi_sound/content/howitzer/medium/mid4.wav"
+				"ace_weapons/multi_sound/content/howitzer/medium/mid1.mp3",
+				"ace_weapons/multi_sound/content/howitzer/medium/mid2.mp3",
+				"ace_weapons/multi_sound/content/howitzer/medium/mid3.mp3",
+				"ace_weapons/multi_sound/content/howitzer/medium/mid4.mp3"
 			}
 
 		},
@@ -612,30 +612,30 @@ ACE.RegisterWeaponFireSound( "ace_weapons/multi_sound/howitzer_multi.wav",
 			Volume	= 10,
 			Pitch	= 100,
 			Package = {
-				"ace_weapons/multi_sound/content/howitzer/medium/mid1.wav",
-				"ace_weapons/multi_sound/content/howitzer/medium/mid2.wav",
-				"ace_weapons/multi_sound/content/howitzer/medium/mid3.wav",
-				"ace_weapons/multi_sound/content/howitzer/medium/mid4.wav"
+				"ace_weapons/multi_sound/content/howitzer/medium/mid1.mp3",
+				"ace_weapons/multi_sound/content/howitzer/medium/mid2.mp3",
+				"ace_weapons/multi_sound/content/howitzer/medium/mid3.mp3",
+				"ace_weapons/multi_sound/content/howitzer/medium/mid4.mp3"
 			}
 		}
 	}
 )
 --[[
 --Generic Mortar gunfire. Ik its empty, the structure is here just to avoid recreate it in the future.
-ACE.RegisterWeaponFireSound( "weapons/ACE_Gun/mortar_new.wav",
+ACE.RegisterWeaponFireSound( "weapons/acf_gun/mortar_new.mp3",
 	{
 		main = {
 			Volume	= 1,
 			Pitch	= 100,
 			Package = {
-				"weapons/ACE_Gun/mortar_new.wav"
+				"weapons/acf_gun/mortar_new.mp3"
 			}
 		},
 		mid = {
 			Volume	= 1,
 			Pitch	= 100,
 			Package = {
-				"weapons/ACE_Gun/mortar_new.wav"
+				"weapons/acf_gun/mortar_new.mp3"
 			}
 
 		},
@@ -643,30 +643,30 @@ ACE.RegisterWeaponFireSound( "weapons/ACE_Gun/mortar_new.wav",
 			Volume	= 1,
 			Pitch	= 100,
 			Package = {
-				"weapons/ACE_Gun/mortar_new.wav"
+				"weapons/acf_gun/mortar_new.mp3"
 			}
 		}
 	}
 )
 ]]
 --Generic AT Rifle gunfire
-ACE.RegisterWeaponFireSound( "acf_extra/tankfx/gnomefather/7mm1.wav",
+ACE.RegisterWeaponFireSound( "acf_extra/tankfx/gnomefather/7mm1.mp3",
 	{
 		main = {
 			Volume	= 1,
 			Pitch	= 100,
 			Package = {
-				"acf_extra/tankfx/gnomefather/7mm1.wav"
+				"acf_extra/tankfx/gnomefather/7mm1.mp3"
 			}
 		},
 		mid = {
 			Volume	= 100,
 			Pitch	= 100,
 			Package = {
-				"acf_other/gunfire/autocannon/autocannon_mid_far1.wav",
-				"acf_other/gunfire/autocannon/autocannon_mid_far2.wav",
-				"acf_other/gunfire/autocannon/autocannon_mid_far3.wav",
-				"acf_other/gunfire/autocannon/autocannon_mid_far4.wav"
+				"acf_other/gunfire/autocannon/autocannon_mid_far1.mp3",
+				"acf_other/gunfire/autocannon/autocannon_mid_far2.mp3",
+				"acf_other/gunfire/autocannon/autocannon_mid_far3.mp3",
+				"acf_other/gunfire/autocannon/autocannon_mid_far4.mp3"
 			}
 
 		},
@@ -674,32 +674,32 @@ ACE.RegisterWeaponFireSound( "acf_extra/tankfx/gnomefather/7mm1.wav",
 			Volume	= 100,
 			Pitch	= 100,
 			Package = {
-				"acf_other/gunfire/autocannon/autocannon_mid_far1.wav",
-				"acf_other/gunfire/autocannon/autocannon_mid_far2.wav",
-				"acf_other/gunfire/autocannon/autocannon_mid_far3.wav",
-				"acf_other/gunfire/autocannon/autocannon_mid_far4.wav"
+				"acf_other/gunfire/autocannon/autocannon_mid_far1.mp3",
+				"acf_other/gunfire/autocannon/autocannon_mid_far2.mp3",
+				"acf_other/gunfire/autocannon/autocannon_mid_far3.mp3",
+				"acf_other/gunfire/autocannon/autocannon_mid_far4.mp3"
 			}
 		}
 	}
 )
 --[[
 --generic rotary autocannon gunfire. Broken atm
-ACE.RegisterWeaponFireSound( "weapons/acf_gun/mg_fire2.wav",
+ACE.RegisterWeaponFireSound( "weapons/acf_gun/mg_fire2.mp3",
 	{
 		main = {
 			Volume	= 0.9,
 			Pitch	= 90,
 			Package = {
-				"weapons/acf_gun/mg_fire2.wav"
+				"weapons/acf_gun/mg_fire2.mp3"
 			}
 		},
 		mid = {
 			Volume	= 2,
 			Pitch	= 100,
 			Package = {
-				"acf_other/gunfire/rotaryautocannon/rac_mid_far1.wav",
-				"acf_other/gunfire/rotaryautocannon/rac_mid_far2.wav",
-				"acf_other/gunfire/rotaryautocannon/rac_mid_far3.wav",
+				"acf_other/gunfire/rotaryautocannon/rac_mid_far1.mp3",
+				"acf_other/gunfire/rotaryautocannon/rac_mid_far2.mp3",
+				"acf_other/gunfire/rotaryautocannon/rac_mid_far3.mp3",
 				"acf_other/gunfire/rotaryautocannon/rac_mid_far4.wav"
 			}
 
@@ -708,9 +708,9 @@ ACE.RegisterWeaponFireSound( "weapons/acf_gun/mg_fire2.wav",
 			Volume	= 2,
 			Pitch	= 100,
 			Package = {
-				"acf_other/gunfire/rotaryautocannon/rac_mid_far1.wav",
-				"acf_other/gunfire/rotaryautocannon/rac_mid_far2.wav",
-				"acf_other/gunfire/rotaryautocannon/rac_mid_far3.wav",
+				"acf_other/gunfire/rotaryautocannon/rac_mid_far1.mp3",
+				"acf_other/gunfire/rotaryautocannon/rac_mid_far2.mp3",
+				"acf_other/gunfire/rotaryautocannon/rac_mid_far3.mp3",
 				"acf_other/gunfire/rotaryautocannon/rac_mid_far4.wav"
 			}
 		}
@@ -719,20 +719,20 @@ ACE.RegisterWeaponFireSound( "weapons/acf_gun/mg_fire2.wav",
 ]]
 --[[
 --Generic GL gunfire
-ACE.RegisterWeaponFireSound( "weapons/acf_gun/grenadelauncher.wav",
+ACE.RegisterWeaponFireSound( "weapons/acf_gun/grenadelauncher.mp3",
 	{
 		main = {
 			Volume	= 1,
 			Pitch	= 100,
 			Package = {
-				"weapons/acf_gun/grenadelauncher.wav"
+				"weapons/acf_gun/grenadelauncher.mp3"
 			}
 		},
 		mid = {
 			Volume	= 0.5,
 			Pitch	= 100,
 			Package = {
-				"weapons/acf_gun/grenadelauncher.wav"
+				"weapons/acf_gun/grenadelauncher.mp3"
 			}
 
 		},
@@ -740,7 +740,7 @@ ACE.RegisterWeaponFireSound( "weapons/acf_gun/grenadelauncher.wav",
 			Volume	= 0.5,
 			Pitch	= 100,
 			Package = {
-				"weapons/acf_gun/grenadelauncher.wav"
+				"weapons/acf_gun/grenadelauncher.mp3"
 			}
 		}
 	}
@@ -775,20 +775,20 @@ ACE.RegisterWeaponFireSound( "ace_weapons/multi_sound/smoke_multi.mp3",
 )
 
 --Generic FGL gunfire
-ACE.RegisterWeaponFireSound( "acf_extra/tankfx/flare_launch.wav",
+ACE.RegisterWeaponFireSound( "acf_extra/tankfx/flare_launch.mp3",
 	{
 		main = {
 			Volume	= 1,
 			Pitch	= 100,
 			Package = {
-				"acf_extra/tankfx/flare_launch.wav"
+				"acf_extra/tankfx/flare_launch.mp3"
 			}
 		},
 		mid = {
 			Volume	= 0.1,
 			Pitch	= 100,
 			Package = {
-				"acf_extra/tankfx/flare_launch.wav"
+				"acf_extra/tankfx/flare_launch.mp3"
 			}
 
 		},
@@ -796,7 +796,7 @@ ACE.RegisterWeaponFireSound( "acf_extra/tankfx/flare_launch.wav",
 			Volume	= 0.1,
 			Pitch	= 100,
 			Package = {
-				"acf_extra/tankfx/flare_launch.wav"
+				"acf_extra/tankfx/flare_launch.mp3"
 			}
 		}
 	}
