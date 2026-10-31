@@ -18,6 +18,7 @@ ACE.GSounds           = {}
 ACE.MuzzleFlashes 	  = {}
 ACE.Missiles = {} -- Current flying missiles
 ACE.Guidance = {} -- Guidances
+ACE.Crewseats = {} -- Active crewseats
 
 ---------------------------------- Useless/Ignore ----------------------------------
 ACEM.FlareBurnMultiplier        = 0.5
@@ -167,6 +168,7 @@ if SERVER then
 
 	--Sbox Limits
 	CreateConVar("ace_mines_max", 10)						-- The mine limit
+	CreateConVar("sbox_max_ace_crewseat", 20)					-- The crewseat limit
 	CreateConVar("ace_meshvalue", 1)
 	CreateConVar("ace_restrictinfo", 1)				-- 0=any, 1=owned
 

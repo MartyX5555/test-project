@@ -21,6 +21,7 @@ Weapons.Gearboxes       = {}
 Weapons.FuelTanks       = {}
 Weapons.FuelTanksSize   = {}
 Weapons.Radars          = {}
+Weapons.Crewseats       = {}
 
 --Small reminder of Mobility table. Still being used in stuff like starfall/e2. This can change
 Weapons.Mobility        = {}
@@ -69,6 +70,9 @@ local irst_base = {
 	ent    = "ace_irst",
 	type   = "Radars"
 }
+local crewseat_base = {
+	type   = "Crewseats"
+}
 
 -- add gui stuff to base classes if this is client
 if CLIENT then
@@ -91,9 +95,20 @@ if CLIENT then
 
 	irst_base.guicreate          = function( _, Table ) ACEIRSTGUICreate( Table )		end or nil
 	irst_base.guiupdate          = function() return end
+
+	crewseat_base.guicreate      = function( _, Table ) ACE.CrewMenuGUICreate( Table ) end or nil
+	crewseat_base.guiupdate      = function() return end
 end
 
 -- some factory functions for defining ents
+
+-- Crewseat definition
+function ACE.DefineCrewseat( id, data )
+	data.id = id
+	table.Inherit( data, crewseat_base )
+	Weapons.Crewseats[id] = data
+end
+
 
 --Gun class definition
 function ACE.RegisterWeaponClass( id, data )

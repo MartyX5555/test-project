@@ -304,6 +304,26 @@ function PANEL:Init()
 	end
 
 	do
+		--[[==================================================
+							Crew folder
+		]]--==================================================
+
+		local CrewNode = HomeNode:AddNode("Crew", "icon16/user.png")
+
+		CrewNode.mytable = {
+			type = "Crewseats",
+			id = "Crewseat_Driver",
+			guicreate = function(_, Table) ACE.CrewMenuGUICreate(Table) end,
+			guiupdate = function() return end
+		}
+
+		function CrewNode:DoClick()
+			acemenupanel:UpdateDisplay(self.mytable)
+			ACE.MenuSendValue("Global", "Type", self.mytable.type)
+		end
+	end
+
+	do
 
 		--[[==================================================
 							Settings folder
@@ -1086,4 +1106,189 @@ end
 --quick fix
 function PANEL:CPanelText(Name, Desc, Font, Panel)
 	ACE.CPanelText(Name, Desc, Font, Panel)
+end
+
+--[[=========================
+	Crew unified menu GUI
+]]--=========================
+function ACE.CrewMenuGUICreate(Table)
+	if acemenupanel.CustomDisplay and acemenupanel.CustomDisplay.EnableVerticalScrollbar then
+		acemenupanel.CustomDisplay:EnableVerticalScrollbar(true)
+	end
+
+	local CrewDefs = (ACE and ACE.Weapons and ACE.Weapons.Crewseats) or {}
+	if table.IsEmpty(CrewDefs) then
+		acemenupanel:CPanelText("CrewMissing", "No crewseat definitions loaded (ACE.Weapons.Crewseats is empty).")
+		acemenupanel.CustomDisplay:PerformLayout()
+		return
+	end
+
+	local RoleToId = {
+		Driver = "Crewseat_Driver",
+		Gunner = "Crewseat_Gunner",
+		Loader = "Crewseat_Loader",
+	}
+
+	local function GetRoleFromId(id)
+		if id == RoleToId.Gunner then return "Gunner" end
+		if id == RoleToId.Loader then return "Loader" end
+		return "Driver"
+	end
+
+	local function GetDefaultPoseForId(id)
+		local def = CrewDefs[id]
+		return (def and def.defaultModel) or "Sitting"
+	end
+
+	local function GetModelFor(id, pose)
+		local def = CrewDefs[id]
+		if not def then return nil end
+
+		if ACE and ACE.CrewseatModels and pose and ACE.CrewseatModels[pose] then
+			return ACE.CrewseatModels[pose]
+		end
+
+		return def.model
+	end
+
+	local CameraPresets = {
+		Standing = {
+			pos = Vector(207, 207, 98),
+			lookat = Vector(0, 0, 40),
+			fov = 18
+		},
+		Sitting = {
+			pos = Vector(138, 138, 58),
+			lookat = Vector(0, 0, 20),
+			fov = 20
+		},
+	}
+	CameraPresets.Default = CameraPresets.Sitting
+
+	local function GetCameraForPose(poseName)
+		if ACE.IsStandingPose and ACE.IsStandingPose(poseName) then
+			return CameraPresets.Standing
+		end
+		if poseName and string.find(string.lower(poseName), "stand") then
+			return CameraPresets.Standing
+		end
+		return CameraPresets.Sitting
+	end
+
+	ACE.MenuSendValue("Global", "Type", "Crewseats")
+
+	local currentId = (Table and Table.id) or RoleToId.Driver
+	if not CrewDefs[currentId] then currentId = RoleToId.Driver end
+
+	local currentPose = GetDefaultPoseForId(currentId)
+
+	ACE.MenuSendValue("Global", "Id", currentId)
+	ACE.MenuSendValue("Data", "ModelType", currentPose)
+
+	-- Header
+	acemenupanel:CPanelText("Crew_Title", "Crew Seats", "DermaDefaultBold")
+
+	acemenupanel:CPanelText("Crew_Desc", "Crewseats simulate a crewmate that can improve specific aspects of certain ACE entities, according to their role, however, they are squishy and can die if shoot. \n\nDead crewmates can be replaced by nearby mates if available.")
+
+	-- Role dropdown
+	acemenupanel:CPanelText("Crew_RoleLabel", "\nRole:")
+
+	local RoleSelect = vgui.Create("DComboBox", acemenupanel.CustomDisplay)
+	RoleSelect:SetSize(acemenupanel.CustomDisplay:GetWide(), 30)
+	RoleSelect:AddChoice("Driver")
+	RoleSelect:AddChoice("Gunner")
+	RoleSelect:AddChoice("Loader")
+	RoleSelect:SetValue(GetRoleFromId(currentId))
+	acemenupanel.CustomDisplay:AddItem(RoleSelect)
+
+	-- Pose dropdown
+	acemenupanel:CPanelText("Crew_PoseLabel", "\nPose Model:")
+
+	local PoseSelect = vgui.Create("DComboBox", acemenupanel.CustomDisplay)
+	PoseSelect:SetSize(acemenupanel.CustomDisplay:GetWide(), 30)
+
+	if ACE and ACE.CrewseatModelList then
+		for _, modelName in ipairs(ACE.CrewseatModelList) do
+			PoseSelect:AddChoice(modelName, modelName)
+		end
+	end
+
+	PoseSelect:SetValue(currentPose)
+	acemenupanel.CustomDisplay:AddItem(PoseSelect)
+
+	-- Model preview
+	local DisplayModel = vgui.Create("DModelPanel", acemenupanel.CustomDisplay)
+	DisplayModel:SetSize(acemenupanel.CustomDisplay:GetWide(), acemenupanel.CustomDisplay:GetWide() * 0.75)
+	DisplayModel.LayoutEntity = function() end
+	acemenupanel.CustomDisplay:AddItem(DisplayModel)
+
+	-- Description label
+	local DescLabel = vgui.Create("DLabel")
+	DescLabel:SetDark(true)
+	DescLabel:SetWrap(true)
+	DescLabel:SetAutoStretchVertical(true)
+	DescLabel:SetText("")
+	DescLabel:SetSize(acemenupanel.CustomDisplay:GetWide() - 10, 20)
+	DescLabel:SetContentAlignment(7)
+	acemenupanel.CustomDisplay:AddItem(DescLabel)
+
+	-- Spacer
+	local Spacer = vgui.Create("DPanel")
+	Spacer:SetSize(acemenupanel.CustomDisplay:GetWide(), 8)
+	Spacer:SetPaintBackground(false)
+	acemenupanel.CustomDisplay:AddItem(Spacer)
+
+	-- Weight label
+	local WeightLabel = vgui.Create("DLabel")
+	WeightLabel:SetDark(true)
+	WeightLabel:SetText("")
+	WeightLabel:SetSize(acemenupanel.CustomDisplay:GetWide(), 20)
+	acemenupanel.CustomDisplay:AddItem(WeightLabel)
+
+	local function Refresh()
+		local def = CrewDefs[currentId]
+		if not def then return end
+
+		local mdl = GetModelFor(currentId, currentPose) or def.model
+		if mdl then
+			DisplayModel:SetModel(mdl)
+			local cam = GetCameraForPose(currentPose)
+			DisplayModel:SetCamPos(cam.pos)
+			DisplayModel:SetLookAt(cam.lookat)
+			DisplayModel:SetFOV(cam.fov)
+		end
+
+		DescLabel:SetText(def.desc or "")
+		DescLabel:SizeToContentsY()
+
+		if def.weight then
+			WeightLabel:SetText("Weight: " .. tostring(def.weight) .. " kg")
+		else
+			WeightLabel:SetText("")
+		end
+		WeightLabel:SizeToContentsY()
+	end
+
+	Refresh()
+
+	RoleSelect.OnSelect = function(_, _, roleName)
+		currentId = RoleToId[roleName] or RoleToId.Driver
+		if not CrewDefs[currentId] then currentId = RoleToId.Driver end
+
+		currentPose = GetDefaultPoseForId(currentId)
+
+		ACE.MenuSendValue("Global", "Id", currentId)
+		ACE.MenuSendValue("Data", "ModelType", currentPose)
+
+		PoseSelect:SetValue(currentPose)
+		Refresh()
+	end
+
+	PoseSelect.OnSelect = function(_, _, poseName)
+		currentPose = poseName or "Sitting"
+		ACE.MenuSendValue("Data", "ModelType", currentPose)
+		Refresh()
+	end
+
+	acemenupanel.CustomDisplay:PerformLayout()
 end

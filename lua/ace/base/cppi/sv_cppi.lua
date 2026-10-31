@@ -40,6 +40,20 @@ function ACE.SetEntityOwner(Entity, Player)
 	end
 	return true
 end
+function ACE.CanTool(Entity, Player, ToolMode)
+	if not IsValid(Entity) or not IsValid(Player) then return false end
+
+	if CPPI and Entity.CPPICanTool then
+		return Entity:CPPICanTool(Player, ToolMode or "remover") and true or false
+	end
+
+	local Owner = ACE.GetEntityOwner(Entity)
+	if not Owner or Owner == Player or Player:IsAdmin() then
+		return true
+	end
+
+	return false
+end
 
 local function CreateContainers(Player, SteamID)
 	if CPPI then return end

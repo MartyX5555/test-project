@@ -135,7 +135,7 @@ do
 				ent:EmitSound( "items/medshot4.wav" ) --and play a sound.
 			else
 
-				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
+				if not ACE.CanTool( ent, self:GetOwner(), "torch" ) then return false end
 
 				if ACE.Check( ent ) and ent.ACE.Health < ent.ACE.MaxHealth then
 
@@ -202,7 +202,7 @@ do
 				HitRes = ACE.Damage( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )
 			else
 
-				if CPPI and not ent:CPPICanTool( self:GetOwner(), "torch" ) then return false end
+				if not ACE.CanTool( ent, self:GetOwner(), "torch" ) then return false end
 
 				Energy = { Kinetic = 500, Momentum = 0, Penetration = 500 }
 				HitRes = ACE.Damage( ent, Energy, 2, 0, self:GetOwner(), _, self, "Torch" )

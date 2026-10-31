@@ -459,7 +459,7 @@ function this.CanDamage(_, Entity, _, _, _, Inflictor, _, _)
 	if not CPPI or DP == 0 then return true end
 	if Entity.DamageOwner then return true end -- This value is normally used by entities meant to be destroyed by everyone.
 
-	local owner = Entity:CPPIGetOwner() --entity to attack. Gets the attacked entity's owner
+	local owner = ACE.GetEntityOwner(Entity) --entity to attack. Gets the attacked entity's owner
 
 	if not (IsValid(owner) and owner:IsPlayer()) then
 

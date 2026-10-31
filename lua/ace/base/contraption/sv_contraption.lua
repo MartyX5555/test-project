@@ -5,6 +5,7 @@ if not ACE.GlobalEntities then
 	ACE.GlobalEntities = {} -- Any entity should go here, parented or not.
 	ACE.Explosives = {} --Explosive entities like ammocrates & fueltanks go here
 	ACE.ScalableEnts = {}
+	ACE.Crewseats = {}
 end
 
 --list of classname ents which should be added to the contraption ents.
@@ -50,6 +51,10 @@ function ACE.AddEntityToCollector(Ent, ForceInsert)
 		ACE.ScalableEnts[Ent] = true
 	end
 
+	if class == "ace_crewseat_gunner" or class == "ace_crewseat_loader" or class == "ace_crewseat_driver" then
+		ACE.Crewseats[Ent] = true
+	end
+
 	if Ent.InitializeOnCollector then
 		Ent:InitializeOnCollector()
 	end
@@ -60,6 +65,7 @@ function ACE.AddEntityToCollector(Ent, ForceInsert)
 
 		ACE.Explosives[Ent] = nil
 		ACE.ScalableEnts[Ent] = nil
+		ACE.Crewseats[Ent] = nil
 
 		if Ent.OnRemoveCollectorData then
 			Ent:OnRemoveCollectorData()
