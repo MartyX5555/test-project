@@ -197,9 +197,21 @@ ACE.SoundToolSupport = {
 
 }
 
+-- Returns the sound with the correct sound extension
+-- This is useful if the original sound had a extension change.
+-- This wont return the sound if said sound also had a soundpath change.
+local function GetFixedSound(rawsoundpath)
+	local cleanpath = string.StripExtension(rawsoundpath)
+	local Checkpath = cleanpath .. ".mp3"
+	if ACE.IsValidSound( Checkpath ) then
+		return Checkpath
+	end
+	return rawsoundpath
+end
+
 local function ReplaceSound( _ , Entity , data)
 	if not IsValid( Entity ) then return end
-	local sound = data[1]
+	local originalsound = data[1]
 	local pitch = tonumber(data[2]) or 100
 	local isNew = data[3]
 
@@ -219,8 +231,9 @@ local function ReplaceSound( _ , Entity , data)
 			pitch = 100
 		end
 
-		local newdata = {sound, pitch, true}
-		support.SetSound(Entity, {Sound = sound, Pitch = pitch})
+		local finalsound = GetFixedSound(originalsound)
+		local newdata = {finalsound, pitch, true}
+		support.SetSound(Entity, {Sound = finalsound, Pitch = pitch})
 		duplicator.StoreEntityModifier( Entity, "ace_sounddata", newdata )
 	end
 end
@@ -316,7 +329,7 @@ if CLIENT then
 		SoundBrowserButton:SetVisible(true)
 		SoundBrowserButton:SetIcon( "icon16/application_view_list.png" )
 		SoundBrowserButton.DoClick = function()
-			RunConsoleCommand("wire_sound_browser_open", SoundNameText:GetValue(), "1")
+			RunConsoleCommand("wire_sound_browser_open", GetFixedSound(SoundNameText:GetValue()), "1")
 		end
 		panel:AddItem(SoundBrowserButton)
 
@@ -335,7 +348,7 @@ if CLIENT then
 		SoundPrePlay:SetVisible(true)
 		SoundPrePlay:SetIcon( "icon16/sound.png" )
 		SoundPrePlay.DoClick = function()
-			RunConsoleCommand("play",SoundNameText:GetValue())
+			RunConsoleCommand("play",GetFixedSound(SoundNameText:GetValue()))
 		end
 
 		local SoundPreStop = vgui.Create("DButton", SoundPre)
@@ -364,7 +377,7 @@ if CLIENT then
 		CopyButton:SetIcon( "icon16/page_copy.png" )
 		CopyButton:SetVisible(true)
 		CopyButton.DoClick = function()
-			SetClipboardText( SoundNameText:GetValue())
+			SetClipboardText( GetFixedSound(SoundNameText:GetValue()))
 		end
 		panel:AddItem(CopyButton)
 
