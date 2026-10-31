@@ -97,7 +97,7 @@ if CLIENT then
 	irst_base.guiupdate          = function() return end
 
 	crewseat_base.guicreate      = function( _, Table ) ACE.CrewMenuGUICreate( Table ) end or nil
-	crewseat_base.guiupdate      = function() return end
+	crewseat_base.guiupdate      = function( _, Table ) ACE.CrewMenuGUIUpdate( Table ) end or nil
 end
 
 -- some factory functions for defining ents
