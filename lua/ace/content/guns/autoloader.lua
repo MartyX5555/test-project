@@ -13,6 +13,25 @@ ACE.RegisterWeaponClass("AL", {
 } )
 
 --add a gun to the class
+ACE.RegisterWeapon("50mmAL", {
+	name = "50mm Autoloading Cannon",
+	desc = "A fast-firing 50mm autoloading cannon, capable of quickly dumping a magazine into light and medium armor before ducking into cover to reload.",
+	model = "models/tankgun/tankgun_al_50mm.mdl",
+	sound = "ace_weapons/multi_sound/50mm_multi.mp3",
+	autosound = "acf_extra/tankfx/reload.mp3",
+	gunclass = "AL",
+	caliber = 5.0,
+	weight = 550,
+	year = 1946,
+	rofmod = 1.1,
+	magsize = 12,
+	magreload = 15,
+	round = {
+		maxlength = 63,
+		propweight = 2.1
+	}
+} )
+
 ACE.RegisterWeapon("75mmAL", { --id
 	name = "75mm Autoloading Cannon",
 	desc = "A quick-firing 75mm gun, pops off a number of rounds in relatively short order.",
