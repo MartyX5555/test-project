@@ -1,3 +1,4 @@
 .vscode/
 /tools
 Agents.md
+*.py
