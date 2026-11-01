@@ -460,6 +460,64 @@ function ACE.CheckFuelTank( fueltankid )
 	return true
 end
 
+---------------------------------- Sound Utilities ----------------------------------
+do
+	local IsValidCache = {}
+
+	-- Helper to strip Source engine sound flags and optional leading sound/ prefix for filesystem checks
+	local function CleanSoundPath( path )
+		local str = tostring( path or "" )
+		local flags, rest = string.match( str, "^([%^%)%*%#%@%>%<%?%!%$%~%+%(]*)(.*)$" )
+		rest = rest or str
+		flags = flags or ""
+
+		local soundPrefix = ""
+		local lowRest = string.lower( rest )
+		if string.sub( lowRest, 1, 6 ) == "sound/" or string.sub( lowRest, 1, 6 ) == "sound\\" then
+			soundPrefix = string.sub( rest, 1, 6 )
+			rest = string.sub( rest, 7 )
+		end
+
+		return rest, flags, soundPrefix
+	end
+
+	-- Returns whether or not a sound actually exists, fixes client timeout issues
+	function ACE.IsValidSound( path )
+		if not path or path == "" then return false end
+		if IsValidCache[path] == nil then
+			local clean = CleanSoundPath( path )
+			IsValidCache[path] = file.Exists( "sound/" .. clean, "GAME" ) and true or false
+		end
+		return IsValidCache[path]
+	end
+
+	-- Returns the sound with the correct sound extension
+	-- This is useful if the original sound had an extension change (e.g. .wav to .mp3).
+	-- Preserves Source engine sound flags and optional sound/ prefix.
+	function ACE.GetFixedSound( rawsoundpath )
+		if not isstring( rawsoundpath ) or rawsoundpath == "" then return rawsoundpath end
+
+		if ACE.IsValidSound( rawsoundpath ) then
+			return rawsoundpath
+		end
+
+		local clean, flags, soundPrefix = CleanSoundPath( rawsoundpath )
+		local cleanNoExt = string.StripExtension( clean )
+
+		local checkpath = cleanNoExt .. ".mp3"
+		if ACE.IsValidSound( checkpath ) then
+			return flags .. soundPrefix .. checkpath
+		end
+
+		checkpath = cleanNoExt .. ".wav"
+		if ACE.IsValidSound( checkpath ) then
+			return flags .. soundPrefix .. checkpath
+		end
+
+		return rawsoundpath
+	end
+end
+
 if SERVER then
 	function ACE.SendMsg(ply, ...)
 		net.Start("ACE_SendMessage")
