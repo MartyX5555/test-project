@@ -15,7 +15,7 @@ TOOL.GetEntityData = {
 		Data.Id = Ent.Id
 		Data.EntityColor = Ent:GetColor()
 		Data.EntityMaterial = Ent:GetMaterial()
-		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		Data.EntityWireName = Ent:GetNW2String( "WireName", "Unknown" )
 		return Data
 	end,
 	ace_rack = function(Ent)
@@ -23,7 +23,7 @@ TOOL.GetEntityData = {
 		Data.Id = Ent.Id
 		Data.EntityColor = Ent:GetColor()
 		Data.EntityMaterial = Ent:GetMaterial()
-		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		Data.EntityWireName = Ent:GetNW2String( "WireName", "Unknown" )
 		return Data
 	end,
 	ace_ammo = function(Ent)
@@ -33,7 +33,7 @@ TOOL.GetEntityData = {
 		Data.Dimensions = Ent.Dimensions
 		Data.EntityColor = Ent:GetColor()
 		Data.EntityMaterial = Ent:GetMaterial()
-		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		Data.EntityWireName = Ent:GetNW2String( "WireName", "Unknown" )
 		return Data
 	end,
 	ace_engine = function(Ent)
@@ -41,7 +41,7 @@ TOOL.GetEntityData = {
 		Data.Id = Ent.Id
 		Data.EntityColor = Ent:GetColor()
 		Data.EntityMaterial = Ent:GetMaterial()
-		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		Data.EntityWireName = Ent:GetNW2String( "WireName", "Unknown" )
 		return Data
 	end,
 	ace_gearbox =  function(Ent)
@@ -54,7 +54,7 @@ TOOL.GetEntityData = {
 		Data.ShiftPoints = Ent.ShiftPoints
 		Data.EntityColor = Ent:GetColor()
 		Data.EntityMaterial = Ent:GetMaterial()
-		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		Data.EntityWireName = Ent:GetNW2String( "WireName", "Unknown" )
 		return Data
 	end,
 	ace_fueltank = function(Ent)
@@ -66,7 +66,7 @@ TOOL.GetEntityData = {
 		Data.Shape = Ent.Shape
 		Data.EntityColor = Ent:GetColor()
 		Data.EntityMaterial = Ent:GetMaterial()
-		Data.EntityWireName = Ent:GetNWString( "WireName", "Unknown" )
+		Data.EntityWireName = Ent:GetNW2String( "WireName", "Unknown" )
 		return Data
 	end,
 }
@@ -106,7 +106,7 @@ function TOOL:LeftClick( trace )
 		if success then
 			ent:SetColor(EntityData.EntityColor)
 			ent:SetMaterial(EntityData.EntityMaterial)
-			ent:SetNWString("WireName", EntityData.EntityWireName)
+			ent:SetNW2String("WireName", EntityData.EntityWireName)
 
 			duplicator.StoreEntityModifier( ent, "colour", { Color = EntityData.EntityColor, RenderMode = 0, RenderFX = 0 } )
 			duplicator.StoreEntityModifier( ent, "material", { MaterialOverride = EntityData.EntityMaterial} )
@@ -133,7 +133,7 @@ function TOOL:LeftClick( trace )
 			NewEnt:GetPhysicsObject():EnableMotion( false )
 			NewEnt:SetColor(EntityData.EntityColor)
 			NewEnt:SetMaterial(EntityData.EntityMaterial)
-			NewEnt:SetNWString("WireName", EntityData.EntityWireName)
+			NewEnt:SetNW2String("WireName", EntityData.EntityWireName)
 
 			duplicator.StoreEntityModifier( NewEnt, "colour", { Color = EntityData.EntityColor, RenderMode = 0, RenderFX = 0 } )
 			duplicator.StoreEntityModifier( NewEnt, "material", { MaterialOverride = EntityData.EntityMaterial} )

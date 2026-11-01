@@ -644,7 +644,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 	Rack.ReloadMultiplier  = ACE.GetRackValue(Id, "reloadmul")
 	Rack.WhitelistOnly     = ACE.GetRackValue(Id, "whitelistonly")
 
-	Rack:SetNWString("WireName",Rack.name)
+	Rack:SetNW2String("WireName",Rack.name)
 	Rack:SetNWString( "Class",  Rack.Class )
 	Rack:SetNWString( "ID",	Rack.Id )
 	Rack:SetNWString( "Sound",  Rack.Sound )

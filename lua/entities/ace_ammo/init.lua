@@ -577,7 +577,7 @@ do
 		self.RoFMul	= self.IsTwoPiece and 0.3 or 0						--30% ROF penalty for 2 piece
 
 		self:SetNWString( "Ammo", self.Ammo )
-		self:SetNWString( "WireName", WireName )
+		self:SetNW2String( "WireName", WireName )
 
 		self.NetworkData = ACE.RoundTypes[self.BulletData.Type].network
 		self:NetworkData( self.BulletData )

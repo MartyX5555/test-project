@@ -229,7 +229,7 @@ do
 		Gun.AutoSound         = ClassData.autosound and (Lookup.autosound or ClassData.autosound) or nil
 
 		Gun:SetNWInt( "Caliber", Gun.Caliber )
-		Gun:SetNWString( "WireName", Lookup.name )
+		Gun:SetNW2String( "WireName", Lookup.name )
 		Gun:SetNWString( "Class", Gun.Class )
 		Gun:SetNWString( "ID", Gun.Id )
 		Gun:SetNWString( "Muzzleflash", Gun.Muzzleflash )

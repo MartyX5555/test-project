@@ -96,7 +96,7 @@ list.Set( "ACECvars", "ace_irst", {"id"} )
 duplicator.RegisterEntityClass("ace_irst", MakeACE_IRST, "Pos", "Angle", "Id" )
 
 function ENT:SetNWNetwork()
-	self:SetNWString( "WireName", self.ACEName )
+	self:SetNW2String( "WireName", self.ACEName )
 end
 
 function ENT:SetModelEasy(mdl)
