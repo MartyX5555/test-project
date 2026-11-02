@@ -1079,7 +1079,7 @@ function ACE.CPanelText(Name, Desc, Font, Panel)
 		acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
 
 		acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
-		acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
+		acemenupanel["CData"][Name .. "_text"]:SetDark(true)
 
 		if Font then acemenupanel["CData"][Name .. "_text"]:SetFont( Font ) end
 

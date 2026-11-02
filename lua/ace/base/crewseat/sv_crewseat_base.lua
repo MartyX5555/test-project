@@ -249,7 +249,7 @@ function ACE.InitializeCrewseat(ent, modelType)
 end
 
 -- Shared update function for tool left-click in-situ update
-function ACE.UpdateCrewseatModel(ent, ply, Id, Data)
+function ACE.UpdateCrewseatModel(ent, _, _, Data)
 	if not IsValid(ent) then return false, "Invalid entity" end
 
 	local modelType = (istable(Data) and Data.ModelType) or (isstring(Data) and Data) or nil
