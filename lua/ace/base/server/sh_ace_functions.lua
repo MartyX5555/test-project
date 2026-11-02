@@ -90,7 +90,7 @@ function ACE.GetCircularSpread(initialdir, cone)
 
 	local baseAng = initialdir:Angle()
 
-	-- 1. Radio angular máximo a escala en el plano tangente. 
+	-- 1. Radio angular máximo a escala en el plano tangente.
 	-- Limited to 89.9 degrees to avoid infinite tangent values.
 	local maxRadius = math.tan(math.rad(math.min(cone, 89.9)))
 
@@ -361,9 +361,8 @@ local function OnhttpSucess(contents)
 end
 
 local function OnhttpFail()
-		print("[ACE | ERROR]- Unable to find the latest version! No internet available.")
-
-		ACE.CurrentVersion = 0
+	print("[ACE | ERROR]- Unable to connect to GitHub. Returning to offline mode.")
+	ACE.CurrentVersion = 0
 end
 
 --Checks if theres new versions for ACE

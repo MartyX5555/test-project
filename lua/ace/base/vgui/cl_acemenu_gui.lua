@@ -409,16 +409,17 @@ function ACEHomeGUICreate()
 
 	local currentpanel = acemenupanel.CustomDisplay
 	local isExperimental = ACE.Version > ACE.CurrentVersion
+	local HasGithubVersion = ACE.CurrentVersion > 0
 
 	-- ====================================================
 	-- 1. Lógica de Versiones (Procesamos los datos primero)
 	-- ====================================================
 	local versionType = "Unknown"
-	local versionString = "No internet Connection available!"
+	local versionString = "Unable to connect to GitHub."
 	local statusColor = Color(225, 0, 0, 255)
 	local statusText = versionString
 
-	if ACE.CurrentVersion > 0 then
+	if HasGithubVersion then
 		versionType = isExperimental and "Experimental" or "Default"
 
 		if isExperimental or ACE.Version == ACE.CurrentVersion then
@@ -432,7 +433,7 @@ function ACEHomeGUICreate()
 		statusText = "ACE Is " .. versionString .. "!\n"
 	end
 
-	local versionInfoText = "Latest Version: " .. ACE.CurrentVersion .. "\nYour Version: " .. ACE.Version .. "\nCurrent Build: " .. versionType
+	local versionInfoText = "GitHub Version: " .. (HasGithubVersion and ACE.CurrentVersion or "Unknown") .. "\nLocal Version: " .. ACE.Version .. "\nCurrent Build: " .. versionType
 
 
 	-- ====================================================
@@ -467,7 +468,7 @@ function ACEHomeGUICreate()
 	acemenupanel["CData"]["VersionText"] = labelVersionStatus
 
 	-- Botón de Changelog (Solo se crea si no existe)
-	if not acemenupanel["CData"]["ChangelogButton"] then
+	if HasGithubVersion and not acemenupanel["CData"]["ChangelogButton"] then
 		acemenupanel:CPanelText("Header", "For a complete changelog, visit our Github")
 
 		local changelogButton = vgui.Create("DButton")
