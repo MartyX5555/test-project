@@ -53,6 +53,20 @@ if CLIENT then
 		hook.Remove( "InitPostEntity", "ACE.PreMaterialCheck" )
 	end )
 
+	-- spawnmenu_reload seems to destroy all of the panels. So i dont think we need to keep track of them beyond of the file refresh.
+	--local function clearPanelsTexts()
+	--	if not next(ToolPanel.TextLabels) then return end
+	--	for Id, textlabel in pairs(ToolPanel.TextLabels) do
+	--		if IsValid(textlabel) then
+	--			print("removing panel that is still valid")
+	--			textlabel:Remove()
+	--		else
+	--			print("panel was already invalid. Yet we need to delete this", ToolPanel.TextLabels[Id], textlabel)
+	--		end
+	--		ToolPanel.TextLabels[Id] = nil
+	--	end
+	--end
+
 	--Replicated from PANEL:CPanelText(Name, Desc, Font).
 	local function ArmorPanelText( name, desc, font, panel )
 
@@ -60,13 +74,11 @@ if CLIENT then
 		local TextLabels = ToolPanel.TextLabels[Id]
 
 		if not IsValid(TextLabels) then
-			TextLabels = panel:Help(desc)
+			print("Panel doesnt exist. Creating...")
+			TextLabels = panel:Help("")
 			TextLabels:SetContentAlignment( TEXT_ALIGN_CENTER )
-			TextLabels:SetAutoStretchVertical(true)
 			if font then TextLabels:SetFont( font ) end
 			TextLabels:SizeToContents()
-
-			panel:AddItem(TextLabels)
 		end
 
 		TextLabels:SetText( desc )
@@ -74,6 +86,18 @@ if CLIENT then
 		TextLabels:SizeToContentsY()
 
 		ToolPanel.TextLabels[Id] = TextLabels
+	end
+
+	local function RefreshMaterialPanel(MaterialData, panel)
+
+		ArmorPanelText( "ComboTitle",  MaterialData.name , "DermaDefaultBold", panel )
+		ArmorPanelText( "ComboDesc" , MaterialData.desc .. "\n", nil, panel )
+
+		ArmorPanelText( "ComboCurve", "Curve : " .. MaterialData.curve, nil, panel )
+		ArmorPanelText( "ComboMass" , "Mass : " .. MaterialData.massMod .. "x RHA", nil, panel )
+		ArmorPanelText( "ComboKE"	, "KE protection : " .. MaterialData.effectiveness .. "x RHA", nil, panel )
+		ArmorPanelText( "ComboCHE"  , "CHEMICAL protection : " .. (MaterialData.HEATeffectiveness or MaterialData.effectiveness) .. "x RHA", nil, panel )
+		ArmorPanelText( "ComboYear" , "Year : " .. (MaterialData.year or "unknown"), nil, panel )
 	end
 
 	--Main menu building
@@ -121,14 +145,8 @@ if CLIENT then
 		ToolPanel.ComboMat = combobox
 		ToolPanel.panel = panel
 
-		ArmorPanelText( "ComboTitle",  MaterialData.name , "DermaDefaultBold", ToolPanel.panel )
-		ArmorPanelText( "ComboDesc" , MaterialData.desc .. "\n", nil, ToolPanel.panel )
-
-		ArmorPanelText( "ComboCurve", "Curve : " .. MaterialData.curve, nil, ToolPanel.panel )
-		ArmorPanelText( "ComboMass" , "Mass : " .. MaterialData.massMod .. "x RHA", nil, ToolPanel.panel )
-		ArmorPanelText( "ComboKE"	, "KE protection : " .. MaterialData.effectiveness .. "x RHA", nil, ToolPanel.panel )
-		ArmorPanelText( "ComboCHE"  , "CHEMICAL protection : " .. (MaterialData.HEATeffectiveness or MaterialData.effectiveness) .. "x RHA", nil, ToolPanel.panel )
-		ArmorPanelText( "ComboYear" , "Year : " .. (MaterialData.year or "unknown"), nil, ToolPanel.panel )
+		--clearPanelsTexts()
+		RefreshMaterialPanel(MaterialData, panel)
 
 	end
 
@@ -195,21 +213,15 @@ if CLIENT then
 		local Mat = ACE.VerifyMaterial(value)
 		if Mat ~= value then RunConsoleCommand( "acearmorprop_material", Mat) end
 
-		if not ToolPanel.panel then return end
+		if not IsValid(ToolPanel.panel) then return end
+		if not IsValid(ToolPanel.ComboMat) then return end
 
 		local MatData = ACE.GetMaterialData( Mat )
 
 		--Too redundant, ik, but looks like the unique way to have it working even when right clicking a prop
 		ToolPanel.ComboMat:SetValue(MatData.sname)
 
-		ArmorPanelText( "ComboTitle", MatData.name , "DermaDefaultBold", ToolPanel.panel )
-		ArmorPanelText( "ComboDesc" , MatData.desc .. "\n", nil, ToolPanel.panel )
-
-		ArmorPanelText( "ComboCurve", "Curve : " .. MatData.curve, nil, ToolPanel.panel )
-		ArmorPanelText( "ComboMass" , "Mass scale: " .. MatData.massMod .. "x RHA", nil, ToolPanel.panel )
-		ArmorPanelText( "ComboKE"	, "KE protection : " .. MatData.effectiveness .. "x RHA", nil, ToolPanel.panel )
-		ArmorPanelText( "ComboCHE"  , "CHEMICAL protection : " .. (MatData.HEATeffectiveness or MatData.effectiveness) .. "x RHA", nil, ToolPanel.panel )
-		ArmorPanelText( "ComboYear" , "Year : " .. (MatData.year or "unknown"), nil, ToolPanel.panel )
+		RefreshMaterialPanel(MatData, ToolPanel.panel)
 
 	end, "ace_material" )
 end

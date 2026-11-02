@@ -231,7 +231,7 @@ do
 			Gearbox:SetBodygroup(1, 0)
 		end
 
-		Gearbox:SetNWString( "WireName", GearboxData.name )
+		Gearbox:SetNW2String( "WireName", GearboxData.name )
 		Gearbox:UpdateOverlayText()
 
 	ACE.Activate( Gearbox, 0 )
@@ -335,7 +335,7 @@ function ENT:Update( _, Id, Data )
 		self:SetBodygroup(1, 0)
 	end
 
-	self:SetNWString( "WireName", GearboxData.name )
+	self:SetNW2String( "WireName", GearboxData.name )
 	self:UpdateOverlayText()
 
 ACE.Activate( self, 1 )

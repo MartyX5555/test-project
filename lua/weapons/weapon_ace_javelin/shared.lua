@@ -16,12 +16,12 @@ SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 1
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "RPG_Round"
-SWEP.Primary.Sound = "acf_extra/airfx/javelin_fire.wav"
+SWEP.Primary.Sound = "acf_extra/airfx/javelin_fire.mp3"
 SWEP.Primary.LightScale = 200 --Muzzleflash light radius
 SWEP.Primary.BulletCount = 1 --Number of bullets to fire each shot, used for shotguns
 
 SWEP.TrackSound = "acf_extra/airfx/caution2.wav"
-SWEP.LockSound = "acf_extra/ACE/BF3/MissileLock/LockedStinger.wav"
+SWEP.LockSound = "acf_extra/ACE/missiles/Seeker/BF3LockedStinger.wav"
 
 SWEP.DirectFireDist = 125 * 39.37
 

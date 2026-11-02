@@ -349,7 +349,7 @@ function ENT:UpdateFuelTank(_, Data)
 
 	local name = "ACE " .. (electric or gas)
 
-	self:SetNWString( "WireName", name )
+	self:SetNW2String( "WireName", name )
 
 	Wire_TriggerOutput( self, "Capacity", math.Round(self.Capacity,2) )
 	self:UpdateOverlayText()

@@ -81,7 +81,7 @@ do
 
 				Mine.physObj:EnableMotion(true)
 				Mine.physObj:ApplyForceCenter( FinalForce )
-				Mine:EmitSound("weapons/amr/sniper_fire.wav", 75, 190, 1, CHAN_WEAPON )
+				Mine:EmitSound("weapons/amr/sniper_fire.mp3", 75, 190, 1, CHAN_WEAPON )
 
 				Mine.HasJumped = true
 			end
@@ -131,7 +131,7 @@ do
 	end
 
 	function ENT:CanTool(ply, _, toolname)
-		if ((CPPI and self:CPPICanTool(ply, "remover")) or (not CPPI)) and toolname == "remover" then
+		if ACE.CanTool(self, ply, "remover") and toolname == "remover" then
 			return true
 		end
 
@@ -139,7 +139,7 @@ do
 	end
 
 	function ENT:CanProperty(ply, property)
-		if ((CPPI and self:CPPICanTool(ply, "remover")) or (not CPPI)) and property == "remover" then
+		if ACE.CanTool(self, ply, "remover") and property == "remover" then
 			return true
 		end
 

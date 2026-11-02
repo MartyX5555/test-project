@@ -8,7 +8,7 @@ ACE.RegisterWeaponClass("ASM", {
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	year           = 1969,
 	rofmod         = 1,
-	sound          = "acf_extra/airfx/rocket_fire2.wav",
+	sound          = "acf_extra/airfx/rocket_fire2.mp3",
 	soundDistance  = " ",
 	soundNormal    = " ",
 	effect         = "Rocket Motor Missile1",		-- Small/Medium size missile

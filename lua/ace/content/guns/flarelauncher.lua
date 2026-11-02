@@ -7,7 +7,7 @@ ACE.RegisterWeaponClass("FGL", {
 	muzzleflash = "40mm_muzzleflash_noscale",
 	rofmod = 0.6,
 	year = 1970,
-	sound = "acf_extra/tankfx/flare_launch.wav",
+	sound = "acf_extra/tankfx/flare_launch.mp3",
 
 	ammoBlacklist	= {"AP", "APHE", "FL", "HE", "HEAT", "HP", "SM"} -- ok fun's over
 } )
@@ -17,7 +17,7 @@ ACE.RegisterWeapon("40mmFGL", { --id
 	name = "40mm Flare Launcher",
 	desc = "Put on an all-American fireworks show with this flare launcher: high fire rate, low distraction rate.  Fill the air with flare.  Careful of your reload time.",
 	model = "models/missiles/blackjellypod.mdl",
-	sound = "acf_extra/tankfx/flare_launch.wav",
+	sound = "acf_extra/tankfx/flare_launch.mp3",
 	gunclass = "FGL",
 	caliber = 4.0,
 	weight = 75,

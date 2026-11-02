@@ -49,17 +49,6 @@ ACE.Sounds.LOSWhitelist = {
 
 do
 
-	-- Cache results so we don't need to do expensive filesystem checks every time
-	local IsValidCache = {}
-
-	-- Returns whether or not a sound actually exists, fixes client timeout issues
-	function ACE.IsValidSound( path )
-		if not IsValidCache[path] then
-			IsValidCache[path] = file.Exists( string.format( "sound/%s", tostring( path ) ), "GAME" ) and true or false
-		end
-		return IsValidCache[path]
-	end
-
 	--Global sound function. In order to be modified by a convar config
 	--If the Origin is an entity, uses entity:EmitSound( SoundTxt , SoundLevel, Pitch, Volume )
 	--If the Origin is a vector Position, uses sound.Play(SoundTxt, Position, SoundLevel, Pitch, Volume)

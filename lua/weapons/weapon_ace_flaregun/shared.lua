@@ -62,9 +62,7 @@ function SWEP:PrimaryAttack()
 			ent:SetColor( Color( 0, 0, 1, 1 ) ) --Blue set to 1 for flare, set to 2 for chaff
 			increaseDrag(ent, 10)
 
-			if CPPI then
-				ent:CPPISetOwner(owner)
-			end
+			ACE.SetEntityOwner(ent, owner)
 
 			local phys = ent:GetPhysicsObject()
 			phys:SetVelocity( owner:GetAimVector() * 13000 )

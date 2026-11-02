@@ -5,10 +5,12 @@ on:
     paths:
       - 'lua/**'
       - '!lua/entities/gmod_wire_expression2/**'
+      - '!lua/weapons/gmod_tool/stools/acedupefixer.lua'
   pull_request:
     paths:
       - 'lua/**'
       - '!lua/entities/gmod_wire_expression2/**'
+      - '!lua/weapons/gmod_tool/stools/acedupefixer.lua'
 
 jobs:
   build:
@@ -23,7 +25,9 @@ jobs:
         run: unzip glualint.zip
 
       - name: Remove blacklisted folders
-        run: rm -rf lua/entities/gmod_wire_expression2/
+        run: |
+          rm -rf lua/entities/gmod_wire_expression2/
+          rm -f lua/weapons/gmod_tool/stools/acedupefixer.lua
 
       - name: Initiate linting
         run: |

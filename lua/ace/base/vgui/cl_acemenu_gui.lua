@@ -304,6 +304,24 @@ function PANEL:Init()
 	end
 
 	do
+		--[[==================================================
+							Crew folder
+		]]--==================================================
+
+		local CrewNode = HomeNode:AddNode( "Crew", "icon16/user.png" )
+
+		for _, CrewData in pairs( FinalContainer["Crewseats"] ) do
+
+			function CrewNode:DoClick()
+				acemenupanel:UpdateDisplay( CrewData )
+				ACE.MenuSendValue( "Global", "Type", CrewData.type )
+			end
+
+			break
+		end
+	end
+
+	do
 
 		--[[==================================================
 							Settings folder
@@ -391,16 +409,17 @@ function ACEHomeGUICreate()
 
 	local currentpanel = acemenupanel.CustomDisplay
 	local isExperimental = ACE.Version > ACE.CurrentVersion
+	local HasGithubVersion = ACE.CurrentVersion > 0
 
 	-- ====================================================
 	-- 1. Lógica de Versiones (Procesamos los datos primero)
 	-- ====================================================
 	local versionType = "Unknown"
-	local versionString = "No internet Connection available!"
+	local versionString = "Unable to connect to GitHub."
 	local statusColor = Color(225, 0, 0, 255)
 	local statusText = versionString
 
-	if ACE.CurrentVersion > 0 then
+	if HasGithubVersion then
 		versionType = isExperimental and "Experimental" or "Default"
 
 		if isExperimental or ACE.Version == ACE.CurrentVersion then
@@ -414,7 +433,7 @@ function ACEHomeGUICreate()
 		statusText = "ACE Is " .. versionString .. "!\n"
 	end
 
-	local versionInfoText = "Latest Version: " .. ACE.CurrentVersion .. "\nYour Version: " .. ACE.Version .. "\nCurrent Build: " .. versionType
+	local versionInfoText = "GitHub Version: " .. (HasGithubVersion and ACE.CurrentVersion or "Unknown") .. "\nLocal Version: " .. ACE.Version .. "\nCurrent Build: " .. versionType
 
 
 	-- ====================================================
@@ -449,7 +468,7 @@ function ACEHomeGUICreate()
 	acemenupanel["CData"]["VersionText"] = labelVersionStatus
 
 	-- Botón de Changelog (Solo se crea si no existe)
-	if not acemenupanel["CData"]["ChangelogButton"] then
+	if HasGithubVersion and not acemenupanel["CData"]["ChangelogButton"] then
 		acemenupanel:CPanelText("Header", "For a complete changelog, visit our Github")
 
 		local changelogButton = vgui.Create("DButton")
@@ -1061,7 +1080,7 @@ function ACE.CPanelText(Name, Desc, Font, Panel)
 		acemenupanel["CData"][Name .. "_text"] = vgui.Create( "DLabel" )
 
 		acemenupanel["CData"][Name .. "_text"]:SetText( Desc or "" )
-		acemenupanel["CData"][Name .. "_text"]:SetTextColor( Color( 0, 0, 0) )
+		acemenupanel["CData"][Name .. "_text"]:SetDark(true)
 
 		if Font then acemenupanel["CData"][Name .. "_text"]:SetFont( Font ) end
 
@@ -1086,4 +1105,169 @@ end
 --quick fix
 function PANEL:CPanelText(Name, Desc, Font, Panel)
 	ACE.CPanelText(Name, Desc, Font, Panel)
+end
+
+--[[=========================
+	Crew unified menu GUI
+]]--=========================
+do
+	local CrewSeats = ACEEnts.Crewseats
+
+	local CameraPresets = {
+		Standing = {
+			pos = Vector(207, 207, 98),
+			lookat = Vector(0, 0, 40),
+			fov = 18
+		},
+		Sitting = {
+			pos = Vector(138, 138, 58),
+			lookat = Vector(0, 0, 20),
+			fov = 20
+		},
+	}
+
+	local function GetDefaultPoseForId(id)
+		local def = CrewSeats and CrewSeats[id]
+		return (def and def.defaultModel) or "Sitting"
+	end
+
+	local function GetModelFor(id, pose)
+		local def = CrewSeats and CrewSeats[id]
+		if not def then return nil end
+
+		if ACE.CrewseatModels and pose and ACE.CrewseatModels[pose] then
+			return ACE.CrewseatModels[pose]
+		end
+
+		return def.model
+	end
+
+	local function GetCameraForPose(poseName)
+		if ACE.IsStandingPose and ACE.IsStandingPose(poseName) then
+			return CameraPresets.Standing
+		end
+		return CameraPresets.Sitting
+	end
+
+	function ACE.CrewMenuGUICreate(Table)
+		if not acemenupanel.CustomDisplay then return end
+
+		local MainPanel = acemenupanel.CustomDisplay
+		MainPanel:EnableVerticalScrollbar(true)
+
+		if not next(CrewSeats) then
+			acemenupanel:CPanelText("CrewMissing", "No crewseat definitions loaded (ACE.Weapons.Crewseats is empty).")
+			MainPanel:PerformLayout()
+			return
+		end
+
+		local defaultId = (Table and Table.id) or "Crewseat_Driver"
+		if not CrewSeats[defaultId] then
+			defaultId = next(CrewSeats)
+		end
+
+		acemenupanel.CrewData = acemenupanel.CrewData or {}
+		acemenupanel.CrewData.Id = defaultId
+		acemenupanel.CrewData.ModelType = GetDefaultPoseForId(defaultId)
+
+		ACE.MenuSendValue("Global", "Type", Table and Table.type or "Crewseats")
+		ACE.MenuSendValue("Global", "Id", acemenupanel.CrewData.Id)
+		ACE.MenuSendValue("Data", "ModelType", acemenupanel.CrewData.ModelType)
+
+		acemenupanel:CPanelText("Name", "Crew Seats", "DermaDefaultBold")
+		acemenupanel:CPanelText("Crew_Desc", "Crewseats simulate a crewmate that can improve specific aspects of certain ACE entities, according to their role, however, they are squishy and can die if shot.\n\nDead crewmates can be replaced by nearby mates if available.")
+
+		----------- Role dropbox -----------
+		acemenupanel:CPanelText("Crew_RoleLabel", "\nRole:")
+
+		local RoleSelect = vgui.Create("DComboBox", MainPanel)
+		RoleSelect:SetSize(MainPanel:GetWide(), 30)
+
+		local SortedCrew = {}
+		for _, def in pairs(CrewSeats) do
+			table.insert(SortedCrew, def)
+		end
+		table.sort(SortedCrew, function(a, b) return a.id < b.id end)
+
+		for _, def in ipairs(SortedCrew) do
+			RoleSelect:AddChoice(def.name, def.id, def.id == acemenupanel.CrewData.Id)
+		end
+
+		function RoleSelect:OnSelect(_, _, data)
+			if not CrewSeats[data] then return end
+
+			acemenupanel.CrewData.Id = data
+			acemenupanel.CrewData.ModelType = GetDefaultPoseForId(data)
+
+			ACE.MenuSendValue("Global", "Id", acemenupanel.CrewData.Id)
+			ACE.MenuSendValue("Data", "ModelType", acemenupanel.CrewData.ModelType)
+
+			if IsValid(acemenupanel.CData.PoseSelect) then
+				acemenupanel.CData.PoseSelect:SetValue(acemenupanel.CrewData.ModelType)
+			end
+
+			ACE.CrewMenuGUIUpdate(Table)
+		end
+
+		acemenupanel.CData.RoleSelect = RoleSelect
+		MainPanel:AddItem(RoleSelect)
+
+		----------- Pose dropbox -----------
+		acemenupanel:CPanelText("Crew_PoseLabel", "\nPose Model:")
+
+		local PoseSelect = vgui.Create("DComboBox", MainPanel)
+		PoseSelect:SetSize(MainPanel:GetWide(), 30)
+
+		if ACE.CrewseatModelList then
+			for _, modelName in ipairs(ACE.CrewseatModelList) do
+				PoseSelect:AddChoice(modelName, modelName, modelName == acemenupanel.CrewData.ModelType)
+			end
+		end
+
+		function PoseSelect:OnSelect(_, _, data)
+			acemenupanel.CrewData.ModelType = data or "Sitting"
+			ACE.MenuSendValue("Data", "ModelType", acemenupanel.CrewData.ModelType)
+			ACE.CrewMenuGUIUpdate(Table)
+		end
+
+		acemenupanel.CData.PoseSelect = PoseSelect
+		MainPanel:AddItem(PoseSelect)
+
+		----------- Model Preview & Details -----------
+		acemenupanel.CData.DisplayModel = vgui.Create("DModelPanel", MainPanel)
+		acemenupanel.CData.DisplayModel:SetSize(MainPanel:GetWide(), MainPanel:GetWide() * 0.75)
+		acemenupanel.CData.DisplayModel.LayoutEntity = function() end
+		MainPanel:AddItem(acemenupanel.CData.DisplayModel)
+
+		acemenupanel:CPanelText("Desc", "")
+		acemenupanel:CPanelText("Weight", "")
+
+		ACE.CrewMenuGUIUpdate(Table)
+
+		MainPanel:PerformLayout()
+	end
+
+	function ACE.CrewMenuGUIUpdate(_)
+		if not acemenupanel.CustomDisplay then return end
+		if not acemenupanel.CrewData then return end
+
+		local currentId = acemenupanel.CrewData.Id
+		local currentPose = acemenupanel.CrewData.ModelType
+		local def = CrewSeats and CrewSeats[currentId]
+		if not def then return end
+
+		if IsValid(acemenupanel.CData.DisplayModel) then
+			local mdl = GetModelFor(currentId, currentPose) or def.model
+			if mdl then
+				local cam = GetCameraForPose(currentPose)
+				acemenupanel.CData.DisplayModel:SetModel(mdl)
+				acemenupanel.CData.DisplayModel:SetCamPos(cam.pos)
+				acemenupanel.CData.DisplayModel:SetLookAt(cam.lookat)
+				acemenupanel.CData.DisplayModel:SetFOV(cam.fov)
+			end
+		end
+
+		acemenupanel:CPanelText("Desc", def.desc or "")
+		acemenupanel:CPanelText("Weight", "Weight : " .. (def.weight or 0) .. " kg")
+	end
 end

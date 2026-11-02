@@ -7,7 +7,7 @@ ACE.RegisterWeaponClass("BOMB", {
 	muzzleflash    = "40mm_muzzleflash_noscale",
 	rofmod         = 0.1,
 	year           = 1915,
-	sound          = "acf_extra/tankfx/clunk.wav",
+	sound          = "acf_extra/tankfx/clunk.mp3",
 	soundDistance  = " ",
 	soundNormal    = " ",
 	nothrust       = true,

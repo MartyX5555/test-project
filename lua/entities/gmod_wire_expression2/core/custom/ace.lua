@@ -56,7 +56,7 @@ end
 local function restrictInfo(ply, ent)
 	if not ACE.RestrictInfo then return false end
 
-	return not ent:CPPICanTool(ply, "acemenu")
+	return not ACE.CanTool(ent, ply, "acemenu")
 end
 
 -- Link functions
@@ -193,7 +193,7 @@ do
 	-- Turns an ACE engine, ammo crate, or fuel tank on or off
 	e2function void entity:aceActive(number on)
 		if not (isEngine(this) or isAmmo(this) or isFuel(this)) then return self:throw("Entity is not a valid ACE engine, ammo crate, or fuel tank") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Active", on)
 	end
@@ -201,7 +201,7 @@ do
 	-- Returns 1 if the hitpos is on a clipped part of the entity
 	[nodiscard]
 	e2function number entity:aceHitClip(vector hitPos)
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot target this entity", 0) end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot target this entity", 0) end
 		return ACE.CheckClips(this, hitPos) and 1 or 0
 	end
 
@@ -345,8 +345,8 @@ do
 		if not IsValid(this) then return self:throw("Invalid source entity", 0) end
 		if not IsValid(target) then return self:throw("Invalid target entity", 0) end
 		if this == target then return self:throw("Cannot link entity to itself", 0) end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You do not have permission to target the source entity", 0) end
-		if not target:CPPICanTool(self.player, "acemenu") then return self:throw("You do not have permission to target the target entity", 0) end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You do not have permission to target the source entity", 0) end
+		if not ACE.CanTool(target, self.player, "acemenu") then return self:throw("You do not have permission to target the target entity", 0) end
 
 		local success, msg
 
@@ -376,8 +376,8 @@ do
 		if not IsValid(this) then return self:throw("Invalid source entity", 0) end
 		if not IsValid(target) then return self:throw("Invalid target entity", 0) end
 		if this == target then return self:throw("Cannot unlink entity from itself", 0) end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You do not have permission to target the source entity", 0) end
-		if not target:CPPICanTool(self.player, "acemenu") then return self:throw("You do not have permission to target the target entity", 0) end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You do not have permission to target the source entity", 0) end
+		if not ACE.CanTool(target, self.player, "acemenu") then return self:throw("You do not have permission to target the target entity", 0) end
 
 		local success, msg
 
@@ -569,7 +569,7 @@ do
 	-- Sets the throttle of an ACE engine
 	e2function void entity:aceThrottle(number throttle)
 		if not isEngine(this) then return self:throw("Entity is not a valid ACE engine") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Throttle", throttle)
 	end
@@ -696,7 +696,7 @@ do
 	e2function void entity:aceCVTRatio(number ratio)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.CVT then return self:throw("This function can only be used on CVTs") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this.CVTRatio = clamp(ratio, 0, 1)
 	end
@@ -706,7 +706,7 @@ do
 	-- Sets the current gear for an ACE gearbox
 	e2function void entity:aceShift(number gear)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Gear", gear)
 	end
@@ -714,7 +714,7 @@ do
 	-- Causes an ACE gearbox to shift up
 	e2function void entity:aceShiftUp()
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Gear Up", 1)
 	end
@@ -722,7 +722,7 @@ do
 	-- Causes an ACE gearbox to shift down
 	e2function void entity:aceShiftDown()
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Gear Down", 1)
 	end
@@ -730,7 +730,7 @@ do
 	-- Sets the brakes for an ACE gearbox
 	e2function void entity:aceBrake(number brake)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Brake", brake)
 	end
@@ -739,7 +739,7 @@ do
 	e2function void entity:aceBrakeLeft(number brake)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.Dual then return self:throw("This gearbox is not dual clutch") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Left Brake", brake)
 	end
@@ -748,7 +748,7 @@ do
 	e2function void entity:aceBrakeRight(number brake)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.Dual then return self:throw("This gearbox is not dual clutch") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Right Brake", brake)
 	end
@@ -756,7 +756,7 @@ do
 	-- Sets the clutch for an ACE gearbox
 	e2function void entity:aceClutch(number clutch)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Clutch", clutch)
 	end
@@ -765,7 +765,7 @@ do
 	e2function void entity:aceClutchLeft(number clutch)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.Dual then return self:throw("This gearbox is not dual clutch") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Left Clutch", clutch)
 	end
@@ -774,7 +774,7 @@ do
 	e2function void entity:aceClutchRight(number clutch)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.Dual then return self:throw("This gearbox is not dual clutch") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Right Clutch", clutch)
 	end
@@ -783,7 +783,7 @@ do
 	e2function void entity:aceSteerRate(number steerRate)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.DoubleDiff then return self:throw("This gearbox is not a double differential") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Steer Rate", steerRate)
 	end
@@ -792,7 +792,7 @@ do
 	e2function void entity:aceHoldGear(number holdGear)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.Auto then return self:throw("This gearbox is not automatic") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Hold Gear", holdGear)
 	end
@@ -801,7 +801,7 @@ do
 	e2function void entity:aceShiftPointScale(number scale)
 		if not isGearbox(this) then return self:throw("Entity is not a valid ACE gearbox") end
 		if not this.Auto then return self:throw("This gearbox is not automatic") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Shift Speed Scale", scale)
 	end
@@ -917,7 +917,7 @@ do
 	-- Sets the rate of fire limit of an ACE gun
 	e2function void entity:aceSetROFLimit(number rate)
 		if not isGun(this) then return self:throw("Entity is not a valid ACE gun") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("ROFLimit", rate)
 	end
@@ -944,7 +944,7 @@ do
 	-- Sets the firing state of an ACE gun or rack
 	e2function void entity:aceFire(number fire)
 		if not (isGun(this) or isRack(this)) then return self:throw("Entity is not a valid ACE gun or rack") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Fire", fire)
 	end
@@ -952,7 +952,7 @@ do
 	-- Unloads an ACE gun
 	e2function void entity:aceUnload()
 		if not isGun(this) then return self:throw("Entity is not a valid ACE gun") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:UnloadAmmo()
 	end
@@ -960,7 +960,7 @@ do
 	-- Reloads an ACE gun
 	e2function void entity:aceReload()
 		if not isGun(this) then return self:throw("Entity is not a valid ACE gun") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		local isEmpty = this.BulletData.Type == "Empty"
 
@@ -1376,7 +1376,7 @@ do
 	-- Sets the ACE fuel tank "refuel duty" state, which allows it to refuel other fuel tanks
 	e2function void entity:aceRefuelDuty(number state)
 		if not isFuel(this) then return self:throw("Entity is not a valid ACE fuel tank") end
-		if not this:CPPICanTool(self.player, "acemenu") then return self:throw("You cannot control this entity") end
+		if not ACE.CanTool(this, self.player, "acemenu") then return self:throw("You cannot control this entity") end
 
 		this:TriggerInput("Refuel Duty", state)
 	end

@@ -94,7 +94,7 @@ function MakeACE_TrackingRadar(Owner, Pos, Angle, Id)
 
 	Radar:SetModelEasy(radar.model)
 
-	Radar:SetNWString( "WireName", Radar.ACEName )
+	Radar:SetNW2String( "WireName", Radar.ACEName )
 
 	Radar:UpdateOverlayText()
 

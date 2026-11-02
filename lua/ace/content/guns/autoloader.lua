@@ -8,17 +8,36 @@ ACE.RegisterWeaponClass("AL", {
 	rofmod = 0.64,
 	year = 1946,
 	sound = "ace_weapons/multi_sound/100mm_multi.mp3",
-	autosound = "acf_extra/tankfx/reload.wav",
+	autosound = "acf_extra/tankfx/reload.mp3",
 	noloader = true,
 } )
 
 --add a gun to the class
+ACE.RegisterWeapon("50mmAL", {
+	name = "50mm Autoloading Cannon",
+	desc = "A fast-firing 50mm autoloading cannon, capable of quickly dumping a magazine into light and medium armor before ducking into cover to reload.",
+	model = "models/tankgun/tankgun_al_50mm.mdl",
+	sound = "ace_weapons/multi_sound/50mm_multi.mp3",
+	autosound = "acf_extra/tankfx/reload.mp3",
+	gunclass = "AL",
+	caliber = 5.0,
+	weight = 550,
+	year = 1946,
+	rofmod = 1.1,
+	magsize = 12,
+	magreload = 15,
+	round = {
+		maxlength = 63,
+		propweight = 2.1
+	}
+} )
+
 ACE.RegisterWeapon("75mmAL", { --id
 	name = "75mm Autoloading Cannon",
 	desc = "A quick-firing 75mm gun, pops off a number of rounds in relatively short order.",
 	model = "models/tankgun/tankgun_al_75mm.mdl",
 	sound = "ace_weapons/multi_sound/75mm_multi.mp3",
-	autosound = "acf_extra/tankfx/reload.wav",
+	autosound = "acf_extra/tankfx/reload.mp3",
 	gunclass = "AL",
 	caliber = 7.5,
 	weight = 980,
@@ -37,7 +56,7 @@ ACE.RegisterWeapon("100mmAL", {
 	desc = "The 100mm is good for rapidly hitting medium armor, then running like your ass is on fire to reload.",
 	model = "models/tankgun/tankgun_al_100mm.mdl",
 	sound = "ace_weapons/multi_sound/100mm_multi.mp3",
-	autosound = "acf_extra/tankfx/reload.wav",
+	autosound = "acf_extra/tankfx/reload.mp3",
 	gunclass = "AL",
 	caliber = 10.0,
 	weight = 1800,
@@ -56,7 +75,7 @@ ACE.RegisterWeapon("120mmAL", {
 	desc = "The 120mm autoloader can do serious damage before reloading, but the reload time is killer.",
 	model = "models/tankgun/tankgun_al_120mm.mdl",
 	sound = "ace_weapons/multi_sound/120mm_multi.mp3",
-	autosound = "acf_extra/tankfx/reload.wav",
+	autosound = "acf_extra/tankfx/reload.mp3",
 	gunclass = "AL",
 	caliber = 12.0,
 	weight = 2700,
@@ -75,7 +94,7 @@ ACE.RegisterWeapon("140mmAL", {
 	desc = "The 140mm can shred a medium tank's armor with one magazine, and even function as shoot & scoot artillery, with its useful HE payload.",
 	model = "models/tankgun/tankgun_al_140mm.mdl",
 	sound = "ace_weapons/multi_sound/120mm_multi.mp3",
-	autosound = "acf_extra/tankfx/reload.wav",
+	autosound = "acf_extra/tankfx/reload.mp3",
 	gunclass = "AL",
 	caliber = 14.0,
 	weight = 4800,
@@ -95,7 +114,7 @@ ACE.RegisterWeapon("170mmAL", {
 	desc = "The 170mm can shred an average 40ton tank's armor with one magazine.",
 	model = "models/tankgun/tankgun_al_170mm.mdl",
 	sound = "ace_weapons/multi_sound/120mm_multi.mp3",
-	autosound = "acf_extra/tankfx/reload.wav",
+	autosound = "acf_extra/tankfx/reload.mp3",
 	gunclass = "AL",
 	caliber = 17.0,
 	weight = 12460,

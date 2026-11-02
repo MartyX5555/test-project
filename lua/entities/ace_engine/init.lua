@@ -148,7 +148,7 @@ do
 			Engine.ModelInertia = 0.99 * phys:GetInertia() / phys:GetMass() -- giving a little wiggle room
 		end
 
-		Engine:SetNWString( "WireName", Lookup.name )
+		Engine:SetNW2String( "WireName", Lookup.name )
 		Engine:UpdateOverlayText()
 
 		Owner:AddCount("_ace_engine", Engine)
@@ -229,7 +229,7 @@ function ENT:Update( _, Id, _ )
 		phys:SetMass( self.Weight )
 	end
 
-	self:SetNWString( "WireName", Lookup.name )
+	self:SetNW2String( "WireName", Lookup.name )
 	self:UpdateOverlayText()
 
 ACE.Activate( self, 1 )

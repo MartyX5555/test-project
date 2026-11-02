@@ -135,7 +135,7 @@ function MakeACE_MissileRadar(Owner, Pos, Angle, Id)
 	Owner:AddCount( "_ace_radar", Radar )
 	Owner:AddCleanup( "acemenu", Radar )
 
-	Radar:SetNWString( "WireName", Radar.ACEName )
+	Radar:SetNW2String( "WireName", Radar.ACEName )
 	Radar:SetNWString( "Sound", Radar.Sound )
 	Radar:SetNWInt( "SoundPitch",  Radar.SoundPitch )
 

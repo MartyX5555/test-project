@@ -63,7 +63,7 @@ function ENT:Initialize()
 		phys:SetInertia(Vector(100))
 	end
 
-	self:EmitSound( "acf_extra/airfx/tow2.wav", 100, 100, 2, CHAN_AUTO )
+	self:EmitSound( "acf_extra/airfx/tow2.mp3", 100, 100, 2, CHAN_AUTO )
 
 	ACE.Missiles[self] = true
 end

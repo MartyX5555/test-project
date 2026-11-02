@@ -229,7 +229,7 @@ do
 		Gun.AutoSound         = ClassData.autosound and (Lookup.autosound or ClassData.autosound) or nil
 
 		Gun:SetNWInt( "Caliber", Gun.Caliber )
-		Gun:SetNWString( "WireName", Lookup.name )
+		Gun:SetNW2String( "WireName", Lookup.name )
 		Gun:SetNWString( "Class", Gun.Class )
 		Gun:SetNWString( "ID", Gun.Id )
 		Gun:SetNWString( "Muzzleflash", Gun.Muzzleflash )
@@ -743,7 +743,7 @@ do
 		local SpreadScale = ACE.SpreadScale
 		local IaccMult = 1
 
-		if self.ACE.Health and self.ACE.MaxHealth then
+		if self.ACE and self.ACE.Health and self.ACE.MaxHealth then
 			IaccMult = math.Clamp(((1 - SpreadScale) / 0.5) * ((self.ACE.Health / self.ACE.MaxHealth) - 1) + 1, 1, SpreadScale)
 		end
 
@@ -752,9 +752,16 @@ do
 			IaccMult = IaccMult * 0.25
 		end
 
-		-- No gunner = more inaccuracy
+		-- No gunner = more inaccuracy. If a gunner is linked, apply its dynamic accuracy penalty (tilt, G-force, standing pose)
 		if not self.HasGunner then
 			IaccMult = IaccMult * 1.5
+		else
+			for _, crewEnt in ipairs(self.CrewLink) do
+				if IsValid(crewEnt) and crewEnt:GetClass() == "ace_crewseat_gunner" and crewEnt.GetAccuracyPenalty then
+					IaccMult = IaccMult * crewEnt:GetAccuracyPenalty()
+					break
+				end
+			end
 		end
 
 		local coneAng = self.Inaccuracy * ACE.GunInaccuracyScale * IaccMult

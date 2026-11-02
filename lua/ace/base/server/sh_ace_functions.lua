@@ -90,7 +90,7 @@ function ACE.GetCircularSpread(initialdir, cone)
 
 	local baseAng = initialdir:Angle()
 
-	-- 1. Radio angular máximo a escala en el plano tangente. 
+	-- 1. Radio angular máximo a escala en el plano tangente.
 	-- Limited to 89.9 degrees to avoid infinite tangent values.
 	local maxRadius = math.tan(math.rad(math.min(cone, 89.9)))
 
@@ -111,6 +111,101 @@ end
 -- A cheap way to check if the distance between 2 points is within a target distance.
 function ACE.InDist( Pos1, Pos2, Distance )
 	return (Pos2 - Pos1):LengthSqr() < Distance ^ 2
+end
+
+local INCHES_PER_S2_PER_G = 386.22
+
+-- Calculates the G-force experienced by an entity in its local space.
+-- @param ent Entity: Target entity to track.
+-- @param smoothingRate number (optional, default 10): Exponential smoothing factor. Pass 0 to disable smoothing.
+-- @param includeGravity boolean (optional, default true): Whether resting state includes 1G upward felt acceleration.
+-- @return number gMag: Total G-force magnitude (~1G at rest when includeGravity is true).
+-- @return Vector gVec: Local-space G-force vector.
+-- @return number gExcess: Excess G-force magnitude over the resting baseline.
+function ACE.CalculateGForce(ent, smoothingRate, includeGravity)
+	if not IsValid(ent) then
+		return 1, Vector(0, 0, 1), 0
+	end
+
+	smoothingRate = smoothingRate or 10
+	if includeGravity == nil then includeGravity = true end
+
+	local baseVec = includeGravity and Vector(0, 0, 1) or Vector(0, 0, 0)
+	local baseMag = includeGravity and 1 or 0
+
+	local st = ent.ACE_GForceState
+	if not st then
+		st = {
+			LastTime = CurTime(),
+			LastPos  = ent:GetPos(),
+			LastVel  = Vector(0, 0, 0),
+			GVec     = Vector(baseVec.x, baseVec.y, baseVec.z),
+			GMag     = baseMag,
+		}
+		ent.ACE_GForceState = st
+		ent.CurrentGForce = baseMag
+		ent.GForceVector = st.GVec
+		ent.CurrentGForceExcess = 0
+		return baseMag, st.GVec, 0
+	end
+
+	local now = CurTime()
+	local dt = now - st.LastTime
+
+	if dt <= 0 then
+		local excess = (st.GVec - baseVec):Length()
+		return st.GMag, st.GVec, excess
+	end
+
+	if dt > 0.5 then
+		st.LastTime = now
+		st.LastPos  = ent:GetPos()
+		st.LastVel  = Vector(0, 0, 0)
+		st.GVec     = Vector(baseVec.x, baseVec.y, baseVec.z)
+		st.GMag     = baseMag
+		ent.CurrentGForce = baseMag
+		ent.GForceVector = st.GVec
+		ent.CurrentGForceExcess = 0
+		return baseMag, st.GVec, 0
+	end
+
+	local pos = ent:GetPos()
+	local vel = (pos - st.LastPos) / dt
+	local accelWorld = (vel - st.LastVel) / dt
+
+	local accelLocal = ent:WorldToLocal(pos + accelWorld) - ent:WorldToLocal(pos)
+
+	if includeGravity then
+		accelLocal.z = accelLocal.z + INCHES_PER_S2_PER_G
+	end
+
+	local gVec = accelLocal / INCHES_PER_S2_PER_G
+	local gMag = gVec:Length()
+
+	if smoothingRate > 0 then
+		local alpha = 1 - math.exp(-dt * smoothingRate)
+		st.GVec = st.GVec + (gVec - st.GVec) * alpha
+		st.GMag = st.GMag + (gMag - st.GMag) * alpha
+	else
+		st.GVec = gVec
+		st.GMag = gMag
+	end
+
+	if includeGravity and math.abs(st.GMag - 1) < 0.05 and vel:Length() < 5 then
+		st.GMag = 1
+		st.GVec = Vector(0, 0, 1)
+	end
+
+	st.LastTime = now
+	st.LastPos  = pos
+	st.LastVel  = vel
+
+	local gExcess = (st.GVec - baseVec):Length()
+	ent.CurrentGForce = st.GMag
+	ent.GForceVector = st.GVec
+	ent.CurrentGForceExcess = gExcess
+
+	return st.GMag, st.GVec, gExcess
 end
 
 	-- Material Enum
@@ -266,9 +361,8 @@ local function OnhttpSucess(contents)
 end
 
 local function OnhttpFail()
-		print("[ACE | ERROR]- Unable to find the latest version! No internet available.")
-
-		ACE.CurrentVersion = 0
+	print("[ACE | ERROR]- Unable to connect to GitHub. Returning to offline mode.")
+	ACE.CurrentVersion = 0
 end
 
 --Checks if theres new versions for ACE
@@ -363,6 +457,64 @@ function ACE.CheckFuelTank( fueltankid )
 	local fueltankid = ACE.Weapons.FuelTanksSize[ fueltankid ]
 	if not fueltankid then return false end
 	return true
+end
+
+---------------------------------- Sound Utilities ----------------------------------
+do
+	local IsValidCache = {}
+
+	-- Helper to strip Source engine sound flags and optional leading sound/ prefix for filesystem checks
+	local function CleanSoundPath( path )
+		local str = tostring( path or "" )
+		local flags, rest = string.match( str, "^([%^%)%*%#%@%>%<%?%!%$%~%+%(]*)(.*)$" )
+		rest = rest or str
+		flags = flags or ""
+
+		local soundPrefix = ""
+		local lowRest = string.lower( rest )
+		if string.sub( lowRest, 1, 6 ) == "sound/" or string.sub( lowRest, 1, 6 ) == "sound\\" then
+			soundPrefix = string.sub( rest, 1, 6 )
+			rest = string.sub( rest, 7 )
+		end
+
+		return rest, flags, soundPrefix
+	end
+
+	-- Returns whether or not a sound actually exists, fixes client timeout issues
+	function ACE.IsValidSound( path )
+		if not path or path == "" then return false end
+		if IsValidCache[path] == nil then
+			local clean = CleanSoundPath( path )
+			IsValidCache[path] = file.Exists( "sound/" .. clean, "GAME" ) and true or false
+		end
+		return IsValidCache[path]
+	end
+
+	-- Returns the sound with the correct sound extension
+	-- This is useful if the original sound had an extension change (e.g. .wav to .mp3).
+	-- Preserves Source engine sound flags and optional sound/ prefix.
+	function ACE.GetFixedSound( rawsoundpath )
+		if not isstring( rawsoundpath ) or rawsoundpath == "" then return rawsoundpath end
+
+		if ACE.IsValidSound( rawsoundpath ) then
+			return rawsoundpath
+		end
+
+		local clean, flags, soundPrefix = CleanSoundPath( rawsoundpath )
+		local cleanNoExt = string.StripExtension( clean )
+
+		local checkpath = cleanNoExt .. ".mp3"
+		if ACE.IsValidSound( checkpath ) then
+			return flags .. soundPrefix .. checkpath
+		end
+
+		checkpath = cleanNoExt .. ".wav"
+		if ACE.IsValidSound( checkpath ) then
+			return flags .. soundPrefix .. checkpath
+		end
+
+		return rawsoundpath
+	end
 end
 
 if SERVER then
@@ -488,6 +640,8 @@ timer.Simple( 0, function()
 end)
 
 --Stupid workaround red added to precache timescaling.
+ACE.CurTime = CurTime()
+ACE.SysTime = SysTime()
 hook.Add( "Think", "Update ACE Internal Clock", function()
 	ACE.CurTime = CurTime()
 	ACE.SysTime = SysTime()
