@@ -296,7 +296,6 @@ do
 			local AllEnts = con.ents
 			for v, _ in pairs( AllEnts ) do
 				if not ACE.Check( v ) then continue end
-				if not pwr then continue end
 
 				if v:GetClass() == "ace_engine" then
 					local driverboost = v.HasDriver and ACE.DriverTorqueBoost or 1
