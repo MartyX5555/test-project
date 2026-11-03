@@ -9,7 +9,7 @@ ACE.RegisterEngine( "4.3-V10", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 160,
-	torque = 288,
+	torque = 360,
 	flywheelmass = 0.2,
 	idlerpm = 900,
 	limitrpm = 6250
@@ -24,7 +24,7 @@ ACE.RegisterEngine( "8.0-V10", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 300,
-	torque = 490,
+	torque = 612,
 	flywheelmass = 0.5,
 	idlerpm = 750,
 	limitrpm = 6500
@@ -39,7 +39,7 @@ ACE.RegisterEngine( "22.0-V10", {
 	fuel = "Multifuel",
 	enginetype = "GenericDiesel",
 	weight = 1600,
-	torque = 2605,
+	torque = 3256,
 	flywheelmass = 5,
 	idlerpm = 525,
 	limitrpm = 2500
@@ -53,7 +53,7 @@ ACE.RegisterEngine( "23.0-V10", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 2110,
-	torque = 1200,
+	torque = 1500,
 	flywheelmass = 0.45,
 	idlerpm = 1000,
 	limitrpm = 9000

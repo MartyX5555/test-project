@@ -10,7 +10,7 @@ ACE.RegisterEngine( "0.8L-I2", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 45,
-	torque = 105,
+	torque = 131,
 	flywheelmass = 0.12,
 	idlerpm = 500,
 	limitrpm = 2950
@@ -27,7 +27,7 @@ ACE.RegisterEngine( "10.0-I2", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 800,
-	torque = 2000,
+	torque = 2500,
 	flywheelmass = 7,
 	idlerpm = 350,
 	limitrpm = 1200

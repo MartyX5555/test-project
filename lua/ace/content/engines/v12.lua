@@ -12,7 +12,7 @@ ACE.RegisterEngine( "4.6-V12", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 188,
-	torque = 235,
+	torque = 294,
 	flywheelmass = 0.2,
 	idlerpm = 1000,
 	limitrpm = 8000
@@ -27,7 +27,7 @@ ACE.RegisterEngine( "7.0-V12", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 360,
-	torque = 300,
+	torque = 375,
 	flywheelmass = 0.45,
 	idlerpm = 800,
 	limitrpm = 7500
@@ -42,7 +42,7 @@ ACE.RegisterEngine( "23.0-V12", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 1350,
-	torque = 1925,
+	torque = 2406,
 	flywheelmass = 5,
 	idlerpm = 600,
 	limitrpm = 3250
@@ -57,7 +57,7 @@ ACE.RegisterEngine( "25.0-V12", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 2600,
-	torque = 2050,
+	torque = 2562,
 	flywheelmass = 5.2,
 	idlerpm = 500,
 	limitrpm = 5000
@@ -74,7 +74,7 @@ ACE.RegisterEngine( "4.0-V12", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 305,
-	torque = 375,
+	torque = 469,
 	flywheelmass = 0.475,
 	idlerpm = 650,
 	limitrpm = 4000
@@ -89,7 +89,7 @@ ACE.RegisterEngine( "9.2-V12", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 600,
-	torque = 750,
+	torque = 938,
 	flywheelmass = 2.5,
 	idlerpm = 675,
 	limitrpm = 3500
@@ -104,7 +104,7 @@ ACE.RegisterEngine( "21.0-V12", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 1800,
-	torque = 3560,
+	torque = 4450,
 	flywheelmass = 7,
 	idlerpm = 400,
 	limitrpm = 2500
@@ -119,7 +119,7 @@ ACE.RegisterEngine( "13.0-V12", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 520,
-	torque = 660,
+	torque = 825,
 	flywheelmass = 1,
 	idlerpm = 700,
 	limitrpm = 4250
@@ -134,7 +134,7 @@ ACE.RegisterEngine( "16.5-V12", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 1050,
-	torque = 1100,
+	torque = 1375,
 	flywheelmass = 2,
 	idlerpm = 675,
 	limitrpm = 3500
@@ -149,7 +149,7 @@ ACE.RegisterEngine( "24.8-V12", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 2100,
-	torque = 3600,
+	torque = 4500,
 	flywheelmass = 7,
 	idlerpm = 500,
 	limitrpm = 2800
@@ -164,7 +164,7 @@ ACE.RegisterEngine( "27.0-V12", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 3150,
-	torque = 4420,
+	torque = 5525,
 	flywheelmass = 6.6,
 	idlerpm = 500,
 	limitrpm = 2800

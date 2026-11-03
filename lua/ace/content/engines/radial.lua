@@ -10,7 +10,7 @@ ACE.RegisterEngine( "3.8-R7", {
 	fuel = "Petrol",
 	enginetype = "Radial",
 	weight = 210,
-	torque = 310,
+	torque = 388,
 	flywheelmass = 0.22,
 	idlerpm = 700,
 	limitrpm = 4800
@@ -25,7 +25,7 @@ ACE.RegisterEngine( "11.0-R7", {
 	fuel = "Petrol",
 	enginetype = "Radial",
 	weight = 385,
-	torque = 560,
+	torque = 700,
 	flywheelmass = 0.45,
 	idlerpm = 600,
 	limitrpm = 4400
@@ -40,7 +40,7 @@ ACE.RegisterEngine( "24.0-R7", {
 	fuel = "Petrol",
 	enginetype = "Radial",
 	weight = 952,
-	torque = 1615,
+	torque = 2019,
 	flywheelmass = 3.4,
 	idlerpm = 750,
 	limitrpm = 3500
@@ -56,7 +56,7 @@ ACE.RegisterEngine( "8.0-R7", {
 	fuel = "Multifuel",
 	enginetype = "GenericDiesel",
 	weight = 450,
-	torque = 800,
+	torque = 1000,
 	flywheelmass = 1.0,
 	idlerpm = 400,
 	limitrpm = 2800

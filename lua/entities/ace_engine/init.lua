@@ -41,7 +41,8 @@ do
 		self.Efficiency     = 1-(ACE.Efficiency[self.EngineType] or ACE.Efficiency["GenericPetrol"]) -- Energy not transformed into kinetic energy and instead into thermal
 		self.Legal          = true
 		self.CanUpdate      = true
-		self.RequiresFuel   = false
+		self.IgnoreFuel     = false
+		self.HasFuel        = false
 		self.NextLegalCheck = ACE.CurTime + math.random(ACE.Legal.Min, ACE.Legal.Max) -- give any spawning issues time to iron themselves out
 		self.Legal          = true
 		self.LegalIssues    = ""
@@ -112,7 +113,7 @@ do
 		Engine.FuelType         = Lookup.fuel or "Petrol"
 		Engine.EngineType       = Lookup.enginetype or "GenericPetrol"
 		Engine.TorqueCurve      = Lookup.torquecurve or ACE.GenericTorqueCurves[Engine.EngineType]
-		Engine.RequiresFuel     = Lookup.requiresfuel
+		Engine.IgnoreFuel       = Lookup.ignorefuel or false
 		Engine.SoundPath        = Lookup.sound
 		Engine.DefaultSound     = Engine.SoundPath
 		Engine.SoundPitch       = Lookup.pitch or 100
@@ -128,7 +129,7 @@ do
 		if Engine.EngineType == "Electric" then
 			Engine.FuelUse = ACE.ElecRate / (ACE.Efficiency[Engine.EngineType] * 60 * 60) --elecs use current power output, not max
 		else
-			Engine.FuelUse = ACE.TorqueBoost * ACE.FuelRate * ACE.Efficiency[Engine.EngineType] * Engine.peakkw / (60 * 60)
+			Engine.FuelUse = ACE.FuelRate * ACE.Efficiency[Engine.EngineType] * Engine.peakkw / (60 * 60)
 		end
 
 		Engine.FlyRPM = 0
@@ -202,7 +203,7 @@ function ENT:Update( _, Id, _ )
 	self.IsTrans           = Lookup.istrans
 	self.FuelType          = Lookup.fuel
 	self.EngineType        = Lookup.enginetype
-	self.RequiresFuel      = Lookup.requiresfuel
+	self.IgnoreFuel        = Lookup.ignorefuel or false
 	self.SoundPath         = Lookup.sound
 	self.DefaultSound      = self.SoundPath
 	self.SoundPitch        = Lookup.pitch or 100
@@ -217,7 +218,7 @@ function ENT:Update( _, Id, _ )
 	if self.EngineType == "Electric" then
 		self.FuelUse = ACE.ElecRate / (ACE.Efficiency[self.EngineType] * 60 * 60) --elecs use current power output, not max
 	else
-		self.FuelUse = ACE.TorqueBoost * ACE.FuelRate * ACE.Efficiency[self.EngineType] * self.peakkw / (60 * 60)
+		self.FuelUse = ACE.FuelRate * ACE.Efficiency[self.EngineType] * self.peakkw / (60 * 60)
 	end
 
 	self:SetModel( self.Model )
@@ -242,11 +243,10 @@ function ENT:UpdateOverlayText()
 	local pbmin = self.PeakMinRPM
 	local pbmax = self.PeakMaxRPM
 
-	local SpecialBoost = self.RequiresFuel and ACE.TorqueBoost or 1
 	local text = "Status: " .. (self.Active and "On" or "Off") .. "\n\n"
 
-	text = text .. "Power: " .. math.Round( self.peakkw * SpecialBoost ) .. " kW / " .. math.Round( self.peakkw * SpecialBoost * 1.34 ) .. " hp\n"
-	text = text .. "Torque: " .. math.Round( self.PeakTorque * SpecialBoost ) .. " Nm / " .. math.Round( self.PeakTorque * SpecialBoost * 0.73 ) .. " ft-lb\n"
+	text = text .. "Power: " .. math.Round( self.peakkw ) .. " kW / " .. math.Round( self.peakkw * 1.34 ) .. " hp\n"
+	text = text .. "Torque: " .. math.Round( self.PeakTorque ) .. " Nm / " .. math.Round( self.PeakTorque * 0.73 ) .. " ft-lb\n"
 	text = text .. "Powerband: " .. (math.Round(pbmin / 10) * 10) .. " - " .. (math.Round(pbmax / 10) * 10) .. " RPM\n"
 	text = text .. "Redline: " .. self.LimitRPM .. " RPM\n\n"
 	text = text .. "Temp: " .. math.Round(self.Heat) .. " °C / " .. math.Round((self.Heat * (9 / 5)) + 32) .. " °F\n"
@@ -274,8 +274,8 @@ function ENT:TriggerInput( iname, value )
 	elseif (iname == "Active") then
 		if (value > 0 and not self.Active and self.Legal) then
 			--make sure we have fuel
-			local HasFuel
-			if not self.RequiresFuel then
+			local HasFuel = false
+			if self.IgnoreFuel or ACE.EnginesRequireFuel == 0 then
 				HasFuel = true
 			else
 				for _,fueltank in pairs(self.FuelLink) do
@@ -491,7 +491,6 @@ function ENT:CalcRPM()
 
 	--First, find the first active fuel tank on among the linked fuels.
 	local Tank
-	local boost = 1
 	for _, FuelTank in ipairs(self.FuelLink) do
 		if IsValidfueltank( FuelTank ) then
 			Tank = FuelTank
@@ -499,8 +498,7 @@ function ENT:CalcRPM()
 		end
 	end
 
-	-- Calculate fuel usage. First condition is used if the fuel is optional and has bonus, 2nd is used for mandatory fuel requirement.
-	-- Concern: why is the fuel usage returning 0 when RPMs hit redline? Maybe the engine hits the redline and torque becomes 0 = no fuel usage??
+	-- Calculate fuel usage.
 	if IsValid(Tank) then
 		local Consumption
 		if self.FuelType == "Electric" then
@@ -510,12 +508,14 @@ function ENT:CalcRPM()
 			Consumption = Load * self.FuelUse * (self.FlyRPM / self.PeakKwRPM) * DeltaTime / ACE.FuelDensity[Tank.FuelType]
 		end
 		Tank.Fuel = math.max(Tank.Fuel - Consumption,0)
-		boost = ACE.TorqueBoost
+		self.HasFuel = true
 		Wire_TriggerOutput(self, "Fuel Use", math.Round(60 * Consumption / DeltaTime,3))
-	elseif self.RequiresFuel then
+	elseif not self.IgnoreFuel and ACE.EnginesRequireFuel == 1 then
+		self.HasFuel = false
 		self:TriggerInput( "Active", 0 ) --shut off if no fuel and requires it
 		return 0
 	else
+		self.HasFuel = false
 		Wire_TriggerOutput(self, "Fuel Use", 0)
 	end
 
@@ -530,7 +530,7 @@ function ENT:CalcRPM()
 
 	-- Calculate the current torque from flywheel RPM.
 	local perc = math.Remap(self.FlyRPM, self.IdleRPM, self.LimitRPM, 0, 1)
-	self.Torque = boost * self.Throttle * ACE.CalcCurve(self.TorqueCurve, perc) * self.PeakTorque * (self.FlyRPM < self.LimitRPM and 1 or 0)
+	self.Torque = self.Throttle * ACE.CalcCurve(self.TorqueCurve, perc) * self.PeakTorque * (self.FlyRPM < self.LimitRPM and 1 or 0)
 
 	-- Let's accelerate the flywheel based on that torque.
 	-- Calculate drag

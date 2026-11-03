@@ -10,7 +10,7 @@ ACE.RegisterEngine( "0.25-I1", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 15,
-	torque = 20,
+	torque = 25,
 	flywheelmass = 0.005,
 	idlerpm = 1200,
 	limitrpm = 7500
@@ -25,7 +25,7 @@ ACE.RegisterEngine( "0.5-I1", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 20,
-	torque = 40,
+	torque = 50,
 	flywheelmass = 0.005,
 	idlerpm = 900,
 	limitrpm = 8000
@@ -40,7 +40,7 @@ ACE.RegisterEngine( "1.3-I1", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 50,
-	torque = 90,
+	torque = 112,
 	flywheelmass = 0.1,
 	idlerpm = 600,
 	limitrpm = 6700

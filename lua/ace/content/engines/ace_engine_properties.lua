@@ -6,11 +6,11 @@ ACE.FuelDensity = { --kg/liter
 }
 
 ACE.Efficiency = { --how efficient various engine types are, higher is worse
-	GenericPetrol = 0.304, --kg per kw hr
-	GenericDiesel = 0.243, --up to 0.274
-	Turbine = 0.375, -- previously 0.231
-	Wankel = 0.335,
-	Radial = 0.4, -- 0.38 to 0.53
+	GenericPetrol = 0.243, -- kg per kw hr (scaled for mandatory fuel without 1.25x fuel boost)
+	GenericDiesel = 0.194, -- up to 0.219 (scaled: 0.243 / 1.25)
+	Turbine = 0.300, -- scaled: 0.375 / 1.25
+	Wankel = 0.268, -- scaled: 0.335 / 1.25
+	Radial = 0.320, -- scaled: 0.4 / 1.25 (0.30 to 0.42)
 	Electric = 0.9 --percent efficiency converting chemical kw into mechanical kw WAS 0.85
 }
 

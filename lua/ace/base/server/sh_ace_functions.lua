@@ -299,8 +299,9 @@ do
 				if not pwr then continue end
 
 				if v:GetClass() == "ace_engine" then
-					power = power + (v.peakkw * 1.34)
-					fuel = v.RequiresFuel and 2 or fuel
+					local driverboost = v.HasDriver and ACE.DriverTorqueBoost or 1
+					power = power + (v.peakkw * 1.34 * driverboost)
+
 				elseif v:GetClass() == "ace_fueltank" then
 					fuel = math.max(fuel,1)
 				end

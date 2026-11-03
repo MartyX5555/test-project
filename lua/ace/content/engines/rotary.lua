@@ -10,7 +10,7 @@ ACE.RegisterEngine( "900cc-R", {
 	fuel = "Petrol",
 	enginetype = "Wankel",
 	weight = 50,
-	torque = 78,
+	torque = 98,
 	flywheelmass = 0.06,
 	idlerpm = 950,
 	limitrpm = 9200
@@ -25,7 +25,7 @@ ACE.RegisterEngine( "1.3L-R", {
 	fuel = "Petrol",
 	enginetype = "Wankel",
 	weight = 140,
-	torque = 124,
+	torque = 155,
 	flywheelmass = 0.06,
 	idlerpm = 950,
 	limitrpm = 9000
@@ -40,7 +40,7 @@ ACE.RegisterEngine( "2.0L-R", {
 	fuel = "Petrol",
 	enginetype = "Wankel",
 	weight = 200,
-	torque = 188,
+	torque = 235,
 	flywheelmass = 0.1,
 	idlerpm = 950,
 	limitrpm = 9500

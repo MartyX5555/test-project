@@ -12,7 +12,7 @@ ACE.RegisterEngine( "1.9L-V4", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 110,
-	torque = 165,
+	torque = 206,
 	flywheelmass = 0.3,
 	idlerpm = 650,
 	limitrpm = 4000
@@ -27,7 +27,7 @@ ACE.RegisterEngine( "3.3L-V4", {
 	fuel = "Diesel",
 	enginetype = "GenericDiesel",
 	weight = 275,
-	torque = 480,
+	torque = 600,
 	flywheelmass = 1.05,
 	idlerpm = 600,
 	limitrpm = 3900

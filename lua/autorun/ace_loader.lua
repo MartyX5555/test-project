@@ -2,7 +2,7 @@ ACE = ACE or {}
 ACEM = ACEM or {} -- temporal as its expected to be merged with the ACE table.
 ---------------------------------- Version ----------------------------------
 
-ACE.Version           = 1009		-- ACE current version
+ACE.Version           = 1010		-- ACE current version
 ACE.CurrentVersion    = 0			-- just defining a variable, do not change
 ACE.Year              = 2026		-- Current Year
 
@@ -44,10 +44,11 @@ ACE.DebrisLifeTime              = 60
 ACE.LiIonED                     = 0.27					-- li-ion energy density: kw hours / liter --BEFORE to balance: 0.458
 ACE.CuIToLiter                  = 0.0163871				-- cubic inches to liters
 
-ACE.TorqueBoost                 = 1.25					-- torque multiplier from using fuel
+ACE.TorqueMult                 = 1.5					-- multiplier for wheel torque in gearbox
+ACE.EnginesRequireFuel         = 1						-- whether engines require fuel to run (1 = required, 0 = optional)
 ACE.DriverTorqueBoost           = 1.25					-- torque multiplier from having a driver
-ACE.FuelRate                    = 10					-- multiplier for fuel usage, 1.0 is approx real world
-ACE.ElecRate                    = 2						-- multiplier for electrics								--BEFORE to balance: 0.458
+ACE.FuelRate                    = 5						-- multiplier for fuel usage, 1.0 is approx real world
+ACE.ElecRate                    = 1						-- multiplier for electrics								--BEFORE to balance: 0.458
 ACE.TankVolumeMul               = 1						-- multiplier for fuel tank capacity, 1.0 is approx real world
 
 ---------------------------------- Ammo Crate config ----------------------------------
@@ -211,6 +212,12 @@ if SERVER then
 	--Smoke
 	CreateConVar("ace_wind", 600, FCVAR_ARCHIVE)
 
+	-- Mobility
+	CreateConVar("ace_torquemult", 1.5, FCVAR_ARCHIVE)
+	CreateConVar("ace_engines_requirefuel", 1, FCVAR_ARCHIVE)
+	ACE.TorqueMult = math.Clamp(GetConVar("ace_torquemult"):GetFloat(), 0, 10)
+	ACE.EnginesRequireFuel = math.Clamp(GetConVar("ace_engines_requirefuel"):GetInt(), 0, 1)
+
 
 	local function ConvarCallback(CVar, _, New)
 
@@ -238,6 +245,10 @@ if SERVER then
 			if ACE.SendDPStatus then
 			ACE.SendDPStatus()
 			end
+		elseif CVar == "ace_torquemult" then
+			ACE.TorqueMult = math.Clamp(tonumber(New) or 1.5, 0, 10)
+		elseif CVar == "ace_engines_requirefuel" then
+			ACE.EnginesRequireFuel = math.Clamp(tonumber(New) or 1, 0, 1)
 		end
 	end
 
@@ -252,6 +263,8 @@ if SERVER then
 	cvars.AddChangeCallback("ace_explosions_scaled_he_max", ConvarCallback)
 	cvars.AddChangeCallback("ace_explosions_scaled_ents_max", ConvarCallback)
 	cvars.AddChangeCallback("ace_enable_dp", ConvarCallback)
+	cvars.AddChangeCallback("ace_torquemult", ConvarCallback)
+	cvars.AddChangeCallback("ace_engines_requirefuel", ConvarCallback)
 
 
 elseif CLIENT then

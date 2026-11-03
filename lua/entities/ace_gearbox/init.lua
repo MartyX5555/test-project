@@ -674,7 +674,7 @@ function ENT:ActWheel( Link, Torque, Brake, DeltaTime )
 		BrakeMult = Link.Vel * Link.Inertia * Brake / 5
 	end
 
-	local Torque = TorqueAxis * math.Clamp( math.deg( -Torque * 1.5 - BrakeMult ) * DeltaTime, -500000, 500000 )
+	local Torque = TorqueAxis * math.Clamp( math.deg( -Torque * ACE.TorqueMult - BrakeMult ) * DeltaTime, -500000, 500000 )
 	Phys:ApplyTorqueCenter( Torque )
 end
 

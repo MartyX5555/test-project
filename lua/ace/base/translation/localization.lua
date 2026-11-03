@@ -137,7 +137,7 @@ ACETranslation.MissileClasses = {
 }
 
 ACETranslation.FuelTanks = {
-	"A fuel tank containing high grade fuel. Guaranteed to improve engine performance by " --FuelDesc
+	"A fuel tank containing high grade fuel. Supplies fuel to keep your engines running." --FuelDesc
 
 }
 

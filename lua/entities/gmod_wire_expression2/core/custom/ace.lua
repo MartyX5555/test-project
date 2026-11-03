@@ -422,13 +422,7 @@ do
 		if not isEngine(this) then return self:throw("Entity is not a valid ACE engine", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		local torque = this.PeakTorque
-
-		if this.RequiresFuel then
-			torque = torque * ACE.TorqueBoost
-		end
-
-		return torque
+		return this.PeakTorque
 	end
 
 	-- Returns the peak power in kW of an ACE engine
@@ -437,31 +431,31 @@ do
 		if not isEngine(this) then return self:throw("Entity is not a valid ACE engine", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		local power = this.peakkw
-
-		if this.RequiresFuel then
-			power = power * ACE.TorqueBoost
-		end
-
-		return power
+		return this.peakkw
 	end
 
 	-- Returns the peak torque in Nm of an ACE engine when supplied with fuel
-	[nodiscard]
+	[nodiscard, deprecated = "Use aceMaxTorque instead"]
 	e2function number entity:aceMaxTorqueWithFuel()
 		if not isEngine(this) then return self:throw("Entity is not a valid ACE engine", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		return this.PeakTorque * ACE.TorqueBoost
+		return this.PeakTorque
 	end
 
 	-- Returns the peak power in kW of an ACE engine when supplied with fuel
-	[nodiscard]
+	[nodiscard, deprecated = "Use aceMaxPower instead"]
 	e2function number entity:aceMaxPowerWithFuel()
 		if not isEngine(this) then return self:throw("Entity is not a valid ACE engine", 0) end
 		if restrictInfo(self.player, this) then return 0 end
 
-		return this.peakkw * ACE.TorqueBoost
+		return this.peakkw
+	end
+
+	-- Returns the server gearbox torque multiplier
+	[nodiscard]
+	e2function number aceTorqueMult()
+		return ACE.TorqueMult
 	end
 
 	-- Returns the idle RPM of an ACE engine
