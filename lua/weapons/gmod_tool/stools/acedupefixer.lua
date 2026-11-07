@@ -201,11 +201,13 @@ if CLIENT then
 
 	local function FixE2(src)
 		if not isstring(src) then return src end
+		local funcedited, soundedited
 		if string.find(src, E2Pattern) then
 			src = string.gsub(src, E2Pattern, "%1ace%2")
+			funcedited = true
 		end
-		local fixedSrc = FixCodeSounds(src, false)
-		return fixedSrc
+		local fixedSrc, soundedited = FixCodeSounds(src, false)
+		return fixedSrc, (funcedited or soundedited)
 	end
 
 	-- Applies prefix and sound extensions fixes to Starfall.
@@ -236,80 +238,86 @@ if CLIENT then
 
 		local read = file.Read(dupepath)
 		local success, dupe, info, _ = AdvDupe2.Decode(read)
+		if not success then print("Dupe could not be decoded!") return end
 
-		if success then
-			for _, enttable in pairs(dupe.Entities) do
+		local IsModified = false
 
-				-- Replaces any old ACE related class with a new one.
-				if ACFToACEtbl[enttable.Class] then
-					enttable.Class = ACFToACEtbl[enttable.Class]
-				end
+		for _, enttable in pairs(dupe.Entities) do
 
-				-- Replace any entity modifier with a new one.
-				if enttable.EntityMods then
-					local newEntityMods = {}
-					for tablename, moddata in pairs(enttable.EntityMods) do
-						if ACFToACEMods[tablename] then
-							newEntityMods[ACFToACEMods[tablename]] = moddata
-						else
-							newEntityMods[tablename] = moddata
-						end
-					end
+			-- Replaces any old ACE related class with a new one.
+			if ACFToACEtbl[enttable.Class] then
+				enttable.Class = ACFToACEtbl[enttable.Class]
+				IsModified = true
+			end
 
-					-- Fix sounds in ace_sounddata if present
-					if newEntityMods.ace_sounddata and isstring(newEntityMods.ace_sounddata[1]) then
-						newEntityMods.ace_sounddata[1] = ACE.GetFixedSound(newEntityMods.ace_sounddata[1])
-					end
-
-					enttable.EntityMods = newEntityMods
-				end
-
-				-- Fix direct entity sound properties if present
-				if isstring(enttable.Sound) then
-					enttable.Sound = ACE.GetFixedSound(enttable.Sound)
-				end
-				if isstring(enttable.SoundPath) then
-					enttable.SoundPath = ACE.GetFixedSound(enttable.SoundPath)
-				end
-
-				-- Replace old acf e2 functions with the ace functions, and fix sounds.
-				-- We are also fixing any possible included e2 library connected to this code.
-				if enttable.Class == "gmod_wire_expression2" then
-
-					if enttable["_original"] then
-						enttable["_original"] = FixE2(enttable["_original"])
-					end
-
-					if istable(enttable["inc_files"]) then
-						for incPath, incCode in pairs(enttable["inc_files"]) do
-							enttable["inc_files"][incPath] = FixE2(incCode)
-						end
+			-- Replace any entity modifier with a new one.
+			if enttable.EntityMods then
+				local newEntityMods = {}
+				for tablename, moddata in pairs(enttable.EntityMods) do
+					if ACFToACEMods[tablename] then
+						newEntityMods[ACFToACEMods[tablename]] = moddata
+						IsModified = true
+					else
+						newEntityMods[tablename] = moddata
 					end
 				end
 
-				-- Replace old acf sf functions with the ace functions and fix sounds.
-				-- SF chips are compressed in this stage. So we need to decompress to edit it. Then Compress it back once edited.
-				if SF and enttable.Class == "starfall_processor" and enttable.EntityMods and enttable.EntityMods.SFDupeInfo then
-					local sfInfo = enttable.EntityMods.SFDupeInfo
-					if sfInfo.starfall and sfInfo.starfall.files then
-						local Data = sfInfo.starfall.files
-						if isstring(Data) then
-							local files = SF.DecompressFiles(Data) -- contains all of the SF codes. Index being the file name, content is code.
-							local changed = false
-							for fname, sfcode in pairs(files) do
-								local patchedcode, edited = FixSF(sfcode)
-								if edited then
-									files[fname] = patchedcode
-									changed = true
-								end
+				-- Fix sounds in ace_sounddata if present
+				if newEntityMods.ace_sounddata and isstring(newEntityMods.ace_sounddata[1]) then
+					newEntityMods.ace_sounddata[1] = ACE.GetFixedSound(newEntityMods.ace_sounddata[1])
+					IsModified = true
+				end
+
+				enttable.EntityMods = newEntityMods
+			end
+
+			-- Replace old acf e2 functions with the ace functions, and fix sounds.
+			-- We are also fixing any possible included e2 library connected to this code.
+			if enttable.Class == "gmod_wire_expression2" then
+
+				local MainEdited, SubEdited
+
+				if enttable["_original"] then
+					enttable["_original"], MainEdited = FixE2(enttable["_original"])
+				end
+
+				if istable(enttable["inc_files"]) then
+					for incPath, incCode in pairs(enttable["inc_files"]) do
+						enttable["inc_files"][incPath], SubEdited = FixE2(incCode)
+					end
+				end
+
+				if MainEdited or SubEdited then
+					IsModified = true
+				end
+			end
+
+			-- Replace old acf sf functions with the ace functions and fix sounds.
+			-- SF chips are compressed in this stage. So we need to decompress to edit it. Then Compress it back once edited.
+			if SF and enttable.Class == "starfall_processor" and enttable.EntityMods and enttable.EntityMods.SFDupeInfo then
+				local sfInfo = enttable.EntityMods.SFDupeInfo
+				if sfInfo.starfall and sfInfo.starfall.files then
+					local Data = sfInfo.starfall.files
+					if isstring(Data) then
+						local files = SF.DecompressFiles(Data) -- contains all of the SF codes. Index being the file name, content is code.
+						local changed = false
+						for fname, sfcode in pairs(files) do
+							local patchedcode, edited = FixSF(sfcode)
+							if edited then
+								files[fname] = patchedcode
+								changed = true
 							end
-							if changed then
-								sfInfo.starfall.files = SF.CompressFiles(files)
-							end
+						end
+						if changed then
+							sfInfo.starfall.files = SF.CompressFiles(files)
+							IsModified = true
 						end
 					end
 				end
 			end
+		end
+		-- We will only encode if the dupe was effectively modified!
+		if IsModified then
 			AdvDupe2.Encode(dupe, info, function(data)
 				local writeFile = file.Open(dupepath, "wb", "DATA")
 				if not writeFile then print("File could not be written! (" .. dupepath .. ")") return end
@@ -317,7 +325,7 @@ if CLIENT then
 				writeFile:Close()
 			end)
 		else
-			print("Dupe could not be decoded!")
+			print("dupe '" .. dupepath .. "' had no changes.")
 		end
 	end
 
