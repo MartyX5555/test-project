@@ -239,7 +239,7 @@ if CLIENT then
 		if not isstring(code) then return code, false end
 		local changed = false
 
-		local newCode = string.gsub(code, '(["])([^"\r\n]+)(["])', function(q1, path, _)
+		local newCode = string.gsub(code, '(["\163])([^"\163\r\n\128]+)(["\163])', function(q1, path, _)
 			local rep = FixQuotedSound(q1, path)
 			if rep then
 				changed = true
@@ -248,7 +248,7 @@ if CLIENT then
 		end)
 
 		if allowSingleQuotes then
-			newCode = string.gsub(newCode, "(['])([^'\r\n]+)(['])", function(q1, path, _)
+			newCode = string.gsub(newCode, "(['])([^'\r\n\128]+)(['])", function(q1, path, _)
 				local rep = FixQuotedSound(q1, path)
 				if rep then
 					changed = true
