@@ -181,14 +181,17 @@ function EFFECT:ApplyMovement( Bullet, Index )
 
 	-- the bullet will never come back to the map.
 	local setPos = Bullet.SimPos
-	if (math.abs(setPos.x) > 16380) or (math.abs(setPos.y) > 16380) or (setPos.z < -16380) then
-	ACE.RemoveBulletClient( Bullet, Index )
+	local WorldBounds = ACE.GetWorldBounds()
+	local WorldBoundsMax = WorldBounds.max
+	local WorldBoundsMin = WorldBounds.min
+	if (math.abs(setPos.x) > WorldBoundsMax.x) or (math.abs(setPos.y) > WorldBoundsMax.y) or (setPos.z < WorldBoundsMin.z) then
+		ACE.RemoveBulletClient( Bullet, Index )
 		return
 	end
 
 	--We don't need small bullets to stay outside of skybox. This is meant for large calibers only.
-	if setPos.z > 16380 and Bullet.Caliber < 5 then
-	ACE.RemoveBulletClient( Bullet, Index )
+	if setPos.z > WorldBoundsMax.z and Bullet.Caliber < 5 then
+		ACE.RemoveBulletClient( Bullet, Index )
 		return
 	end
 
