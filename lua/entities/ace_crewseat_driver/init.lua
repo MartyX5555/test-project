@@ -140,7 +140,7 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	ACE.CrewseatDeferredModelSync(self, info)
 end
 
-function ENT:ACF_OnDamage(Entity, Energy, FrArea, _, Inflictor, _, _)
+function ENT:ACE_OnDamage(Entity, Energy, FrArea, _, Inflictor, _, _)
 	local HitRes = ACE.CrewseatDamage(self, Entity, Energy, FrArea, Inflictor)
 
 	if HitRes.Kill or HitRes.Overkill > 1 then
