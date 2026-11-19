@@ -12,6 +12,42 @@
 ]]
 
 local ACE = ACE or {}
+
+--[[
+	Global missile factory. Creates and configures an ace_missile independently
+	of whether it is mounted on a rack (Launcher ~= nil) or spawned standalone.
+]]--
+function ACE.CreateMissile(Owner, Pos, Ang, BulletData, RoundData, Launcher)
+	if not istable(BulletData) or not BulletData.Id then return NULL end
+	if not ACE.Weapons.Guns[BulletData.Id] then return NULL end
+
+	local Missile = ents.Create("ace_missile")
+	if not IsValid(Missile) then return NULL end
+
+	if IsValid(Owner) then
+		ACE.SetEntityOwner(Missile, Owner)
+	end
+
+	Missile:SetPos(Pos or vector_origin)
+	Missile:SetAngles(Ang or angle_zero)
+	Missile:Spawn()
+
+	Missile.DoNotDuplicate = true
+
+	if IsValid(Launcher) then
+		Missile.Launcher = Launcher
+		Missile.ForceTdelay = Launcher.TrackDelay or 0
+		Missile:SetNWEntity("Launcher", Launcher)
+	else
+		Missile.Launcher = NULL
+		Missile.ForceTdelay = 0
+	end
+
+	Missile:SetMissileData(BulletData, RoundData)
+
+	return Missile
+end
+
 --[[
 	Differences with the default bullet function:
 		1.- It doesnt count traceback, since the missile has no velocity and the bullet will not be hitting the initial launcher.

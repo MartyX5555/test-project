@@ -12,6 +12,7 @@ local ACE = ACE or {}
 if not ACE.AmmoCrates then
 	ACE.AmmoCrates = {}
 end
+ACE.RefillCrates = ACE.RefillCrates or {}
 
 local GunClasses = ACE.Classes.GunClass
 
@@ -69,10 +70,15 @@ end
 
 function ENT:InitializeOnCollector()
 	ACE.AmmoCrates[self] = true
+
+	if self.BulletData and self.BulletData.Type == "Refill" then
+		ACE.RefillCrates[self] = true
+	end
 end
 
 function ENT:OnRemoveCollectorData()
 	ACE.AmmoCrates[self] = nil
+	ACE.RefillCrates[self] = nil
 end
 
 
@@ -488,6 +494,12 @@ do
 		self.RoundData 		= RoundData or {}
 		self.ConvertData    = ACE.RoundTypes[RoundData.RoundType].convert
 		self.BulletData     = self:ConvertData( RoundData )
+
+		if self.BulletData and self.BulletData.Type == "Refill" then
+			ACE.RefillCrates[self] = true
+		else
+			ACE.RefillCrates[self] = nil
+		end
 
 		self:BuildAmmoCapacity()
 	end

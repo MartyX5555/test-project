@@ -104,6 +104,7 @@ ACE.PScale                = 1							-- Gun Propellant power expotential
 ACE.MVScale               = 0.5							-- Propellant to MV convertion expotential
 ACE.PDensity              = 1.6							-- Gun propellant density (Real powders go from 0.7 to 1.6, i'm using higher densities to simulate case bottlenecking)
 ACE.PhysMaxVel            = 8000
+ACE.MissileInRackTimeout  = 10							-- Max seconds a missile or inert bomb can stay in FlightInRack before safe dismount
 
 
 ACE.NormalizationFactor   = 0.15						-- at 0.1(10%) a round hitting a 70 degree plate will act as if its hitting a 63 degree plate, this only applies to capped and LRP ammunition.
