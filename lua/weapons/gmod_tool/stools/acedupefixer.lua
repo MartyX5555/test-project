@@ -148,7 +148,7 @@ if CLIENT then
 		node.ItemName = name
 		node.ParentFolderNode = parentFolderNode
 
-		function node:Paint(w, h)
+		function node:Paint(w, _)
 			local IsDirectSelect = IsPathSelected(path)
 			local IsInheritSelect = not IsDirectSelect and HasSelectedAncestorNode(self)
 
@@ -740,7 +740,7 @@ if CLIENT then
 			end
 		end
 
-		function barPanel:Paint(w, h)
+		function barPanel:Paint(w, _)
 			if w <= 0 then return end
 
 			-- External top-left status lines (nothing drawn inside the bar)
@@ -875,7 +875,7 @@ if CLIENT then
 
 		local dupelist = vgui.Create("DTree", dupelistdtreebase)
 		dupelist:Dock(FILL)
-		function dupelist:Paint(w, h)
+		function dupelist:Paint(_, _)
 		end
 
 		-- Create the whole DTree
@@ -970,7 +970,7 @@ if CLIENT then
 				removeButton:Dock(RIGHT)
 				removeButton:SetText("")
 				removeButton:SetWide( row:GetTall() )			-- OPTIONAL: Use instead of SizeToContents() if you know/want to fix the size
-				function removeButton:Paint(w, h)
+				function removeButton:Paint(_, _)
 					-- Static Icons
 					local CheckiconX = 0
 					surface.SetDrawColor(255, 255, 255, 255)
