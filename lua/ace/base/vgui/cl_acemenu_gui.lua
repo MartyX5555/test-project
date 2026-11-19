@@ -603,6 +603,17 @@ function ACESVGUICreate()	--Serverside folder content
 
 	acemenupanel.CustomDisplay:AddItem( General )
 
+	local Mobility = vgui.Create( "DForm" )
+	Mobility:SetName("Mobility")
+
+	Mobility:CheckBox("Engines require fuel", "ace_engines_requirefuel")
+	Mobility:ControlHelp( "Controls whether engines require fuel tanks to run. When disabled, engines run without fuel at full power." )
+
+	Mobility:NumSlider( "Gearbox Torque Multiplier", "ace_torquemult", 0, 10, 2 )
+	Mobility:ControlHelp( "Multiplier applied to torque output from gearboxes to wheels. Default is 1.5." )
+
+	acemenupanel.CustomDisplay:AddItem( Mobility )
+
 	local Spall = vgui.Create( "DForm" )
 	Spall:SetName("Spalling")
 

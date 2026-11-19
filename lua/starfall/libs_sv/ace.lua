@@ -1071,6 +1071,13 @@ do
 		return tbl
 	end
 
+	--- Returns the server gearbox torque multiplier
+	-- @server
+	-- @return number The torque multiplier
+	function ace_library.getTorqueMult()
+		return ACE.TorqueMult
+	end
+
 	--- Returns any wheels linked to this engine/gearbox or child gearboxes
 	-- @server
 	-- @return table The linked wheels
@@ -1115,6 +1122,7 @@ do
 	end
 
 	--- Returns the torque in N/m of an ACE engine with fuel
+	-- @deprecated Fuel boost has been merged into base engine stats. Use aceMaxTorque instead.
 	-- @server
 	-- @return number The torque in N/m
 	function ents_methods:aceMaxTorqueWithFuel()
@@ -1122,7 +1130,7 @@ do
 
 		if not isEngine(this) then return 0 end
 
-		return this.PeakTorque * ACE.TorqueBoost
+		return this.PeakTorque
 	end
 
 	--- Returns the power in kW of an ACE engine
@@ -1137,6 +1145,7 @@ do
 	end
 
 	--- Returns the power in kW of an ACE engine with fuel
+	-- @deprecated Fuel boost has been merged into base engine stats. Use aceMaxPower instead.
 	-- @server
 	-- @return number The power in kW
 	function ents_methods:aceMaxPowerWithFuel()
@@ -1144,7 +1153,7 @@ do
 
 		if not isEngine(this) then return 0 end
 
-		return this.peakkw * ACE.TorqueBoost
+		return this.peakkw
 	end
 
 	--- Returns the idle rpm of an ACE engine

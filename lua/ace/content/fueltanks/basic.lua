@@ -2,7 +2,7 @@
 --definition for the fuel tank that shows on menu
 ACE.RegisterFuelTank( "Basic_FuelTank", {
 	name = "High Grade Fuel Tank",
-	desc = ACETranslation.FuelTanks[1] .. ((ACE.TorqueBoost-1) * 100) .. "%.",
+	desc = ACETranslation.FuelTanks[1],
 	category = "High Grade"
 } )
 

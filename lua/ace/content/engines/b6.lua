@@ -10,7 +10,7 @@ ACE.RegisterEngine( "2.8-B6", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 100,
-	torque = 136,
+	torque = 170,
 	flywheelmass = 0.08,
 	idlerpm = 750,
 	limitrpm = 7250
@@ -25,7 +25,7 @@ ACE.RegisterEngine( "5.0-B6", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 240,
-	torque = 330,
+	torque = 412,
 	flywheelmass = 0.11,
 	idlerpm = 900,
 	limitrpm = 6800
@@ -40,7 +40,7 @@ ACE.RegisterEngine( "8.3-B6", {
 	fuel = "Multifuel",
 	enginetype = "GenericDiesel",
 	weight = 480,
-	torque = 565,
+	torque = 706,
 	flywheelmass = 0.65,
 	idlerpm = 500,
 	limitrpm = 4200
@@ -55,7 +55,7 @@ ACE.RegisterEngine( "10.0-B6", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 650,
-	torque = 1050,
+	torque = 1312,
 	flywheelmass = 1,
 	idlerpm = 620,
 	limitrpm = 4500
@@ -70,7 +70,7 @@ ACE.RegisterEngine( "5.4-B6", {
 	fuel = "Multifuel",
 	enginetype = "GenericDiesel",
 	weight = 380,
-	torque = 550,
+	torque = 688,
 	flywheelmass = 0.65,
 	idlerpm = 500,
 	limitrpm = 3500
@@ -85,7 +85,7 @@ ACE.RegisterEngine( "15.8-B6", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 725,
-	torque = 1100,
+	torque = 1375,
 	flywheelmass = 1,
 	idlerpm = 620,
 	limitrpm = 4900

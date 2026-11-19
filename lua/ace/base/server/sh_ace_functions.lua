@@ -296,11 +296,11 @@ do
 			local AllEnts = con.ents
 			for v, _ in pairs( AllEnts ) do
 				if not ACE.Check( v ) then continue end
-				if not pwr then continue end
 
 				if v:GetClass() == "ace_engine" then
-					power = power + (v.peakkw * 1.34)
-					fuel = v.RequiresFuel and 2 or fuel
+					local driverboost = v.HasDriver and ACE.DriverTorqueBoost or 1
+					power = power + (v.peakkw * 1.34 * driverboost)
+
 				elseif v:GetClass() == "ace_fueltank" then
 					fuel = math.max(fuel,1)
 				end
@@ -645,4 +645,17 @@ ACE.SysTime = SysTime()
 hook.Add( "Think", "Update ACE Internal Clock", function()
 	ACE.CurTime = CurTime()
 	ACE.SysTime = SysTime()
+end )
+
+-- Get and cache the world bounds
+function ACE.GetWorldBounds()
+	if not ACE.WorldBounds then
+		local min, max = game.GetWorld():GetModelBounds()
+		ACE.WorldBounds = {min = min, max = max}
+	end
+	return ACE.WorldBounds
+end
+
+hook.Add( "InitPostEntity", "ACE.CacheWorldBounds", function()
+	ACE.GetWorldBounds()
 end )

@@ -353,10 +353,10 @@ if CLIENT then
 		local physratio	= math.Round( net.ReadFloat(), 1 )
 		local power		= net.ReadFloat() -- Note: intentional
 		local fuel		= math.Round( net.ReadFloat(), 1 )
-		local bonus		= (fuel > 0 and 1.25 or 1)
 
-		local hpton		= math.Round( power * bonus / (total / 1000), 1 )
-		local hasfuel	= fuel == 1 and " with fuel (25% boost)" or fuel == 2 and "" or " (no fuel)"
+
+		local hpton		= math.Round( power / (total / 1000), 1 )
+		local hasfuel	= power > 0 and (fuel > 0 and " (fueled)" or " (no fuel)") or ""
 		local Compressed	= net.ReadData(640)
 		local Decompress	= util.Decompress(Compressed)
 		local FromJSON	= util.JSONToTable( Decompress )
@@ -368,7 +368,7 @@ if CLIENT then
 		local Title		= { Color2, "<|",Color1, "|============|", Color2, "[- Contraption Summary -]", Color1, "|============|",Color2, "|>" .. Sep }
 		local TMass		= { Color4, "- Total Mass: ", Color3, "" .. total, Color4, " kgs / @ ", Color3, "" .. math.Truncate(total / 1000,2), Color4, " tons" .. Sep }
 		local TMass2		= { Color4, "- Mass Ratio: ",Color3, "" .. phystotal, Color4, " kgs physical, ", Color3, "" .. parenttotal, Color4, " kgs parented / ", Color3, physratio .. "%", Color4, " physical )" .. Sep }
-		local Engine		= { Color4, "- Total Power: ", Color3, "" .. math.Round(power * bonus, 1), Color4," hp / ",Color3, "" .. hpton, Color4, " hp/ton" .. hasfuel .. Sep }
+		local Engine		= { Color4, "- Total Power: ", Color3, "" .. math.Round(power, 1), Color4," hp / ",Color3, "" .. hpton, Color4, " hp/ton" .. hasfuel .. Sep }
 		local ArmorComp1	= { Color4, "- Composition: " .. Sep }
 
 		Tabletxt = table.Add(Tabletxt, Title)

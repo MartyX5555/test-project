@@ -10,7 +10,7 @@ ACE.RegisterEngine( "1.4-B4", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 60,
-	torque = 105,
+	torque = 131,
 	flywheelmass = 0.06,
 	idlerpm = 600,
 	limitrpm = 4500
@@ -25,7 +25,7 @@ ACE.RegisterEngine( "2.1-B4", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 125,
-	torque = 180,
+	torque = 225,
 	flywheelmass = 0.15,
 	idlerpm = 700,
 	limitrpm = 5000
@@ -40,7 +40,7 @@ ACE.RegisterEngine( "3.2-B4", {
 	fuel = "Petrol",
 	enginetype = "GenericPetrol",
 	weight = 210,
-	torque = 252,
+	torque = 315,
 	flywheelmass = 0.15,
 	idlerpm = 900,
 	limitrpm = 6500
@@ -55,7 +55,7 @@ ACE.RegisterEngine( "2.4-B4", {
 	fuel = "Multifuel",
 	enginetype = "GenericDiesel",
 	weight = 135,
-	torque = 248,
+	torque = 310,
 	flywheelmass = 0.4,
 	idlerpm = 550,
 	limitrpm = 2800

@@ -47,13 +47,8 @@ function ACEEngineGUI_Update( Table )
 	local pbmin = Table.peakminrpm
 	local pbmax = Table.peakmaxrpm
 
-	if Table.requiresfuel then --if fuel required, show max power with fuel at top, no point in doing it twice
-		acemenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw * ACE.TorqueBoost) .. " kW / " .. math.Round(peakkw * ACE.TorqueBoost * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
-		acemenupanel:CPanelText("Torque", "Peak Torque: " .. math.Round(Table.torque * ACE.TorqueBoost) .. " n/m  / " .. math.Round(Table.torque * ACE.TorqueBoost * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
-	else
-		acemenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw) .. " kW / " .. math.Round(peakkw * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
-		acemenupanel:CPanelText("Torque", "Peak Torque: " .. Table.torque .. " n/m  / " .. math.Round(Table.torque * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
-	end
+	acemenupanel:CPanelText("Power", "\nPeak Power: " .. math.floor(peakkw) .. " kW / " .. math.Round(peakkw * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
+	acemenupanel:CPanelText("Torque", "Peak Torque: " .. Table.torque .. " n/m  / " .. math.Round(Table.torque * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM")
 
 	acemenupanel:CPanelText("RPM", "Idle: " .. Table.idlerpm .. " RPM\nPowerband : " .. (math.Round(pbmin / 10) * 10) .. "-" .. (math.Round(pbmax / 10) * 10) .. " RPM\nRedline : " .. Table.limitrpm .. " RPM")
 	acemenupanel:CPanelText("Weight", "Weight: " .. Table.weight .. " kg")
@@ -65,20 +60,17 @@ function ACEEngineGUI_Update( Table )
 		local cons = ACE.ElecRate * peakkw / ACE.Efficiency[Table.enginetype]
 		acemenupanel:CPanelText("FuelCons", "Peak energy use: " .. math.Round(cons,1) .. " kW / " .. math.Round(0.06 * cons,1) .. " MJ/min")
 	elseif Table.fuel == "Multifuel" then
-		local petrolcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * ACE.TorqueBoost * peakkw / (60 * ACE.FuelDensity.Petrol)
-		local dieselcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * ACE.TorqueBoost * peakkw / (60 * ACE.FuelDensity.Diesel)
+		local petrolcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * peakkw / (60 * ACE.FuelDensity.Petrol)
+		local dieselcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * peakkw / (60 * ACE.FuelDensity.Diesel)
 		acemenupanel:CPanelText("FuelConsP", "Petrol Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(petrolcons,2) .. " liters/min / " .. math.Round(0.264 * petrolcons,2) .. " gallons/min")
 		acemenupanel:CPanelText("FuelConsD", "Diesel Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(dieselcons,2) .. " liters/min / " .. math.Round(0.264 * dieselcons,2) .. " gallons/min")
 	else
-		local fuelcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * ACE.TorqueBoost * peakkw / (60 * ACE.FuelDensity[Table.fuel])
+		local fuelcons = ACE.FuelRate * ACE.Efficiency[Table.enginetype] * peakkw / (60 * ACE.FuelDensity[Table.fuel])
 		acemenupanel:CPanelText("FuelCons", Table.fuel .. " Use at " .. math.Round(peakkwrpm) .. " rpm: " .. math.Round(fuelcons,2) .. " liters/min / " .. math.Round(0.264 * fuelcons,2) .. " gallons/min")
 	end
 
-	if Table.requiresfuel then
+	if not Table.ignorefuel then
 		acemenupanel:CPanelText("Fuelreq", "\nTHIS ENGINE REQUIRES " .. (Table.fuel == "Electric" and "BATTERIES" or "FUEL") .. "\n", "DermaDefaultBold")
-	else
-		acemenupanel:CPanelText("FueledPower", "\nWhen supplied with fuel:\nPeak Power: " .. math.floor(peakkw * ACE.TorqueBoost) .. " kW / " .. math.Round(peakkw * ACE.TorqueBoost * 1.34) .. " HP @ " .. math.Round(peakkwrpm) .. " RPM")
-		acemenupanel:CPanelText("FueledTorque", "Peak Torque: " .. (Table.torque * ACE.TorqueBoost) .. " n/m  / " .. math.Round(Table.torque * ACE.TorqueBoost * 0.73) .. " ft-lb @ " .. math.Round(peaktqrpm) .. " RPM\n")
 	end
 
 	acemenupanel.CustomDisplay:PerformLayout()
