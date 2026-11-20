@@ -1,28 +1,5 @@
 include("shared.lua")
 
-local GunInfoWhileSeated = CreateClientConVar("GunInfoWhileSeated", 0, true, false)
-
-function ENT:Initialize()
-
-	self.BaseClass.Initialize( self )
-
-end
-
-function ENT:Draw()
-
-	local lply = LocalPlayer()
-	local hideBubble = not GunInfoWhileSeated:GetBool() and IsValid(lply) and lply:InVehicle()
-
-	self.BaseClass.DoNormalDraw(self, false, hideBubble)
-	Wire_Render(self)
-
-	if self.GetBeamLength and (not self.GetShowBeam or self:GetShowBeam()) then
-		-- Every SENT that has GetBeamLength should draw a tracer. Some of them have the GetShowBeam boolean
-		Wire_DrawTracerBeam( self, 1, self.GetBeamHighlight and self:GetBeamHighlight() or false )
-	end
-
-end
-
 function ACETrackRadarGUICreate( Table )
 
 	if not (ACE and next(ACE.Classes) and next(ACE.Classes.Radar) and Table) then

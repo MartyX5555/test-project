@@ -1,6 +1,6 @@
 -- shared.lua
 
-DEFINE_BASECLASS( "base_wire_entity" )
+DEFINE_BASECLASS("ace_base")
 
-ENT.PrintName = "ACE Engine"
-ENT.WireDebugName = "ACE Engine"
+ENT.PrintName		= "ACE Engine"
+ENT.WireDebugName	= "ACE Engine"

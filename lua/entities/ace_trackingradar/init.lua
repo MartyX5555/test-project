@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-DEFINE_BASECLASS( "base_wire_entity" )
+DEFINE_BASECLASS("ace_base")
 
 local ACE = ACE or {}
 
@@ -30,8 +30,8 @@ function ENT:Initialize()
 
 	self.ClosestToBeam		= -1
 
-	self.Inputs = WireLib.CreateInputs( self, { "Active", "Cone" } )
-	self.Outputs = WireLib.CreateOutputs( self, {"Detected", "Owner [ARRAY]", "Position [ARRAY]", "Velocity [ARRAY]", "ClosestToBeam","IsJammed"} )
+	self.Inputs = self:SetWireInputs({ "Active", "Cone" } )
+	self.Outputs = self:SetWireOutputs({"Detected", "Owner [ARRAY]", "Position [ARRAY]", "Velocity [ARRAY]", "ClosestToBeam","IsJammed"} )
 	self.OutputData = {
 		Detected        = 0,
 		Owner           = {},
@@ -159,12 +159,12 @@ function ENT:SetActive(active)
 		self:ResetSequence(sequence)
 		self.AutomaticFrameAdvance = false
 
-		WireLib.TriggerOutput( self, "Detected", 0 )
-		WireLib.TriggerOutput( self, "Owner", {} )
-		WireLib.TriggerOutput( self, "Position", {} )
-		WireLib.TriggerOutput( self, "Velocity", {} )
-		WireLib.TriggerOutput( self, "ClosestToBeam", -1 )
-		WireLib.TriggerOutput( self, "IsJammed", 0 )
+		self:TriggerWireOutput("Detected", 0 )
+		self:TriggerWireOutput("Owner", {} )
+		self:TriggerWireOutput("Position", {} )
+		self:TriggerWireOutput("Velocity", {} )
+		self:TriggerWireOutput("ClosestToBeam", -1 )
+		self:TriggerWireOutput("IsJammed", 0 )
 
 		self.OutputData.Detected = 0
 		self.OutputData.Owner = {}
@@ -207,7 +207,7 @@ function ENT:Think()
 
 		end
 
-		WireLib.TriggerOutput( self, "IsJammed", self.IsJammed )
+		self:TriggerWireOutput("IsJammed", self.IsJammed )
 		self.OutputData.IsJammed = self.IsJammed
 
 		if self.IsJammed <= 0 then
@@ -344,16 +344,16 @@ function ENT:Think()
 
 			end
 
-			--self.Outputs = WireLib.CreateOutputs( self, {"Detected", "Owner [ARRAY]", "Position [ARRAY]", "Velocity [ARRAY]", "ClosestToBeam"} )
+			--self.Outputs = self:SetWireOutputs({"Detected", "Owner [ARRAY]", "Position [ARRAY]", "Velocity [ARRAY]", "ClosestToBeam"} )
 
 			--Some entity passed the test to be valid
 			if self.ClosestToBeam ~= -1 then
 
-				WireLib.TriggerOutput( self, "Detected", 1 )
-				WireLib.TriggerOutput( self, "Owner", ownArray )
-				WireLib.TriggerOutput( self, "Position", posArray )
-				WireLib.TriggerOutput( self, "Velocity", velArray )
-				WireLib.TriggerOutput( self, "ClosestToBeam", self.ClosestToBeam )
+				self:TriggerWireOutput("Detected", 1 )
+				self:TriggerWireOutput("Owner", ownArray )
+				self:TriggerWireOutput("Position", posArray )
+				self:TriggerWireOutput("Velocity", velArray )
+				self:TriggerWireOutput("ClosestToBeam", self.ClosestToBeam )
 
 				self.OutputData.Detected = 1
 				self.OutputData.Owner = ownArray
@@ -362,11 +362,11 @@ function ENT:Think()
 				self.OutputData.ClosestToBeam = self.ClosestToBeam
 
 			else --Nothing detected
-				WireLib.TriggerOutput( self, "Detected", 0 )
-				WireLib.TriggerOutput( self, "Owner", {} )
-				WireLib.TriggerOutput( self, "Position", {} )
-				WireLib.TriggerOutput( self, "Velocity", {} )
-				WireLib.TriggerOutput( self, "ClosestToBeam", -1 )
+				self:TriggerWireOutput("Detected", 0 )
+				self:TriggerWireOutput("Owner", {} )
+				self:TriggerWireOutput("Position", {} )
+				self:TriggerWireOutput("Velocity", {} )
+				self:TriggerWireOutput("ClosestToBeam", -1 )
 
 				self.OutputData.Detected = 0
 				self.OutputData.Owner = {}
@@ -415,6 +415,6 @@ function ENT:UpdateOverlayText()
 	txt = txt .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText(txt)
+	self:SetWireOverlayText(txt)
 
 end

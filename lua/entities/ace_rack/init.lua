@@ -5,7 +5,7 @@ AddCSLuaFile( "cl_init.lua" )
 
 include("shared.lua")
 
-DEFINE_BASECLASS( "base_wire_entity" )
+DEFINE_BASECLASS("ace_base")
 
 CreateConVar("sbox_max_ace_rack", 12) -- Racks limit
 
@@ -74,7 +74,7 @@ local WireOutputs = {
 
 function ENT:Initialize()
 
-	self.BaseClass.Initialize(self)
+	BaseClass.Initialize(self)
 
 	self.ReloadTime      = 1
 	self.RackStatus      = "Empty"
@@ -101,14 +101,11 @@ function ENT:Initialize()
 	self.ForceTdelay           = 0
 	self.Inaccuracy            = 1
 
-	--self.Inputs = WireLib.CreateInputs( self, WireInputs )
-	--self.Outputs = WireLib.CreateOutputs( self, WireOutputs )
+	self.Inputs = self:SetWireInputs(WireInputs)
+	self.Outputs = self:SetWireOutputs(WireOutputs)
 
-	WireLib.CreateInputs( self, WireInputs )
-	WireLib.CreateOutputs( self, WireOutputs )
-
-	Wire_TriggerOutput(self, "Entity", self)
-	Wire_TriggerOutput(self, "Ready", 1)
+	self:TriggerWireOutput("Entity", self)
+	self:TriggerWireOutput("Ready", 1)
 	self.WireDebugName = "ACE Rack"
 
 	self.lastCol = self:GetColor() or Color(255, 255, 255)
@@ -185,7 +182,7 @@ function ENT:Link( Target )
 	table.insert( self.AmmoLink, Target )
 	table.insert( Target.Master, self )
 
-	self:SetOverlayText(txt)
+	self:SetWireOverlayText(txt)
 
 	return true, "Link successful!"
 end
@@ -229,7 +226,7 @@ function ENT:TriggerInput( iname , value )
 	elseif iname == "Reload" and value ~= 0 then
 		self:Reload()
 	elseif iname == "Target Pos" then
-		Wire_TriggerOutput(self, "Position", value)
+		self:TriggerWireOutput("Position", value)
 	elseif iname == "Track Delay" then
 		self.ForceTdelay = math.max(value,0)
 
@@ -352,7 +349,7 @@ function ENT:Think()
 		self:UpdateRefillBonus()
 
 		self:TrimNullMissiles()
-		Wire_TriggerOutput(self, "Shots Left", Ammo)
+		self:TriggerWireOutput("Shots Left", Ammo)
 
 		self:SetNWString("GunType",	self.Id)
 		self:SetNWInt(  "Ammo",		Ammo)
@@ -368,7 +365,7 @@ function ENT:Think()
 
 	if self.NextFire >= 1 and Ammo > 0 and Ammo <= self.MagSize then
 		self.Ready = true
-		Wire_TriggerOutput(self, "Ready", 1)
+		self:TriggerWireOutput("Ready", 1)
 		if self.Firing then
 			self.ReloadTime = nil
 			self:FireMissile()
@@ -577,7 +574,7 @@ function ENT:LoadAmmo()
 	self.Ready = false
 	self.ReloadTime = ReloadTime
 
-	Wire_TriggerOutput(self, "Ready", 0)
+	self:TriggerWireOutput("Ready", 0)
 
 	self:GetOverlayText()
 
@@ -736,7 +733,7 @@ function ENT:FireMissile()
 		end
 
 		self.Ready = false
-		Wire_TriggerOutput(self, "Ready", 0)
+		self:TriggerWireOutput("Ready", 0)
 		self.NextFire = 0
 		self.WaitFunction = self.GetFireDelay
 		self.ReloadTime = ReloadTime
@@ -767,8 +764,8 @@ function ENT:PreEntityCopy()
 		duplicator.StoreEntityModifier( self, "ACFAmmoLink", info )
 	end
 
-	--Wire dupe info
-	self.BaseClass.PreEntityCopy( self )
+	-- Wire dupe info
+	BaseClass.PreEntityCopy(self)
 
 end
 
@@ -787,17 +784,21 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 		Ent.EntityMods.ACFAmmoLink = nil
 	end
 
-	--Wire dupe info
-	self.BaseClass.PostEntityPaste( self, Player, Ent, CreatedEntities )
+	-- Wire dupe info
+	BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 
 end
 
 function ENT:OnRemove()
-	Wire_Remove(self)
+	if Wire_Remove then
+		Wire_Remove(self)
+	end
 end
 
 function ENT:OnRestore()
-	Wire_Restored(self)
+	if Wire_Restored then
+		Wire_Restored(self)
+	end
 end
 
 --New Overlay text that is shown when you are looking at the rack.
@@ -836,6 +837,6 @@ function ENT:GetOverlayText()
 		txt = txt .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText(txt)
+	self:SetWireOverlayText(txt)
 
 end

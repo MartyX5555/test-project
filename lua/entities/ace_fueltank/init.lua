@@ -45,13 +45,13 @@ do
 		self.Legal            = true
 		self.LegalIssues      = ""
 
-		self.Inputs = Wire_CreateInputs( self, { "Active", "Refuel Duty (" .. FueltankWireDescs["Refuel"] .. ")" } )
-		self.Outputs = WireLib.CreateSpecialOutputs( self,
+		self.Inputs = self:SetWireInputs({ "Active", "Refuel Duty (" .. FueltankWireDescs["Refuel"] .. ")" })
+		self.Outputs = self:SetWireOutputs(
 			{ "Fuel (" .. FueltankWireDescs["Fuel"] .. ")", "Capacity (" .. FueltankWireDescs["Capacity"] .. ")", "Leaking (" .. FueltankWireDescs["Leaking"] .. ")", "Entity" },
 			{ "NORMAL", "NORMAL", "NORMAL", "ENTITY" }
 		)
-		Wire_TriggerOutput( self, "Leaking", 0 )
-		Wire_TriggerOutput( self, "Entity", self )
+		self:TriggerWireOutput("Leaking", 0 )
+		self:TriggerWireOutput("Entity", self )
 
 		self.Master = {} --engines linked to this tank
 		ACE.FuelTanks = ACE.FuelTanks or {} --master list of ace fuel tanks
@@ -351,7 +351,7 @@ function ENT:UpdateFuelTank(_, Data)
 
 	self:SetNW2String( "WireName", name )
 
-	Wire_TriggerOutput( self, "Capacity", math.Round(self.Capacity,2) )
+	self:TriggerWireOutput("Capacity", math.Round(self.Capacity,2) )
 	self:UpdateOverlayText()
 
 end
@@ -392,7 +392,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText( text )
+	self:SetWireOverlayText( text )
 
 end
 
@@ -471,7 +471,7 @@ function ENT:Think()
 		self:NextThink( CurTime() + 0.25 )
 		self.Fuel = math.max(self.Fuel - self.Leaking,0)
 		self.Leaking = math.Clamp(self.Leaking - (1 / math.max(self.Fuel,1)) ^ 0.5, 0, self.Fuel) --fuel tanks are self healing
-		Wire_TriggerOutput(self, "Leaking", (self.Leaking > 0) and 1 or 0)
+		self:TriggerWireOutput("Leaking", (self.Leaking > 0) and 1 or 0)
 	else
 		self:NextThink( CurTime() + 1 )
 	end
@@ -509,7 +509,7 @@ function ENT:Think()
 
 	self:UpdateFuelMass()
 
-	Wire_TriggerOutput(self, "Fuel", self.Fuel)
+	self:TriggerWireOutput("Fuel", self.Fuel)
 
 	self.LastThink = CurTime()
 

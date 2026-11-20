@@ -1,5 +1,4 @@
-DEFINE_BASECLASS( "base_wire_entity" )
-ENT.Base                    = "base_wire_entity"
+DEFINE_BASECLASS("ace_base")
 ENT.Type                    = "anim"
 ENT.PrintName               = "ACE - ECM"
 ENT.Author                  = "RDC"

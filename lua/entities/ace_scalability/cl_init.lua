@@ -1,18 +1,21 @@
 include("shared.lua")
 
 function ENT:Initialize()
+	if not self.CanScale then return end
 
 	local ply = LocalPlayer()
 
 	if ply.CanReceiveNet then
 		net.Start("ACE_Scalable_Network")
-			net.WriteEntity( self )
+			net.WriteEntity(self)
 		net.SendToServer()
 	end
 end
 
---Brought from ACE3. Fixes the physgun grabbing beam glitch
+-- Brought from ACE3. Fixes the physgun grabbing beam glitch
 function ENT:CalcAbsolutePosition() -- Faking sync
+	if not self.Matrix then return end
+
 	local PhysObj  = self:GetPhysicsObject()
 	local Position = self:GetPos()
 	local Angles	= self:GetAngles()

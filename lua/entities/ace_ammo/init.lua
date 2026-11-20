@@ -4,7 +4,7 @@ AddCSLuaFile("cl_init.lua")
 
 include("shared.lua")
 
-DEFINE_BASECLASS("ace_scalability") -- Required to get the local BaseClass. A workaround uses this below
+DEFINE_BASECLASS("ace_base") -- Required to get the local BaseClass. A workaround uses this below
 
 CreateConVar("sbox_max_ace_ammo", 50)					-- ammo limit
 
@@ -62,8 +62,8 @@ function ENT:Initialize()
 	self.RoFMul              = 1
 	self.LastMass            = 1
 
-	self.Inputs              = Wire_CreateInputs( self, Inputs )
-	self.Outputs             = Wire_CreateOutputs( self, Outputs )
+	self.Inputs              = self:SetWireInputs(Inputs)
+	self.Outputs             = self:SetWireOutputs(Outputs)
 
 end
 
@@ -477,7 +477,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText( text )
+	self:SetWireOverlayText( text )
 
 end
 
@@ -582,7 +582,7 @@ do
 		self.NetworkData = ACE.RoundTypes[self.BulletData.Type].network
 		self:NetworkData( self.BulletData )
 
-		Wire_TriggerOutput( self, "Capacity", self.Capacity )
+		self:TriggerWireOutput("Capacity", self.Capacity )
 		self:UpdateOverlayText()
 
 	end
@@ -790,7 +790,7 @@ function ENT:Think()
 		end
 	end
 
-	Wire_TriggerOutput(self, "Munitions", self.Ammo)
+	self:TriggerWireOutput("Munitions", self.Ammo)
 	return true
 
 end

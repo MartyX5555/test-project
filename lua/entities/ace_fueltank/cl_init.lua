@@ -1,24 +1,6 @@
 
 include("shared.lua")
 
-CreateClientConVar("ACE_FuelInfoWhileSeated", 0, true, false)
-
--- copied from base_wire_entity: DoNormalDraw's notip arg isn't accessible from ENT:Draw defined there.
-function ENT:Draw()
-
-	local lply = LocalPlayer()
-	local hideBubble = not GetConVar("ACE_FuelInfoWhileSeated"):GetBool() and IsValid(lply) and lply:InVehicle()
-
-	self.BaseClass.DoNormalDraw(self, false, hideBubble)
-	Wire_Render(self)
-
-	if self.GetBeamLength and (not self.GetShowBeam or self:GetShowBeam()) then
-		-- Every SENT that has GetBeamLength should draw a tracer. Some of them have the GetShowBeam boolean
-		Wire_DrawTracerBeam( self, 1, self.GetBeamHighlight and self:GetBeamHighlight() or false )
-	end
-
-end
-
 do
 
 	local Wall = 0.03937 -- wall thickness in inches (1mm). Meant to be a global var

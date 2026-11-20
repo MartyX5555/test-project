@@ -1,41 +1,23 @@
 
 include("shared.lua")
 
-local GunInfoWhileSeated = CreateClientConVar("GunInfoWhileSeated", 0, true, false)
+DEFINE_BASECLASS("ace_base")
 
 function ENT:Initialize()
-
-	self.BaseClass.Initialize( self )
+	BaseClass.Initialize(self)
 
 	self.LastFire	= 0
-	self.Reload	= 1
-	self.CloseTime  = 1
-	self.Rate	= 1
-	self.RateScale  = 1
-	self.FireAnim	= self:LookupSequence( "shoot" )
-	self.CloseAnim  = self:LookupSequence( "load" )
-	self.LastThink  = 0
-end
-
--- copied from base_wire_entity: DoNormalDraw's notip arg isn't accessible from ENT:Draw defined there.
-function ENT:Draw()
-
-	local lply = LocalPlayer()
-	local hideBubble = not GunInfoWhileSeated:GetBool() and IsValid(lply) and lply:InVehicle()
-
-	self.BaseClass.DoNormalDraw(self, false, hideBubble)
-	Wire_Render(self)
-
-	if self.GetBeamLength and (not self.GetShowBeam or self:GetShowBeam()) then
-		-- Every SENT that has GetBeamLength should draw a tracer. Some of them have the GetShowBeam boolean
-		Wire_DrawTracerBeam( self, 1, self.GetBeamHighlight and self:GetBeamHighlight() or false )
-	end
-
+	self.Reload		= 1
+	self.CloseTime	= 1
+	self.Rate		= 1
+	self.RateScale	= 1
+	self.FireAnim	= self:LookupSequence("shoot")
+	self.CloseAnim	= self:LookupSequence("load")
+	self.LastThink	= 0
 end
 
 function ENT:Think()
-
-	self.BaseClass.Think( self )
+	BaseClass.Think(self)
 
 	local SinceFire = CurTime() - self.LastFire
 	self:SetCycle( SinceFire * self.Rate / self.RateScale )

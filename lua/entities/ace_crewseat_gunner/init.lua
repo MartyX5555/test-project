@@ -3,6 +3,8 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
+DEFINE_BASECLASS("ace_base")
+
 local round = math.Round
 
 local CrewseatTable = ACE.Weapons.Crewseats
@@ -12,9 +14,9 @@ function ENT:Initialize()
 
 	self.LinkedGun = nil
 
-	self.Inputs = WireLib.CreateInputs(self, {})
+	self.Inputs = self:SetWireInputs({})
 
-	self.Outputs = WireLib.CreateOutputs(self, {
+	self.Outputs = self:SetWireOutputs({
 		"Health (Current health percentage)",
 		"IsLinked (1 if linked to a gun)",
 		"AccuracyPenalty (Current accuracy penalty multiplier)",
@@ -107,10 +109,10 @@ function ENT:UpdateWireOutputs()
 	local hp = round(self.ACE.Health / self.ACE.MaxHealth * 100)
 	local isLinked = IsValid(self.LinkedGun) and 1 or 0
 
-	WireLib.TriggerOutput(self, "Health", hp)
-	WireLib.TriggerOutput(self, "IsLinked", isLinked)
-	WireLib.TriggerOutput(self, "AccuracyPenalty", self:GetAccuracyPenalty())
-	WireLib.TriggerOutput(self, "Name", self.Name or "Unknown")
+	self:TriggerWireOutput("Health", hp)
+	self:TriggerWireOutput("IsLinked", isLinked)
+	self:TriggerWireOutput("AccuracyPenalty", self:GetAccuracyPenalty())
+	self:TriggerWireOutput("Name", self.Name or "Unknown")
 end
 
 function ENT:UpdateOverlayText()
@@ -151,7 +153,7 @@ function ENT:UpdateOverlayText()
 		str = str .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - (ACE.CurTime or CurTime())) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText(str)
+	self:SetWireOverlayText(str)
 end
 
 function ENT:ACE_OnDamage(Entity, Energy, FrArea, _, Inflictor, _, _)
@@ -218,14 +220,14 @@ function ENT:ResetLinks()
 end
 
 function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+	local info = BaseClass.BuildDupeInfo(self) or {}
 	info.ModelType = self.ModelType
 	info.Model = self.Model
 	return info
 end
 
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
+	BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
 
 	local class = self:GetClass()
 	local defaultModelType = (ACE.CrewseatDefaults and ACE.CrewseatDefaults[class]) or "Sitting"

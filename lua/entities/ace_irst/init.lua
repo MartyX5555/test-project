@@ -12,8 +12,8 @@ function ENT:Initialize()
 	self.LastStatusUpdate	= CurTime()
 	self.Active				= false
 
-	self.Inputs	= WireLib.CreateInputs( self, { "Active", "Cone" } )
-	self.Outputs	= WireLib.CreateOutputs( self, {"Detected", "Owner [ARRAY]", "Angle [ARRAY]", "EffHeat [ARRAY]", "ClosestToBeam"} )
+	self.Inputs	= self:SetWireInputs({ "Active", "Cone" } )
+	self.Outputs	= self:SetWireOutputs({"Detected", "Owner [ARRAY]", "Angle [ARRAY]", "EffHeat [ARRAY]", "ClosestToBeam"} )
 	self.OutputData = {
 		Detected		= 0,
 		Owner			= {},
@@ -150,11 +150,11 @@ function ENT:SetActive(active)
 		self:ResetSequence(sequence)
 		self.AutomaticFrameAdvance = false
 
-		WireLib.TriggerOutput( self, "Detected"	, 0 )
-		WireLib.TriggerOutput( self, "Owner"		, {} )
-		WireLib.TriggerOutput( self, "Angle"		, {} )
-		WireLib.TriggerOutput( self, "EffHeat"	, {} )
-		WireLib.TriggerOutput( self, "ClosestToBeam", -1 )
+		self:TriggerWireOutput("Detected"	, 0 )
+		self:TriggerWireOutput("Owner"		, {} )
+		self:TriggerWireOutput("Angle"		, {} )
+		self:TriggerWireOutput("EffHeat"	, {} )
+		self:TriggerWireOutput("ClosestToBeam", -1 )
 
 		self.OutputData.Detected = 0
 		self.OutputData.Owner = {}
@@ -315,11 +315,11 @@ function ENT:AcquireLock()
 
 	if self.ClosestToBeam ~= -1 then --Some entity passed the test to be valid
 
-		WireLib.TriggerOutput( self, "Detected"	, 1 )
-		WireLib.TriggerOutput( self, "Owner"		, Owners )
-		WireLib.TriggerOutput( self, "Angle"		, AngTable )
-		WireLib.TriggerOutput( self, "EffHeat"	, Temperatures )
-		WireLib.TriggerOutput( self, "ClosestToBeam", self.ClosestToBeam )
+		self:TriggerWireOutput("Detected"	, 1 )
+		self:TriggerWireOutput("Owner"		, Owners )
+		self:TriggerWireOutput("Angle"		, AngTable )
+		self:TriggerWireOutput("EffHeat"	, Temperatures )
+		self:TriggerWireOutput("ClosestToBeam", self.ClosestToBeam )
 
 		self.OutputData.Detected = 1
 		self.OutputData.Owner = Owners
@@ -328,11 +328,11 @@ function ENT:AcquireLock()
 		self.OutputData.ClosestToBeam = self.ClosestToBeam
 	else --Nothing detected
 
-		WireLib.TriggerOutput( self, "Detected"	, 0 )
-		WireLib.TriggerOutput( self, "Owner"		, {} )
-		WireLib.TriggerOutput( self, "Angle"		, {} )
-		WireLib.TriggerOutput( self, "EffHeat"	, {} )
-		WireLib.TriggerOutput( self, "ClosestToBeam", -1 )
+		self:TriggerWireOutput("Detected"	, 0 )
+		self:TriggerWireOutput("Owner"		, {} )
+		self:TriggerWireOutput("Angle"		, {} )
+		self:TriggerWireOutput("EffHeat"	, {} )
+		self:TriggerWireOutput("ClosestToBeam", -1 )
 
 		self.OutputData.Detected = 0
 		self.OutputData.Owner = {}
@@ -399,7 +399,7 @@ function ENT:UpdateOverlayText()
 		txt = txt .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText(txt)
+	self:SetWireOverlayText(txt)
 
 
 end

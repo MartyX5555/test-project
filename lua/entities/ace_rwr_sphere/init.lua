@@ -28,8 +28,8 @@ function ENT:Initialize()
 
 	self:GetPhysicsObject():SetMass(65)
 
-	self.Inputs = WireLib.CreateInputs( self, { "Active" } )
-	self.Outputs = WireLib.CreateOutputs( self, {"Detected"} )
+	self.Inputs = self:SetWireInputs({ "Active" } )
+	self.Outputs = self:SetWireOutputs({"Detected"} )
 
 	self:SetActive(false)
 
@@ -71,7 +71,7 @@ function ENT:SetActive(active)
 		self:ResetSequence(sequence)
 		self.AutomaticFrameAdvance = false
 
-		WireLib.TriggerOutput( self, "Detected", 0 )
+		self:TriggerWireOutput("Detected", 0 )
 	end
 
 end
@@ -129,6 +129,6 @@ function ENT:Think()
 				end
 			end
 		end
-		WireLib.TriggerOutput( self, "Detected", detected )
+		self:TriggerWireOutput("Detected", detected )
 	end
 end
