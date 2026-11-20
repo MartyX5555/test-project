@@ -61,8 +61,6 @@ function ACE.MakeCrewseatGunner(Owner, Pos, Angle, Id, Data)
 
 	return ent
 end
-
-list.Set("ACFCvars", "ace_crewseat_gunner", {"id", "entitydata"})
 duplicator.RegisterEntityClass("ace_crewseat_gunner", ACE.MakeCrewseatGunner, "Pos", "Angle", "Id", "ModelType")
 
 function ENT:Update(ply, Id, Data)

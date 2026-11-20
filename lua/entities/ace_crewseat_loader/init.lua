@@ -63,8 +63,6 @@ function ACE.MakeCrewseatLoader(Owner, Pos, Angle, Id, Data)
 
 	return ent
 end
-
-list.Set("ACFCvars", "ace_crewseat_loader", {"id", "entitydata"})
 duplicator.RegisterEntityClass("ace_crewseat_loader", ACE.MakeCrewseatLoader, "Pos", "Angle", "Id", "ModelType")
 
 function ENT:Update(ply, Id, Data)
