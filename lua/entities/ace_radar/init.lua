@@ -50,7 +50,7 @@ function ENT:Initialize()
 
 	self:ConfigureForClass()
 
-	self:GetOverlayText()
+	self:UpdateWireOverlay()
 
 	self:SetActive(false)
 
@@ -208,7 +208,7 @@ function ENT:Think()
 		self.LastStatusUpdate = curTime
 	end
 
-	self:GetOverlayText()
+	self:UpdateWireOverlay()
 
 	return true
 end
@@ -320,7 +320,7 @@ function ENT:EnableClientInfo(bool)
 end
 
 --New Overlay text that is shown when you are looking at the radar
-function ENT:GetOverlayText()
+function ENT:UpdateWireOverlay()
 
 	local cone	= self.ConeDegs
 	local range	= self.Range

@@ -134,13 +134,6 @@ function ENT:SetMissileData(BulletData, RoundData)
 	self:UpdateSkin()
 end
 
-function ENT:SetCrateData(Crate)
-	if not IsValid(Crate) then return end
-
-	self:SetMissileData(Crate.BulletData, Crate.RoundData)
-	self:SetColor(Crate:GetColor())
-end
-
 --===========================================================================================
 ----- Guidance and Fuse functions
 --===========================================================================================
@@ -379,6 +372,11 @@ local function ExitRack(Missile, DeltaTime)
 
 	Missile.InRack = false
 
+	if IsValid(Launcher) and Missile.PortId and Launcher.ClearPortOccupant then
+		Launcher:ClearPortOccupant(Missile.PortId, Missile)
+		Missile.PortId = nil
+	end
+
 	local worldVel = Vector(Missile.LocalVel.x, Missile.LocalVel.y, Missile.LocalVel.z)
 	if IsValid(Launcher) then
 		worldVel:Rotate(Launcher:GetAngles())
@@ -578,6 +576,11 @@ end
 -- Used to safely dismount launched missiles
 function ENT:Dismount()
 	if self.MissileDetonated then return end
+
+	if IsValid(self.Launcher) and self.PortId and self.Launcher.ClearPortOccupant then
+		self.Launcher:ClearPortOccupant(self.PortId, self)
+		self.PortId = nil
+	end
 
 	self.MissileDetonated = true
 	self.Motor = 0
@@ -910,6 +913,12 @@ do
 
 			if IsValid(Inflictor) and Inflictor:IsPlayer() then
 				self.Inflictor = Inflictor
+			end
+
+			local Launcher = self.Launcher
+			-- break the port if the missile is still attached.
+			if not self.Launched and IsValid(Launcher) and Launcher.SetPortDamaged then
+				Launcher:SetPortDamaged(self.PortId, true)
 			end
 		end
 

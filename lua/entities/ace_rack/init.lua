@@ -16,6 +16,27 @@
 	- Per-missile reload timing fields (firedelay, reloadspeed, reloaddelay) if adopting upstream ordnance economy.
 ]]--
 
+--[[
+	Port Values and how they are interpreted:
+
+	Ports are stored inside of a table, number indexed with the slot number used on the rack/pod
+	Inside, we have the following values:
+
+	Missile (ENTITY): This is the Missile, being armed, still not launched by the rack. Once the missile is launched, this becomes NULL.
+	OccupiedBy (ENTITY): Once you fire the missile, this one will be used to represent the missile while its still inside of the rack, only if you are using the rail.
+	IsDamaged (bool): Determine if the port is good to work as intended. In a future, we can expand this.
+	Pos: The Missile position, relative to the rack/pod
+	ScaleDir:
+
+		Missile		= NULL,
+		OccupiedBy	= NULL,
+		IsDamaged	= false,
+		Pos			= pos + offset,
+		ScaleDir	= portdata.scaledir and Vector(portdata.scaledir) or Vector(0, 0, 0)
+
+
+]]--
+
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 
@@ -170,6 +191,7 @@ local function CanReloadInPort(portdata)
 	if not next(portdata) then return false end
 	if portdata.IsDamaged then return false end
 	if IsValid(portdata.Missile) then return false end
+	if IsValid(portdata.OccupiedBy) then return false end
 
 	return true
 end
@@ -231,6 +253,7 @@ local function BuildMissilePorts(Rack)
 
 		Rack.MissilePorts[i] = {
 			Missile		= NULL,
+			OccupiedBy	= NULL,
 			IsDamaged	= false,
 			Pos			= pos + offset,
 			ScaleDir	= portdata.scaledir and Vector(portdata.scaledir) or Vector(0, 0, 0)
@@ -266,8 +289,26 @@ function ENT:SetPortDamaged(portId, damaged)
 	local portdata = self.MissilePorts[portId]
 	if not portdata then return false end
 
-	portdata.IsDamaged = damaged and true or false
-	return true
+	portdata.IsDamaged = damaged
+
+	--Updating the integrity of the rack
+	local IsRackDamaged
+	for _, portdata in ipairs(self.MissilePorts) do
+		if portdata.IsDamaged then
+			IsRackDamaged = true
+			break
+		end
+	end
+	self.IsRackDamaged = IsRackDamaged
+end
+
+function ENT:ClearPortOccupant(portId, missile)
+	local portdata = self.MissilePorts[portId]
+	if not portdata then return end
+
+	if not missile or portdata.OccupiedBy == missile then
+		portdata.OccupiedBy = NULL
+	end
 end
 
 function ENT:SetLoadedWeight()
@@ -486,6 +527,13 @@ function ENT:FireMissile()
 				local useRail = (self.PodLength > 0) and (self.EnforceFlightInRack or self.RailLaunch)
 
 				portdata.Missile = NULL
+				if useRail then
+					portdata.OccupiedBy = missile
+					missile.PortId = portIdx
+				else
+					missile.PortId = nil
+				end
+
 				missile:Launch(ShootVec, useRail, self.PodLength, self.LaunchKick)
 
 				self:EmitSound(FireSound, 500, 100)
@@ -588,6 +636,7 @@ function ENT:LoadMissile()
 		Missile:SetColor(Crate:GetColor())
 		Missile:SetParent(self)
 		Missile:SetParentPhysNum(0)
+		Missile.PortId = portId
 
 		portData.Missile = Missile
 		Crate.Ammo = Crate.Ammo - 1
@@ -832,16 +881,6 @@ function ENT:PostEntityPaste(Player, Ent, CreatedEntities)
 	BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 end
 
-function ENT:OnRemove()
-	BaseClass.OnRemove(self)
-end
-
-function ENT:OnRestore()
-	if Wire_Restored then
-		Wire_Restored(self)
-	end
-end
-
 local function GetStatus(Rack)
 	if Rack.Ready then
 		return "Ready"
@@ -889,14 +928,12 @@ function ENT:UpdateWireOverlay()
 		end
 	end
 
-	if self.PodLength > 0 then
-		if self.EnforceFlightInRack then
-			txt = txt .. "\nRail Launch: Forced (" .. self.PodLength .. "\")"
-		elseif self.RailLaunch then
-			txt = txt .. "\nRail Launch: Enabled (" .. self.PodLength .. "\")"
-		else
-			txt = txt .. "\nRail Launch: Disabled"
-		end
+	if self.PodLength > 0 and self.RailLaunch then
+		txt = txt .. "\nRail Launch: Enabled (" .. self.PodLength .. "\")"
+	end
+
+	if self.IsRackDamaged then
+		txt = txt .. "\n\nWarning: Damaged!"
 	end
 
 	if not self.Legal then
@@ -904,8 +941,4 @@ function ENT:UpdateWireOverlay()
 	end
 
 	self:SetWireOverlayText(txt)
-end
-
-function ENT:GetOverlayText()
-	self:UpdateWireOverlay()
 end
