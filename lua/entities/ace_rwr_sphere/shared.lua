@@ -1,6 +1,5 @@
-DEFINE_BASECLASS( "base_wire_entity" )
-ENT.Base			= "base_wire_entity"
-ENT.Type = "anim"
+DEFINE_BASECLASS("ace_base")
+ENT.Type			= "anim"
 ENT.PrintName = "ACE - RWR Spherical"
 ENT.Author = "RDC"
 ENT.Category = "ACE - SpecialEntities"

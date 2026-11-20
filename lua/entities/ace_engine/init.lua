@@ -5,6 +5,8 @@ AddCSLuaFile( "cl_init.lua" )
 
 include("shared.lua")
 
+DEFINE_BASECLASS("ace_base")
+
 CreateConVar("sbox_max_ace_engine", 12)				-- Engine limit
 
 local EngineTable = ACE.Weapons.Engines
@@ -52,12 +54,14 @@ do
 
 		self.LastDamageTime = CurTime()
 
-		self.Inputs = Wire_CreateInputs( self, { "Active", "Throttle (" .. EngineWireDescs["Throttle"] .. ")" } ) --use fuel input?
-		self.Outputs = WireLib.CreateSpecialOutputs( self,  { "RPM (" .. EngineWireDescs["RPM"] .. ")", "Torque (" .. EngineWireDescs["Torque"] .. ")", "Power (" .. EngineWireDescs["Power"] .. ")", "Fuel Use (" .. EngineWireDescs["Fuel Use"] .. ")", "Total Fuel" , "Entity", "Mass", "Physical Mass" , "EngineHeat (" .. EngineWireDescs["EngineHeat"] .. ")"},
-														{ "NORMAL","NORMAL","NORMAL", "NORMAL", "NORMAL", "ENTITY", "NORMAL", "NORMAL", "NORMAL" } )
+		self.Inputs = self:SetWireInputs({ "Active", "Throttle (" .. EngineWireDescs["Throttle"] .. ")" }) --use fuel input?
+		self.Outputs = self:SetWireOutputs(
+			{ "RPM (" .. EngineWireDescs["RPM"] .. ")", "Torque (" .. EngineWireDescs["Torque"] .. ")", "Power (" .. EngineWireDescs["Power"] .. ")", "Fuel Use (" .. EngineWireDescs["Fuel Use"] .. ")", "Total Fuel", "Entity", "Mass", "Physical Mass", "EngineHeat (" .. EngineWireDescs["EngineHeat"] .. ")" },
+			{ "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "ENTITY", "NORMAL", "NORMAL", "NORMAL" }
+		)
 
-		Wire_TriggerOutput( self, "Entity", self )
-		Wire_TriggerOutput(self, "EngineHeat", self.Heat)
+		self:TriggerWireOutput("Entity", self )
+		self:TriggerWireOutput("EngineHeat", self.Heat)
 
 		self.WireDebugName = "ACE Engine"
 
@@ -263,7 +267,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText( text )
+	self:SetWireOverlayText( text )
 
 end
 
@@ -306,10 +310,10 @@ function ENT:TriggerInput( iname, value )
 				self.Sound:Stop()
 			end
 			self.Sound = nil
-			Wire_TriggerOutput( self, "RPM", 0 )
-			Wire_TriggerOutput( self, "Torque", 0 )
-			Wire_TriggerOutput( self, "Power", 0 )
-			Wire_TriggerOutput( self, "Fuel Use", 0 )
+			self:TriggerWireOutput("RPM", 0 )
+			self:TriggerWireOutput("Torque", 0 )
+			self:TriggerWireOutput("Power", 0 )
+			self:TriggerWireOutput("Fuel Use", 0 )
 		end
 	end
 end
@@ -409,12 +413,12 @@ function ENT:Think()
 	end
 
 	self.Heat = ACE.HeatFromEngine( self )
-	Wire_TriggerOutput(self, "EngineHeat", self.Heat)
+	self:TriggerWireOutput("EngineHeat", self.Heat)
 
 	if ACE.CurTime > self.NextUpdate then
 
 		self.TotalFuel = self:GetMaxFuel()
-		Wire_TriggerOutput(self, "Total Fuel", self.TotalFuel)
+		self:TriggerWireOutput("Total Fuel", self.TotalFuel)
 
 		self:UpdateOverlayText()
 		self.NextUpdate = ACE.CurTime + 0.5
@@ -449,8 +453,8 @@ function ENT:CalcMassRatio()
 		Mass = EngineMass
 		PhysMass = EngineMass
 	end
-	Wire_TriggerOutput( self, "Mass", math.Round( Mass, 2 ) )
-	Wire_TriggerOutput( self, "Physical Mass", math.Round( PhysMass, 2 ) )
+	self:TriggerWireOutput("Mass", math.Round( Mass, 2 ) )
+	self:TriggerWireOutput("Physical Mass", math.Round( PhysMass, 2 ) )
 
 end
 
@@ -509,14 +513,14 @@ function ENT:CalcRPM()
 		end
 		Tank.Fuel = math.max(Tank.Fuel - Consumption,0)
 		self.HasFuel = true
-		Wire_TriggerOutput(self, "Fuel Use", math.Round(60 * Consumption / DeltaTime,3))
+		self:TriggerWireOutput("Fuel Use", math.Round(60 * Consumption / DeltaTime,3))
 	elseif not self.IgnoreFuel and ACE.EnginesRequireFuel == 1 then
 		self.HasFuel = false
 		self:TriggerInput( "Active", 0 ) --shut off if no fuel and requires it
 		return 0
 	else
 		self.HasFuel = false
-		Wire_TriggerOutput(self, "Fuel Use", 0)
+		self:TriggerWireOutput("Fuel Use", 0)
 	end
 
 	------------------------ Torque & RPM calculation ------------------------
@@ -599,9 +603,9 @@ function ENT:CalcRPM()
 	SmoothRPM = SmoothRPM / 10
 
 	local Power = self.Torque * SmoothRPM / 9548.8
-	Wire_TriggerOutput(self, "Torque", math.Round(self.Torque))
-	Wire_TriggerOutput(self, "Power", math.Round(Power))
-	Wire_TriggerOutput(self, "RPM", math.Round(self.FlyRPM))
+	self:TriggerWireOutput("Torque", math.Round(self.Torque))
+	self:TriggerWireOutput("Power", math.Round(Power))
+	self:TriggerWireOutput("RPM", math.Round(self.FlyRPM))
 
 	if self.Sound then
 		self.Sound:ChangePitch( math.min( 20 + (SmoothRPM * (self.SoundPitch / 100)) / 50, 255 ), 0 )
@@ -927,8 +931,8 @@ do
 			duplicator.StoreEntityModifier( self, "CrewLink", info )
 		end
 
-		--Wire dupe info
-		self.BaseClass.PreEntityCopy( self )
+		-- Wire dupe info
+		BaseClass.PreEntityCopy(self)
 
 	end
 
@@ -975,8 +979,8 @@ do
 			end
 			Ent.EntityMods.CrewLink = nil
 		end
-		--Wire dupe info
-		self.BaseClass.PostEntityPaste( self, Player, Ent, CreatedEntities )
+		-- Wire dupe info
+		BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 	end
 end
 function ENT:OnRemove()

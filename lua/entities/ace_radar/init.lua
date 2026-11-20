@@ -7,7 +7,7 @@ include("radar_types_support.lua")
 
 CreateConVar("sbox_max_ace_radar", 6)
 
-DEFINE_BASECLASS( "base_wire_entity" )
+DEFINE_BASECLASS("ace_base")
 
 
 local RadarWireDescs = {
@@ -22,10 +22,10 @@ local RadarWireDescs = {
 
 function ENT:Initialize()
 
-	self.BaseClass.Initialize(self)
+	BaseClass.Initialize(self)
 
-	self.Inputs				= WireLib.CreateInputs( self, { "Active" } )
-	self.Outputs			= WireLib.CreateOutputs( self, {"Detected (" .. RadarWireDescs["Detected"] .. ")", "ClosestDistance", "Entities (" .. RadarWireDescs["Entities"] .. ") [ARRAY]", "Position (" .. RadarWireDescs["Position"] .. ") [ARRAY]", "Velocity (" .. RadarWireDescs["Velocity"] .. ") [ARRAY]"} )
+	self.Inputs				= self:SetWireInputs({ "Active" } )
+	self.Outputs			= self:SetWireOutputs({"Detected (" .. RadarWireDescs["Detected"] .. ")", "ClosestDistance", "Entities (" .. RadarWireDescs["Entities"] .. ") [ARRAY]", "Position (" .. RadarWireDescs["Position"] .. ") [ARRAY]", "Velocity (" .. RadarWireDescs["Velocity"] .. ") [ARRAY]"} )
 	self.OutputData = {
 		Detected = 0,
 		ClosestDistance = 0,
@@ -263,11 +263,11 @@ function ENT:ScanForMissiles()
 
 	local closestOutput = math.sqrt(closestSqr)
 
-	WireLib.TriggerOutput( self, "Detected", i )
-	WireLib.TriggerOutput( self, "ClosestDistance", closestOutput )
-	WireLib.TriggerOutput( self, "Entities", entArray )
-	WireLib.TriggerOutput( self, "Position", posArray )
-	WireLib.TriggerOutput( self, "Velocity", velArray )
+	self:TriggerWireOutput("Detected", i )
+	self:TriggerWireOutput("ClosestDistance", closestOutput )
+	self:TriggerWireOutput("Entities", entArray )
+	self:TriggerWireOutput("Position", posArray )
+	self:TriggerWireOutput("Velocity", velArray )
 
 	self.OutputData.Detected = i
 	self.OutputData.ClosestDistance = closestOutput
@@ -292,19 +292,19 @@ end
 function ENT:ClearOutputs()
 
 	if #self.Outputs.Entities.Value > 0 then
-		WireLib.TriggerOutput( self, "Entities", {} )
+		self:TriggerWireOutput("Entities", {} )
 		self.OutputData.Entities = {}
 	end
 
 	if #self.Outputs.Position.Value > 0 then
-		WireLib.TriggerOutput( self, "Position", {} )
-		WireLib.TriggerOutput( self, "ClosestDistance", 0 )
+		self:TriggerWireOutput("Position", {} )
+		self:TriggerWireOutput("ClosestDistance", 0 )
 		self.OutputData.Position = {}
 		self.OutputData.ClosestDistance = 0
 	end
 
 	if #self.Outputs.Velocity.Value > 0 then
-		WireLib.TriggerOutput( self, "Velocity", {} )
+		self:TriggerWireOutput("Velocity", {} )
 		self.OutputData.Velocity = {}
 	end
 
@@ -341,6 +341,6 @@ function ENT:GetOverlayText()
 		txt = txt .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText(txt)
+	self:SetWireOverlayText(txt)
 
 end

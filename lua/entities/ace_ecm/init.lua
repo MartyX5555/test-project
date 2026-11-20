@@ -31,8 +31,8 @@ function ENT:Initialize()
 
 	self:GetPhysicsObject():SetMass(1000)
 
-	self.Inputs = WireLib.CreateInputs( self, { "Active", "Radar ID" } )
-	self.Outputs = WireLib.CreateOutputs( self, { "Energy" } )
+	self.Inputs = self:SetWireInputs({ "Active", "Radar ID" } )
+	self.Outputs = self:SetWireOutputs({ "Energy" } )
 
 	self:SetActive(false)
 
@@ -151,9 +151,9 @@ function ENT:Think()
 	end
 
 	if self.OutOfEnergy then
-		WireLib.TriggerOutput( self, "Energy", 0 )
+		self:TriggerWireOutput("Energy", 0 )
 	else
-		WireLib.TriggerOutput( self, "Energy", self.JamEnergy )
+		self:TriggerWireOutput("Energy", self.JamEnergy )
 	end
 end
 

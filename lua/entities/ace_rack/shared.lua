@@ -1,6 +1,6 @@
 -- shared.lua
 
-DEFINE_BASECLASS("base_wire_entity")
+DEFINE_BASECLASS("ace_base")
 
 ENT.Type			= "anim"
 ENT.Base			= "base_wire_entity"

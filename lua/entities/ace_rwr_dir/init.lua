@@ -29,8 +29,8 @@ function ENT:Initialize()
 
 	self:GetPhysicsObject():SetMass(165)
 
-	self.Inputs = WireLib.CreateInputs( self, { "Active" } )
-	self.Outputs = WireLib.CreateOutputs( self, {"Detected", "Radar ID [ARRAY]", "Angle [ARRAY]"} )
+	self.Inputs = self:SetWireInputs({ "Active" } )
+	self.Outputs = self:SetWireOutputs({"Detected", "Radar ID [ARRAY]", "Angle [ARRAY]"} )
 
 	self:SetActive(false)
 
@@ -76,9 +76,9 @@ function ENT:SetActive(active)
 		self:ResetSequence(sequence)
 		self.AutomaticFrameAdvance = false
 
-		WireLib.TriggerOutput( self, "Detected", 0 )
-		WireLib.TriggerOutput( self, "Angle", {} )
-		WireLib.TriggerOutput( self, "Radar ID", {} )
+		self:TriggerWireOutput("Detected", 0 )
+		self:TriggerWireOutput("Angle", {} )
+		self:TriggerWireOutput("Radar ID", {} )
 	end
 
 end
@@ -145,9 +145,9 @@ function ENT:Think()
 			end
 		end
 
-		WireLib.TriggerOutput( self, "Detected", detected )
-		WireLib.TriggerOutput( self, "Radar ID", radIDs )
-		WireLib.TriggerOutput( self, "Angle", detAngs )
+		self:TriggerWireOutput("Detected", detected )
+		self:TriggerWireOutput("Radar ID", radIDs )
+		self:TriggerWireOutput("Angle", detAngs )
 
 	end
 end

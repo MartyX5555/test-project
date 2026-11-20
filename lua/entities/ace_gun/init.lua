@@ -3,6 +3,8 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
+DEFINE_BASECLASS("ace_base")
+
 CreateConVar("sbox_max_ace_gun", 24)					-- Gun limit
 CreateConVar("sbox_max_ace_rapidgun", 4)				-- Guns like RACs, MGs, and ACs
 CreateConVar("sbox_max_ace_largegun", 2)				-- Guns with a caliber above 100mm
@@ -193,9 +195,9 @@ do
 			local Cal = Gun.Caliber
 
 			if Cal >= 2 and Cal <= 14 then
-				Gun.Inputs = WireLib.CreateInputs( Gun, Inputs_Fuse )
+				Gun.Inputs = Gun:SetWireInputs(Inputs_Fuse)
 			else
-				Gun.Inputs = WireLib.CreateInputs( Gun, Inputs_NoFuse )
+				Gun.Inputs = Gun:SetWireInputs(Inputs_NoFuse)
 			end
 
 		--to cover guns that get its ammo directly from the crate
@@ -203,15 +205,15 @@ do
 			local Cal = Gun.Caliber
 
 			if Cal >= 2 and Cal <= 14 then
-				Gun.Inputs = WireLib.CreateInputs( Gun, Inputs_Fuse_noreload )
+				Gun.Inputs = Gun:SetWireInputs(Inputs_Fuse_noreload)
 			else
-				Gun.Inputs = WireLib.CreateInputs( Gun, Inputs_NoFuse_noreload )
+				Gun.Inputs = Gun:SetWireInputs(Inputs_NoFuse_noreload)
 			end
 		end
 
-		Gun.Outputs = WireLib.CreateOutputs( Gun, Outputs_Default )
+		Gun.Outputs = Gun:SetWireOutputs(Outputs_Default)
 
-		Wire_TriggerOutput(Gun, "Entity", Gun)
+		Gun:TriggerWireOutput("Entity", Gun)
 
 		Gun.MagReload = 0
 		if Lookup.magreload then
@@ -309,7 +311,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText( text )
+	self:SetWireOverlayText( text )
 
 
 end
@@ -449,9 +451,9 @@ function ENT:Link( Target )
 		self.ReloadTime = math.max(( ( math.max(Target.BulletData.RoundVolume,self.MinLengthBonus) / 500 ) ^ 0.60 ) * self.RoFmod * self.PGRoFmod * ReloadBuff, self.ROFLimit)
 		self.RateOfFire = 60 / self.ReloadTime
 
-		Wire_TriggerOutput( self, "Fire Rate", self.RateOfFire )
-		Wire_TriggerOutput( self, "Muzzle Weight", math.floor( Target.BulletData.ProjMass * 1000 ) )
-		Wire_TriggerOutput( self, "Muzzle Velocity", math.floor( Target.BulletData.MuzzleVel * ACE.VelScale ) )
+		self:TriggerWireOutput("Fire Rate", self.RateOfFire )
+		self:TriggerWireOutput("Muzzle Weight", math.floor( Target.BulletData.ProjMass * 1000 ) )
+		self:TriggerWireOutput("Muzzle Velocity", math.floor( Target.BulletData.MuzzleVel * ACE.VelScale ) )
 
 		return true, "Link successful!"
 
@@ -563,14 +565,14 @@ function ENT:Heat_Function()
 	--print(DeltaTime)
 
 	self.Heat = ACE.HeatFromGun( self , self.Heat, self.DeltaTime )
-	Wire_TriggerOutput(self, "Heat", math.Round(self.Heat))
+	self:TriggerWireOutput("Heat", math.Round(self.Heat))
 
 	-- TODO: instead of breaking the gun by heat, decrease accurancy and jam it
 	local OverHeat = math.max(self.Heat / 200, 0) --overheat will start affecting the gun at 200° celcius. STILL unrealistic, weird
 	if OverHeat > 1 and self.Caliber < 10 then  --leave the low calibers to damage themselves only
 
 		self.IsOverheated = true
-		Wire_TriggerOutput(self,"OverHeat", 1)
+		self:TriggerWireOutput("OverHeat", 1)
 
 		local phys = self:GetPhysicsObject()
 		local Mass = phys:GetMass()
@@ -587,7 +589,7 @@ function ENT:Heat_Function()
 
 	else
 		self.IsOverheated = false
-		Wire_TriggerOutput(self,"OverHeat", 0)
+		self:TriggerWireOutput("OverHeat", 0)
 	end
 
 end
@@ -666,13 +668,13 @@ function ENT:Think()
 		self.Ammo = Ammo
 		self:UpdateOverlayText()
 
-		Wire_TriggerOutput(self, "AmmoCount", Ammo)
+		self:TriggerWireOutput("AmmoCount", Ammo)
 
 
 		if self.MagSize then
-			Wire_TriggerOutput(self, "Shots Left", self.MagSize - self.CurrentShot)
+			self:TriggerWireOutput("Shots Left", self.MagSize - self.CurrentShot)
 		else
-			Wire_TriggerOutput(self, "Shots Left", 1)
+			self:TriggerWireOutput("Shots Left", 1)
 		end
 
 		self:SetNWString("GunType", self.Id)
@@ -688,7 +690,7 @@ function ENT:Think()
 
 	if self.NextFire <= Time then
 		self.Ready = true
-		Wire_TriggerOutput(self, "Ready", 1)
+		self:TriggerWireOutput("Ready", 1)
 
 		if self.MagSize and self.MagSize == 1 then
 			self.CurrentShot = 0
@@ -719,11 +721,11 @@ function ENT:ReloadMag()
 			self:LoadAmmo(self.MagReload, false)
 			self:EmitSound("weapons/357/357_reload4.wav", 68, 100)
 			self.CurrentShot = 0
-			Wire_TriggerOutput(self, "Ready", 0)
+			self:TriggerWireOutput("Ready", 0)
 		else
 			self.CurrentShot = 0
 			self.Ready = false
-			Wire_TriggerOutput(self, "Ready", 0)
+			self:TriggerWireOutput("Ready", 0)
 			self:LoadAmmo(false, true)
 		end
 	end
@@ -901,13 +903,13 @@ do
 				else
 					self:LoadAmmo(false, false)
 				end
-				Wire_TriggerOutput(self, "Ready", 0)
+				self:TriggerWireOutput("Ready", 0)
 
 			else
 				self:EmitSound("weapons/shotgun/shotgun_empty.wav", 68, 100)
 				self.CurrentShot = 0
 				self.Ready = false
-				Wire_TriggerOutput(self, "Ready", 0)
+				self:TriggerWireOutput("Ready", 0)
 				self:LoadAmmo(false, true)
 			end
 		end
@@ -993,12 +995,12 @@ function ENT:LoadAmmo( AddTime, Reload )
 			self.ReloadTime = math.max(defaultReloadTime, lowestReloadTime)
 		end
 
-		Wire_TriggerOutput(self, "Loaded", self.BulletData.Type)
+		self:TriggerWireOutput("Loaded", self.BulletData.Type)
 
 		self.RateOfFire = (60 / self.ReloadTime)
-		Wire_TriggerOutput(self, "Fire Rate", self.RateOfFire)
-		Wire_TriggerOutput(self, "Muzzle Weight", math.floor(self.BulletData.ProjMass * 1000) )
-		Wire_TriggerOutput(self, "Muzzle Velocity", math.floor(self.BulletData.MuzzleVel * ACE.VelScale) )
+		self:TriggerWireOutput("Fire Rate", self.RateOfFire)
+		self:TriggerWireOutput("Muzzle Weight", math.floor(self.BulletData.ProjMass * 1000) )
+		self:TriggerWireOutput("Muzzle Velocity", math.floor(self.BulletData.MuzzleVel * ACE.VelScale) )
 
 		self.NextFire = curTime + self.ReloadTime
 		local reloadTime = self.ReloadTime
@@ -1026,7 +1028,7 @@ function ENT:LoadAmmo( AddTime, Reload )
 			self.BulletData.PropMass = 0
 			self.BulletData.ProjMass = 0
 
-		Wire_TriggerOutput(self, "Loaded", "Empty")
+		self:TriggerWireOutput("Loaded", "Empty")
 
 		self.NextFire = curTime + 0.5
 		self:Think()
@@ -1049,7 +1051,7 @@ function ENT:UnloadAmmo()
 	end
 
 	self.Ready = false
-	Wire_TriggerOutput(self, "Ready", 0)
+	self:TriggerWireOutput("Ready", 0)
 	self:EmitSound("weapons/shotgun/shotgun_empty.wav", 68, 100)
 
 	local unloadtime = self.ReloadTime / 2 -- base time to swap a fully loaded shell out
@@ -1113,8 +1115,8 @@ function ENT:PreEntityCopy()
 		duplicator.StoreEntityModifier( self, "ACFAmmoLink", info )
 	end
 
-	--Wire dupe info
-	self.BaseClass.PreEntityCopy(self  )
+	-- Wire dupe info
+	BaseClass.PreEntityCopy(self)
 
 end
 
@@ -1149,6 +1151,6 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 		Ent.EntityMods.ACFAmmoLink = nil
 	end
 
-	--Wire dupe info
-	self.BaseClass.PostEntityPaste( self, Player, Ent, CreatedEntities )
+	-- Wire dupe info
+	BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 end

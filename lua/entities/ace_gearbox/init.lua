@@ -3,6 +3,8 @@ AddCSLuaFile("cl_init.lua")
 
 include("shared.lua")
 
+DEFINE_BASECLASS("ace_base")
+
 CreateConVar("sbox_max_ace_gearbox", 12)				-- Gearbox limit
 
 local GearboxTable = ACE.Weapons.Gearboxes
@@ -194,13 +196,13 @@ do
 			table.insert(OutputTypes,"NORMAL")
 		end
 
-		Gearbox.Inputs = Wire_CreateInputs( Gearbox, Inputs )
-		Gearbox.Outputs = WireLib.CreateSpecialOutputs( Gearbox, Outputs, OutputTypes )
-		Wire_TriggerOutput(Gearbox, "Entity", Gearbox)
+		Gearbox.Inputs = Gearbox:SetWireInputs(Inputs)
+		Gearbox.Outputs = Gearbox:SetWireOutputs(Outputs, OutputTypes)
+		Gearbox:TriggerWireOutput("Entity", Gearbox)
 
 		if Gearbox.CVT then
-			Wire_TriggerOutput(Gearbox, "Min Target RPM", Gearbox.MinRPMTarget)
-			Wire_TriggerOutput(Gearbox, "Max Target RPM", Gearbox.MaxRPMTarget)
+			Gearbox:TriggerWireOutput("Min Target RPM", Gearbox.MinRPMTarget)
+			Gearbox:TriggerWireOutput("Max Target RPM", Gearbox.MaxRPMTarget)
 		end
 
 		Gearbox.LClutch = Gearbox.MaxTorque
@@ -298,17 +300,17 @@ function ENT:Update( _, Id, Data )
 			phys:SetMass( self.Mass )
 		end
 
-		self.Inputs = Wire_CreateInputs( self, Inputs )
-		self.Outputs = WireLib.CreateSpecialOutputs( self, Outputs, OutputTypes )
-		Wire_TriggerOutput( self, "Entity", self )
+		self.Inputs = self:SetWireInputs(Inputs)
+		self.Outputs = self:SetWireOutputs(Outputs, OutputTypes)
+		self:TriggerWireOutput("Entity", self )
 	end
 
 	if self.CVT then
 		self.MinRPMTarget = Data.MinRPMTarget or 0
 		self.MaxRPMTarget = math.max(Data.MaxRPMTarget or 0,Data.MinRPMTarget + 100)
 		self.CVTRatio = nil
-		Wire_TriggerOutput(self, "Min Target RPM", self.MinRPMTarget)
-		Wire_TriggerOutput(self, "Max Target RPM", self.MaxRPMTarget)
+		self:TriggerWireOutput("Min Target RPM", self.MinRPMTarget)
+		self:TriggerWireOutput("Max Target RPM", self.MaxRPMTarget)
 	end
 
 	self.GearTable = Data.GearTable or {}
@@ -372,7 +374,7 @@ function ENT:UpdateOverlayText()
 		text = text .. "\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText( text )
+	self:SetWireOverlayText( text )
 
 end
 
@@ -525,7 +527,7 @@ function ENT:Calc( InputRPM, InputInertia )
 			self.GearTable[1] = math.Clamp((InputRPM - self.MinRPMTarget) / ((self.MaxRPMTarget - self.MinRPMTarget) or 1),0.05,1)
 		end
 		self.GearRatio = (self.GearTable[1] or 0) * self.FinalDrive
-		Wire_TriggerOutput(self, "Ratio", self.GearRatio)
+		self:TriggerWireOutput("Ratio", self.GearRatio)
 	end
 
 	if self.Auto and self.Drive == 1 and self.InGear then
@@ -700,9 +702,9 @@ function ENT:ChangeGear(value)
 	self.ChangeFinished = CurTime() + self.SwitchTime
 	self.InGear = false
 
-	Wire_TriggerOutput(self, "Current Gear", self.Gear)
+	self:TriggerWireOutput("Current Gear", self.Gear)
 	self:EmitSound("buttons/lever7.wav",250,100)
-	Wire_TriggerOutput(self, "Ratio", self.GearRatio)
+	self:TriggerWireOutput("Ratio", self.GearRatio)
 
 end
 
@@ -719,9 +721,9 @@ function ENT:ChangeDrive(value)
 		self.ChangeFinished = CurTime() + self.SwitchTime
 		self.InGear = false
 
-		Wire_TriggerOutput(self, "Current Gear", self.Gear)
+		self:TriggerWireOutput("Current Gear", self.Gear)
 		self:EmitSound("buttons/lever7.wav",250,100)
-		Wire_TriggerOutput(self, "Ratio", self.GearRatio)
+		self:TriggerWireOutput("Ratio", self.GearRatio)
 	else
 		self:ChangeGear(self.Drive) --autogearing in :calc will set correct gear
 	end
@@ -887,8 +889,8 @@ function ENT:PreEntityCopy()
 		duplicator.StoreEntityModifier( self, "WheelLink", info )
 	end
 
-	--Wire dupe info
-	self.BaseClass.PreEntityCopy( self )
+	-- Wire dupe info
+	BaseClass.PreEntityCopy(self)
 
 end
 
@@ -910,8 +912,8 @@ function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
 		Ent.EntityMods.WheelLink = nil
 	end
 
-	--Wire dupe info
-	self.BaseClass.PostEntityPaste( self, Player, Ent, CreatedEntities )
+	-- Wire dupe info
+	BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 
 end
 

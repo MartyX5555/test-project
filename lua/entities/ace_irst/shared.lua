@@ -1,4 +1,4 @@
-DEFINE_BASECLASS( "base_wire_entity" )
+DEFINE_BASECLASS("ace_base")
 
 ENT.PrintName		= "ACE - Infrared Search And Track"
 ENT.WireDebugName	= "ACE IRST"

@@ -21,7 +21,7 @@ AddCSLuaFile("cl_init.lua")
 
 include("shared.lua")
 
-DEFINE_BASECLASS("base_wire_entity")
+DEFINE_BASECLASS("ace_base")
 
 CreateConVar("sbox_max_ace_rack", 12) -- Racks limit
 
@@ -58,7 +58,7 @@ do
 	}
 
 	function ENT:Initialize()
-		self.BaseClass.Initialize(self)
+		BaseClass.Initialize(self)
 
 		self.Ready					= false
 		self.AllowReload			= false
@@ -102,20 +102,20 @@ do
 		self.IsMaster				= true
 		self.WireDebugName			= "ACE Rack"
 
-		self.Inputs					= WireLib.CreateInputs(self, Inputs)
-		self.Outputs				= WireLib.CreateOutputs(self, Outputs)
+		self.Inputs					= self:SetWireInputs(Inputs)
+		self.Outputs				= self:SetWireOutputs(Outputs)
 
-		Wire_TriggerOutput(self, "Entity", self)
-		Wire_TriggerOutput(self, "Ready", 0)
-		Wire_TriggerOutput(self, "Shots Left", 0)
-		Wire_TriggerOutput(self, "AmmoCount", 0)
-		Wire_TriggerOutput(self, "Position", vector_origin)
+		self:TriggerWireOutput("Entity", self)
+		self:TriggerWireOutput("Ready", 0)
+		self:TriggerWireOutput("Shots Left", 0)
+		self:TriggerWireOutput("AmmoCount", 0)
+		self:TriggerWireOutput("Position", vector_origin)
 	end
 end
 
 local function SetReady(Rack, bool)
 	Rack.Ready = bool
-	Wire_TriggerOutput(Rack, "Ready", bool and 1 or 0)
+	Rack:TriggerWireOutput("Ready", bool and 1 or 0)
 end
 
 local function SetNextFire(Rack, delay)
@@ -259,7 +259,7 @@ local function ValidateAmmoCount(Rack)
 	end
 
 	Rack.AvailableAmmo = AvailableAmmo
-	Wire_TriggerOutput(Rack, "AmmoCount", AvailableAmmo)
+	Rack:TriggerWireOutput("AmmoCount", AvailableAmmo)
 end
 
 function ENT:SetPortDamaged(portId, damaged)
@@ -499,7 +499,7 @@ function ENT:FireMissile()
 			self.WaitTime = Time + math.max(self.FireDelay * 1.5, 2)
 
 			self.LoadedAmmo = CountLoadedMissiles(self)
-			Wire_TriggerOutput(self, "Shots Left", self.LoadedAmmo)
+			self:TriggerWireOutput("Shots Left", self.LoadedAmmo)
 			self:SetNWInt("Ammo", self.LoadedAmmo)
 			self:SetLoadedWeight()
 		end
@@ -593,7 +593,7 @@ function ENT:LoadMissile()
 		Crate.Ammo = Crate.Ammo - 1
 
 		self.LoadedAmmo = CountLoadedMissiles(self)
-		Wire_TriggerOutput(self, "Shots Left", self.LoadedAmmo)
+		self:TriggerWireOutput("Shots Left", self.LoadedAmmo)
 		self:SetNWInt("Ammo", self.LoadedAmmo)
 		self:SetLoadedWeight()
 		self:EmitSound(ReloadSound)
@@ -621,7 +621,7 @@ function ENT:TriggerInput(iname, value)
 		self.AllowReload = value ~= 0
 	elseif iname == "Target Pos" then
 		self.TargetPos = value
-		Wire_TriggerOutput(self, "Position", value)
+		self:TriggerWireOutput("Position", value)
 	elseif iname == "Fire Delay" then
 		if value <= 0 then
 			self.CustomFireDelay = nil
@@ -662,7 +662,7 @@ function ENT:Think()
 		ValidateAmmoCount(self)
 		self:UpdateRefillBonus()
 		self.LoadedAmmo = CountLoadedMissiles(self)
-		Wire_TriggerOutput(self, "Shots Left", self.LoadedAmmo)
+		self:TriggerWireOutput("Shots Left", self.LoadedAmmo)
 		self:SetNWInt("Ammo", self.LoadedAmmo)
 		self:UpdateWireOverlay()
 
@@ -810,7 +810,8 @@ function ENT:PreEntityCopy()
 
 	duplicator.StoreEntityModifier(self, "ACFRackInfo", { Id = self.Id })
 
-	self.BaseClass.PreEntityCopy(self)
+	-- Wire dupe info
+	BaseClass.PreEntityCopy(self)
 end
 
 function ENT:PostEntityPaste(Player, Ent, CreatedEntities)
@@ -827,15 +828,18 @@ function ENT:PostEntityPaste(Player, Ent, CreatedEntities)
 		Ent.EntityMods.ACFAmmoLink = nil
 	end
 
-	self.BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
+	-- Wire dupe info
+	BaseClass.PostEntityPaste(self, Player, Ent, CreatedEntities)
 end
 
 function ENT:OnRemove()
-	self.BaseClass.OnRemove(self)
+	BaseClass.OnRemove(self)
 end
 
 function ENT:OnRestore()
-	Wire_Restored(self)
+	if Wire_Restored then
+		Wire_Restored(self)
+	end
 end
 
 local function GetStatus(Rack)
@@ -899,7 +903,7 @@ function ENT:UpdateWireOverlay()
 		txt = txt .. "\n\nNot legal, disabled for " .. math.ceil(self.NextLegalCheck - ACE.CurTime) .. "s\nIssues: " .. self.LegalIssues
 	end
 
-	self:SetOverlayText(txt)
+	self:SetWireOverlayText(txt)
 end
 
 function ENT:GetOverlayText()

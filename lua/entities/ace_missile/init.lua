@@ -18,6 +18,8 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
+DEFINE_BASECLASS("ace_base")
+
 local GunTable      = ACE.Weapons.Guns
 local GuidanceTable = ACE.Guidance
 local FuseTable     = ACE.Fuse
@@ -45,9 +47,9 @@ local function GetLauncherVelocity(launcher)
 end
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
+	BaseClass.Initialize(self)
 
-	self.Inputs = WireLib.CreateInputs(self, { "Detonate" })
+	self.Inputs = self:SetWireInputs({ "Detonate" })
 	self.ThinkDelay = 0.1
 	self.BulletData = {}
 	self.RoundData = {}
@@ -930,7 +932,7 @@ function ENT:CanTool(ply, _, mode)
 end
 
 function ENT:OnRemove()
-	self.BaseClass.OnRemove(self)
+	BaseClass.OnRemove(self)
 	ACE.Missiles[self] = nil
 	self:StopParticles()
 end
