@@ -96,6 +96,7 @@ do
 		self.PodLength				= 0
 		self.EnforceFlightInRack	= false
 		self.RailLaunch				= false
+		self.LaunchKick				= 0
 
 		self.Inaccuracy				= 1
 		self.IsMaster				= true
@@ -485,7 +486,7 @@ function ENT:FireMissile()
 				local useRail = (self.PodLength > 0) and (self.EnforceFlightInRack or self.RailLaunch)
 
 				portdata.Missile = NULL
-				missile:Launch(ShootVec, useRail, self.PodLength)
+				missile:Launch(ShootVec, useRail, self.PodLength, self.LaunchKick)
 
 				self:EmitSound(FireSound, 500, 100)
 			else
@@ -759,6 +760,7 @@ function MakeACE_Rack(Owner, Pos, Angle, Id)
 
 	Rack.PodLength			= ACE.GetRackValue(Id, "podlength") or 0
 	Rack.EnforceFlightInRack = ACE.GetRackValue(Id, "enforceFlightInRack") or false
+	Rack.LaunchKick			= ACE.GetRackValue(Id, "launchkick") or 0
 	Rack.MinFireDelay		= math.max(ACE.GetRackValue(Id, "minfiredelay") or 0.05, 0.05)
 	Rack.DefaultFireDelay	= Rack.MinFireDelay
 	Rack.FireDelay			= Rack.MinFireDelay

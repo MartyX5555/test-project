@@ -8,8 +8,6 @@ function ACEMissiles_MenuSlider(config, controlGroup, combo, conCmd, min, max)
 		slider:SetMax( max )
 		slider:SetValue( config.Min )
 		slider:SetDecimals( 2 )
-		--slider:Dock(FILL)
-		--slider:DockMargin(6,0,0,0)
 		slider.Configurable = config
 
 		slider.GetConfigValue = function( slider )
@@ -26,8 +24,6 @@ function ACEMissiles_MenuSlider(config, controlGroup, combo, conCmd, min, max)
 	return slider
 
 end
-
-
 
 function ACEMissiles_SetCommand(combo, controlGroup, conCmd)
 
@@ -52,20 +48,12 @@ function ACEMissiles_SetCommand(combo, controlGroup, conCmd)
 
 end
 
-
-
-
-ACEMissiles_ConfigurationFactory =
-{
-	number =	function(config, controlGroup, combo, conCmd, gundata)
-					--print(config.MinConfig, gundata.armdelay, config.Min, gundata[config.MinConfig], gundata.id)
-					local min = config.MinConfig and gundata.armdelay or config.Min
-					return ACEMissiles_MenuSlider(config, controlGroup, combo, conCmd, min, config.Max)
-				end
+local ACEMissiles_ConfigurationFactory = {
+	number = function(config, controlGroup, combo, conCmd, gundata)
+				local min = config.MinConfig and gundata.armdelay or config.Min
+				return ACEMissiles_MenuSlider(config, controlGroup, combo, conCmd, min, config.Max)
+			end
 }
-
-
-
 
 function ACEMissiles_CreateMenuConfiguration(tbl, combo, conCmd, existingPanel, gundata)
 
@@ -79,17 +67,13 @@ function ACEMissiles_CreateMenuConfiguration(tbl, combo, conCmd, existingPanel, 
 	end
 
 	local controlGroup = {}
-
 	local height = 0
 
 	for _, config in pairs(tbl.Configurable) do
 		local control = ACEMissiles_ConfigurationFactory[config.Type](config, controlGroup, combo, conCmd, gundata)
-		control:SetPos(6, height)
-
+		control:Dock(TOP)
+		control:DockMargin(6, 0, 6, 0)
 		panel:Add(control)
-
-		control:StretchToParent(0,nil,0,nil)
-
 		height = height + control:GetTall()
 	end
 
@@ -98,10 +82,4 @@ function ACEMissiles_CreateMenuConfiguration(tbl, combo, conCmd, existingPanel, 
 	combo.ControlGroup = controlGroup
 
 	return panel
-
-end
-
-
-function ACEMissiles_RemoveMenuConfiguration()
-	ErrorNoHalt("TODO: ACEMissiles_RemoveMenuConfiguration")
 end

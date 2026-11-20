@@ -2,7 +2,7 @@
 
 local ACEEnts = ACE.Weapons
 
-function SetMissileGUIEnabled(_, enabled, gundata)
+local function SetMissileGUIEnabled(_, enabled, gundata)
 
 	if enabled then
 
@@ -164,7 +164,7 @@ end
 
 
 
-function CreateRackSelectGUI(node)
+local function CreateRackSelectGUI(node)
 
 	local Current_Rack = node.mytable.rack
 	if not acemenupanel.CData.MissileSpacer then
@@ -235,7 +235,7 @@ end
 
 
 
-function ModifyACEMenu(panel)
+local function ModifyACEMenu(panel)
 
 	oldAmmoSelect = oldAmmoSelect or panel.AmmoSelect
 

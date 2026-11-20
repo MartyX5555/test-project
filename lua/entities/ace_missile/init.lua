@@ -65,10 +65,11 @@ function ENT:Initialize()
 
 	self.InRack = false
 	self.InRackTime = 0
-	self.MaxInRackTime = ACE.MissileInRackTimeout or 2
 	self.PodLengthDistance = 0
 	self.Motor = 0
 	self.NoThrust = false
+	self.IgnitionDelay = 0
+	self.LaunchKick = 0
 
 	self.CutoutTime = CurTime() + 10000
 
@@ -419,12 +420,14 @@ local function FlightInRack(Missile, DeltaTime)
 
 	Missile:DoFlight()
 
+	-- The ordnance has finished the rail. Time to release it.
 	if (nextLocalPos.x - Missile.LStartX) >= Missile.PodLengthDistance then
 		ExitRack(Missile, DeltaTime)
 		return
 	end
 
-	if Missile.InRackTime >= Missile.MaxInRackTime then
+	-- we'll safely remove the missile/bomb if its stuck inside of the rack.
+	if Missile.InRackTime >= ACE.MissileInRackTimeout then
 		Missile:Dismount()
 		return
 	end
@@ -498,7 +501,7 @@ end
 --===========================================================================================
 ----- Launch & Dismount functions
 --===========================================================================================
-function ENT:Launch(ShootDir, UseRail, PodLength)
+function ENT:Launch(ShootDir, UseRail, PodLength, LaunchKick)
 	if not IsValid(self.PhysObj) then self.PhysObj = self:GetPhysicsObject() end
 
 	local BulletData = self.BulletData
@@ -533,19 +536,22 @@ function ENT:Launch(ShootDir, UseRail, PodLength)
 	self.Filter = self.Filter or { self }
 	self.LaunchDir = ShootDir and ShootDir:GetNormalized() or self:GetForward():GetNormalized()
 
+	self.LaunchKick = ((self.IgnitionDelay or 0) > 0) and (math.max(LaunchKick or 0, 0) * 39.37) or 0
+
 	local podLen = PodLength or 0
 	self.InRack = (UseRail and podLen > 0 and IsValid(self.Launcher)) and true or false
 	self.PodLengthDistance = podLen
 	self.InRackTime = 0
-	self.MaxInRackTime = ACE.MissileInRackTimeout or 2
 
 	if self.InRack then
 		self.LCurPos = self.Launcher:WorldToLocal(self:GetPos())
 		self.LStartX = self.LCurPos.x
-		self.LocalVel = Vector(0, 0, 0)
+		self.LocalVel = Vector(self.LaunchKick, 0, 0)
 	end
 
 	self:SetParent(nil)
+	self:SetNoDraw(false)
+	self:SetNotSolid(false)
 
 	self:ConfigureFlight()
 
@@ -567,6 +573,7 @@ function ENT:Launch(ShootDir, UseRail, PodLength)
 	self:Think()
 end
 
+-- Used to safely dismount launched missiles
 function ENT:Dismount()
 	if self.MissileDetonated then return end
 
@@ -579,75 +586,51 @@ function ENT:Dismount()
 	self:Remove()
 end
 
-do
-	local PushThrust = 30000
+function ENT:MotorStart(_, Round, BulletData)
+	if not self.Launched then return end
 
-	function ENT:MotorStart(GunData, Round, BulletData)
-		if not self.Launched then return end
+	local noThrust = ACE.GetGunValue(BulletData, "nothrust")
+	local ignitionDelay = math.max(self.IgnitionDelay or 0, 0)
 
-		local noThrust = ACE.GetGunValue(BulletData, "nothrust")
+	if noThrust then
+		self.MotorLength = 0
+		self.Motor = 0
+		return
+	end
 
-		if GunData.prepush and not noThrust then
-			-- Put a little gunpowder push on the missile so it can fly a few meters before the main rocket starts
-			self.Motor = PushThrust
+	local function IgniteMainMotor()
+		if not IsValid(self) or self.MissileDetonated then return end
+		if self:WaterLevel() > 0 and self.NotDrownable then return end
 
-			timer.Simple(0.01, function()
-				if not IsValid(self) then return end
-				self.Motor = 0
-			end)
+		local Time = CurTime()
 
-			timer.Simple(0.5, function()
-				if not IsValid(self) then return end
-				if self.MissileDetonated then return end
-				if self:WaterLevel() > 0 and self.NotDrownable then return end
+		self.MotorLength = BulletData.PropMass / (Round.burnrate / 1000) * (1 - Round.starterpct)
+		self.Motor = Round.thrust
 
-				local Time = CurTime()
-
-				self.MotorLength = BulletData.PropMass / (Round.burnrate / 1000) * (1 - Round.starterpct)
-				self.Motor = Round.thrust
-
-				if self.Motor > 0 or self.MotorLength > 0.1 then
-					self.MissileIgnited = true
-					self.CacheParticleEffect = Time + 0.01
-					self:SetNWFloat("LightSize", BulletData.Caliber * 3)
-					self.CutoutTime = Time + self.MotorLength
-				end
-
-				if self.Motor > 0 then
-					self:LaunchEffect()
-				end
-			end)
-		else
-			local Time = CurTime()
-
-			if noThrust then
-				self.MotorLength = 0
-				self.Motor = 0
-			else
-				self.MotorLength = BulletData.PropMass / (Round.burnrate / 1000) * (1 - Round.starterpct)
-				self.Motor = Round.thrust
-			end
-
-			if self.Motor > 0 or self.MotorLength > 0.1 then
-				self.MissileIgnited = true
-				self.CacheParticleEffect = Time + 0.01
-				self:SetNWFloat("LightSize", BulletData.Caliber * 3)
-				self.CutoutTime = Time + self.MotorLength
-			end
-
-			if self.Motor > 0 then
-				self:LaunchEffect()
-			end
+		if self.Motor > 0 or self.MotorLength > 0.1 then
+			self.MissileIgnited = true
+			self.CacheParticleEffect = Time + 0.01
+			self:SetNWFloat("LightSize", BulletData.Caliber * 3)
+			self.CutoutTime = Time + self.MotorLength
 		end
 
 		if self.Motor > 0 then
-			local DRTime = 1250 / self.Motor
+			self:LaunchEffect()
 
+			local DRTime = 1250 / self.Motor
 			timer.Simple(DRTime, function()
 				if not IsValid(self) then return end
 				self.NotDrownable = true -- Allow missiles to escape water briefly before motor drowning applies
 			end)
 		end
+	end
+
+	if ignitionDelay > 0 then
+		self.MotorLength = 0
+		self.Motor = 0
+		timer.Simple(ignitionDelay, IgniteMainMotor)
+	else
+		IgniteMainMotor()
 	end
 end
 
@@ -702,8 +685,10 @@ function ENT:Think()
 			self.LastThink = Time - self.ThinkDelay
 
 			local parentVel = GetLauncherVelocity(self.Launcher)
-			self.LastVel = parentVel * self.ThinkDelay
-			self.TrueVel = parentVel
+			local kickVel = (not self.InRack and (self.LaunchKick or 0) > 0) and ((self.LaunchDir or self:GetForward():GetNormalized()) * self.LaunchKick) or vector_origin
+			local initialVel = parentVel + kickVel
+			self.LastVel = initialVel * self.ThinkDelay
+			self.TrueVel = initialVel
 		end
 
 		local DeltaTime = Time - self.LastThink
@@ -750,8 +735,6 @@ function ENT:Detonate()
 		self:Dud()
 		return
 	end
-
-	self.BulletData.Flight = self:GetForward() * (self.BulletData.MuzzleVel or 10)
 	self:ForceDetonate()
 end
 
@@ -769,8 +752,7 @@ function ENT:ForceDetonate()
 	local phys = self:GetPhysicsObject()
 	local pos = self:GetPos()
 
-	local phyvel = phys and phys:GetVelocity() or Vector(0, 0, 1000)
-	bdata.Flight = bdata.Flight or phyvel
+	bdata.Flight = self:GetForward() * (bdata.MuzzleVel or 10)
 
 	if self.Fuse and self.Fuse.PerformDetonation then
 		self.Fuse:PerformDetonation(self, bdata, phys, pos)
@@ -779,12 +761,11 @@ function ENT:ForceDetonate()
 	end
 
 	timer.Simple(1, function()
-		if IsValid(self) then
-			if IsValid(self.FakeCrate) then
-				self.FakeCrate:Remove()
-			end
-			self:Remove()
+		if not IsValid(self) then return end
+		if IsValid(self.FakeCrate) then
+			self.FakeCrate:Remove()
 		end
+		self:Remove()
 	end)
 
 	debugoverlay.Text(pos, "Missile Pos", 10)

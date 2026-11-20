@@ -8,7 +8,8 @@ ACE.RegisterRackClass("RK", {
 	reloadmul			= 8,
 	enforceFlightInRack	= false,
 	minfiredelay		= 0.2,
-	podlength			= 0
+	podlength			= 0,
+	launchkick			= 0
 } )
 
 --add a gun to the class

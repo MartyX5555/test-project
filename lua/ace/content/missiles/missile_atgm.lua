@@ -324,5 +324,4 @@ ACE.RegisterWeapon("FGM-148 ASM", {
 	guidanceInac	= 1, --15									-- How much inaccuracy this missile will have when its being guided. In units
 	ghosttime		= 0.3,									-- Time where this missile will be unable to hit surfaces, in seconds
 
-	prepush			= false,										-- Additional push and delaying motor ignition
 } )

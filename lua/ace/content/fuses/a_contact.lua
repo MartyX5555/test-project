@@ -17,6 +17,7 @@ this.Name = ClassName
 this.desc = "This fuse triggers upon direct contact against solid surfaces."
 
 this.Primer = 0
+this.StartDelay = 0
 
 -- Configuration information for things like acfmenu.
 this.Configurable =
@@ -32,6 +33,15 @@ this.Configurable =
 		Max		= 10								-- number specific: maximum value
 
 		-- in future if needed: min/max getter function based on munition type.  useful for modifying radar cones?
+	},
+	{
+		Name		= "StartDelay",					-- name of the variable to change
+		DisplayName = "Ignition Delay (in seconds)",-- name displayed to the user
+		CommandName = "Id",							-- shorthand name used in console commands
+
+		Type		= "number",						-- lua type of the configurable variable
+		Min			= 0,							-- number specific: minimum value
+		Max			= 5								-- number specific: maximum value
 	}
 }
 
@@ -46,8 +56,12 @@ function this:IsArmed()
 end
 
 
-function this:Configure()
+function this:Configure(missile)
 	self.TimeStarted = CurTime()
+
+	if IsValid(missile) then
+		missile.IgnitionDelay = math.max(self.StartDelay or 0, 0)
+	end
 end
 
 
@@ -81,5 +95,8 @@ function this:PerformDetonation( missile, bdata, phys, pos )
 end
 
 function this:GetDisplayConfig()
-	return {["Arming delay"] = math.Round(self.Primer, 3) .. " s"}
+	return {
+		["Arming delay"] = math.Round(self.Primer, 3) .. " s",
+		["Ignition delay"] = math.Round(self.StartDelay or 0, 3) .. " s"
+	}
 end

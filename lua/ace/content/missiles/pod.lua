@@ -14,6 +14,7 @@ ACE.RegisterRackClass("POD", {
 	enforceFlightInRack	= true,
 	minfiredelay		= 0.05,
 	podlength			= 0,
+	launchkick			= 0,
 
 	reloadmul			= 8
 } )
@@ -87,6 +88,7 @@ ACE.RegisterRack("1x BGM-71E", {
 	magsize		= 1,
 	caliber		= 13,
 	podlength	= 25,
+	launchkick	= 25,
 
 	whitelistonly	= true,
 	protectmissile	= true,
@@ -108,6 +110,7 @@ ACE.RegisterRack("2x BGM-71E", {
 	magsize		= 2,
 	caliber		= 13,
 	podlength	= 32,
+	launchkick	= 25,
 
 	whitelistonly	= true,
 	protectmissile	= true,
@@ -130,6 +133,7 @@ ACE.RegisterRack("4x BGM-71E", {
 	magsize		= 4,
 	caliber		= 13,
 	podlength	= 32,
+	launchkick	= 25,
 
 	whitelistonly	= true,
 	protectmissile	= true,
@@ -397,6 +401,7 @@ ACE.RegisterRack("1x Kornet", {
 	magsize		= 1,
 	caliber		= 15.2,
 	podlength	= 55,
+	launchkick	= 20,
 
 	protectmissile	= true,
 	hidemissile		= true,
@@ -418,6 +423,7 @@ ACE.RegisterRack("2x Kornet", {
 	magsize		= 2,
 	caliber		= 15.2,
 	podlength	= 63,
+	launchkick	= 20,
 
 	protectmissile	= true,
 	hidemissile		= true,
@@ -440,6 +446,7 @@ ACE.RegisterRack("4x Kornet", {
 	magsize		= 4,
 	caliber		= 15.2,
 	podlength	= 63,
+	launchkick	= 20,
 
 	protectmissile	= true,
 	hidemissile		= true,
@@ -509,6 +516,7 @@ ACE.RegisterRack("1x Javelin", {
 	magsize		= 1,
 	caliber		= 12.7,
 	podlength	= 69,
+	launchkick	= 15,
 
 	protectmissile	= true,
 	hidemissile		= true,
