@@ -1,12 +1,7 @@
 include("shared.lua")
 
-
-
-
 function ENT:Initialize()
-
 	self.LightUpdate = CurTime() + 0.05
-
 end
 
 function ENT:Draw()
