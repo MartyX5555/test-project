@@ -18,8 +18,23 @@ function ACEGearboxGUICreate( Table )
 	end
 
 	if not acemenupanel.GearboxData[Table.id] then
-		acemenupanel.GearboxData[Table.id] = {}
-		acemenupanel.GearboxData[Table.id].GearTable = Table.geartable
+		local gearData = {
+			GearTable = {},
+			FinalDrive = Table.geartable[-1]
+		}
+
+		if Table.cvt then
+			gearData.MinRPMTarget = Table.geartable[-3]
+			gearData.MaxRPMTarget = Table.geartable[-2]
+		end
+
+		for k, v in pairs(Table.geartable) do
+			if isnumber(k) and k ~= -1 and not (Table.cvt and (k == -2 or k == -3)) then
+				gearData.GearTable[k] = v
+			end
+		end
+
+		acemenupanel.GearboxData[Table.id] = gearData
 	end
 
 	if Table.auto and not acemenupanel.GearboxData[Table.id].ShiftTable then
@@ -56,23 +71,27 @@ function ACEGearboxGUICreate( Table )
 	end
 
 	if Table.cvt then
-	ACE.GearsSlider(2, true, acemenupanel.GearboxData[Table.id].GearTable[2], Table.id)
-	ACE.GearsSlider("MinRPMTarget", nil, acemenupanel.GearboxData[Table.id].GearTable[-3], Table.id, "Min Target RPM",true)
-	ACE.GearsSlider("MaxRPMTarget", nil, acemenupanel.GearboxData[Table.id].GearTable[-2], Table.id, "Max Target RPM",true)
-	ACE.GearsSlider("FinalDrive", nil, acemenupanel.GearboxData[Table.id].GearTable[-1], Table.id, "Final Drive")
+		ACE.GearsSlider(2, true, acemenupanel.GearboxData[Table.id].GearTable[2], Table.id)
+		ACE.GearsSlider("MinRPMTarget", nil, acemenupanel.GearboxData[Table.id].MinRPMTarget, Table.id, "Min Target RPM", true)
+		ACE.GearsSlider("MaxRPMTarget", nil, acemenupanel.GearboxData[Table.id].MaxRPMTarget, Table.id, "Max Target RPM", true)
+		ACE.GearsSlider("FinalDrive", nil, acemenupanel.GearboxData[Table.id].FinalDrive, Table.id, "Final Drive")
 		ACE.MenuSendTableValue("Data", "GearTable", 1, 0.01)
 	else
-		for ID,Value in pairs(acemenupanel.GearboxData[Table.id].GearTable) do
-			if ID > 0 and not (Table.auto and ID == 8) then
-			ACE.GearsSlider(ID, true, Value, Table.id)
-				if Table.auto then
-				ACE.ShiftPoint(ID, acemenupanel.GearboxData[Table.id].ShiftTable[ID], Table.id, "Gear " .. ID .. " upshift speed: ")
+		for ID, Value in pairs(acemenupanel.GearboxData[Table.id].GearTable) do
+			if isnumber(ID) then
+				if ID > 0 and not (Table.auto and ID == 8) then
+					ACE.GearsSlider(ID, true, Value, Table.id)
+					if Table.auto then
+						ACE.ShiftPoint(ID, acemenupanel.GearboxData[Table.id].ShiftTable[ID], Table.id, "Gear " .. ID .. " upshift speed: ")
+					end
+				elseif Table.auto and (ID == -2 or ID == 8) then
+					ACE.GearsSlider(Table.gears + 1, true, Value, Table.id, "Reverse")
 				end
-			elseif Table.auto and (ID == -2 or ID == 8) then
-			ACE.GearsSlider(Table.gears + 1, true,Value, Table.id, "Reverse")
-			elseif ID == -1 then
-			ACE.GearsSlider("FinalDrive", nil, Value, Table.id, "Final Drive")
 			end
+		end
+
+		if acemenupanel.GearboxData[Table.id].FinalDrive then
+			ACE.GearsSlider("FinalDrive", nil, acemenupanel.GearboxData[Table.id].FinalDrive, Table.id, "Final Drive")
 		end
 	end
 
@@ -188,7 +207,7 @@ function ACEGearboxGUICreate( Table )
 end
 
 function ACE.GearsSlider(NetworkID, IsGear, Value, ID, Desc, CVT)
-	if NetworkID and not acemenupanel.CData[GNetworkIDear] then
+	if NetworkID and not acemenupanel.CData[NetworkID] then
 
 		local GearSlider = vgui.Create( "DNumSlider", acemenupanel.CustomDisplay )
 		GearSlider:SetText( Desc or "Gear " .. NetworkID )
@@ -208,11 +227,11 @@ function ACE.GearsSlider(NetworkID, IsGear, Value, ID, Desc, CVT)
 		end
 
 		GearSlider.OnValueChanged = function( slider, val )
-			acemenupanel.GearboxData[slider.ID].GearTable[slider.Gear] = val
-
 			if IsGear then
+				acemenupanel.GearboxData[slider.ID].GearTable[slider.Gear] = val
 				ACE.MenuSendTableValue("Data", "GearTable", NetworkID, val)
 			else
+				acemenupanel.GearboxData[slider.ID][slider.Gear] = val
 				ACE.MenuSendValue( "Data", NetworkID, val )
 			end
 		end
