@@ -75,9 +75,10 @@ SWEP.CarrySpeedMul			= 0.75
 
 SWEP.LastThink = 0
 SWEP.RangeTick = 0
-SWEP.TargetDistance = 0
+SWEP.TargetDistance = 20
 SWEP.CurrentReplenishTicks = 0
-SWEP.RoundType = 0 --0 for He, 1 for smoke
+SWEP.RoundType = 1 --1 for HE, 2 for smoke
+SWEP.ReloadKeyDown = false
 
 
 DEFINE_BASECLASS("weapon_ace_base")
@@ -506,16 +507,16 @@ function SWEP:Shoot()
 
 
 			local ARC = 1 -- +1 for high, -1 for direct fire
-			local G = (GetConVar("sv_gravity"):GetInt() / -39.37)
+			local G = GetConVar("sv_gravity"):GetFloat() / -39.37
 			self:SetPg(G)
-
 
 			local eEye = owner:EyeAngles()
 
-			Xdist = Xdist - 7 --Because of the incline of the shells near the end of their flight, this helps bring back the distribution a smidge. It just feels right
+			Xdist = math.max(Xdist - 7, 1) --Because of the incline of the shells near the end of their flight, this helps bring back the distribution a smidge. It just feels right
 
-			local calculatedAngle = (math.atan( (GVel^2 + ARC * math.sqrt(GVel^4 - G * ( G * Xdist^2 + 2 * Ydist * GVel^2))) / (G * Xdist) )) * 180 / math.pi
-			local VectorPos = ( Angle(eEye.x,eEye.y,0) + Angle(calculatedAngle,0,0) + Angle( math.Rand(-0.75,0.75) * self.BaseSpread, math.Rand(-1,1) * self.BaseSpread, 0)):Forward()
+			local discriminant = math.max(GVel^4 - G * (G * Xdist^2 + 2 * Ydist * GVel^2), 0)
+			local calculatedAngle = math.atan((GVel^2 + ARC * math.sqrt(discriminant)) / (G * Xdist)) * 180 / math.pi
+			local VectorPos = (Angle(calculatedAngle, eEye.y, 0) + Angle(math.Rand(-0.75, 0.75) * self.BaseSpread, math.Rand(-1, 1) * self.BaseSpread, 0)):Forward()
 
 
 			self.BulletData.MuzzleVel = GVel
@@ -593,35 +594,23 @@ function SWEP:Think()
 	if not CLIENT then
 
 		local CT = CurTime()
-		local DT = CT-self.LastThink
+		local DT = self.LastThink > 0 and (CT - self.LastThink) or 0
 
-
-		if owner:KeyDown( IN_SPEED ) then
-			DT = DT * 10
-		end
-
-		if owner:KeyDown( IN_FORWARD ) then
-
-			self.TargetDistance = math.Min(self.TargetDistance + 35 * DT,1050)
-
-		elseif owner:KeyDown( IN_BACK ) then
-
-			self.TargetDistance = math.Max(self.TargetDistance - 35 * DT,20)
-
-		end
-
-
-		if CT > self.RangeTick then --More of a secondary thing rate
-			self.RangeTick = CT + 0.1
-			self:SetPx(self.TargetDistance)
-			self.CurrentReplenishTicks = self.CurrentReplenishTicks + 1
-
-			if self.CurrentReplenishTicks > 50 and owner:GetAmmoCount( "CombineCannon" ) < 16 then --Reload
-				self.CurrentReplenishTicks = 0
-				owner:GiveAmmo( 1, "CombineCannon", true )
+		if self:GetZoomState() then
+			if owner:KeyDown( IN_SPEED ) then
+				DT = DT * 10
 			end
 
-			if owner:KeyDown( IN_RELOAD ) then
+			if owner:KeyDown( IN_FORWARD ) then
+				self.TargetDistance = math.Min(self.TargetDistance + 35 * DT, 1050)
+			elseif owner:KeyDown( IN_BACK ) then
+				self.TargetDistance = math.Max(self.TargetDistance - 35 * DT, 20)
+			end
+		end
+
+		if owner:KeyDown( IN_RELOAD ) then
+			if not self.ReloadKeyDown then
+				self.ReloadKeyDown = true
 				if self.RoundType == 1 then
 					self.RoundType = 2
 					self:InitBulletData2()
@@ -634,9 +623,22 @@ function SWEP:Think()
 					self:SetPy(1)
 				end
 			end
-
+		else
+			self.ReloadKeyDown = false
 		end
 
+		if CT > self.RangeTick then --More of a secondary thing rate
+			self.RangeTick = CT + 0.1
+			self:SetPx(self.TargetDistance)
+			self:SetPy(self.RoundType)
+			self:SetPg(GetConVar("sv_gravity"):GetFloat() / -39.37)
+			self.CurrentReplenishTicks = self.CurrentReplenishTicks + 1
+
+			if self.CurrentReplenishTicks > 50 and owner:GetAmmoCount( "CombineCannon" ) < 16 then --Reload
+				self.CurrentReplenishTicks = 0
+				owner:GiveAmmo( 1, "CombineCannon", true )
+			end
+		end
 
 		self.LastThink = CT
 	end

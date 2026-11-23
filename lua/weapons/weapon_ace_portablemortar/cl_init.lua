@@ -23,11 +23,19 @@ function SWEP:DoDrawCrosshair(x, y)
 
 	local owner = self:GetOwner()
 	local inaccuracy = math.min(owner:GetVelocity():Length() / owner:GetRunSpeed(), 1)
-	inaccuracy = math.max(inaccuracy, self.Heat / self.HeatMax)
+	if self.HeatMax > 0 then
+		inaccuracy = math.max(inaccuracy, self.Heat / self.HeatMax)
+	end
 --	local fusedelay = self:GetFuseDelay()
 	local Tx = self:GetPx()
+	if Tx <= 0 then
+		Tx = self.TargetDistance > 0 and self.TargetDistance or 20
+	end
 	local ST = self:GetPy()
 	local Tg = self:GetPg()
+	if Tg == 0 then
+		Tg = GetConVar("sv_gravity"):GetFloat() / -39.37
+	end
 
 	if Zoom then
 
@@ -203,10 +211,11 @@ function SWEP:DoDrawCrosshair(x, y)
 		surface.SetTextPos( x - 350, y + 160 )
 		surface.DrawText( "Vel: " .. math.Round(GVel,0) .. "m/s")
 
-		Tx = Tx - 7 --Because of the incline of the shells near the end of their flight, this helps bring back the distribution a smidge. It just feels right
+		Tx = math.max(Tx - 7, 1) --Because of the incline of the shells near the end of their flight, this helps bring back the distribution a smidge. It just feels right
 
-		local calculatedAngle = (math.atan( (GVel^2 + math.sqrt(GVel^4 - Tg * ( Tg * Tx^2))) / (Tg * Tx) ))
-		local ShellTime = 2 * ( GVel / Tg) * math.sin(calculatedAngle)
+		local discriminant = math.max(GVel^4 - Tg * (Tg * Tx^2), 0)
+		local calculatedAngle = Tg ~= 0 and math.atan((GVel^2 + math.sqrt(discriminant)) / (Tg * Tx)) or (-math.pi / 4)
+		local ShellTime = Tg ~= 0 and (2 * (GVel / Tg) * math.sin(calculatedAngle)) or 0
 
 		surface.SetTextPos( x - 350, y-10 )
 		surface.DrawText( "Ang: " .. math.Round(-calculatedAngle * 180 / math.pi,0) .. " deg")
