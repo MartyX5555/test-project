@@ -82,7 +82,8 @@ do
 		return Id
 	end
 	local function VerifyGearboxData(GearboxData, Data)
-		if istable(Data.GearTable) and #Data.GearTable > 0 then
+		if (istable(Data.GearTable) and #Data.GearTable > 0) or Data.FinalDrive ~= nil then
+			Data.GearTable = Data.GearTable or {}
 			Data.FinalDrive = ToNumber(Data.FinalDrive) or 0.5
 			if GearboxData.cvt then
 				Data.MinRPMTarget = Max(ToNumber(Data.MinRPMTarget) or 1,1)
